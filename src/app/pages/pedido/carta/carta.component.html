@@ -1,0 +1,55 @@
+<div>
+    <!-- toolbar -->
+    <ng-container *ngIf="showToolBar">
+      <div matRipple class="text-white bg-primary p-2 m-toolbar-seccion animated fadeInDown" (click)="goBack()">
+        <i class="fa fa-arrow-left" aria-hidden="true"></i>
+        <span class="pl-2 font-weight-light fs-13">{{tituloToolBar}}</span>
+      </div>
+    </ng-container> 
+
+    <!-- categorias -->
+    <div [hidden]="!showCategoria" class="animated fadeInUp">
+        <ng-container *ngIf="objCarta">
+            <ul>
+                <li *ngFor="let item of objCarta.carta"
+                    matRipple [matRippleColor]="rippleColor"
+                    (click)="getSecciones(item)">
+                    <div class="m1">
+                        {{item.des}}
+                    </div>
+                </li>
+            </ul>    
+        </ng-container>
+    </div>    
+
+    <!-- Secciones -->
+    <div [hidden]="!showSecciones" class="animated fadeIn m-main-pt-40">
+      <ng-container>
+        <ul>
+          <li *ngFor="let item of objSecciones"
+              matRipple [matRippleColor]="rippleColor"
+              (click)="getItems(item)">
+            <div class="m1">
+              {{item.des}}
+            </div>
+          </li>
+        </ul>
+      </ng-container>
+    </div>
+
+    <!-- items -->
+    <div [hidden]="!showItems" class="animated fadeIn  m-main-pt-40">
+      <ng-container>
+        <ul>
+          <li *ngFor="let item of objItems" 
+              matRipple [matRippleColor]="rippleColor">
+            <div class="m1">
+              {{item.des}}
+            </div>
+          </li>
+        </ul>
+      </ng-container>
+    </div>
+
+
+</div>

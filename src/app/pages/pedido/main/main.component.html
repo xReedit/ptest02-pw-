@@ -1,0 +1,18 @@
+<div class="h-100 overflow-hidden">
+    <div class="toolbar-main" [ngClass]="{'fadeInTool': isVisibleToolBar, 'fadeOutTool': !isVisibleToolBar}">
+      <app-tool-bar></app-tool-bar>
+    </div>
+    <div>
+      <mat-tab-group backgroundColor="primary" color="accent" class="main-contemt">
+        <mat-tab label="Carta">
+          <div class=""
+            [ngClass]="{'x100-toolbar-visible': isVisibleToolBar, 'x100-toolbar-hidden': !isVisibleToolBar}"
+            (scroll)="onScroll($event)">          
+            <app-carta></app-carta>
+          </div>     
+        </mat-tab>
+        <mat-tab label="Resumen"><app-resumen-pedido></app-resumen-pedido></mat-tab>
+        <mat-tab label="Estado"><app-estado-pedido></app-estado-pedido> </mat-tab>
+      </mat-tab-group>
+    </div>
+</div>

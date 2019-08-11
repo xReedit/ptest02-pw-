@@ -1,0 +1,20 @@
+li .m1 {
+  border:0px;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 8px;
+}
+
+/* li .m1:hover {  
+  background: #fff9c4;
+} */
+
+
+.m-toolbar-seccion {
+  position: fixed;
+  width: 100%;
+  z-index: 1;  
+}
+
+.m-main-pt-40 {
+  padding-top: 40px;
+}
