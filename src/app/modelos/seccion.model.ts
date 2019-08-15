@@ -7,5 +7,5 @@ export class SeccionModel {
     sec_orden: number;
     ver_stock_cero: number;
     des: string;
-    items: ItemModel[];
+    items: ItemModel[] = [];
 }

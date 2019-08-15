@@ -1,14 +1,14 @@
 <div>
     <!-- toolbar -->
     <ng-container *ngIf="showToolBar">
-      <div matRipple class="text-white bg-primary p-2 m-toolbar-seccion animated fadeInDown" (click)="goBack()">
+      <div matRipple class="text-white bg-primary p-2 m-toolbar-seccion animated pulse" (click)="goBack()">
         <i class="fa fa-arrow-left" aria-hidden="true"></i>
         <span class="pl-2 font-weight-light fs-13">{{tituloToolBar}}</span>
       </div>
     </ng-container> 
 
     <!-- categorias -->
-    <div [hidden]="!showCategoria" class="animated fadeInUp">
+    <div [hidden]="!showCategoria" class="animated fadeIn">
         <ng-container *ngIf="objCarta">
             <ul>
                 <li *ngFor="let item of objCarta.carta"
@@ -41,10 +41,31 @@
     <div [hidden]="!showItems" class="animated fadeIn  m-main-pt-40">
       <ng-container>
         <ul>
-          <li *ngFor="let item of objItems" 
-              matRipple [matRippleColor]="rippleColor">
-            <div class="m1">
-              {{item.des}}
+          <li *ngFor="let item of objItems">            
+            <div>
+              <div class="m1 d-flex" matRipple [matRippleColor]="rippleColor" (click)="selectedItem(item)">
+                <div class="w-100">{{item.des}}</div>
+                <div class="text-right">
+                  <span class="fs-10">{{item.cantidad}}</span>
+                  <span>{{item.precio}}</span>
+                </div>
+              </div>
+              <ng-container *ngIf="item.selected">
+                <hr>
+                <div>
+                  <table>
+                    <tr *ngFor="let tp of tiposConsumo">
+                      <td>{{tp.descripcion}}</td>
+                      <td>
+                        <button (click)="addItem(tp, item, 1)">-</button>
+                        {{item.cantidad_seleccionada}}
+                        <button (click)="addItem(tp, item, 0)">+</button>
+                      </td>
+                    </tr>
+                  </table>                  
+                </div>
+              </ng-container>
+              
             </div>
           </li>
         </ul>

@@ -6,6 +6,8 @@ import { Observable } from 'rxjs/internal/Observable';
 import { URL_SERVER_SOCKET } from '../config/config.const';
 import { CartaModel } from 'src/app/modelos/carta.model';
 import { SeccionModel } from 'src/app/modelos/seccion.model';
+import { ItemModel } from 'src/app/modelos/item.model';
+import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +15,7 @@ import { SeccionModel } from 'src/app/modelos/seccion.model';
 export class SocketService {
   objCarta: any;
   socket: any;
+  item: ItemModel;
   urlSocket = URL_SERVER_SOCKET;
 
   constructor() { }
@@ -31,5 +34,38 @@ export class SocketService {
         observer.next(this.objCarta);
       });
     });
+  }
+
+  onGetTipoConsumo() {
+    return new Observable(observer => {
+      this.socket.on('getTipoConsumo', (res: TipoConsumoModel) => {
+        observer.next(res);
+      });
+    });
+  }
+
+  onItemModificado() {
+    return new Observable(observer => {
+      this.socket.on('itemModificado', (res: any) => {
+        this.item = <ItemModel>res;
+        observer.next(this.item);
+      });
+    });
+  }
+
+  // cuando se recupera el stock de pedido que caduco el tiempo
+  onItemResetCant() {
+    return new Observable(observer => {
+      this.socket.on('itemResetCant', (res: any) => {
+        this.item = <ItemModel>res;
+        observer.next(this.item);
+      });
+    });
+  }
+
+
+
+  emit(evento: string, data: any) {
+    this.socket.emit(evento, data);
   }
 }
