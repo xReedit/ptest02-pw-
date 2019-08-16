@@ -33,8 +33,13 @@ li .m1 {
 .m1-selected {
       /* margin: 10px; */
       border: 1px solid #e0e0e0;
-      background: white;
+      background: #eeeeee;
       border-radius: 5px;
+}
+
+.margin-input {
+  margin-bottom: -20px;
+  margin-top: -20px;
 }
 
 .color-fondo-ul {
@@ -43,6 +48,49 @@ li .m1 {
 
 .li-padding-selected {
   padding: 12px;
+}
+
+.li-padding-selected .xcontent {
+  border: 1px solid #e0e0e0;
+  background: #eeeeee;
+  border-radius: 5px;
+  /* position: inherit; */
+
+}
+
+.li-padding-selected .xtitulo {
+  background: #e0e0e0;
+  /* position: static; */
+}
+
+.li-padding-selected .flag-stock {
+  display: inline-block;
+}
+
+.tb-tpc tr>td{
+  font-size: 12px;
+  border-bottom: 1px dashed #e0e0e0;
+}
+
+.btn-tbl {
+  text-align: center;
+  color: white;
+  padding: 5px 12px 5px 12px;
+  font-size: 15px;
+}
+
+.flag-stock {
+  position: absolute;
+  float: right;
+  margin-top: -9px;
+  margin-right: 50px;
+  /* padding: 0px 10px 0px 10px; */
+  padding: 5px;
+  background: green;
+  border-radius: 0px 0px 5px 5px;
+  right: 10px;
+  line-height: 1;
+  display: none;     
 }
 
 
