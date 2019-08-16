@@ -9,6 +9,10 @@
   height: calc(100vh - 105px);
 } */
 
+/* .color-fondo {
+  background: #eeeeee;
+} */
+
 .main-contemt {
     overflow:  hidden !important;
 }
@@ -18,9 +22,9 @@
     overflow: auto;    
 }
 
-.transicion {
+/* .transicion {
     transition: all 0.3s ease-out;
-}
+} */
 
 .toolbar-main {
     animation-duration: 0.3s;

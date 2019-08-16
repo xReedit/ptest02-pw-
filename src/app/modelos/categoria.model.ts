@@ -7,5 +7,6 @@ export class CategoriaModel {
     hora_fin: string;
     hora_ini: string;
     des: string;
+    detalle: string;
     secciones: SeccionModel[];
 }

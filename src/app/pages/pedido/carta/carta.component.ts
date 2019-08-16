@@ -7,6 +7,7 @@ import { PedidoModel } from 'src/app/modelos/pedido.model';
 import { StorageService } from 'src/app/shared/services/storage.service';
 import { MAX_MINUTE_ORDER } from 'src/app/shared/config/config.const';
 import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
+import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 
 @Component({
   selector: 'app-carta',
@@ -39,7 +40,9 @@ export class CartaComponent implements OnInit {
   listItemsPedido: ItemModel[] = [];
   miPedido: PedidoModel = new PedidoModel();
 
-  tiposConsumo: TipoConsumoModel = new TipoConsumoModel();
+  tiposConsumo: TipoConsumoModel[] = [];
+  objItemTipoConsumoSelected: ItemTipoConsumoModel[];
+  objNewItemTiposConsumo: ItemTipoConsumoModel[] = [];
 
   constructor(
       private socketService: SocketService,
@@ -54,16 +57,28 @@ export class CartaComponent implements OnInit {
       this.objCarta = res;
       this.isCargado = false;
       this.showCategoria = true;
-      // console.log(this.objCarta);
+      console.log(this.objCarta);
       this.clearPedidoIsLimitTime();
       this.updatePedidoFromStrorage();
     });
 
     // tipo de consumo
-    this.socketService.onGetTipoConsumo().subscribe((res: TipoConsumoModel) => {
-      // console.log('tipo consumo ', res);
+    this.socketService.onGetTipoConsumo().subscribe((res: TipoConsumoModel[]) => {
+      console.log('tipo consumo ', res);
       this.tiposConsumo = res;
-      this.tiposConsumo.secciones = [];
+
+      // set tipos de consumo a new item tipo cosnumo para los item vista
+      this.tiposConsumo.map((t: TipoConsumoModel) => {
+        const _objTpcAdd = new ItemTipoConsumoModel();
+        _objTpcAdd.descripcion = t.descripcion;
+        _objTpcAdd.idtipo_consumo = t.idtipo_consumo;
+        _objTpcAdd.titulo = t.titulo;
+
+        this.objNewItemTiposConsumo.push(_objTpcAdd);
+      });
+
+      console.log('this.objNewItemTiposConsumo', this.objNewItemTiposConsumo);
+      // this.tiposConsumo.secciones = [];
     });
 
     this.socketService.onItemModificado().subscribe((res: ItemModel) => {
@@ -90,7 +105,7 @@ export class CartaComponent implements OnInit {
       this.showToolBar = true;
 
       this.tituloToolBar = categoria.des;
-    }, 150);
+    }, 250);
   }
 
   getItems(seccion: SeccionModel) {
@@ -123,56 +138,49 @@ export class CartaComponent implements OnInit {
   selectedItem(selectedItem: ItemModel) {
     this.objItems.map(x => x.selected = false);
     selectedItem.selected = true;
+
+    const _objNewItemTiposConsumo = JSON.parse(JSON.stringify(this.objNewItemTiposConsumo));
+    this.objItemTipoConsumoSelected = selectedItem.itemtiposconsumo ? selectedItem.itemtiposconsumo : _objNewItemTiposConsumo;
+
+    if ( !selectedItem.itemtiposconsumo ) {
+      selectedItem.itemtiposconsumo = this.objItemTipoConsumoSelected;
+    }
     // this.cantItem = 0;
   }
 
-  // 0 = sumar | 1 restar
-  addItem(tipoconsumo: TipoConsumoModel, item: ItemModel, signo: number = 0) {
-    let cantSeleccionada = item.cantidad_seleccionada || 0;
-    let cantItem = item.cantidad;
-    if (signo === 0) { // suma
-      cantSeleccionada = cantItem <= 0 ? cantSeleccionada : cantSeleccionada + 1;
-      cantItem = cantItem <= 0 ? cantItem : cantItem - 1;
-    } else {
-      cantSeleccionada -= 1;
-      cantItem = cantSeleccionada < 0 ? cantItem : cantItem + 1;
-      cantSeleccionada = cantSeleccionada < 0 ? 0 : cantSeleccionada;
-    }
-    // cantSeleccionada = signo === 0 ? cantSeleccionada + 1 : cantSeleccionada - 1;
-    // cantSeleccionada = cantSeleccionada < 0 ? 0 : cantSeleccionada;
+  addItem2(tipoconsumo: ItemTipoConsumoModel, item: ItemModel, signo: number = 0) {
+    let sumTotalTpcSelected = this.totalItemTpcSelected();
+    let cantItem = parseInt(item.cantidad.toString(), 0);
+    const sumar = signo === 0 ? true : false;
 
-    const itemInPedido = this.findItemMiPedido(tipoconsumo, this.objSeccionSelected, item);
-    // if (itemInPedido) {
-      itemInPedido.cantidad_seleccionada = cantSeleccionada;
-      itemInPedido.cantidad = cantItem;
-      item.cantidad_seleccionada = cantSeleccionada;
-      item.cantidad = cantItem;
-    // } else {
-      // nueva item
-      // this.objSeccionSelected.items.push(item);
-      // tipoconsumo.secciones = tipoconsumo.secciones ? tipoconsumo.secciones : [];
-      // tipoconsumo.secciones.push(this.objSeccionSelected);
+    if (cantItem <= 0 && sumar) {return; }
 
-    // }
+    let cantSeleccionada = tipoconsumo.cantidad_seleccionada || 0;
+    cantSeleccionada += sumar ? 1 : -1;
+    if (cantSeleccionada < 0 ) {return ; }
 
-    // console.log('tipoconsumo', tipoconsumo);
-    console.log('this.miPedido', this.miPedido);
+    cantItem += sumar ? -1 : 1;
+    cantSeleccionada = cantSeleccionada < 0 ? 0 : cantSeleccionada;
+    cantItem = cantItem < 0 || cantSeleccionada < 0 ? 0 : cantItem;
+    tipoconsumo.cantidad_seleccionada = cantSeleccionada;
+
+    sumTotalTpcSelected = this.totalItemTpcSelected();
+    item.cantidad_seleccionada = sumTotalTpcSelected;
+    item.cantidad = cantItem;
 
 
+    // json pedido
+    const _tipoconsumo = JSON.parse(JSON.stringify(tipoconsumo));
+    const itemInPedido = this.findItemMiPedido(_tipoconsumo, this.objSeccionSelected, item);    
+    itemInPedido.cantidad_seleccionada = sumTotalTpcSelected;
+    itemInPedido.cantidad = cantItem;
+
+    // para el local storage recuperar y resetear
     const itemInList = this.findItemFromArr(this.listItemsPedido, item); // <ItemModel>this.listItemsPedido.filter( x => x.iditem === item.iditem )[0];
-    if (itemInList ) {
-      itemInList.cantidad_seleccionada = cantSeleccionada;
+    if (itemInList) {
+      itemInList.cantidad_seleccionada = sumTotalTpcSelected;
       itemInList.cantidad = cantItem;
-      item.cantidad_seleccionada = cantSeleccionada;
-      item.cantidad = cantItem;
     } else {
-      // tipoconsumo.secciones[0].items[item.idcarta_lista] = item;
-      // this.miPedido.tipoconsumo[tipoconsumo.idtipo_consumo] = tipoconsumo;
-
-
-      item.cantidad_seleccionada = cantSeleccionada;
-      item.cantidad = cantItem;
-      item._tiposconsumo.push(tipoconsumo);
       this.listItemsPedido.push(item);
     }
 
@@ -185,8 +193,12 @@ export class CartaComponent implements OnInit {
     // emitir item modificado
     this.socketService.emit('itemModificado', item);
 
-    // console.log(itemInList);
     console.log('listItemsPedido', this.listItemsPedido);
+    console.log('this.miPedido', this.miPedido);
+  }
+
+  totalItemTpcSelected(): number {
+    return this.objItemTipoConsumoSelected.map( (x: ItemTipoConsumoModel) => x.cantidad_seleccionada || 0 ).reduce( (a, b ) => a + b , 0 );
   }
 
   findItemFromArr(arrFind: any, item: ItemModel) {
@@ -208,7 +220,7 @@ export class CartaComponent implements OnInit {
     return rpt;
   }
 
-  findItemMiPedido(tpc: TipoConsumoModel, seccion: any, item: ItemModel): ItemModel  {
+  findItemMiPedido(tpc: any, seccion: any, item: ItemModel): ItemModel  {
     let rpt: ItemModel;
     const findTpc = <TipoConsumoModel>this.miPedido.tipoconsumo.filter((x: TipoConsumoModel) => x.idtipo_consumo === tpc.idtipo_consumo)[0];
     if (findTpc ) {
@@ -239,26 +251,6 @@ export class CartaComponent implements OnInit {
     }
 
     return rpt;
-
-      // .map(a => a.secciones).map((sec: any) => {
-      //   const _rpt = sec.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0];
-      //   if (_rpt) {
-      //     rpt = _rpt;
-      //     return rpt;
-      //   }
-      // })
-
-    // this.objCarta.carta.map((cat: CategoriaModel) => {
-    //   cat.secciones.map((sec: SeccionModel) => {
-    //     const _rpt = sec.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0];
-    //     if (_rpt) {
-    //       rpt = _rpt;
-    //       return rpt;
-    //     }
-    //   });
-    // });
-
-    //return rpt;
   }
 
   setLocalStorageHora() {
@@ -295,13 +287,16 @@ export class CartaComponent implements OnInit {
           cat.secciones.map((sec: SeccionModel) => {
             const itemUpdate = sec.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0]
             if ( itemUpdate ) {
+              // itemUpdate.cantidad = item.cantidad;
               itemUpdate.cantidad_seleccionada = item.cantidad_seleccionada;
+              itemUpdate.itemtiposconsumo = item.itemtiposconsumo;
             }
           });
         });
       }
     });
   }
+
 
   // actualiza la carta del pedido reseteado por tiempo limite
   // solo local porque a los demas se le emite el socket

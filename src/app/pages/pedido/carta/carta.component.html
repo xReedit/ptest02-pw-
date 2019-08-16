@@ -1,21 +1,31 @@
-<div>
+<div class="fondo">
     <!-- toolbar -->
     <ng-container *ngIf="showToolBar">
       <div matRipple class="text-white bg-primary p-2 m-toolbar-seccion animated pulse" (click)="goBack()">
         <i class="fa fa-arrow-left" aria-hidden="true"></i>
-        <span class="pl-2 font-weight-light fs-13">{{tituloToolBar}}</span>
+        <span class="pl-2 font-weight-light fs-13">{{tituloToolBar}}</span>        
       </div>
-    </ng-container> 
+    </ng-container>
 
     <!-- categorias -->
     <div [hidden]="!showCategoria" class="animated fadeIn">
         <ng-container *ngIf="objCarta">
             <ul>
-                <li *ngFor="let item of objCarta.carta"
+                <li *ngFor="let item of objCarta.carta" class="xCursor"
                     matRipple [matRippleColor]="rippleColor"
                     (click)="getSecciones(item)">
-                    <div class="m1">
-                        {{item.des}}
+                    <div class="m1">                          
+                      <div class="img mt-2">
+                        <img src="assets/images/048-grill.png" alt="">
+                      </div>                        
+                      <div>
+                        <span class="fw-100 fs-20">{{item.des}}</span><br>                        
+                        <div class="text-secondary">
+                          <span class="mt-2 fs-15">{{ item.detalle | lowercase }}</span><br>
+                          <i class="fa fa-clock-o pr-2" aria-hidden="true"></i>
+                          <span class="mt-2 fs-12">Horario de atencion: de {{item.hora_ini}} a {{item.hora_fin}} </span>
+                        </div>
+                      </div>
                     </div>
                 </li>
             </ul>    
@@ -26,11 +36,19 @@
     <div [hidden]="!showSecciones" class="animated fadeIn m-main-pt-40">
       <ng-container>
         <ul>
-          <li *ngFor="let item of objSecciones"
+          <li *ngFor="let item of objSecciones; let i = index" class="xCursor"
               matRipple [matRippleColor]="rippleColor"
               (click)="getItems(item)">
             <div class="m1">
-              {{item.des}}
+              <div class="img">
+                <img src="assets/images/{{i}}.png" alt="">
+              </div>
+              <div>
+                <span class="fw-100 fs-19">{{item.des}}</span><br>
+                <div class="text-secondary">
+                  <span class="mt-2 fs-14">sopa, causa aaaaa, eeee , yyy.....</span>
+                </div>
+              </div>
             </div>
           </li>
         </ul>
@@ -38,39 +56,37 @@
     </div>
 
     <!-- items -->
-    <div [hidden]="!showItems" class="animated fadeIn  m-main-pt-40">
+    <div [hidden]="!showItems" class="animated fadeIn m-main-pt-40 color-fondo-ul">
       <ng-container>
         <ul>
-          <li *ngFor="let item of objItems">            
-            <div>
+          <li *ngFor="let item of objItems" class="transicion" [ngClass]="{'li-padding-selected': item.selected}">  
+            <div class="transicion border-left-item-verde" [ngClass]="{'m1-selected': item.selected}">
               <div class="m1 d-flex" matRipple [matRippleColor]="rippleColor" (click)="selectedItem(item)">
                 <div class="w-100">{{item.des}}</div>
-                <div class="text-right">
-                  <span class="fs-10">{{item.cantidad}}</span>
-                  <span>{{item.precio}}</span>
+                <div class="text-right">                  
+                  <span>{{item.precio | number:'0.2' }}</span>
                 </div>
               </div>
-              <ng-container *ngIf="item.selected">
-                <hr>
+              <ng-container *ngIf="item.selected" class="transicion">                
                 <div>
                   <table>
-                    <tr *ngFor="let tp of tiposConsumo">
+                    <tr *ngFor="let tp of objItemTipoConsumoSelected">
                       <td>{{tp.descripcion}}</td>
                       <td>
-                        <button (click)="addItem(tp, item, 1)">-</button>
-                        {{item.cantidad_seleccionada}}
-                        <button (click)="addItem(tp, item, 0)">+</button>
+                        <button (click)="addItem2(tp, item, 1)">-</button>
+                        {{tp.cantidad_seleccionada}}
+                        <button (click)="addItem2(tp, item, 0)">+</button>
                       </td>
                     </tr>
                   </table>                  
-                </div>
+                </div>                
               </ng-container>
               
-            </div>
-          </li>
-        </ul>
+            </div>            
+          </li>          
+        </ul>        
       </ng-container>
     </div>
-
+    <br>
 
 </div>

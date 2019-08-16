@@ -1,4 +1,4 @@
-import { TipoConsumoModel } from './tipoconsumo.model';
+import { ItemTipoConsumoModel } from './item.tipoconsumo.model';
 
 export class ItemModel {
     iditem: number;
@@ -11,5 +11,5 @@ export class ItemModel {
     cantidad_reset: number; // cuando caduca el tiempo y recupera stock
     des: string;
     selected: boolean;
-    _tiposconsumo: TipoConsumoModel[] = []; // solo frond end
+    itemtiposconsumo: ItemTipoConsumoModel[] = [];
 }
