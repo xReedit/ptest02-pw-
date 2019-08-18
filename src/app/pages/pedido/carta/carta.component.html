@@ -60,27 +60,35 @@
       <ng-container>
         <ul>
           <li *ngFor="let item of objItems" class="transicion" [ngClass]="{'li-padding-selected': item.selected}">  
-            <div class="border-left-item-verde xcontent">              
+            <div class="trasicion-border xcontent border-left-item-{{getEstadoStockItem(item.cantidad)}}"> 
               <div class="m1 d-flex xtitulo" matRipple [matRippleColor]="rippleColor" (click)="selectedItem(item)">
                 <div class="w-100">{{item.des}}</div>
                 <div class="text-right d-flex">
-                  <div class="flag-stock text-center animated fadeInDown">
-                    <span class="fs-9">Stock</span><br>
-                    <span class="fs-15">{{item.cantidad}}</span>
+                  <div class="transicion flag-stock text-center estado-color-{{getEstadoStockItem(item.cantidad)}} animated fadeInDown">
+                    <div [ngClass]="{'animated wobble': item.cantidad===0}">
+                      <span class="fs-9">Stock</span><br>
+                      <span class="fs-15">{{item.cantidad}}</span>
+                    </div>
                   </div>
                   <span>{{item.precio | number:'0.2' }}</span>
                 </div>
               </div>              
               <ng-container *ngIf="item.selected">
                 <div class="animated fadeIn">
-                  <!-- detalle y stock -->
-                  <div class="pl-3 pr-3">
-                    <span class="fs-14 text-secondary">sopa, causa aaaaa, eeee , yyy.....</span>
-                  </div>
-                  <hr>
+                  <!-- detalle -->                  
+                  <ng-container *ngIf="item.detalles === ''; else elseTemplate">
+                    <br>
+                  </ng-container>
+                  <ng-template #elseTemplate>
+                    <div class="pl-3 pr-3">
+                      <span class="fs-14 text-secondary">{{ item.detalles | lowercase }}</span>
+                    </div>
+                    <hr>                    
+                  </ng-template>
+                  
                   <!-- especificaciones -->
-                  <div class="pl-3 pr-3 margin-input">
-                    <mat-form-field class="w-100">
+                  <div class="pl-3 pr-3">
+                    <mat-form-field class="w-100 margin-input">
                       <input matInput placeholder="Escribe aqui las especificaciones">
                     </mat-form-field>                    
                   </div>
@@ -93,8 +101,8 @@
                         <td>
                           <div class="d-flex float-right">
                             <span class="fs-19 pr-2">{{tp.cantidad_seleccionada}}</span>
-                            <div class="btn-tbl bg-danger xCursor" matRipple (click)="addItem2(tp, item, 1)">-</div>
-                            <div class="btn-tbl bg-success xCursor" matRipple (click)="addItem2(tp, item, 0)">+</div>
+                            <div class="btn-tbl bg-danger xCursor" matRipple (click)="this.miPedidoService.addItem2(tp, item, 1)">-</div>
+                            <div class="btn-tbl bg-success xCursor" matRipple (click)="this.miPedidoService.addItem2(tp, item, 0)">+</div>
                           </div>
                         </td>
                       </tr>

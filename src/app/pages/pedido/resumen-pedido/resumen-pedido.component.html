@@ -1,2 +1,13 @@
-<h1>cargando</h1>
-<p>resumen-pedido works!</p>
+<div>    
+    <div *ngFor="let tpc of _miPedido.tipoconsumo" class="xCursor">
+            {{tpc.descripcion}}
+        <div *ngFor="let seccion of tpc.secciones">
+            {{seccion.des}}
+            <ul>
+               <li *ngFor="let item of seccion.items" matRipple [matRippleColor]="rippleColor">
+                   {{item.des}}
+               </li>
+            </ul>
+        </div>
+    </div>    
+</div>

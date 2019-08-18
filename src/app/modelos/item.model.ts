@@ -10,6 +10,7 @@ export class ItemModel {
     cantidad_seleccionada: number;
     cantidad_reset: number; // cuando caduca el tiempo y recupera stock
     des: string;
+    detalles: string; // descripcion en detalle
     selected: boolean;
     itemtiposconsumo: ItemTipoConsumoModel[] = [];
 }
