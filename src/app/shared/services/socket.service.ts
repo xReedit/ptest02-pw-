@@ -63,6 +63,14 @@ export class SocketService {
     });
   }
 
+  // load reglas de la carta y subtotales
+  onReglasCarta() {
+    return new Observable(observer => {
+      this.socket.on('getReglasCarta', (res: any) => {
+        observer.next(res);
+      });
+    });
+  }
 
 
   emit(evento: string, data: any) {

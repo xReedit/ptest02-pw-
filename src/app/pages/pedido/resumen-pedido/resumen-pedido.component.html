@@ -5,7 +5,15 @@
             {{seccion.des}}
             <ul>
                <li *ngFor="let item of seccion.items" matRipple [matRippleColor]="rippleColor">
-                   {{item.des}}
+                <div class="w-80">
+                    {{item.cantidad_seleccionada}} | {{item.des}} (ids {{item.idseccion}})
+                    <div class="text-right d-flex">
+                        <span>precio: {{item.precio | number:'0.2' }}</span>                    
+                        <span>precio total: {{item.precio_total | number:'0.2' }}</span>
+                        <span>precio calc: {{item.precio_total_calc | number:'0.2' }}</span>
+                        <span>precio print: {{item.precio_print | number:'0.2' }}</span>
+                    </div>
+                </div>
                </li>
             </ul>
         </div>

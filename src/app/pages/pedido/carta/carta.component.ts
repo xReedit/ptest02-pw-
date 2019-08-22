@@ -8,6 +8,7 @@ import { ItemModel } from 'src/app/modelos/item.model';
 import { PedidoModel } from 'src/app/modelos/pedido.model';
 import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
 import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
+import { ReglascartaService } from 'src/app/shared/services/reglascarta.service';
 
 @Component({
   selector: 'app-carta',
@@ -46,7 +47,8 @@ export class CartaComponent implements OnInit {
 
   constructor(
       private socketService: SocketService,
-      private miPedidoService: MipedidoService
+      private miPedidoService: MipedidoService,
+      private reglasCartaService: ReglascartaService
       ) { }
 
   ngOnInit() {
@@ -59,7 +61,7 @@ export class CartaComponent implements OnInit {
 
       this.isCargado = false;
       this.showCategoria = true;
-      console.log(this.objCarta);
+      // console.log(this.objCarta);
 
       this.miPedidoService.clearPedidoIsLimitTime();
       this.miPedidoService.updatePedidoFromStrorage();
@@ -67,7 +69,7 @@ export class CartaComponent implements OnInit {
 
     // tipo de consumo
     this.socketService.onGetTipoConsumo().subscribe((res: TipoConsumoModel[]) => {
-      console.log('tipo consumo ', res);
+      // console.log('tipo consumo ', res);
       this.tiposConsumo = res;
 
       // set tipos de consumo a new item tipo cosnumo para los item vista
@@ -80,9 +82,12 @@ export class CartaComponent implements OnInit {
         this.objNewItemTiposConsumo.push(_objTpcAdd);
       });
 
-      console.log('this.objNewItemTiposConsumo', this.objNewItemTiposConsumo);
+      // console.log('this.objNewItemTiposConsumo', this.objNewItemTiposConsumo);
       // this.tiposConsumo.secciones = [];
     });
+
+    // reglas de la carta y subtotales
+    this.reglasCartaService.loadReglasCarta();
 
     this.socketService.onItemModificado().subscribe((res: ItemModel) => {
       const itemInList = this.miPedidoService.findItemCarta(res);
@@ -118,6 +123,7 @@ export class CartaComponent implements OnInit {
   }
 
   goBack() {
+    this.objItems.map(x => x.selected = false);
     if (this.showItems) {
       this.showItems = false;
       this.showSecciones = true;
