@@ -9,6 +9,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatDialogModule } from '@angular/material/dialog';
+
 
 @NgModule({
   declarations: [],
@@ -20,7 +22,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatInputModule,
     MatTabsModule,
     MatProgressBarModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatDialogModule
   ],
   exports: [
     MatButtonModule,
@@ -29,7 +32,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatInputModule,
     MatTabsModule,
     MatProgressBarModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatDialogModule
   ]
 })
 export class MaterialModule { }

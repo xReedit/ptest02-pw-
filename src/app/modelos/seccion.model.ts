@@ -5,7 +5,9 @@ export class SeccionModel {
     idimpresora: number;
     imprimir: number;
     sec_orden: number;
+    count_items: number;
     ver_stock_cero: number;
     des: string;
+
     items: ItemModel[] = [];
 }

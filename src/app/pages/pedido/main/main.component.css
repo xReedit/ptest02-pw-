@@ -73,3 +73,18 @@
   height: calc(100vh - 49px);
   overflow: auto;
 }
+
+.countItem {
+  padding: 2px 6px 2px 3px;
+  border-radius: 50%;
+  line-height: 18px;
+  font-size: 12px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.countTotal {
+  float: right;
+  background: #f44336;  
+  color: #eeeeee;
+}

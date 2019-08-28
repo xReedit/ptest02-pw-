@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 
 @Component({
   selector: 'app-main',
@@ -8,12 +9,17 @@ import { Component, OnInit } from '@angular/core';
 export class MainComponent implements OnInit {
 
   isVisibleToolBar = true;
+  countTotalItems = 0;
 
   private lastValScrollTop = 0;
 
-  constructor() { }
+  constructor(private miPedidoService: MipedidoService) { }
 
   ngOnInit() {
+
+    this.miPedidoService.countItemsObserve$.subscribe((res) => {
+      this.countTotalItems = res;
+    });
   }
 
   onScroll($event: any): void {

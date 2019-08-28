@@ -21,12 +21,15 @@ export class MipedidoService {
   private miPedidoSource = new BehaviorSubject<PedidoModel>(new PedidoModel());
   public miPedidoObserver$ = this.miPedidoSource.asObservable();
 
+  private countItemsSource = new BehaviorSubject<number>(0);
+  public countItemsObserve$ = this.countItemsSource.asObservable();
+
   public objCarta: any;
   listItemsPedido: ItemModel[] = [];
   miPedido: PedidoModel = new PedidoModel();
 
-  objItemTipoConsumoSelected: ItemTipoConsumoModel[];
-  objSeccionSelected: SeccionModel = new SeccionModel();
+  mpObjItemTipoConsumoSelected: ItemTipoConsumoModel[];
+  mpObjSeccionSelected: SeccionModel = new SeccionModel();
 
   time = new Date();
   max_minute_order = MAX_MINUTE_ORDER;
@@ -34,7 +37,7 @@ export class MipedidoService {
   constructor(
     private storageService: StorageService,
     private socketService: SocketService) {
-      // console.log('aaaaaaaaaaaaa');
+
     }
 
   getObjCarta() {
@@ -57,16 +60,18 @@ export class MipedidoService {
 
   // setea los tipos de consumo del item seleccionado para sumar las cantidaddes seleccionadas
   setobjItemTipoConsumoSelected(_objItemTipoConsumoSelected: ItemTipoConsumoModel[]) {
-    this.objItemTipoConsumoSelected = _objItemTipoConsumoSelected;
+    // this.mpObjItemTipoConsumoSelected = JSON.parse(JSON.stringify(_objItemTipoConsumoSelected));
+    this.mpObjItemTipoConsumoSelected = _objItemTipoConsumoSelected;
   }
 
   // seteamos seccion seleccionada menos items[]; para que no se forme el bucle
   setObjSeccionSeleced(seccion: SeccionModel) {
-    this.objSeccionSelected.des = seccion.des;
-    this.objSeccionSelected.idimpresora = seccion.idimpresora;
-    this.objSeccionSelected.idseccion = seccion.idseccion;
-    this.objSeccionSelected.sec_orden = seccion.sec_orden;
-    this.objSeccionSelected.ver_stock_cero = seccion.ver_stock_cero;
+    this.mpObjSeccionSelected = new SeccionModel();
+    this.mpObjSeccionSelected.des = seccion.des;
+    this.mpObjSeccionSelected.idimpresora = seccion.idimpresora;
+    this.mpObjSeccionSelected.idseccion = seccion.idseccion;
+    this.mpObjSeccionSelected.sec_orden = seccion.sec_orden;
+    this.mpObjSeccionSelected.ver_stock_cero = seccion.ver_stock_cero;
   }
 
   // suma cantidad seleccionada
@@ -95,7 +100,7 @@ export class MipedidoService {
 
     // json pedido
     const _tipoconsumo = JSON.parse(JSON.stringify(tipoconsumo));
-    const itemInPedido = this.findItemMiPedido(_tipoconsumo, this.objSeccionSelected, item, sumar);
+    const itemInPedido = this.findItemMiPedido(_tipoconsumo, this.mpObjSeccionSelected, item, sumar);
     // if ( !itemInPedido ) { itemInPedido = new item }
     // itemInPedido.cantidad_seleccionada = sumTotalTpcSelected;
     itemInPedido.cantidad = cantItem;
@@ -118,12 +123,12 @@ export class MipedidoService {
     // emitir item modificado
     this.socketService.emit('itemModificado', item);
 
-    // console.log('listItemsPedido', this.listItemsPedido);
+    console.log('listItemsPedido', this.listItemsPedido);
     // console.log('this.miPedido', this.miPedido);
   }
 
   totalItemTpcSelected(): number {
-    return this.objItemTipoConsumoSelected.map((x: ItemTipoConsumoModel) => x.cantidad_seleccionada || 0).reduce((a, b) => a + b, 0);
+    return this.mpObjItemTipoConsumoSelected.map((x: ItemTipoConsumoModel) => x.cantidad_seleccionada || 0).reduce((a, b) => a + b, 0);
   }
 
   // buscar item en listItemsPedido
@@ -147,17 +152,18 @@ export class MipedidoService {
     return rpt;
   }
 
-  findItemMiPedido(tpc: any, seccion: any, item: ItemModel, sumar: boolean): ItemModel {
+  // buscar o agregar item en miPedido
+  findItemMiPedido(_tpc: any, _seccion: SeccionModel, item: ItemModel, sumar: boolean): ItemModel {
     let rpt: ItemModel;
     // let elItem = item;
     let elItem = <ItemModel>JSON.parse(JSON.stringify(item));
-    const cantSeleccionadaTPC = tpc.cantidad_seleccionada;
+    const cantSeleccionadaTPC = _tpc.cantidad_seleccionada;
     elItem.itemtiposconsumo = [];
     this.addCantItemMiPedido(elItem, cantSeleccionadaTPC);
 
-    const findTpc = <TipoConsumoModel>this.miPedido.tipoconsumo.filter((x: TipoConsumoModel) => x.idtipo_consumo === tpc.idtipo_consumo)[0];
+    const findTpc = <TipoConsumoModel>this.miPedido.tipoconsumo.filter((x: TipoConsumoModel) => x.idtipo_consumo === _tpc.idtipo_consumo)[0];
     if (findTpc) {
-      const findSecc = <SeccionModel>findTpc.secciones.filter((sec: SeccionModel) => sec.idseccion === seccion.idseccion)[0];
+      const findSecc = <SeccionModel>findTpc.secciones.filter((sec: SeccionModel) => sec.idseccion === _seccion.idseccion)[0];
       if (findSecc) {
         const _rpt = findSecc.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0];
         if (_rpt) {
@@ -171,21 +177,27 @@ export class MipedidoService {
           findSecc.items.push(elItem);
           rpt = elItem;
         }
+        this.setCountCantItemTpcAndSeccion(findTpc, findSecc);
       } else {
         // si no existe seccion add
         rpt = elItem;
-        seccion.items.push(rpt);
-        findTpc.secciones.push(seccion);
+        _seccion.items.push(rpt);
+        findTpc.secciones.push(_seccion);
+
+        this.setCountCantItemTpcAndSeccion(findTpc, _seccion);
       }
     } else {
       // si no existe tpc add
       // elItem.cantidad_seleccionada = 0;
-      const _newSeccion = JSON.parse(JSON.stringify(seccion));
+      const _newSeccion = <SeccionModel>JSON.parse(JSON.stringify(_seccion));
       _newSeccion.items = [];
       _newSeccion.items.push(elItem);
-      tpc.secciones = tpc.secciones ? tpc.secciones : [];
-      tpc.secciones.push(_newSeccion);
-      this.miPedido.tipoconsumo.push(tpc);
+      _tpc.secciones = _tpc.secciones ? _tpc.secciones : [];
+      _tpc.secciones.push(_newSeccion);
+
+      this.miPedido.tipoconsumo.push(_tpc);
+
+      this.setCountCantItemTpcAndSeccion(_tpc, _newSeccion);
       rpt = elItem;
     }
 
@@ -202,7 +214,21 @@ export class MipedidoService {
     elItem.precio_print = precioTotal;
   }
 
+  // cuenta la cantidad de items en seccion
+  setCountCantItemTpcAndSeccion(_tpc: TipoConsumoModel, _seccion: SeccionModel) {
+    const countItemsSeccion = _seccion.items.map((i: ItemModel) => i.cantidad_seleccionada).reduce((a, b) => a + b, 0);
+    _seccion.count_items = countItemsSeccion;
 
+    const countSeccionTpc = _tpc.secciones.map((s: SeccionModel) => s.count_items).reduce((a, b) => a + b, 0);
+    _tpc.count_items_seccion = countSeccionTpc;
+
+    this.setCountTotalImtesPedido();
+  }
+
+  setCountTotalImtesPedido() {
+    const countTotal = this.miPedido.tipoconsumo.map((t: TipoConsumoModel) => t.count_items_seccion).reduce((a, b) => a + b, 0);
+    this.countItemsSource.next(countTotal);
+  }
 
   setLocalStorageHora() {
     if (this.storageService.isExistKey('sys::h')) { return; }
@@ -233,6 +259,8 @@ export class MipedidoService {
     // if ( !this.storageService.isExistKey('sys::h') ) { return; }
     this.listItemsPedido = JSON.parse(atob(this.storageService.get('sys::order')));
     this.miPedido = JSON.parse(atob(this.storageService.get('sys::order::all')));
+
+    this.setCountTotalImtesPedido();
     this.miPedidoSource.next(this.miPedido);
 
     // actualizar // buscar cada item en el obj carta
@@ -403,7 +431,7 @@ export class MipedidoService {
 
   // <------ sub totales ---->//
 
-  getArrSubTotales(rulesSubTotales: any[]) {
+  getArrSubTotales(rulesSubTotales: any[]): any {
     const subTotal = this.getSubTotalMiPedido();
     let sumaTotal = subTotal;
 
@@ -411,7 +439,7 @@ export class MipedidoService {
     let _arrSubtotales: any = [];
 
     _arrSubtotales.id = 0;
-    _arrSubtotales.descripcion = 'Sub Total';
+    _arrSubtotales.descripcion = 'SUB TOTAL';
     _arrSubtotales.esImpuesto = 0;
     _arrSubtotales.visible = true;
     _arrSubtotales.quitar = false;
@@ -490,7 +518,7 @@ export class MipedidoService {
     _arrSubtotales = [];
     _arrSubtotales.id = 0;
     _arrSubtotales.esImpuesto = 0;
-    _arrSubtotales.descripcion = 'Total';
+    _arrSubtotales.descripcion = 'TOTAL';
     _arrSubtotales.visible = true;
     _arrSubtotales.quitar = false;
     _arrSubtotales.tachado = false;
@@ -500,6 +528,7 @@ export class MipedidoService {
     arrSubtotales.push(_arrSubtotales);
 
     console.log('totales', arrSubtotales);
+    return  arrSubtotales;
 
   }
 
@@ -521,4 +550,20 @@ export class MipedidoService {
   // <------ sub totales ---->//
 
 
+
+  // <--------- listen change -------> //
+  // escuha todos los cambios echos en las cantidades, from carta y resumen pedido
+  listenChangeCantItem(): void {
+    this.socketService.onItemModificado().subscribe((res: ItemModel) => {
+        const _itemInList = this.findItemCarta(res);
+        _itemInList.cantidad = res.cantidad;
+    });
+
+    this.socketService.onItemResetCant().subscribe((res: ItemModel) => {
+        const _itemInList = this.findItemCarta(res);
+        _itemInList.cantidad += res.cantidad_reset;
+    });
+  }
+
+  // <--------- listen change -------> //
 }

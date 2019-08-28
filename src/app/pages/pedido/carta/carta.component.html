@@ -62,7 +62,7 @@
           <li *ngFor="let item of objItems" class="transicion" [ngClass]="{'li-padding-selected': item.selected}">  
             <div class="trasicion-border xcontent border-left-item-{{getEstadoStockItem(item.cantidad)}}"> 
               <div class="m1 d-flex xtitulo" matRipple [matRippleColor]="rippleColor" (click)="selectedItem(item)">
-                <div class="w-100">{{item.des}}</div>
+                <div class="w-100"><span>{{item.des}}</span></div>
                 <div class="text-right d-flex">
                   <div class="transicion flag-stock text-center estado-color-{{getEstadoStockItem(item.cantidad)}} animated fadeInDown">
                     <div [ngClass]="{'animated wobble': item.cantidad===0}">
@@ -101,8 +101,8 @@
                         <td>
                           <div class="d-flex float-right">
                             <span class="fs-19 pr-2">{{tp.cantidad_seleccionada}}</span>
-                            <div class="btn-tbl bg-danger xCursor" matRipple (click)="this.miPedidoService.addItem2(tp, item, 1)">-</div>
-                            <div class="btn-tbl bg-success xCursor" matRipple (click)="this.miPedidoService.addItem2(tp, item, 0)">+</div>
+                            <div class="btn-tbl bg-danger xCursor" matRipple (click)="addItemToPedido(tp, 1)">-</div>
+                            <div class="btn-tbl bg-success xCursor" matRipple (click)="addItemToPedido(tp, 0)">+</div>
                           </div>
                         </td>
                       </tr>

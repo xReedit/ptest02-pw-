@@ -8,14 +8,20 @@ import { BuscarItemComponent } from './buscar-item/buscar-item.component';
 import { PedidoRoutingModule } from './pedido.routing';
 import { CoreModule } from 'src/app/core/core.module';
 
+import { DialogItemComponent } from './resumen-pedido/dialog-item/dialog-item.component';
+
 
 
 @NgModule({
-  declarations: [MainComponent, CartaComponent, ResumenPedidoComponent, EstadoPedidoComponent, BuscarItemComponent],
+  declarations: [MainComponent, CartaComponent, ResumenPedidoComponent, EstadoPedidoComponent, BuscarItemComponent, DialogItemComponent],
   imports: [
     CommonModule,
     PedidoRoutingModule,
     CoreModule
-  ]
+  ],
+  exports: [
+    DialogItemComponent
+  ],
+  entryComponents: [DialogItemComponent]
 })
 export class PedidoModule { }

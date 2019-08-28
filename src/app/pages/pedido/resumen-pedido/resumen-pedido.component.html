@@ -1,21 +1,40 @@
-<div>    
+<div class="xh-100">
     <div *ngFor="let tpc of _miPedido.tipoconsumo" class="xCursor">
-            {{tpc.descripcion}}
-        <div *ngFor="let seccion of tpc.secciones">
-            {{seccion.des}}
-            <ul>
-               <li *ngFor="let item of seccion.items" matRipple [matRippleColor]="rippleColor">
-                <div class="w-80">
-                    {{item.cantidad_seleccionada}} | {{item.des}} (ids {{item.idseccion}})
-                    <div class="text-right d-flex">
-                        <span>precio: {{item.precio | number:'0.2' }}</span>                    
-                        <span>precio total: {{item.precio_total | number:'0.2' }}</span>
-                        <span>precio calc: {{item.precio_total_calc | number:'0.2' }}</span>
-                        <span>precio print: {{item.precio_print | number:'0.2' }}</span>
+        <ng-container *ngIf="tpc.count_items_seccion > 0">
+            <div class="div-plr titulo-tpc">
+                <span>{{tpc.descripcion}}</span>
+                <div class="countItem countTpc">{{tpc.count_items_seccion}}</div>
+            </div>
+            <div *ngFor="let seccion of tpc.secciones">
+                <ng-container *ngIf="seccion.count_items > 0">
+                    <div class="div-plr titulo-seccion">
+                        <span>{{seccion.des | titlecase}}</span>
+                        <div class="countItem countSeccion">{{seccion.count_items}}</div>
                     </div>
-                </div>
-               </li>
-            </ul>
-        </div>
+                    <ul class="w-100">
+                        <div *ngFor="let item of seccion.items">
+                            <ng-container *ngIf="item.cantidad_seleccionada > 0">
+                                <li class="d-flex div-plr li-item" matRipple [matRippleColor]="rippleColor" (click)="openDlgItem(seccion, item)">
+                                    <div class="pr-2 fw-100">{{item.cantidad_seleccionada | number: '2.'}}</div>
+                                    <div class="w-100 fw-100">{{item.des | lowercase}}</div>
+                                    <div class="fw-100">{{item.precio_print | number:'0.2' }}</div>
+                                </li>
+                            </ng-container>                            
+                        </div>
+                    </ul>            
+                </ng-container>
+            </div>
+        </ng-container>
     </div>    
+
+    <!-- subtotales -->    
+    <div class="div-total">
+        <ul class="w-100 ul-total">
+            <li class="d-flex div-plr li-item" *ngFor="let item of _arrSubtotales" matRipple
+              [matRippleColor]="rippleColor">
+              <div class="w-100">{{item.descripcion | titlecase}}</div>
+              <div>{{item.importe | number:'0.2' }}</div>
+            </li>
+        </ul>
+    </div>
 </div>

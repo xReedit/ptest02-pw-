@@ -17,8 +17,8 @@ import { ReglascartaService } from 'src/app/shared/services/reglascarta.service'
 })
 export class CartaComponent implements OnInit {
 
-  public objCarta: any;
-  public isCargado = true;
+  private objCarta: any;
+  private isCargado = true;
 
   public showCategoria = false;
   public showSecciones = false;
@@ -32,18 +32,19 @@ export class CartaComponent implements OnInit {
 
   rippleColor = 'rgb(255,238,88, 0.5)';
 
-  objSecciones: SeccionModel[] = [];
-  objItems: ItemModel[] = [];
+  private objSecciones: SeccionModel[] = [];
+  private objItems: ItemModel[] = [];
 
   // objSelectedItem: ItemModel;
-  objSeccionSelected: SeccionModel = new SeccionModel();
+  // objSeccionSelected: SeccionModel = new SeccionModel();
 
   // listItemsPedido: ItemModel[] = [];
-  miPedido: PedidoModel = new PedidoModel();
+  // miPedido: PedidoModel = new PedidoModel();
 
-  tiposConsumo: TipoConsumoModel[] = [];
-  objItemTipoConsumoSelected: ItemTipoConsumoModel[];
-  objNewItemTiposConsumo: ItemTipoConsumoModel[] = [];
+  private tiposConsumo: TipoConsumoModel[] = [];
+  private objItemTipoConsumoSelected: ItemTipoConsumoModel[];
+  private objNewItemTiposConsumo: ItemTipoConsumoModel[] = [];
+  private itemSelected: ItemModel;
 
   constructor(
       private socketService: SocketService,
@@ -89,15 +90,16 @@ export class CartaComponent implements OnInit {
     // reglas de la carta y subtotales
     this.reglasCartaService.loadReglasCarta();
 
-    this.socketService.onItemModificado().subscribe((res: ItemModel) => {
-      const itemInList = this.miPedidoService.findItemCarta(res);
-      itemInList.cantidad = res.cantidad;
-    });
+    this.miPedidoService.listenChangeCantItem();
+    // this.socketService.onItemModificado().subscribe((res: ItemModel) => {
+    //   const itemInList = this.miPedidoService.findItemCarta(res);
+    //   itemInList.cantidad = res.cantidad;
+    // });
 
-    this.socketService.onItemResetCant().subscribe((res: ItemModel) => {
-      const itemInList = this.miPedidoService.findItemCarta(res);
-      itemInList.cantidad += res.cantidad_reset;
-    });
+    // this.socketService.onItemResetCant().subscribe((res: ItemModel) => {
+    //   const itemInList = this.miPedidoService.findItemCarta(res);
+    //   itemInList.cantidad += res.cantidad_reset;
+    // });
   }
 
   getSecciones(categoria: CategoriaModel) {
@@ -136,6 +138,7 @@ export class CartaComponent implements OnInit {
   selectedItem(selectedItem: ItemModel) {
     this.objItems.map(x => x.selected = false);
     selectedItem.selected = true;
+    this.itemSelected = selectedItem;
 
     const _objNewItemTiposConsumo = JSON.parse(JSON.stringify(this.objNewItemTiposConsumo));
     this.objItemTipoConsumoSelected = selectedItem.itemtiposconsumo ? selectedItem.itemtiposconsumo : _objNewItemTiposConsumo;
@@ -144,7 +147,11 @@ export class CartaComponent implements OnInit {
       selectedItem.itemtiposconsumo = this.objItemTipoConsumoSelected;
     }
 
-    this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);    
+    this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
+  }
+
+  addItemToPedido(tpcSelect: ItemTipoConsumoModel, suma: number): void {
+    this.miPedidoService.addItem2(tpcSelect, this.itemSelected, suma);
   }
 
   getEstadoStockItem(stock: number): string {
