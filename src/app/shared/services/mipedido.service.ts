@@ -21,8 +21,14 @@ export class MipedidoService {
   private miPedidoSource = new BehaviorSubject<PedidoModel>(new PedidoModel());
   public miPedidoObserver$ = this.miPedidoSource.asObservable();
 
+  // number tab Mi Pedido
   private countItemsSource = new BehaviorSubject<number>(0);
   public countItemsObserve$ = this.countItemsSource.asObservable();
+
+  // observable que se modifco cantidad - stock de algun producto
+  // si es que esta en resumen de pedido dialog -- actualize stock
+  private itemStockChangeSource = new BehaviorSubject<ItemModel>(new ItemModel());
+  public itemStockChangeObserve$ = this.itemStockChangeSource.asObservable();
 
   public objCarta: any;
   listItemsPedido: ItemModel[] = [];
@@ -75,8 +81,15 @@ export class MipedidoService {
   }
 
   // suma cantidad seleccionada
-  addItem2(tipoconsumo: ItemTipoConsumoModel, item: ItemModel, signo: number = 0) {
-    let sumTotalTpcSelected = this.totalItemTpcSelected();
+  // idTpcItemResumenSelect tipo consumo del item al modificar desde resumen, si el tpc es diferente al seleccionado en el dialog entonces no suma al item
+  addItem2(tipoconsumo: ItemTipoConsumoModel, item: ItemModel, signo: number = 0, idTpcItemResumenSelect: number = null) {
+    // let sumTotalTpcSelected = this.totalItemTpcSelected();
+
+    // el item que viene es de carta o del resumen
+    // buscamos el item en la carta para el stock
+    // de esta manera manejamos una sola cantidad
+    // idTpcItemResumenSelect si viene del resumen dialog
+    // let cantItem = idTpcItemResumenSelect ? parseInt(this.findItemCarta(item).cantidad.toString(), 0) : parseInt(item.cantidad.toString(), 0);
     let cantItem = parseInt(item.cantidad.toString(), 0);
     const sumar = signo === 0 ? true : false;
 
@@ -91,28 +104,35 @@ export class MipedidoService {
     cantItem = cantItem < 0 || cantSeleccionada < 0 ? 0 : cantItem;
     tipoconsumo.cantidad_seleccionada = cantSeleccionada;
 
-    sumTotalTpcSelected = this.totalItemTpcSelected() || 0;
-    item.cantidad_seleccionada = sumTotalTpcSelected;
-    item.cantidad = cantItem;
-
-    // this.estadoItemColor = this.getEstadoStockItem(cantItem);
-
-
-    // json pedido
-    const _tipoconsumo = JSON.parse(JSON.stringify(tipoconsumo));
-    const itemInPedido = this.findItemMiPedido(_tipoconsumo, this.mpObjSeccionSelected, item, sumar);
-    // if ( !itemInPedido ) { itemInPedido = new item }
-    // itemInPedido.cantidad_seleccionada = sumTotalTpcSelected;
-    itemInPedido.cantidad = cantItem;
-
-    // para el local storage recuperar y resetear
-    const itemInList = this.findItemFromArr(this.listItemsPedido, item); // <ItemModel>this.listItemsPedido.filter( x => x.iditem === item.iditem )[0];
+    // listItemsPedido -> para el local storage recuperar y resetear
+    const itemInList = this.findItemListPedido(item); // <ItemModel>this.listItemsPedido.filter( x => x.iditem === item.iditem )[0];
+    let sumTotalTpcSelected = 1;
     if (itemInList) {
+      sumTotalTpcSelected = this.totalItemTpcSelected(itemInList.itemtiposconsumo) || 0;
       itemInList.cantidad_seleccionada = sumTotalTpcSelected;
       itemInList.cantidad = cantItem;
     } else {
       this.listItemsPedido.push(item);
     }
+
+    // item
+    // sumTotalTpcSelected = this.totalItemTpcSelected(itemInList.itemtiposconsumo) || 0;
+    // actualizar cantidades en item carta
+    // item.cantidad_seleccionada = sumTotalTpcSelected;
+    // item.cantidad = cantItem;
+
+
+    // json pedido
+    const _tipoconsumo = JSON.parse(JSON.stringify(tipoconsumo));
+    const itemInPedido = this.findItemMiPedido(_tipoconsumo, this.mpObjSeccionSelected, item, sumar);
+    itemInPedido.cantidad = cantItem;
+
+    // actualizar cantidades en item carta
+    item = idTpcItemResumenSelect ? this.findItemCarta(item) : item;
+    item.cantidad_seleccionada = sumTotalTpcSelected;
+    item.cantidad = cantItem;
+    // comunica el cambio de stock en el item carta
+    this.itemStockChangeSource.next(item);
 
     // hora que comienza a realizar el pedido
     this.setLocalStorageHora();
@@ -127,14 +147,32 @@ export class MipedidoService {
     // console.log('this.miPedido', this.miPedido);
   }
 
-  totalItemTpcSelected(): number {
-    return this.mpObjItemTipoConsumoSelected.map((x: ItemTipoConsumoModel) => x.cantidad_seleccionada || 0).reduce((a, b) => a + b, 0);
+  totalItemTpcSelected(_arrTpc: any): number {
+    return _arrTpc.map((x: ItemTipoConsumoModel) => x.cantidad_seleccionada || 0).reduce((a, b) => a + b, 0);
   }
+
+  // cantidad seleccionada y precio
+  addCantItemMiPedido(elItem: ItemModel, cantidad_seleccionada: number) {
+    const cantSeleccionadaTPC = cantidad_seleccionada;
+    const precioTotal = cantSeleccionadaTPC * parseFloat(elItem.precio);
+    elItem.cantidad_seleccionada = cantSeleccionadaTPC;
+    elItem.precio_total = precioTotal;
+    // elItem.precio_total_calc = precioTotal;
+    elItem.precio_print = precioTotal;
+  }
+
+  // <---------- Busquedas ------> //
 
   // buscar item en listItemsPedido
   findItemFromArr(arrFind: any, item: ItemModel) {
     return arrFind.filter((x: any) => x.iditem === item.iditem)[0];
   }
+
+  // buscar item en listItemsPedido
+  findItemListPedido(item: ItemModel) {
+    return this.listItemsPedido.filter((x: any) => x.iditem === item.iditem)[0];
+  }
+
 
   // buscar item en la carta
   findItemCarta(item: ItemModel): ItemModel {
@@ -205,14 +243,8 @@ export class MipedidoService {
     return rpt;
   }
 
-  addCantItemMiPedido(elItem: ItemModel, cantidad_seleccionada: number) {
-    const cantSeleccionadaTPC = cantidad_seleccionada;
-    const precioTotal = cantSeleccionadaTPC * parseFloat(elItem.precio);
-    elItem.cantidad_seleccionada = cantSeleccionadaTPC;
-    elItem.precio_total = precioTotal;
-    // elItem.precio_total_calc = precioTotal;
-    elItem.precio_print = precioTotal;
-  }
+  // <---------- Busquedas ------> //
+
 
   // cuenta la cantidad de items en seccion
   setCountCantItemTpcAndSeccion(_tpc: TipoConsumoModel, _seccion: SeccionModel) {
@@ -225,6 +257,7 @@ export class MipedidoService {
     this.setCountTotalImtesPedido();
   }
 
+  // <------ storage ---- > ///
   setCountTotalImtesPedido() {
     const countTotal = this.miPedido.tipoconsumo.map((t: TipoConsumoModel) => t.count_items_seccion).reduce((a, b) => a + b, 0);
     this.countItemsSource.next(countTotal);
@@ -249,9 +282,29 @@ export class MipedidoService {
 
     if (this.isTimeLimit()) {
       // si el tiempo limite fue superado mandamos a restablecer carta
+      // nuevo pdido
       this.socketService.emit('resetPedido', this.listItemsPedido);
       this.updatePedidoFromClear();
+      // this.resetAllNewPedido();
     }
+  }
+
+  resetAllNewPedido() {
+    this.socketService.emit('resetPedido', this.listItemsPedido);
+    this.updatePedidoFromClear();
+    this.resetTpcCarta();
+  }
+
+  private resetTpcCarta() {
+    this.objCarta.carta.map((cat: CategoriaModel) => {
+      cat.secciones.map((sec: SeccionModel) => {
+        sec.items.map((i: ItemModel) => {
+          i.itemtiposconsumo.map((a: ItemTipoConsumoModel) => {
+            a.cantidad_seleccionada = 0;
+          });
+        });
+      });
+    });
   }
 
   updatePedidoFromStrorage() {
@@ -304,6 +357,7 @@ export class MipedidoService {
     this.listItemsPedido = [];
     this.miPedido = new PedidoModel();
     this.miPedidoSource.next(this.miPedido);
+    this.countItemsSource.next(0);
   }
 
   getEstadoStockItem(stock: number): string {
@@ -329,6 +383,8 @@ export class MipedidoService {
 
   }
 
+  // <------ storage ---- > ///
+
 
   // <------ reglas de la carta ----> //
 
@@ -347,7 +403,7 @@ export class MipedidoService {
     this.miPedido.tipoconsumo
       .map((tpc: TipoConsumoModel) => {
         tpc.secciones.map((z: SeccionModel) => {
-          z.items.map((n: ItemModel) => n.precio_total_calc = null)
+          z.items.map((n: ItemModel) => n.precio_total_calc = null);
         });
       });
 
@@ -552,16 +608,23 @@ export class MipedidoService {
 
 
   // <--------- listen change -------> //
-  // escuha todos los cambios echos en las cantidades, from carta y resumen pedido
+  // escuha todos los cambios echos en las cantidades, from carta y listItemPedido ----resumen pedido
   listenChangeCantItem(): void {
     this.socketService.onItemModificado().subscribe((res: ItemModel) => {
-        const _itemInList = this.findItemCarta(res);
-        _itemInList.cantidad = res.cantidad;
+      const _itemInCarta = this.findItemCarta(res);
+      // const _itemInList = this.findItemListPedido(res);
+      _itemInCarta.cantidad = res.cantidad;
+      this.itemStockChangeSource.next(_itemInCarta);
+      // _itemInList.cantidad = res.cantidad;
+      // console.log('socket list', this.listItemsPedido);
     });
 
     this.socketService.onItemResetCant().subscribe((res: ItemModel) => {
-        const _itemInList = this.findItemCarta(res);
-        _itemInList.cantidad += res.cantidad_reset;
+      const _itemInCarta = this.findItemCarta(res);
+      // const _itemInList = this.findItemListPedido(res);
+      _itemInCarta.cantidad += res.cantidad_reset;
+      this.itemStockChangeSource.next(_itemInCarta);
+      // _itemInList.cantidad += res.cantidad_reset;
     });
   }
 

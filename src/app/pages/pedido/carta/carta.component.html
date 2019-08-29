@@ -100,7 +100,7 @@
                         <td>{{tp.descripcion}}</td>
                         <td>
                           <div class="d-flex float-right">
-                            <span class="fs-19 pr-2">{{tp.cantidad_seleccionada}}</span>
+                            <span [hidden]="tp.cantidad_seleccionada === 0" class="fs-19 pr-2">{{tp.cantidad_seleccionada}}</span>
                             <div class="btn-tbl bg-danger xCursor" matRipple (click)="addItemToPedido(tp, 1)">-</div>
                             <div class="btn-tbl bg-success xCursor" matRipple (click)="addItemToPedido(tp, 0)">+</div>
                           </div>

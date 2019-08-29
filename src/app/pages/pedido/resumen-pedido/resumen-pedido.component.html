@@ -1,40 +1,67 @@
-<div class="xh-100">
-    <div *ngFor="let tpc of _miPedido.tipoconsumo" class="xCursor">
-        <ng-container *ngIf="tpc.count_items_seccion > 0">
-            <div class="div-plr titulo-tpc">
-                <span>{{tpc.descripcion}}</span>
-                <div class="countItem countTpc">{{tpc.count_items_seccion}}</div>
-            </div>
-            <div *ngFor="let seccion of tpc.secciones">
-                <ng-container *ngIf="seccion.count_items > 0">
-                    <div class="div-plr titulo-seccion">
-                        <span>{{seccion.des | titlecase}}</span>
-                        <div class="countItem countSeccion">{{seccion.count_items}}</div>
-                    </div>
-                    <ul class="w-100">
-                        <div *ngFor="let item of seccion.items">
-                            <ng-container *ngIf="item.cantidad_seleccionada > 0">
-                                <li class="d-flex div-plr li-item" matRipple [matRippleColor]="rippleColor" (click)="openDlgItem(seccion, item)">
-                                    <div class="pr-2 fw-100">{{item.cantidad_seleccionada | number: '2.'}}</div>
-                                    <div class="w-100 fw-100">{{item.des | lowercase}}</div>
-                                    <div class="fw-100">{{item.precio_print | number:'0.2' }}</div>
-                                </li>
-                            </ng-container>                            
+<div class="d-flex">
+    <div class="xh-100 w-100">
+        <div *ngFor="let tpc of _miPedido.tipoconsumo" class="xCursor">
+            <ng-container *ngIf="tpc.count_items_seccion > 0">
+                <div class="div-plr titulo-tpc">
+                    <span>{{tpc.descripcion}}</span>
+                    <div class="countItem countTpc">{{tpc.count_items_seccion}}</div>
+                </div>
+                <div *ngFor="let seccion of tpc.secciones">
+                    <ng-container *ngIf="seccion.count_items > 0">
+                        <div class="div-plr titulo-seccion">
+                            <span>{{seccion.des | titlecase}}</span>
+                            <div class="countItem countSeccion">{{seccion.count_items}}</div>
                         </div>
-                    </ul>            
-                </ng-container>
-            </div>
-        </ng-container>
-    </div>    
+                        <ul class="w-100">
+                            <div *ngFor="let item of seccion.items">
+                                <ng-container *ngIf="item.cantidad_seleccionada > 0">
+                                    <li class="d-flex div-plr li-item" matRipple [matRippleColor]="rippleColor"
+                                    (click)="openDlgItem(tpc, seccion, item)">
+                                        <div class="pr-2 fw-100">{{item.cantidad_seleccionada | number: '2.'}}</div>
+                                        <div class="w-100 fw-100">{{item.des | lowercase}}</div>
+                                        <div class="fw-100">{{item.precio_print | number:'0.2' }}</div>
+                                    </li>
+                                </ng-container>                            
+                            </div>
+                        </ul>            
+                    </ng-container>
+                </div>
+            </ng-container>
+        </div>    
 
-    <!-- subtotales -->    
-    <div class="div-total">
-        <ul class="w-100 ul-total">
-            <li class="d-flex div-plr li-item" *ngFor="let item of _arrSubtotales" matRipple
-              [matRippleColor]="rippleColor">
-              <div class="w-100">{{item.descripcion | titlecase}}</div>
-              <div>{{item.importe | number:'0.2' }}</div>
-            </li>
-        </ul>
+        <!-- subtotales -->    
+        <div class="div-total">
+            <ul class="w-100 ul-total">
+                <li class="d-flex div-plr li-item" *ngFor="let item of _arrSubtotales" matRipple
+                [matRippleColor]="rippleColor">
+                <div class="w-100">{{item.descripcion | titlecase}}</div>
+                <div>{{item.importe | number:'0.2' }}</div>
+                </li>
+            </ul>
+        </div>
+        
     </div>
+
+    <!-- confirma pedido -->
+    <ng-container *ngIf="isVisibleConfirmar">
+        <div class="div-confirma-pedido w-100 xh-100 transicion animated fadeInRight"
+          [ngClass]="[isVisibleConfirmarAnimated ? 'show' : 'hide', isVisibleConfirmarAnimated ? 'fadeInRight' :
+          'fadeInLeft']">
+            <div class="text-center">
+                <h3>Indique mesa</h3>
+                <p>alguna referencia</p>
+                <p>enviar</p>
+            </div>
+        </div>
+    </ng-container>
+    <!-- confirma pedido -->
+</div>
+
+<!-- footer -->
+<div *ngIf="hayItems" class="xfooter">
+  <div class="row m-0 w-100">
+    <div class="col-5 btn-footer-cancel" matRipple (click)="nuevoPedido()">Nuevo Pedido</div>
+    <div class="col-2"></div>
+    <div class="col-5 btn-footer-next" matRipple (click)="confirmarPeiddo()">Confirmar</div>
+  </div>
 </div>

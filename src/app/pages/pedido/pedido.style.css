@@ -112,17 +112,17 @@
   display: none;
 }
 
+.li-padding-selected .flag-stock-dialog {
+  display: inline-block;
+}
+
 .flag-stock-dialog{
-    position: absolute;
     float: right;
-    margin-top: -9px;
-    margin-right: 50px;
-    /* padding: 0px 10px 0px 10px; */
+    margin-top: -9px;    
     padding: 5px;
     border-radius: 0px 0px 5px 5px;
     right: 10px;
-    line-height: 1;
-    display: none;
+    line-height: 1;    
 }
 
 .mat-dialog-container {

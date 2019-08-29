@@ -50,3 +50,41 @@
   color: #616161;
   background: #ffcc80;
 }
+
+.xfooter {
+    width: 100%;
+    bottom: 0px;
+    position: fixed;
+    background: #e0e0e0;
+    height: 50px;
+}
+
+.btn-footer-cancel {
+    padding: 12px;
+    background: #f44336;
+    color: white;
+    text-align: center;
+}
+
+.btn-footer-next {
+    padding: 12px;
+    background: #00c853;
+    color: white;
+    text-align: center;
+}
+
+/* confirmar pedido */
+.div-confirma-pedido {        
+    position: absolute;
+    background: antiquewhite;
+}
+
+.div-confirma-pedido.hide {
+    margin-left: 100%;
+}
+
+.div-confirma-pedido.show {
+    margin-left: 0;
+}
+
+/* confirmar pedido */

@@ -9,19 +9,21 @@ import { PedidoRoutingModule } from './pedido.routing';
 import { CoreModule } from 'src/app/core/core.module';
 
 import { DialogItemComponent } from './resumen-pedido/dialog-item/dialog-item.component';
+import { DialogResetComponent } from './resumen-pedido/dialog-reset/dialog-reset.component';
 
 
 
 @NgModule({
-  declarations: [MainComponent, CartaComponent, ResumenPedidoComponent, EstadoPedidoComponent, BuscarItemComponent, DialogItemComponent],
+  declarations: [MainComponent, CartaComponent, ResumenPedidoComponent, EstadoPedidoComponent, BuscarItemComponent, DialogItemComponent, DialogResetComponent],
   imports: [
     CommonModule,
     PedidoRoutingModule,
     CoreModule
   ],
   exports: [
-    DialogItemComponent
+    DialogItemComponent,
+    DialogResetComponent
   ],
-  entryComponents: [DialogItemComponent]
+  entryComponents: [DialogItemComponent, DialogResetComponent]
 })
 export class PedidoModule { }
