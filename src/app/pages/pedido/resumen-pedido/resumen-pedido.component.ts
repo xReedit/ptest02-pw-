@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { PedidoModel } from 'src/app/modelos/pedido.model';
 
@@ -9,6 +9,7 @@ import { DialogItemComponent } from './dialog-item/dialog-item.component';
 import { SeccionModel } from 'src/app/modelos/seccion.model';
 import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
 import { DialogResetComponent } from './dialog-reset/dialog-reset.component';
+import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 
 @Component({
   selector: 'app-resumen-pedido',
@@ -16,6 +17,8 @@ import { DialogResetComponent } from './dialog-reset/dialog-reset.component';
   styleUrls: ['./resumen-pedido.component.css']
 })
 export class ResumenPedidoComponent implements OnInit {
+
+
   _miPedido: PedidoModel = new PedidoModel();
   _arrSubtotales: any = [];
   hayItems = false;
@@ -24,10 +27,16 @@ export class ResumenPedidoComponent implements OnInit {
   rulesCarta: any;
   rulesSubtoTales: any;
 
+  isReserva = false;
+  isRequiereMesa = false;
+  frmConforma: any = {};
+
   rippleColor = 'rgb(255,238,88, 0.5)';
+
   constructor(
     private miPedidoService: MipedidoService,
     private reglasCartaService: ReglascartaService,
+    private navigatorService: NavigatorLinkService,
     private dialog: MatDialog,
     ) { }
 
@@ -38,7 +47,22 @@ export class ResumenPedidoComponent implements OnInit {
       this.rulesCarta = res.reglas || res[0].reglas;
       this.rulesSubtoTales = res.subtotales || res[0].subtotales;
       this.listenMiPedido();
+
+      this.frmConforma = {
+        mesa: '',
+        referencia: ''
+      }
     });
+
+    this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
+          if (res.pageActive === 'mipedido') {
+            if (res.url.indexOf('confirma') > 0) {
+              this.confirmarPeiddo();
+            } else {
+              this.backConfirmacion();
+            }
+          }
+        });
   }
 
   pintarMiPedido() {
@@ -82,11 +106,13 @@ export class ResumenPedidoComponent implements OnInit {
   }
 
   nuevoPedido() {
+    this.backConfirmacion();
     if (this.isVisibleConfirmar) {
-      this.isVisibleConfirmarAnimated = false;
-      setTimeout(() => {
-        this.isVisibleConfirmar = false;
-      }, 300);
+      this.backConfirmacion();
+      // this.isVisibleConfirmarAnimated = false;
+      // setTimeout(() => {
+      //   this.isVisibleConfirmar = false;
+      // }, 300);
       return;
     }
 
@@ -98,9 +124,26 @@ export class ResumenPedidoComponent implements OnInit {
     });
   }
 
-  confirmarPeiddo() {
+  private backConfirmacion(): void {
+    this.navigatorService.addLink('mipedido');
+    this.isVisibleConfirmarAnimated = false;
+    this.isRequiereMesa = false;
+    setTimeout(() => {
+      this.isVisibleConfirmar = false;
+    }, 300);
+  }
+
+  private confirmarPeiddo(): void {
     this.isVisibleConfirmar = true;
     this.isVisibleConfirmarAnimated = true;
+    this.checkIsRequierMesa();
+
+    this.navigatorService.addLink('mipedido-confirma');
+  }
+
+  private checkIsRequierMesa(): void {
+    const isTPCLocal = this.miPedidoService.findMiPedidoIsTPCLocal();
+    this.isRequiereMesa = isTPCLocal && this.frmConforma.mesa.length === 0;
   }
 
 }

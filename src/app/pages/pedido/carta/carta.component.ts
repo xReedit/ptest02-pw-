@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
+import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 
 import { SeccionModel } from 'src/app/modelos/seccion.model';
 import { CategoriaModel } from 'src/app/modelos/categoria.model';
 import { ItemModel } from 'src/app/modelos/item.model';
-import { PedidoModel } from 'src/app/modelos/pedido.model';
 import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
 import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { ReglascartaService } from 'src/app/shared/services/reglascarta.service';
+
 
 @Component({
   selector: 'app-carta',
@@ -45,16 +46,29 @@ export class CartaComponent implements OnInit {
   private objItemTipoConsumoSelected: ItemTipoConsumoModel[];
   private objNewItemTiposConsumo: ItemTipoConsumoModel[] = [];
   private itemSelected: ItemModel;
+  private countSeeBack = 2; // primera vista al dar goback
 
   constructor(
       private socketService: SocketService,
       private miPedidoService: MipedidoService,
-      private reglasCartaService: ReglascartaService
-      ) { }
+      private reglasCartaService: ReglascartaService,
+      private navigatorService: NavigatorLinkService,
+      ) {
+
+  }
 
   ngOnInit() {
     this.isCargado = true;
     this.socketService.connect();
+
+    this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
+      if (res.pageActive === 'carta') {
+        if (this.countSeeBack < 2) { this.countSeeBack++; return; }
+        this.goBack();
+      } else {
+        this.countSeeBack = 0;
+      }
+    });
 
     this.socketService.onGetCarta().subscribe(res => {
       this.objCarta = res;
@@ -83,6 +97,8 @@ export class CartaComponent implements OnInit {
         this.objNewItemTiposConsumo.push(_objTpcAdd);
       });
 
+      this.navigatorService.addLink('carta-i-');
+
       // console.log('this.objNewItemTiposConsumo', this.objNewItemTiposConsumo);
       // this.tiposConsumo.secciones = [];
     });
@@ -110,6 +126,7 @@ export class CartaComponent implements OnInit {
       this.showToolBar = true;
 
       this.tituloToolBar = categoria.des;
+      this.navigatorService.addLink('carta-i-secciones');
     }, 250);
   }
 
@@ -120,6 +137,7 @@ export class CartaComponent implements OnInit {
       this.showSecciones = false;
       this.showItems = true;
       this.tituloToolBar += ' / ' + seccion.des;
+      this.navigatorService.addLink('carta-i-secciones-items');
     }, 150);
 
   }
@@ -130,9 +148,13 @@ export class CartaComponent implements OnInit {
       this.showItems = false;
       this.showSecciones = true;
       this.tituloToolBar = this.tituloToolBar.split(' / ')[0];
+      // this.navigatorService.addLink('carta-i-secciones');
       return;
     }
-    if (this.showSecciones) { this.showSecciones = false; this.showToolBar = false; this.showCategoria = true; }
+    if (this.showSecciones) {
+      this.showSecciones = false; this.showToolBar = false; this.showCategoria = true;
+      // this.navigatorService.addLink('carta-i-');
+    }
   }
 
   selectedItem(selectedItem: ItemModel) {

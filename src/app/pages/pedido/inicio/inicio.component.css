@@ -14,29 +14,33 @@
 } */
 
 .main-contemt {
-    overflow:  hidden !important;
+  overflow: hidden !important;
 }
 
 .x100 {
-    height: 100vh;
-    overflow: auto;    
+  height: 100vh;
+  overflow: auto;
 }
 
+/* .transicion {
+    transition: all 0.3s ease-out;
+} */
+
 .toolbar-main {
-    animation-duration: 0.3s;
-    animation-timing-function: ease-out;
-    animation-fill-mode: both;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
 }
 
 
 @keyframes fadeOutTool {
-  from {    
+  from {
     margin-top: 0px;
   }
 
-  to {     
+  to {
     margin-top: -60px;
-    display: none; 
+    display: none;
     visibility: hidden;
   }
 }
@@ -46,12 +50,12 @@
 }
 
 @keyframes fadeInTool {
-  from {    
+  from {
     margin-top: -60px;
     display: inline-block;
   }
 
-  to {    
+  to {
     margin-top: 0px;
   }
 }
@@ -60,7 +64,7 @@
   animation-name: fadeInTool;
 }
 
-.x100-toolbar-visible {    
+.x100-toolbar-visible {
   height: calc(100vh - 105px);
   overflow: auto;
 }
@@ -81,6 +85,6 @@
 
 .countTotal {
   float: right;
-  background: #f44336;  
+  background: #f44336;
   color: #eeeeee;
 }

@@ -243,6 +243,11 @@ export class MipedidoService {
     return rpt;
   }
 
+  // busca si en el pedido hay para consumir en el local y si es asi, exigir numero de mesa
+  findMiPedidoIsTPCLocal(): boolean {
+    return this.miPedido.tipoconsumo.filter(x => x.titulo === 'LOCAL')[0] ? true : false;
+  }
+
   // <---------- Busquedas ------> //
 
 

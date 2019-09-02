@@ -1,3 +1,9 @@
+
+.xcontent {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+}
 .div-plr {
     padding-left: 7px;
     padding-right: 7px;
@@ -71,6 +77,12 @@
     background: #00c853;
     color: white;
     text-align: center;
+}
+
+.btn-footer-next.xdisabled {
+    pointer-events: none;
+    opacity: 0.5;
+    background: #CCC;
 }
 
 /* confirmar pedido */

@@ -10,6 +10,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatTabsModule,
     MatProgressBarModule,
     MatToolbarModule,
-    MatDialogModule
+    MatDialogModule,
+    MatCheckboxModule
   ],
   exports: [
     MatButtonModule,
@@ -33,7 +35,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatTabsModule,
     MatProgressBarModule,
     MatToolbarModule,
-    MatDialogModule
+    MatDialogModule,
+    MatCheckboxModule
   ]
 })
 export class MaterialModule { }

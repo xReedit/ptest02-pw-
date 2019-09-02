@@ -1,5 +1,5 @@
-<div class="d-flex">
-    <div class="xh-100 w-100">
+<div class="d-flex w-100">
+    <div class="w-100">
         <div *ngFor="let tpc of _miPedido.tipoconsumo" class="xCursor">
             <ng-container *ngIf="tpc.count_items_seccion > 0">
                 <div class="div-plr titulo-tpc">
@@ -38,19 +38,42 @@
                 <div>{{item.importe | number:'0.2' }}</div>
                 </li>
             </ul>
-        </div>
-        
+        </div>        
+        <br><br><br>
     </div>
 
     <!-- confirma pedido -->
     <ng-container *ngIf="isVisibleConfirmar">
-        <div class="div-confirma-pedido w-100 xh-100 transicion animated fadeInRight"
+        <div class="xcontent div-confirma-pedido w-100 p-3 transicion animated fadeInRight"
           [ngClass]="[isVisibleConfirmarAnimated ? 'show' : 'hide', isVisibleConfirmarAnimated ? 'fadeInRight' :
           'fadeInLeft']">
-            <div class="text-center">
-                <h3>Indique mesa</h3>
-                <p>alguna referencia</p>
-                <p>enviar</p>
+            <div class="text-center">                
+                <form #frmconfirma="ngForm">
+                    <span class="fw-100 fs-22">Indique # de mesa</span>
+                    <div class="w-100">
+                    <mat-form-field class="text-center fs-20">
+                        <input matInput class="fs-20" [(ngModel)]="frmConfirma.mesa" name="mesa"
+                        [required]="isRequiereMesa">
+                    </mat-form-field>
+                    </div>
+                    <div class="w-100">
+                    <mat-form-field class="w-100 text-center">
+                        <input matInput placeholder="Indique alguna referencia" [(ngModel)]="frmConfirma.referencia"
+                        name="referencia">
+                    </mat-form-field>
+                    </div>
+                    <br>
+                    <div class="w-100">                  
+                        <mat-checkbox>Esto es una reserva.</mat-checkbox>                
+                    </div>
+                    <br><br>
+                    <hr>
+                    <p class="fw-100 fs-17 animated pulse text-secondary">
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                        Por favor, verifique su pedido, una vez enviado ya no podra realizar ningun
+                    cambio.</p>
+                    <hr>
+                </form>
             </div>
         </div>
     </ng-container>
@@ -58,10 +81,22 @@
 </div>
 
 <!-- footer -->
-<div *ngIf="hayItems" class="xfooter">
-  <div class="row m-0 w-100">
-    <div class="col-5 btn-footer-cancel" matRipple (click)="nuevoPedido()">Nuevo Pedido</div>
-    <div class="col-2"></div>
-    <div class="col-5 btn-footer-next" matRipple (click)="confirmarPeiddo()">Confirmar</div>
-  </div>
-</div>
+<ng-container *ngIf="hayItems">
+    <div class="xfooter">
+      <div class="row m-0 w-100">
+        <div class="col-5 btn-footer-cancel" matRipple (click)="nuevoPedido()">
+            <span [hidden]="isVisibleConfirmarAnimated" class="animated fadeInRight">Nuevo Pedido</span>
+            <span [hidden]="!isVisibleConfirmarAnimated" class="animated fadeInLeft"><i class="fa fa-arrow-left"></i> Atras </span>
+        </div>
+        <div class="col-2"></div>
+        <div class="col-5 btn-footer-next xdisabled" matRipple (click)="confirmarPeiddo()"
+          >
+            <div>        
+                <span [hidden]="isVisibleConfirmarAnimated" class="animated fadeInRight">Listo <i
+                    class="fa fa-arrow-right"></i></span>
+                <span [hidden]="!isVisibleConfirmarAnimated" class="animated fadeInLeft">Confirmar</span>
+            </div>
+        </div>
+      </div>
+    </div>
+</ng-container>
