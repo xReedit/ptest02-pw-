@@ -5,6 +5,9 @@ export class ItemModel {
     idseccion: number;
     idcarta_lista: number;
     isalmacen: number;
+    isporcion: string; // si es SP = porcion
+    imprimir_comanda: number;
+    procede: number; // tabla de donde descontar 0 = producto 1 = cartalista
     precio: string; // precio unitario
     precio_print = 0; // precio que se muestra
     precio_total_calc: number; // preciounitario * cantidad // para calular reglas carta

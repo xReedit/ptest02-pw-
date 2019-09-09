@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { FormsModule } from '@angular/forms';
+import { ComponentesModule } from 'src/app/componentes/componentes.module';
+
 import { MainComponent } from './main/main.component';
 import { InicioComponent } from './inicio/inicio.component';
 import { CartaComponent } from './carta/carta.component';
@@ -13,21 +15,33 @@ import { CoreModule } from 'src/app/core/core.module';
 
 import { DialogItemComponent } from './resumen-pedido/dialog-item/dialog-item.component';
 import { DialogResetComponent } from './resumen-pedido/dialog-reset/dialog-reset.component';
+import { DialogLoadingComponent } from './resumen-pedido/dialog-loading/dialog-loading.component';
 
 
 
 @NgModule({
-  declarations: [MainComponent, InicioComponent, CartaComponent, ResumenPedidoComponent, EstadoPedidoComponent, BuscarItemComponent, DialogItemComponent, DialogResetComponent],
+  declarations: [
+    MainComponent,
+    InicioComponent,
+    CartaComponent,
+    ResumenPedidoComponent,
+    EstadoPedidoComponent,
+    BuscarItemComponent,
+    DialogItemComponent,
+    DialogResetComponent,
+    DialogLoadingComponent],
   imports: [
     CommonModule,
     FormsModule,
     PedidoRoutingModule,
-    CoreModule
+    CoreModule,
+    ComponentesModule
   ],
   exports: [
     DialogItemComponent,
-    DialogResetComponent
+    DialogResetComponent,
+    DialogLoadingComponent
   ],
-  entryComponents: [DialogItemComponent, DialogResetComponent]
+  entryComponents: [DialogItemComponent, DialogResetComponent, DialogLoadingComponent]
 })
 export class PedidoModule { }

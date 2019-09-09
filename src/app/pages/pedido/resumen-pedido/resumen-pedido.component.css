@@ -85,6 +85,21 @@
     background: #CCC;
 }
 
+/* RESUMEN pedido */
+.div-resumen-pedido {
+  position: absolute;  
+}
+
+.div-resumen-pedido.hide {
+  margin-left: -100%;
+}
+
+.div-resumen-pedido.show {
+  margin-left: 0;
+}
+
+/* RESUMEN pedido */
+
 /* confirmar pedido */
 .div-confirma-pedido {        
     position: absolute;

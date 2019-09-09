@@ -1,82 +1,115 @@
 <div class="d-flex w-100">
-    <div class="w-100">
-        <div *ngFor="let tpc of _miPedido.tipoconsumo" class="xCursor">
-            <ng-container *ngIf="tpc.count_items_seccion > 0">
-                <div class="div-plr titulo-tpc">
-                    <span>{{tpc.descripcion}}</span>
-                    <div class="countItem countTpc">{{tpc.count_items_seccion}}</div>
-                </div>
-                <div *ngFor="let seccion of tpc.secciones">
-                    <ng-container *ngIf="seccion.count_items > 0">
-                        <div class="div-plr titulo-seccion">
-                            <span>{{seccion.des | titlecase}}</span>
-                            <div class="countItem countSeccion">{{seccion.count_items}}</div>
-                        </div>
-                        <ul class="w-100">
-                            <div *ngFor="let item of seccion.items">
-                                <ng-container *ngIf="item.cantidad_seleccionada > 0">
-                                    <li class="d-flex div-plr li-item" matRipple [matRippleColor]="rippleColor"
-                                    (click)="openDlgItem(tpc, seccion, item)">
-                                        <div class="pr-2 fw-100">{{item.cantidad_seleccionada | number: '2.'}}</div>
-                                        <div class="w-100 fw-100">{{item.des | lowercase}}</div>
-                                        <div class="fw-100">{{item.precio_print | number:'0.2' }}</div>
-                                    </li>
-                                </ng-container>                            
+    <!-- <div class="w-100"> -->
+        <div class="w-100 div-resumen-pedido">
+            <div *ngFor="let tpc of _miPedido.tipoconsumo" class="xCursor">
+                <ng-container *ngIf="tpc.count_items_seccion > 0">
+                    <div class="div-plr titulo-tpc">
+                        <span>{{tpc.descripcion}}</span>
+                        <div class="countItem countTpc">{{tpc.count_items_seccion}}</div>
+                    </div>
+                    <div *ngFor="let seccion of tpc.secciones">
+                        <ng-container *ngIf="seccion.count_items > 0">
+                            <div class="div-plr titulo-seccion">
+                                <span>{{seccion.des | titlecase}}</span>
+                                <div class="countItem countSeccion">{{seccion.count_items}}</div>
                             </div>
-                        </ul>            
-                    </ng-container>
-                </div>
-            </ng-container>
-        </div>    
+                            <ul class="w-100">
+                                <div *ngFor="let item of seccion.items">
+                                    <ng-container *ngIf="item.cantidad_seleccionada > 0">
+                                        <li class="d-flex div-plr li-item" matRipple [matRippleColor]="rippleColor"
+                                        (click)="openDlgItem(tpc, seccion, item)">
+                                            <div class="pr-2 fw-100">{{item.cantidad_seleccionada | number: '2.'}}</div>
+                                            <div class="w-100 fw-100">{{item.des | lowercase}}</div>
+                                            <div class="fw-100">{{item.precio_print | number:'0.2' }}</div>
+                                        </li>
+                                    </ng-container>                            
+                                </div>
+                            </ul>            
+                        </ng-container>
+                    </div>
+                </ng-container>
+            </div>    
 
-        <!-- subtotales -->    
-        <div class="div-total">
-            <ul class="w-100 ul-total">
-                <li class="d-flex div-plr li-item" *ngFor="let item of _arrSubtotales" matRipple
-                [matRippleColor]="rippleColor">
-                <div class="w-100">{{item.descripcion | titlecase}}</div>
-                <div>{{item.importe | number:'0.2' }}</div>
-                </li>
-            </ul>
-        </div>        
-        <br><br><br>
-    </div>
+            <!-- subtotales -->    
+            <div class="div-total">
+                <ul class="w-100 ul-total">
+                    <li class="d-flex div-plr li-item" *ngFor="let item of _arrSubtotales" matRipple
+                    [matRippleColor]="rippleColor">
+                    <div class="w-100">{{item.descripcion | titlecase}}</div>
+                    <div>{{item.importe | number:'0.2' }}</div>
+                    </li>
+                </ul>
+            </div>        
+            <br><br><br>
+        </div>
+    <!-- </div> -->
 
     <!-- confirma pedido -->
-    <ng-container *ngIf="isVisibleConfirmar">
+    <div [hidden]="!isVisibleConfirmar">
         <div class="xcontent div-confirma-pedido w-100 p-3 transicion animated fadeInRight"
           [ngClass]="[isVisibleConfirmarAnimated ? 'show' : 'hide', isVisibleConfirmarAnimated ? 'fadeInRight' :
           'fadeInLeft']">
-            <div class="text-center">                
-                <form #frmconfirma="ngForm">
-                    <span class="fw-100 fs-22">Indique # de mesa</span>
-                    <div class="w-100">
-                    <mat-form-field class="text-center fs-20">
-                        <input matInput class="fs-20" [(ngModel)]="frmConfirma.mesa" name="mesa"
-                        [required]="isRequiereMesa">
-                    </mat-form-field>
-                    </div>
-                    <div class="w-100">
-                    <mat-form-field class="w-100 text-center">
-                        <input matInput placeholder="Indique alguna referencia" [(ngModel)]="frmConfirma.referencia"
-                        name="referencia">
-                    </mat-form-field>
-                    </div>
-                    <br>
-                    <div class="w-100">                  
-                        <mat-checkbox>Esto es una reserva.</mat-checkbox>                
-                    </div>
-                    <br><br>
+            <div class="text-center">
+                <!-- datos del pedido -->
+                <div [hidden]="isDelivery">
+                    <form #frmconfirma="ngForm">
+                        <div *ngIf="frmConfirma.reserva" class="animated fadeIn">
+                            <p class="fs-30 fw-100">RESERVAR</p>
+                        </div>
+
+                        <div *ngIf="!frmConfirma.reserva" class="animated fadeIn">
+                        <span class="fw-100 fs-20">Indique # de mesa</span>
+                        <div class="w-100">
+                            <mat-form-field class="text-center fs-20">
+                            <input 
+                                type="number"
+                                matInput
+                                [(ngModel)]="frmConfirma.mesa" name="mesa"
+                                [required]="isRequiereMesa" (keyup)="checkIsRequierMesa()">
+                            </mat-form-field>
+                        </div>
+                        </div>
+                                        
+                        <div class="w-100">
+                        <mat-form-field class="w-100 text-center">
+                            <input matInput placeholder="Indique alguna referencia" [(ngModel)]="frmConfirma.referencia"
+                            name="referencia">
+                        </mat-form-field>
+                        </div>
+                        <br>
+                        <div class="w-100">                  
+                            <mat-checkbox [(ngModel)]="frmConfirma.reserva" name="reserva" (change)="checkIsRequierMesa()">
+                            Esto es una reserva.
+                            </mat-checkbox>
+                        </div>
+                        <br><br>
+                        <hr>
+                        <p class="fw-100 fs-17 animated pulse text-secondary">
+                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                            Por favor, verifique su pedido, una vez enviado ya no podra realizar ningun
+                        cambio.</p>
+                        <hr>
+                        <!-- {{isRequiereMesa}} -->
+                    </form>
+                </div>
+                <!-- datos del pedido -->
+
+                <!-- datos del delivery -->
+                <div [hidden]="!isDelivery">
+                    <app-datos-delivery (changeStatus)="checkDataDelivery($event)"></app-datos-delivery>
+                    
+                    <p class="fw-100 fs-14 animated pulse text-secondary">
+                      <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                      Por favor, verifique su pedido, una vez enviado ya no podra realizar ningun
+                      cambio.</p>
                     <hr>
-                    <p class="fw-100 fs-17 animated pulse text-secondary">
-                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                        Por favor, verifique su pedido, una vez enviado ya no podra realizar ningun
-                    cambio.</p>
-                    <hr>
-                </form>
+                    <br><br><br><br>
+                </div>
+                
+                <!-- datos del delivery -->
             </div>
         </div>
-    </ng-container>
+    </div>
     <!-- confirma pedido -->
 </div>
 
@@ -89,14 +122,33 @@
             <span [hidden]="!isVisibleConfirmarAnimated" class="animated fadeInLeft"><i class="fa fa-arrow-left"></i> Atras </span>
         </div>
         <div class="col-2"></div>
-        <div class="col-5 btn-footer-next xdisabled" matRipple (click)="confirmarPeiddo()"
-          >
-            <div>        
-                <span [hidden]="isVisibleConfirmarAnimated" class="animated fadeInRight">Listo <i
-                    class="fa fa-arrow-right"></i></span>
-                <span [hidden]="!isVisibleConfirmarAnimated" class="animated fadeInLeft">Confirmar</span>
+        <ng-container *ngIf="!isVisibleConfirmarAnimated; then divBtnListo; else divBtnEnviar"></ng-container>
+        <ng-template #divBtnListo>
+            <div class="col-5 btn-footer-next transicion" matRipple (click)="confirmarPeiddo()">
+              <div>
+                <span class="animated fadeInRight">Listo <i class="fa fa-arrow-right"></i></span>
+              </div>
             </div>
-        </div>
+        </ng-template>
+        <ng-template #divBtnEnviar>
+            <ng-container *ngIf="!isDelivery; else elseTemplate">
+              <div class="col-5 btn-footer-next transicion" matRipple (click)="prepararEnvio()"
+                [ngClass]="{'xdisabled': isRequiereMesa}">
+                <div>
+                  <span class="animated fadeInLeft">Enviar mesa</span>
+                </div>
+              </div>
+            </ng-container>
+            <ng-template #elseTemplate>
+              <div class="col-5 btn-footer-next transicion" matRipple (click)="prepararEnvio()"
+                [ngClass]="{'xdisabled': isDelivery && !isDeliveryValid}">
+                <div>
+                  <span class="animated fadeInLeft">Enviar delivery</span>
+                </div>
+              </div>
+            </ng-template>
+        </ng-template>        
+
       </div>
     </div>
 </ng-container>

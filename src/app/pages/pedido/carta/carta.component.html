@@ -59,7 +59,8 @@
     <div [hidden]="!showItems" class="animated fadeIn m-main-pt-40 color-fondo-ul">
       <ng-container>
         <ul>
-          <li *ngFor="let item of objItems" class="transicion" [ngClass]="{'li-padding-selected': item.selected}">  
+          <li *ngFor="let item of objItems" class="transicion"
+            [ngClass]="{'li-padding-selected': item.selected}">
             <div class="trasicion-border xcontent border-left-item-{{getEstadoStockItem(item.cantidad)}}"> 
               <div class="m1 d-flex xtitulo" matRipple [matRippleColor]="rippleColor" (click)="selectedItem(item)">
                 <div class="w-100"><span>{{item.des}}</span></div>
@@ -74,7 +75,7 @@
                 </div>
               </div>              
               <ng-container *ngIf="item.selected">
-                <div class="animated fadeIn">
+                <div>
                   <!-- detalle -->                  
                   <ng-container *ngIf="item.detalles === ''; else elseTemplate">
                     <br>
@@ -108,7 +109,7 @@
                       </tr>
                     </table>
                     <br>
-                  </div>
+                  </div>                  
                 </div>                
               </ng-container>
               

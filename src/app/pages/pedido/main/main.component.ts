@@ -47,7 +47,7 @@ export class MainComponent implements OnInit {
     }, 100);
   }
 
-  clickTab($event) {
+  clickTab($event: any) {
     console.log('event tab', $event);
     this.selectedTab = $event.index;
     const _pageActive = $event.tab.textLabel.toLowerCase();

@@ -9,6 +9,7 @@ import { ItemModel } from 'src/app/modelos/item.model';
 import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
 import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { ReglascartaService } from 'src/app/shared/services/reglascarta.service';
+import { JsonPrintService } from 'src/app/shared/services/json-print.service';
 
 
 @Component({
@@ -52,6 +53,7 @@ export class CartaComponent implements OnInit {
       private socketService: SocketService,
       private miPedidoService: MipedidoService,
       private reglasCartaService: ReglascartaService,
+      private jsonPrintService: JsonPrintService,
       private navigatorService: NavigatorLinkService,
       ) {
 
@@ -72,11 +74,12 @@ export class CartaComponent implements OnInit {
 
     this.socketService.onGetCarta().subscribe(res => {
       this.objCarta = res;
+      //
       this.miPedidoService.setObjCarta(res);
 
       this.isCargado = false;
       this.showCategoria = true;
-      // console.log(this.objCarta);
+      console.log('objCarta', this.objCarta);
 
       this.miPedidoService.clearPedidoIsLimitTime();
       this.miPedidoService.updatePedidoFromStrorage();
@@ -107,15 +110,9 @@ export class CartaComponent implements OnInit {
     this.reglasCartaService.loadReglasCarta();
 
     this.miPedidoService.listenChangeCantItem();
-    // this.socketService.onItemModificado().subscribe((res: ItemModel) => {
-    //   const itemInList = this.miPedidoService.findItemCarta(res);
-    //   itemInList.cantidad = res.cantidad;
-    // });
 
-    // this.socketService.onItemResetCant().subscribe((res: ItemModel) => {
-    //   const itemInList = this.miPedidoService.findItemCarta(res);
-    //   itemInList.cantidad += res.cantidad_reset;
-    // });
+    // datos de la sede, impresoras
+    this.jsonPrintService.getDataSede();
   }
 
   getSecciones(categoria: CategoriaModel) {
@@ -124,6 +121,9 @@ export class CartaComponent implements OnInit {
       this.showSecciones = true;
       this.showCategoria = false;
       this.showToolBar = true;
+
+      // local storage categoria
+      localStorage.setItem('sys::cat', categoria.idcategoria.toString());
 
       this.tituloToolBar = categoria.des;
       this.navigatorService.addLink('carta-i-secciones');
@@ -176,8 +176,13 @@ export class CartaComponent implements OnInit {
     this.miPedidoService.addItem2(tpcSelect, this.itemSelected, suma);
   }
 
-  getEstadoStockItem(stock: number): string {
-    return stock > 10 ? 'verde' : stock > 5 ? 'amarillo' : 'rojo';
+  getEstadoStockItem(stock: string): string {
+    if ( stock === 'ND' ) {
+      return 'verde';
+    } else {
+      const _stock = parseInt(stock, 0);
+      return _stock > 10 ? 'verde' : _stock > 5 ? 'amarillo' : 'rojo';
+    }
   }
 
 }

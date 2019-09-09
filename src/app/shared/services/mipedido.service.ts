@@ -51,7 +51,17 @@ export class MipedidoService {
   }
 
   setObjCarta(_objCarta: any) {
+
     this.objCarta = _objCarta;
+
+    // colocamos la bodega en todas las cartas
+    const _carta = this.objCarta.carta;
+    const _bodega = this.objCarta.bodega;
+    _carta.map((c: CategoriaModel) => {
+      _bodega.map((bs: SeccionModel) => {
+        c.secciones.push(bs);
+      });
+    });
   }
 
   getMiPedido(): PedidoModel {
@@ -90,6 +100,7 @@ export class MipedidoService {
     // de esta manera manejamos una sola cantidad
     // idTpcItemResumenSelect si viene del resumen dialog
     // let cantItem = idTpcItemResumenSelect ? parseInt(this.findItemCarta(item).cantidad.toString(), 0) : parseInt(item.cantidad.toString(), 0);
+
     let cantItem = parseInt(item.cantidad.toString(), 0);
     const sumar = signo === 0 ? true : false;
 
@@ -99,9 +110,13 @@ export class MipedidoService {
     cantSeleccionada += sumar ? 1 : -1;
     if (cantSeleccionada < 0) { return; }
 
-    cantItem += sumar ? -1 : 1;
+    if ( item.isporcion !== 'ND' ) {
+      cantItem += sumar ? -1 : 1;
+      cantSeleccionada = cantSeleccionada < 0 ? 0 : cantSeleccionada;
+      cantItem = cantItem < 0 || cantSeleccionada < 0 ? 0 : cantItem;
+    }
+
     cantSeleccionada = cantSeleccionada < 0 ? 0 : cantSeleccionada;
-    cantItem = cantItem < 0 || cantSeleccionada < 0 ? 0 : cantItem;
     tipoconsumo.cantidad_seleccionada = cantSeleccionada;
 
     // listItemsPedido -> para el local storage recuperar y resetear
@@ -110,7 +125,10 @@ export class MipedidoService {
     if (itemInList) {
       sumTotalTpcSelected = this.totalItemTpcSelected(itemInList.itemtiposconsumo) || 0;
       itemInList.cantidad_seleccionada = sumTotalTpcSelected;
-      itemInList.cantidad = cantItem;
+
+      if ( item.isporcion !== 'ND' ) {
+        itemInList.cantidad = cantItem;
+      }
     } else {
       this.listItemsPedido.push(item);
     }
@@ -130,7 +148,7 @@ export class MipedidoService {
     // actualizar cantidades en item carta
     item = idTpcItemResumenSelect ? this.findItemCarta(item) : item;
     item.cantidad_seleccionada = sumTotalTpcSelected;
-    item.cantidad = cantItem;
+    if (item.isporcion !== 'ND') { item.cantidad = cantItem; }
     // comunica el cambio de stock en el item carta
     this.itemStockChangeSource.next(item);
 
@@ -144,7 +162,7 @@ export class MipedidoService {
     this.socketService.emit('itemModificado', item);
 
     console.log('listItemsPedido', this.listItemsPedido);
-    // console.log('this.miPedido', this.miPedido);
+    console.log('itemModificado', item);
   }
 
   totalItemTpcSelected(_arrTpc: any): number {
@@ -245,7 +263,34 @@ export class MipedidoService {
 
   // busca si en el pedido hay para consumir en el local y si es asi, exigir numero de mesa
   findMiPedidoIsTPCLocal(): boolean {
-    return this.miPedido.tipoconsumo.filter(x => x.titulo === 'LOCAL')[0] ? true : false;
+    let rpt = false;
+    this.miPedido.tipoconsumo
+      .filter(x => x.titulo === 'LOCAL')
+      .map((t: TipoConsumoModel) => {
+        rpt = t.secciones.filter((s: SeccionModel) => s.count_items > 0)[0] ? true : false;
+      });
+    return rpt;
+  }
+
+  // busca si en el pedido hay para consumir en el local y si es asi, exigir numero de mesa
+  findMiPedidoIsTPCDelivery(): boolean {
+    let rpt = false;
+    this.miPedido.tipoconsumo
+      .filter(x => x.descripcion.toUpperCase() === 'DELIVERY')
+      .map((t: TipoConsumoModel) => {
+        rpt = t.secciones.filter((s: SeccionModel) => s.count_items > 0)[0] ? true : false;
+      });
+    return rpt;
+  }
+
+  // busca la seccion por idimpresora -- para mandar imprimir
+  findSeccionInMipedidoByPrint(idPrintSearch: number): SeccionModel[] {
+    let secRpt: SeccionModel[];
+    this.miPedido.tipoconsumo
+      .map((tpc: TipoConsumoModel) => {
+        secRpt = tpc.secciones.filter((s: SeccionModel) => s.idimpresora === idPrintSearch);
+      });
+    return secRpt;
   }
 
   // <---------- Busquedas ------> //
@@ -294,20 +339,32 @@ export class MipedidoService {
     }
   }
 
+  // resetear stock
   resetAllNewPedido() {
     this.socketService.emit('resetPedido', this.listItemsPedido);
     this.updatePedidoFromClear();
-    this.resetTpcCarta();
   }
 
-  private resetTpcCarta() {
-    this.objCarta.carta.map((cat: CategoriaModel) => {
-      cat.secciones.map((sec: SeccionModel) => {
-        sec.items.map((i: ItemModel) => {
-          i.itemtiposconsumo.map((a: ItemTipoConsumoModel) => {
-            a.cantidad_seleccionada = 0;
-          });
-        });
+  // nuevo pedido // sin recuperar stock // cuando el envio fue exitoso
+  prepareNewPedido(): void {
+    // this.updatePedidoFromClear();
+    this.resetTpcCarta();
+
+    // valor en blanco para nuevo pedido
+    this.storageService.clear('sys::h');
+    this.storageService.clear('sys::order');
+    this.storageService.clear('sys::order::all');
+    this.listItemsPedido = [];
+    this.miPedido = new PedidoModel();
+    this.miPedidoSource.next(this.miPedido);
+    this.countItemsSource.next(0);
+    console.log('antes new', this.listItemsPedido);
+  }
+
+  private resetTpcCarta(): void {
+    this.listItemsPedido.map((item: ItemModel) => {
+      item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
+        tpc.cantidad_seleccionada = 0;
       });
     });
   }
@@ -346,7 +403,7 @@ export class MipedidoService {
       if (item.isalmacen === 0) {
         this.objCarta.carta.map((cat: CategoriaModel) => {
           cat.secciones.map((sec: SeccionModel) => {
-            const itemUpdate = <ItemModel>sec.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0];
+            const itemUpdate = <ItemModel>sec.items.filter((x: ItemModel) => x.isporcion !== 'ND' && x.idcarta_lista === item.idcarta_lista)[0];
             if (itemUpdate) {
               itemUpdate.cantidad = parseInt(itemUpdate.cantidad.toString(), 0) + item.cantidad_seleccionada;
             }
@@ -355,14 +412,16 @@ export class MipedidoService {
       }
     });
 
+
     // valor en blanco para nuevo pedido
-    this.storageService.clear('sys::h');
-    this.storageService.clear('sys::order');
-    this.storageService.clear('sys::order::all');
-    this.listItemsPedido = [];
-    this.miPedido = new PedidoModel();
-    this.miPedidoSource.next(this.miPedido);
-    this.countItemsSource.next(0);
+    this.prepareNewPedido();
+    // this.storageService.clear('sys::h');
+    // this.storageService.clear('sys::order');
+    // this.storageService.clear('sys::order::all');
+    // this.listItemsPedido = [];
+    // this.miPedido = new PedidoModel();
+    // this.miPedidoSource.next(this.miPedido);
+    // this.countItemsSource.next(0);
   }
 
   getEstadoStockItem(stock: number): string {
@@ -497,7 +556,7 @@ export class MipedidoService {
     let sumaTotal = subTotal;
 
     const arrSubtotales: any = [];
-    let _arrSubtotales: any = [];
+    let _arrSubtotales: any = {};
 
     _arrSubtotales.id = 0;
     _arrSubtotales.descripcion = 'SUB TOTAL';
@@ -506,7 +565,7 @@ export class MipedidoService {
     _arrSubtotales.quitar = false;
     _arrSubtotales.tachado = false;
     _arrSubtotales.visible_cpe = true;
-    _arrSubtotales.importe = subTotal;
+    _arrSubtotales.importe = parseFloat(subTotal.toString()).toFixed(2);
 
     arrSubtotales.push(_arrSubtotales);
 
@@ -519,7 +578,7 @@ export class MipedidoService {
       const isImpuesto = p.es_impuesto === 1 ? true : false;
       const isActivo = p.activo === 0 ? true : false;
       const importe = (subTotal * porcentaje).toFixed(2);
-      const rpt: any = [];
+      const rpt: any = {};
 
       rpt.id = p.tipo + p.id;
       rpt.descripcion = p.descripcion;
@@ -529,6 +588,7 @@ export class MipedidoService {
       rpt.tachado = false;
       rpt.visible_cpe = isImpuesto;
       rpt.importe = isImpuesto ? isActivo ? importe : 0 : importe;
+      rpt.importe = parseFloat(rpt.importe.toString()).toFixed(2);
 
       sumaTotal += parseFloat(rpt.importe);
 
@@ -540,7 +600,7 @@ export class MipedidoService {
     const rptOtros: any = [];
     const arrOtros = rulesSubTotales.filter(x => x.tipo === 'a');
     arrOtros.map(p => {
-      const rpt: any = [];
+      const rpt: any = {};
       importeOtros = parseFloat(p.monto); // aplica a todo el pedido
 
       const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion);
@@ -555,9 +615,9 @@ export class MipedidoService {
       rpt.esImpuesto = p.es_impuesto;
       rpt.visible = true;
       rpt.quitar = true;
-      rpt.tachado = true;
+      rpt.tachado = false;
       rpt.visible_cpe = false;
-      rpt.importe = importeOtros;
+      rpt.importe = parseFloat(importeOtros.toString()).toFixed(2);
 
       sumaTotal += parseFloat(rpt.importe);
 
@@ -576,7 +636,7 @@ export class MipedidoService {
     rptPorcentajes.map(y => arrSubtotales.push(y));
     rptOtros.map(y => arrSubtotales.push(y));
 
-    _arrSubtotales = [];
+    _arrSubtotales = {};
     _arrSubtotales.id = 0;
     _arrSubtotales.esImpuesto = 0;
     _arrSubtotales.descripcion = 'TOTAL';
@@ -584,7 +644,7 @@ export class MipedidoService {
     _arrSubtotales.quitar = false;
     _arrSubtotales.tachado = false;
     _arrSubtotales.visible_cpe = true;
-    _arrSubtotales.importe = sumaTotal;
+    _arrSubtotales.importe = parseFloat(sumaTotal.toString()).toFixed(2);
 
     arrSubtotales.push(_arrSubtotales);
 

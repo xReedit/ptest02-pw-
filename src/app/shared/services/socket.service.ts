@@ -72,6 +72,16 @@ export class SocketService {
     });
   }
 
+  // datos de la sede, impresoras
+  // load reglas de la carta y subtotales
+  onGetDatosSede() {
+    return new Observable(observer => {
+      this.socket.on('getDataSede', (res: any) => {
+        observer.next(res);
+      });
+    });
+  }
+
 
   emit(evento: string, data: any) {
     this.socket.emit(evento, data);
