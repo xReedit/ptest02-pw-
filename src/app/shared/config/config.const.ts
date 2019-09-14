@@ -1,7 +1,7 @@
 export const URL_SERVER = 'http://localhost:5819/v3/'; // desarrollo
 export const URL_SERVER_SOCKET = 'http://localhost:5819'; // desarrollo
 
-export const MAX_MINUTE_ORDER = 15;
+// export const MAX_MINUTE_ORDER = 15;
 // export const URL_SERVER = 'https://restobar.papaya.com.pe/api/v2/'; // produccion
 
 

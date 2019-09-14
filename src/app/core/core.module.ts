@@ -8,12 +8,14 @@ import { LayoutMainComponent } from './layout-main/layout-main.component';
 import { RouterModule } from '@angular/router';
 import { MaterialModule } from './material/material.module';
 import { ToolBarComponent } from './tool-bar/tool-bar.component';
+import { ProgressTimeLimitComponent } from './progress-time-limit/progress-time-limit.component';
 
 
 @NgModule({
   declarations: [
     LayoutMainComponent,
-    ToolBarComponent
+    ToolBarComponent,
+    ProgressTimeLimitComponent
   ],
   imports: [
     CommonModule,
@@ -23,7 +25,8 @@ import { ToolBarComponent } from './tool-bar/tool-bar.component';
   ],
   exports: [
     MaterialModule,
-    ToolBarComponent
+    ToolBarComponent,
+    ProgressTimeLimitComponent
   ],
   providers: [
     CrudHttpService

@@ -53,6 +53,15 @@ export class SocketService {
     });
   }
 
+  onNuevoItemAddInCarta() {
+    return new Observable(observer => {
+      this.socket.on('nuevoItemAddInCarta', (res: any) => {
+        this.item = res;
+        observer.next(this.item);
+      });
+    });
+  }
+
   // cuando se recupera el stock de pedido que caduco el tiempo
   onItemResetCant() {
     return new Observable(observer => {

@@ -1,8 +1,8 @@
 <div class="h-100 overflow-hidden">
-    <button (click)="addLink('../lacarta')">aa</button>
-    <button (click)="addLink('../lacarta/subitem')">aa</button>
-  <a [routerLink]="carta">aaa</a>
-  <a [routerLink]="['carta/subitem']">eee</a>
+    <!-- <button (click)="addLink('../lacarta')">aa</button>
+    <button (click)="addLink('../lacarta/subitem')">aa</button> -->
+  <!-- <a [routerLink]="carta">aaa</a>
+  <a [routerLink]="['carta/subitem']">eee</a> -->
   <div class="toolbar-main" [ngClass]="{'fadeInTool': isVisibleToolBar, 'fadeOutTool': !isVisibleToolBar}">
     <app-tool-bar></app-tool-bar>
   </div>
@@ -25,9 +25,9 @@
           <br>
         </div>
       </mat-tab>
-      <mat-tab label="Estado">
+      <!-- <mat-tab label="Estado">
         <app-estado-pedido></app-estado-pedido>
-      </mat-tab>
+      </mat-tab> -->
     </mat-tab-group>
   </div>
 

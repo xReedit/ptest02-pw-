@@ -83,6 +83,10 @@ export class CartaComponent implements OnInit {
 
       this.miPedidoService.clearPedidoIsLimitTime();
       this.miPedidoService.updatePedidoFromStrorage();
+
+      // restaurar cuenta de timepo limite
+      console.log('restore timer limt');
+      this.miPedidoService.restoreTimerLimit();
     });
 
     // tipo de consumo

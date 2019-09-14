@@ -8,10 +8,12 @@ import { ItemModel } from 'src/app/modelos/item.model';
 import { PedidoModel } from 'src/app/modelos/pedido.model';
 import { CategoriaModel } from 'src/app/modelos/categoria.model';
 import { SeccionModel } from 'src/app/modelos/seccion.model';
-import { MAX_MINUTE_ORDER } from '../config/config.const';
+// import { MAX_MINUTE_ORDER } from '../config/config.const';
 import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
 import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
-import { match } from 'minimatch';
+import { TimerLimitService } from './timer-limit.service';
+import { NavigatorLinkService } from './navigator-link.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'
@@ -38,11 +40,16 @@ export class MipedidoService {
   mpObjSeccionSelected: SeccionModel = new SeccionModel();
 
   time = new Date();
-  max_minute_order = MAX_MINUTE_ORDER;
+  max_minute_order: number;
+
 
   constructor(
     private storageService: StorageService,
-    private socketService: SocketService) {
+    private socketService: SocketService,
+    private timerLimitService: TimerLimitService,
+    private navigatorService: NavigatorLinkService,
+    private _snackBar: MatSnackBar
+    ) {
 
     }
 
@@ -67,7 +74,7 @@ export class MipedidoService {
   getMiPedido(): PedidoModel {
     if ( this.miPedido.tipoconsumo.length === 0 ) {
       if (this.storageService.isExistKey('sys::order::all')) {
-        this.miPedido = JSON.parse(atob(this.storageService.get('sys::order::all')));      
+        this.miPedido = JSON.parse(atob(this.storageService.get('sys::order::all')));
       }
     }
     // this.miPedidoSource.next(this.miPedido);
@@ -163,6 +170,8 @@ export class MipedidoService {
 
     console.log('listItemsPedido', this.listItemsPedido);
     console.log('itemModificado', item);
+
+    this.playTimerLimit();
   }
 
   totalItemTpcSelected(_arrTpc: any): number {
@@ -177,6 +186,26 @@ export class MipedidoService {
     elItem.precio_total = precioTotal;
     // elItem.precio_total_calc = precioTotal;
     elItem.precio_print = precioTotal;
+  }
+
+  // del socket nuevo item from monitoreo stock
+  addItemInCarta(newItem: any) {
+    const newItemFind = this.findItemCarta(newItem);
+    if ( newItemFind ) { // update
+      console.log('update');
+      newItemFind.cantidad = newItemFind.cantidad;
+    } else { // agrega a la carta
+      console.log('add in carta');
+      this.objCarta.carta.map((cat: CategoriaModel) => {
+        cat.secciones
+          .filter((sec: SeccionModel) => sec.idseccion === newItem.idseccion )
+          .map((sec: SeccionModel) => {
+            sec.items.push(newItem);
+        });
+      });
+    }
+
+    console.log('item new add in carta', this.objCarta.carta);
   }
 
   // <---------- Busquedas ------> //
@@ -330,13 +359,13 @@ export class MipedidoService {
     this.listItemsPedido = JSON.parse(atob(this.storageService.get('sys::order')));
     this.miPedido = JSON.parse(atob(this.storageService.get('sys::order::all')));
 
-    if (this.isTimeLimit()) {
-      // si el tiempo limite fue superado mandamos a restablecer carta
-      // nuevo pdido
-      this.socketService.emit('resetPedido', this.listItemsPedido);
-      this.updatePedidoFromClear();
-      // this.resetAllNewPedido();
-    }
+    // if (this.isTimeLimit()) {
+    //   // si el tiempo limite fue superado mandamos a restablecer carta
+    //   // nuevo pdido
+    //   this.socketService.emit('resetPedido', this.listItemsPedido);
+    //   this.updatePedidoFromClear();
+    //   // this.resetAllNewPedido();
+    // }
   }
 
   // resetear stock
@@ -354,11 +383,14 @@ export class MipedidoService {
     this.storageService.clear('sys::h');
     this.storageService.clear('sys::order');
     this.storageService.clear('sys::order::all');
+    this.storageService.clear('sys::tcount'); // timer count
     this.listItemsPedido = [];
     this.miPedido = new PedidoModel();
     this.miPedidoSource.next(this.miPedido);
     this.countItemsSource.next(0);
-    console.log('antes new', this.listItemsPedido);
+
+    this.stopTimerLimit();
+    // console.log('antes new', this.listItemsPedido);
   }
 
   private resetTpcCarta(): void {
@@ -383,7 +415,7 @@ export class MipedidoService {
       if (item.isalmacen === 0) {
         this.objCarta.carta.map((cat: CategoriaModel) => {
           cat.secciones.map((sec: SeccionModel) => {
-            const itemUpdate = sec.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0]
+            const itemUpdate = sec.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0];
             if (itemUpdate) {
               // itemUpdate.cantidad = item.cantidad;
               itemUpdate.cantidad_seleccionada = item.cantidad_seleccionada;
@@ -428,24 +460,24 @@ export class MipedidoService {
     return stock > 10 ? 'verde' : stock > 5 ? 'amarillo' : 'rojo';
   }
 
-  isTimeLimit(): boolean {
-    const h2 = this.storageService.get('sys::h');
-    const hora1 = this.time.getTime().toString().split(':');
-    const hora2 = h2.split(':');
-    const t1 = new Date();
-    const t2 = new Date();
+  // isTimeLimit(): boolean {
+  //   const h2 = this.storageService.get('sys::h');
+  //   const hora1 = this.time.getTime().toString().split(':');
+  //   const hora2 = h2.split(':');
+  //   const t1 = new Date();
+  //   const t2 = new Date();
 
-    // tslint:disable-next-line: radix
-    t1.setHours(parseInt(hora2[0], 0), parseInt(hora2[1], 0), parseInt(hora2[2], 0));
-    t2.setHours(this.time.getHours(), this.time.getMinutes(), this.time.getSeconds());
-    const dif = t2.getTime() - t1.getTime(); // diferencia en milisegundos
-    const difSeg = Math.floor(dif / 1000);
-    const difMin = Math.floor(difSeg / 60);
-    let minutos = difMin % 60; // minutos
-    minutos = minutos < 0 ? minutos * -1 : minutos;
-    return minutos > this.max_minute_order ? true : false;
+  //   // tslint:disable-next-line: radix
+  //   t1.setHours(parseInt(hora2[0], 0), parseInt(hora2[1], 0), parseInt(hora2[2], 0));
+  //   t2.setHours(this.time.getHours(), this.time.getMinutes(), this.time.getSeconds());
+  //   const dif = t2.getTime() - t1.getTime(); // diferencia en milisegundos
+  //   const difSeg = Math.floor(dif / 1000);
+  //   const difMin = Math.floor(difSeg / 60);
+  //   let minutos = difMin % 60; // minutos
+  //   minutos = minutos < 0 ? minutos * -1 : minutos;
+  //   return minutos > this.max_minute_order ? true : false;
 
-  }
+  // }
 
   // <------ storage ---- > ///
 
@@ -478,7 +510,7 @@ export class MipedidoService {
       xCantidadBuscarSecc_detalle = this.countCantItemsFromSeccion(xSecc_detalle);
 
       diferencia = xCantidadBuscar - xCantidadBuscarSecc_detalle;
-      diferencia = diferencia < 0 ? xCantidadBuscar : diferencia; // no valores negativos 
+      diferencia = diferencia < 0 ? xCantidadBuscar : diferencia; // no valores negativos
       // console.log('diferencia reglas', diferencia);
 
       this.miPedido.tipoconsumo
@@ -670,6 +702,21 @@ export class MipedidoService {
 
   // <------ sub totales ---->//
 
+  // <------- timer limit ----> //
+
+  private playTimerLimit(): void {
+    this.timerLimitService.playCountTimerLimit();
+  }
+
+  private stopTimerLimit(): void {
+    this.timerLimitService.resetCountTimerLimit();
+  }
+
+  public restoreTimerLimit(): void {
+    this.timerLimitService.resetCountTimerLimit();
+  }
+
+  // <------- timer limit ----> //
 
 
   // <--------- listen change -------> //
@@ -690,6 +737,48 @@ export class MipedidoService {
       _itemInCarta.cantidad += res.cantidad_reset;
       this.itemStockChangeSource.next(_itemInCarta);
       // _itemInList.cantidad += res.cantidad_reset;
+    });
+
+    // from monitoreo stock - add item in carta
+    this.socketService.onNuevoItemAddInCarta().subscribe((res: any) => {
+      console.log('onNuevoItemAddInCarta', res);
+      this.addItemInCarta(res);
+    });
+
+    // tiempo limite
+
+    this.socketService.onGetDatosSede().subscribe((res: any) => {
+      this.max_minute_order = res[0].datossede[0].pwa_time_limit;
+      this.timerLimitService.maxTime = this.max_minute_order * 60;
+    });
+
+    this.timerLimitService.countdown$.subscribe((countTime: number) => {
+      switch (countTime) {
+        case 1:
+          if ( this._snackBar._openedSnackBarRef ) {return; }
+          this._snackBar.open(`Recuerde, ${this.max_minute_order} minutos para enviar su pedido.`, '', {
+            duration: 3000,
+          });
+          break;
+        case 80:
+          this._snackBar.open('Proximo a cumplir el tiempo de envio.', '', {
+            duration: 3000,
+          });
+          break;
+        case 100:
+          this._snackBar.open('Tiempo agotado, debe realizar un nuevo pedido.', '', {
+            duration: 4000,
+          });
+          break;
+      }
+    });
+
+    this.timerLimitService.isTimeLimitComplet$.subscribe((res: boolean) => {
+      // tiempo completado // reseteamos
+      if (res === true) {
+        this.resetAllNewPedido();
+        this.navigatorService.setPageActive('carta');
+      }
     });
   }
 

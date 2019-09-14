@@ -12,7 +12,6 @@ import { DialogResetComponent } from './dialog-reset/dialog-reset.component';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { JsonPrintService } from 'src/app/shared/services/json-print.service';
-import { DatosDeliveryModel } from 'src/app/modelos/datos.delivery.model';
 import { DialogLoadingComponent } from './dialog-loading/dialog-loading.component';
 
 @Component({
@@ -58,13 +57,7 @@ export class ResumenPedidoComponent implements OnInit {
       this.rulesSubtoTales = res.subtotales || res[0].subtotales;
       this.listenMiPedido();
 
-      this.frmConfirma = {
-        mesa: '',
-        referencia: '',
-        reserva: false,
-        solo_llevar: false,
-        delivery: false
-      };
+      this.newFomrConfirma();
 
       // this.frmDelivery = new DatosDeliveryModel();
     });
@@ -78,6 +71,16 @@ export class ResumenPedidoComponent implements OnInit {
             }
           }
         });
+  }
+
+  private newFomrConfirma(): void {
+    this.frmConfirma = {
+      mesa: '',
+      referencia: '',
+      reserva: false,
+      solo_llevar: false,
+      delivery: false
+    };
   }
 
   pintarMiPedido() {
@@ -138,6 +141,8 @@ export class ResumenPedidoComponent implements OnInit {
         this.navigatorService.setPageActive('carta');
       }
     });
+
+    this.newFomrConfirma();
   }
 
   private backConfirmacion(): void {
@@ -151,7 +156,7 @@ export class ResumenPedidoComponent implements OnInit {
 
   private confirmarPeiddo(): void {
 
-    if (this.isVisibleConfirmarAnimated ) {
+    if (this.isVisibleConfirmarAnimated ) { // enviar pedido
       if (this.isRequiereMesa || !this.isDeliveryValid) { return; }
       this.prepararEnvio();
     } else {
@@ -228,6 +233,7 @@ export class ResumenPedidoComponent implements OnInit {
     // this.isRequiereMesa = false;
     // this.isVisibleConfirmar = false;
     //
+    this.newFomrConfirma();
     this.backConfirmacion();
 
     this.miPedidoService.prepareNewPedido();

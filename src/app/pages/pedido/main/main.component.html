@@ -1,5 +1,6 @@
 <!-- <router-outlet></router-outlet> -->
 <div class="h-100 overflow-hidden">  
+    <app-progress-time-limit></app-progress-time-limit>
     <div class="toolbar-main" [ngClass]="{'fadeInTool': isVisibleToolBar, 'fadeOutTool': !isVisibleToolBar}">
       <app-tool-bar></app-tool-bar>
     </div>
@@ -22,35 +23,9 @@
             <br>
           </div>
         </mat-tab>
-        <mat-tab label="Estado"><app-estado-pedido></app-estado-pedido> </mat-tab>
+        <!-- <mat-tab label="Estado">
+          <app-estado-pedido></app-estado-pedido>
+        </mat-tab> -->
       </mat-tab-group>
     </div>
-
-    <!-- <nav mat-tab-nav-bar>
-      <a mat-tab-link [routerLink]="['./lacarta']">Carta</a>
-      <a mat-tab-link [routerLink]="['./resumen']">Mi Pedido</a>
-      <a mat-tab-link>Estado</a>
-    </nav>
-    <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
-      <router-outlet></router-outlet>
-      <br>
-    </div> -->
-    <!-- <mat-tab-group backgroundColor="primary" color="accent" class="main-contemt transicion">
-      <nav mat-tab-nav-bar>
-      <mat-tab label="Carta">
-        <a mat-tab-link [routerLink]="/lacarta">Carta</a>
-      </mat-tab>
-      <mat-tab>
-        <ng-template matTabLabel>
-          <span>Mi Pedido</span>
-          <div *ngIf="countTotalItems > 0" class="countItem countTotal animated fadeInUp">
-            {{countTotalItems | number: '2.'}}</div>          
-        </ng-template>        
-      </mat-tab>
-      <mat-tab label="Estado"></mat-tab>
-    </mat-tab-group>
-    <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
-      <router-outlet></router-outlet>      
-      <br>
-    </div> -->
-<!-- </div> -->
+</div>
