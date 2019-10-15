@@ -16,6 +16,7 @@ import { CoreModule } from 'src/app/core/core.module';
 import { DialogItemComponent } from './resumen-pedido/dialog-item/dialog-item.component';
 import { DialogResetComponent } from './resumen-pedido/dialog-reset/dialog-reset.component';
 import { DialogLoadingComponent } from './resumen-pedido/dialog-loading/dialog-loading.component';
+import { BusquedaComponent } from './busqueda/busqueda.component';
 
 
 
@@ -29,7 +30,8 @@ import { DialogLoadingComponent } from './resumen-pedido/dialog-loading/dialog-l
     BuscarItemComponent,
     DialogItemComponent,
     DialogResetComponent,
-    DialogLoadingComponent],
+    DialogLoadingComponent,
+    BusquedaComponent],
   imports: [
     CommonModule,
     FormsModule,

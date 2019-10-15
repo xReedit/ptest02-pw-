@@ -360,3 +360,119 @@ p, span, div {
 	  display: none;
 	}
 }
+
+.xtransicion {
+	transition: all 0.2s ease-in-out;
+}
+
+.xanimated {
+    -webkit-animation-duration: 0.15s;
+    animation-duration: 0.15s;
+    /* -webkit-animation-fill-mode: both;
+    animation-fill-mode: both; */
+}
+
+.xfast {
+    -webkit-animation-duration: 0.3s;
+    animation-duration: 0.3s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
+@keyframes xfadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.xfadeIn {
+    animation-name: xfadeIn;
+}
+
+@keyframes xfadeInDown {
+    from {
+		opacity: 0;
+        margin-top: -20px
+    }
+    to {
+		opacity: 1;
+		margin-top: 0px
+    }
+}
+
+.xfadeInDown {
+	animation-name: xfadeInDown;
+}
+
+@keyframes xwobble {
+	from {
+	  transform: none;
+	}
+  
+	15% {
+	  transform: translate3d(-25%, 0, 0) rotate3d(0, 0, 1, -5deg);
+	}
+  
+	30% {
+	  transform: translate3d(20%, 0, 0) rotate3d(0, 0, 1, 3deg);
+	}
+  
+	45% {
+	  transform: translate3d(-15%, 0, 0) rotate3d(0, 0, 1, -3deg);
+	}
+  
+	60% {
+	  transform: translate3d(10%, 0, 0) rotate3d(0, 0, 1, 2deg);
+	}
+  
+	75% {
+	  transform: translate3d(-5%, 0, 0) rotate3d(0, 0, 1, -1deg);
+	}
+  
+	to {
+	  transform: none;
+	}
+  }
+  
+  .xwobble {
+	animation-name: xwobble;
+  }
+
+/* pulse llamada atencion */
+/* numero de items en pedido */
+.div-spinner {
+	width: 35px;
+	height: 35px;
+	display: inline-flex;
+	position: fixed;
+	margin-left: -9px;
+    margin-top: -9px;
+	/* margin: 100px auto; */
+	background-color: #ffff;
+  
+	border-radius: 100%;  
+	-webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
+	animation: sk-scaleout 1.0s infinite ease-in-out;
+  }
+  
+  @-webkit-keyframes sk-scaleout {
+	0% { -webkit-transform: scale(0) }
+	100% {
+	  -webkit-transform: scale(1.0);
+	  opacity: 0;
+	}
+  }
+  
+  @keyframes sk-scaleout {
+	0% { 
+	  -webkit-transform: scale(0);
+	  transform: scale(0);
+	} 100% {
+	  -webkit-transform: scale(1.0);
+	  transform: scale(1.0);
+	  opacity: 0;
+	}
+  }

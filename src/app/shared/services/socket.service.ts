@@ -8,6 +8,9 @@ import { CartaModel } from 'src/app/modelos/carta.model';
 import { SeccionModel } from 'src/app/modelos/seccion.model';
 import { ItemModel } from 'src/app/modelos/item.model';
 import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
+import { retry } from 'rxjs/operators';
+import { observable } from 'rxjs';
+import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 
 @Injectable({
   providedIn: 'root'
@@ -17,14 +20,38 @@ export class SocketService {
   socket: any;
   item: ItemModel;
   urlSocket = URL_SERVER_SOCKET;
+  isSocketOpen = false;
+
+  private resTipoConsumo: any = [];
 
   constructor() { }
 
   connect() {
-    this.socket = io(this.urlSocket, {a: 1});
+    if ( this.isSocketOpen ) { return; } // para cuando se desconecta y conecta desde el celular
+
+    // produccion
+    // this.socket = io('/', {
+    //   secure: true,
+    //   rejectUnauthorized: false,
+    //   forceNew: false
+    // });
+
+    // desarrollo
+    this.socket = io(this.urlSocket, {
+      secure: true,
+      rejectUnauthorized: false,
+      // forceNew: true
+    });
+
+
+    this.socket.on('finishLoadDataInitial', () => {
+      this.isSocketOpen = true;
+      console.log('conected socket');
+    });
   }
 
   onGetCarta() {
+    // if ( this.isSocketOpen ) { return new Observable(observer => {observer.next(null); }); }
     return new Observable(observer => {
         this.socket.on('getLaCarta', (res: any) => {
         this.objCarta = {
@@ -37,11 +64,27 @@ export class SocketService {
   }
 
   onGetTipoConsumo() {
+    // if ( this.isSocketOpen ) { return new Observable(observer => {observer.next(null); }); }
     return new Observable(observer => {
       this.socket.on('getTipoConsumo', (res: TipoConsumoModel) => {
+        this.resTipoConsumo = res;
         observer.next(res);
       });
     });
+  }
+
+  getDataTipoConsumo(): ItemTipoConsumoModel[] {
+    const resTPC: ItemTipoConsumoModel[] = [];
+    this.resTipoConsumo .map((t: TipoConsumoModel) => {
+      const _objTpcAdd = new ItemTipoConsumoModel();
+      _objTpcAdd.descripcion = t.descripcion;
+      _objTpcAdd.idtipo_consumo = t.idtipo_consumo;
+      _objTpcAdd.titulo = t.titulo;
+
+      resTPC.push(_objTpcAdd);
+    });
+
+    return resTPC;
   }
 
   onItemModificado() {
@@ -94,5 +137,10 @@ export class SocketService {
 
   emit(evento: string, data: any) {
     this.socket.emit(evento, data);
+  }
+
+  closeConnection(): void {
+    this.socket.disconnect();
+    this.isSocketOpen = false;
   }
 }

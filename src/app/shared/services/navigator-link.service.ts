@@ -1,6 +1,6 @@
 // servicio adminsitra el navigator link -- carta y resumen
 import { Injectable } from '@angular/core';
-import { Event as NavigationEvent, Router, NavigationStart, NavigationEnd, NavigationError } from '@angular/router';
+import { Event as NavigationEvent, Router, NavigationStart } from '@angular/router';
 import { filter, bufferCount } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
@@ -104,6 +104,10 @@ export class NavigatorLinkService {
     this.saveHistoryPageActive(this.pageActive, params);
   }
 
+  cerrarSession() {
+    this.router.navigate(['../']);
+  }
+
   // maneja los back
   // si es [mipedido-confirma] -> ['mipedido']
   // si es [mipedido, estado] -> 'carta' - > historial
@@ -141,8 +145,9 @@ export class NavigatorLinkService {
         // this.findAndApplyHistory(_pageActive);
         break;
       case 'carta':
-        _pageActive = '';
-        this.router.navigate(['../']);
+        // _pageActive = '';
+        // this.router.navigate(['../']);
+        _pageActive = 'carta';
         break;
     }
 

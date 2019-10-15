@@ -8,7 +8,7 @@ import { TimerLimitService } from 'src/app/shared/services/timer-limit.service';
 })
 export class ProgressTimeLimitComponent implements OnInit {
 
-  constructor(private timerLimitService: TimerLimitService) { }
+  constructor(public timerLimitService: TimerLimitService) { }
 
   ngOnInit() {
   }

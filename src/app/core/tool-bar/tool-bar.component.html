@@ -1,8 +1,39 @@
 <mat-toolbar color="primary">   
- <mat-toolbar-row>
+ <mat-toolbar-row [ngClass]="{'toolbar-busqueda': isBusqueda}">
+   <ng-container *ngIf="!isBusqueda">   
     <span>Restobar</span>
-    <!-- <span class="example-spacer"></span>
-    <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon"></mat-icon>
-    <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon"></mat-icon> -->
+    <span class="example-spacer"></span>
+    <div style="display: contents;">       
+       <div class="example-ripple-container fs-15" matRipple 
+         [matRippleColor]="rippleColorBusqueda"
+         matRippleCentered="true"
+         matRippleUnbounded="true"
+         matRippleRadius="290"
+         (click)="activaBusqueda()"
+         title="Buscar">
+            <i title="Cerrar Sesion" class="fa fa-search" aria-hidden="true"></i>
+       </div>
+       <div class="example-ripple-container fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor" title="Cerrar Sesion" (click)="cerrarSession()">
+            <i title="Cerrar Sesion" class="fa fa-sign-out" aria-hidden="true"></i>
+       </div>
+       <!-- <button class="noSelect" mat-icon-button title="Cerrar Sesion"  (click)="cerrarSession()">
+            <i title="Cerrar Sesion" class="fa fa-sign-out" aria-hidden="true"></i>
+       </button>       -->
+    </div>
+   </ng-container>
+
+   <ng-container *ngIf="isBusqueda">
+      <div class="d-flex">
+       <div class="example-ripple-container text-success fs-15" style="margin-left: -15px;" matRipple matRippleCentered="true" [matRippleColor]="rippleColorPlomo" title="Cerrar Sesion" (click)="activaBusqueda()">
+            <i title="Cerrar Sesion" class="fa fa-arrow-left" aria-hidden="true"></i>
+       </div>
+       <input type="text" class="text-busqueda" placeholder="Buscar..." #txtBuscar (keyup)="buscarCharAhora(txtBuscar.value)" autofocus>
+       <div [hidden]="txtBuscar.value === ''" class="example-ripple-container text-dark fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColorPlomo"  (click)="clearTextBuqueda()">
+            <i title="Cerrar Sesion" class="fa fa-times" aria-hidden="true"></i>
+       </div>
+      </div>
+   </ng-container>
+   
+    <!-- <button (click)="cerrarSession()">aa</button> -->
  </mat-toolbar-row>
 </mat-toolbar>

@@ -16,7 +16,7 @@ export class DialogItemComponent implements OnInit {
   objItemTipoConsumoSelected: ItemTipoConsumoModel[];
 
   constructor(
-    private miPedidoService: MipedidoService,
+    public miPedidoService: MipedidoService,
     private dialogRef: MatDialogRef<DialogItemComponent>,
     @Inject(MAT_DIALOG_DATA) data: any
   )  {

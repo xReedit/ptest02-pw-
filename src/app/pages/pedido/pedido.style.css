@@ -8,6 +8,7 @@
   padding-right: 15px;
 }
 
+
 .img {
   border: 1px solid #bdbdbd;
   text-align: center;
@@ -78,6 +79,23 @@
 
 }
 
+.p-titulo-item-sin-detalle {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.p-titulo-item-select {
+  padding: 8px;
+  padding-left: 15px;
+  padding-right: 15px;  
+}
+
+.content-titulo-item .titlo-detalle {
+  font-size: 13px;
+  font-family: Ubuntu-Light;
+  color: #616161;
+}
+
 .li-padding-selected .xtitulo {
   background: #e0e0e0;
   /* position: static; */
@@ -95,7 +113,7 @@
 .btn-tbl {
   text-align: center;
   color: white;
-  padding: 5px 12px 5px 12px;
+  padding: 5px 15px 5px 15px;
   font-size: 15px;
 }
 
@@ -114,6 +132,11 @@
 
 .li-padding-selected .flag-stock-dialog {
   display: inline-block;
+}
+
+.li-tachado {
+  text-decoration: line-through;
+  color: red;
 }
 
 .flag-stock-dialog{
@@ -140,3 +163,7 @@
   padding-top: 40px;
 }
 
+.titulo-num-mesa {
+  background: #757575;
+  color: black;
+}

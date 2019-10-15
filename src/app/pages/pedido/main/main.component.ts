@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
+import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 
 @Component({
   selector: 'app-main',
@@ -10,6 +11,8 @@ import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.ser
 export class MainComponent implements OnInit {
 
   isVisibleToolBar = true;
+  isBusqueda = false;
+  isHayCuentaBusqueda = false;
   countTotalItems = 0;
   selectedTab = 0;
 
@@ -18,7 +21,8 @@ export class MainComponent implements OnInit {
 
   constructor(
     private miPedidoService: MipedidoService,
-    private navigatorService: NavigatorLinkService
+    private navigatorService: NavigatorLinkService,
+    private listenStatusService: ListenStatusService
     ) {
     }
 
@@ -26,9 +30,19 @@ export class MainComponent implements OnInit {
     this.navigatorService.setPageActive('carta');
     // this.navigatorService.addLink('carta');
 
+    this.listenStatusService.isBusqueda$.subscribe(res => {
+      this.isBusqueda = res;
+    });
+
+    this.listenStatusService.hayCuentaBusqueda$.subscribe(res => {
+      this.isHayCuentaBusqueda = res;
+    });
+
     this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
       if (res.pageActive === 'carta') {
         this.selectedTab = 0;
+
+        this.resetObjCuenta();
         console.log(this.selectedTab);
       }
     });
@@ -52,6 +66,14 @@ export class MainComponent implements OnInit {
     this.selectedTab = $event.index;
     const _pageActive = $event.tab.textLabel.toLowerCase();
     this.navigatorService.setPageActive(_pageActive);
+    // $event.srcElement.scrollTop = 0;
+    this.isVisibleToolBar = true;
     // this.navigatorService.restorePage(_pageActive);
+  }
+
+  private resetObjCuenta(): void {
+    if ( !this.isHayCuentaBusqueda ) { return; }
+    this.miPedidoService.resetObjMiPedido();
+    this.listenStatusService.setHayCuentaBuesqueda(false);
   }
 }

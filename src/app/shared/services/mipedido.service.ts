@@ -14,6 +14,7 @@ import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { TimerLimitService } from './timer-limit.service';
 import { NavigatorLinkService } from './navigator-link.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormValidRptModel } from 'src/app/modelos/from.valid.rpt.model';
 
 @Injectable({
   providedIn: 'root'
@@ -57,6 +58,21 @@ export class MipedidoService {
     return this.objCarta;
   }
 
+  getObjCartaLibery() {
+    return JSON.parse(JSON.stringify(this.objCarta));
+  }
+
+  // cuando obtenemos la cuenta
+  setObjMiPedido(obj: any): void {
+    this.miPedido = obj;
+    this.miPedidoSource.next(this.miPedido);
+  }
+
+  resetObjMiPedido(): void {
+    this.miPedido = new PedidoModel();
+    this.miPedidoSource.next(this.miPedido);
+  }
+
   setObjCarta(_objCarta: any) {
 
     this.objCarta = _objCarta;
@@ -64,11 +80,13 @@ export class MipedidoService {
     // colocamos la bodega en todas las cartas
     const _carta = this.objCarta.carta;
     const _bodega = this.objCarta.bodega;
-    _carta.map((c: CategoriaModel) => {
-      _bodega.map((bs: SeccionModel) => {
-        c.secciones.push(bs);
+    if ( _bodega ) {
+      _carta.map((c: CategoriaModel) => {
+        _bodega.map((bs: SeccionModel) => {
+          c.secciones.push(bs);
+        });
       });
-    });
+    }
   }
 
   getMiPedido(): PedidoModel {
@@ -133,9 +151,9 @@ export class MipedidoService {
       sumTotalTpcSelected = this.totalItemTpcSelected(itemInList.itemtiposconsumo) || 0;
       itemInList.cantidad_seleccionada = sumTotalTpcSelected;
 
-      if ( item.isporcion !== 'ND' ) {
-        itemInList.cantidad = cantItem;
-      }
+      // if ( item.isporcion !== 'ND' ) {
+      //   itemInList.cantidad = cantItem;
+      // }
     } else {
       this.listItemsPedido.push(item);
     }
@@ -154,8 +172,10 @@ export class MipedidoService {
 
     // actualizar cantidades en item carta
     item = idTpcItemResumenSelect ? this.findItemCarta(item) : item;
+    item = this.findItemCarta(item);
     item.cantidad_seleccionada = sumTotalTpcSelected;
-    if (item.isporcion !== 'ND') { item.cantidad = cantItem; }
+    // if (item.isporcion !== 'ND') { item.cantidad = cantItem; } // la cantidad lo envia el socket
+
     // comunica el cambio de stock en el item carta
     this.itemStockChangeSource.next(item);
 
@@ -166,10 +186,11 @@ export class MipedidoService {
     this.setLocalStoragePedido();
 
     // emitir item modificado
+    item.sumar = sumar;
     this.socketService.emit('itemModificado', item);
 
     console.log('listItemsPedido', this.listItemsPedido);
-    console.log('itemModificado', item);
+    console.log('itemModificado en add', item);
 
     this.playTimerLimit();
   }
@@ -208,6 +229,19 @@ export class MipedidoService {
     console.log('item new add in carta', this.objCarta.carta);
   }
 
+  // actualizar las cantidades despues de connectar
+  // setUpdateCantAfterReconnect( arrObj: any ) {
+  //   arrObj.carta.map((cat: CategoriaModel) => {
+  //     cat.secciones.map((sec: SeccionModel) => {
+  //       sec.items.filter((x: ItemModel) => x.indicaciones )
+  //             .map((i: ItemModel) => {
+  //               const itemCartaUpdate = this.findItemCarta(i);
+  //               itemCartaUpdate.cantidad = i.cantidad;
+  //             });
+  //     });
+  //   });
+  // }
+
   // <---------- Busquedas ------> //
 
   // buscar item en listItemsPedido
@@ -220,6 +254,16 @@ export class MipedidoService {
     return this.listItemsPedido.filter((x: any) => x.iditem === item.iditem)[0];
   }
 
+  // buscar item en carta y limpiar las indicaciones
+  // en nuevo pedido
+  findItemCartaAndClearIndicaciones() {
+    this.objCarta.carta.map((cat: CategoriaModel) => {
+      cat.secciones.map((sec: SeccionModel) => {
+        sec.items.filter((x: ItemModel) => x.indicaciones )
+              .map((x: ItemModel) => x.indicaciones = '');
+      });
+    });
+  }
 
   // buscar item en la carta
   findItemCarta(item: ItemModel): ItemModel {
@@ -234,6 +278,18 @@ export class MipedidoService {
       });
     });
 
+    return rpt;
+  }
+
+  // bucar item en Mi pedido, update indicaciones
+  findOnlyItemMiPedido(itemSearch: ItemModel): ItemModel {
+    let rpt: ItemModel;
+    this.miPedido.tipoconsumo
+      .map((tpc: TipoConsumoModel) => {
+        tpc.secciones.map((sec: SeccionModel) => {
+          rpt = sec.items.filter((i: ItemModel) => i.idcarta_lista === itemSearch.idcarta_lista)[0];
+        });
+      });
     return rpt;
   }
 
@@ -252,6 +308,10 @@ export class MipedidoService {
       if (findSecc) {
         const _rpt = findSecc.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0];
         if (_rpt) {
+
+          // indicaciones
+          _rpt.indicaciones = elItem.indicaciones;
+
           this.addCantItemMiPedido(_rpt, cantSeleccionadaTPC);
           elItem = _rpt;
           // elItem.cantidad_seleccionada = this.addCantItemMiPedido(elItem.cantidad_seleccionada, sumar);
@@ -312,6 +372,37 @@ export class MipedidoService {
     return rpt;
   }
 
+  // busca si en el pedido hay para consumir en el local y si es asi, exigir numero de mesa
+  findMiPedidoIsTPCLLevar(): boolean {
+    let rpt = false;
+    this.miPedido.tipoconsumo
+      .filter(x => x.descripcion.toUpperCase().indexOf('LLEVAR'))
+      .map((t: TipoConsumoModel) => {
+        rpt = t.secciones.filter((s: SeccionModel) => s.count_items > 0)[0] ? true : false;
+      });
+    return rpt;
+  }
+
+  // recorre los tipos de consumo y devuelve un arr de requerimientos
+  findEvaluateTPCMiPedido(): any {
+    const rptArr: FormValidRptModel = new FormValidRptModel();
+
+    let sumTpcReqMesa = 0;
+
+    this.miPedido.tipoconsumo
+    .filter((t: TipoConsumoModel) => t.count_items_seccion > 0)
+    .map((t: TipoConsumoModel) => {
+      if (t.titulo === 'LOCAL') { rptArr.isTpcLocal = true; sumTpcReqMesa++; }
+      if (t.descripcion.toUpperCase().indexOf('LLEVAR') > -1) { rptArr.isTpcSoloLLevar = true; sumTpcReqMesa++; }
+      if (t.descripcion.toUpperCase().indexOf('DELIVERY') > -1) { rptArr.isTpcSoloDelivery = true; }
+
+      rptArr.isRequiereMesa = rptArr.isTpcLocal ? true : false;
+      rptArr.isTpcSoloLLevar = sumTpcReqMesa === 1 && rptArr.isTpcSoloLLevar ? true : false;
+    });
+
+    return rptArr;
+  }
+
   // busca la seccion por idimpresora -- para mandar imprimir
   findSeccionInMipedidoByPrint(idPrintSearch: number): SeccionModel[] {
     let secRpt: SeccionModel[];
@@ -320,6 +411,10 @@ export class MipedidoService {
         secRpt = tpc.secciones.filter((s: SeccionModel) => s.idimpresora === idPrintSearch);
       });
     return secRpt;
+  }
+
+  findIsHayItems(): boolean {
+    return this.setCountTotalImtesPedido() > 0 ? true : false;
   }
 
   // <---------- Busquedas ------> //
@@ -337,9 +432,10 @@ export class MipedidoService {
   }
 
   // <------ storage ---- > ///
-  setCountTotalImtesPedido() {
+  setCountTotalImtesPedido(): number {
     const countTotal = this.miPedido.tipoconsumo.map((t: TipoConsumoModel) => t.count_items_seccion).reduce((a, b) => a + b, 0);
     this.countItemsSource.next(countTotal);
+    return countTotal;
   }
 
   setLocalStorageHora() {
@@ -378,12 +474,14 @@ export class MipedidoService {
   prepareNewPedido(): void {
     // this.updatePedidoFromClear();
     this.resetTpcCarta();
+    this.findItemCartaAndClearIndicaciones();
 
     // valor en blanco para nuevo pedido
     this.storageService.clear('sys::h');
     this.storageService.clear('sys::order');
     this.storageService.clear('sys::order::all');
     this.storageService.clear('sys::tcount'); // timer count
+    this.storageService.clear('sys::tnum'); // timer count
     this.listItemsPedido = [];
     this.miPedido = new PedidoModel();
     this.miPedidoSource.next(this.miPedido);
@@ -393,6 +491,7 @@ export class MipedidoService {
     // console.log('antes new', this.listItemsPedido);
   }
 
+  // reset cantidades en vista tipos de consumo
   private resetTpcCarta(): void {
     this.listItemsPedido.map((item: ItemModel) => {
       item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
@@ -516,7 +615,7 @@ export class MipedidoService {
       this.miPedido.tipoconsumo
         .map((tpc: TipoConsumoModel) => {
           tpc.secciones
-            .filter((z: SeccionModel) => z.idseccion === xSecc_detalle)
+            .filter((z: SeccionModel) => z.idseccion.toString() === xSecc_detalle.toString())
             .map((z: SeccionModel) => {
               z.items
                 .map((n: ItemModel, i) => {
@@ -536,8 +635,8 @@ export class MipedidoService {
                     diferencia = diferencia - cant_item < 0 ? 0 : diferencia - cant_item;
                   }
 
-                  n.precio_total_calc = xPrecio_item_bus; //
-                  n.precio_print = xPrecio_item_bus; //
+                  n.precio_total_calc = parseFloat(xPrecio_item_bus.toString()); //
+                  n.precio_print = parseFloat(xPrecio_item_bus.toString()); //
                   n.cantidad_descontado = cant_item;
                 });
             });
@@ -552,7 +651,7 @@ export class MipedidoService {
     .map((tpc: TipoConsumoModel) => {
       tpc.secciones.map((z: SeccionModel) => {
         sum += z.items
-          .filter((x: ItemModel) => x.idseccion === seccionSearch)
+          .filter((x: ItemModel) => x.idseccion.toString() === seccionSearch.toString())
           .map((x: ItemModel) => x.cantidad_seleccionada)
           .reduce((a, b) => a + b, 0);
       });
@@ -725,16 +824,18 @@ export class MipedidoService {
     this.socketService.onItemModificado().subscribe((res: ItemModel) => {
       const _itemInCarta = this.findItemCarta(res);
       // const _itemInList = this.findItemListPedido(res);
-      _itemInCarta.cantidad = res.cantidad;
+      _itemInCarta.cantidad = parseInt(res.cantidad.toString(), 0);
       this.itemStockChangeSource.next(_itemInCarta);
       // _itemInList.cantidad = res.cantidad;
-      // console.log('socket list', this.listItemsPedido);
+      console.log('socket list', this.listItemsPedido);
     });
 
     this.socketService.onItemResetCant().subscribe((res: ItemModel) => {
       const _itemInCarta = this.findItemCarta(res);
       // const _itemInList = this.findItemListPedido(res);
-      _itemInCarta.cantidad += res.cantidad_reset;
+      // _itemInCarta.cantidad = Number.parseFloat(_itemInCarta.cantidad.toString()) +  Number.parseFloat(res.cantidad_reset.toString());
+      _itemInCarta.cantidad = parseInt(res.cantidad.toString(), 0);
+      console.log('cant reset ', _itemInCarta);
       this.itemStockChangeSource.next(_itemInCarta);
       // _itemInList.cantidad += res.cantidad_reset;
     });

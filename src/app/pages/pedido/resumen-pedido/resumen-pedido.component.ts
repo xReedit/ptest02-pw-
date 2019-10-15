@@ -13,6 +13,11 @@ import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.ser
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { JsonPrintService } from 'src/app/shared/services/json-print.service';
 import { DialogLoadingComponent } from './dialog-loading/dialog-loading.component';
+import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+import { FormValidRptModel } from 'src/app/modelos/from.valid.rpt.model';
+import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
+import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
+import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 
 @Component({
   selector: 'app-resumen-pedido',
@@ -27,6 +32,8 @@ export class ResumenPedidoComponent implements OnInit {
   hayItems = false;
   isVisibleConfirmar = false;
   isVisibleConfirmarAnimated = false;
+  isHayCuentaBusqueda: boolean;
+  numMesaCuenta = '';
   rulesCarta: any;
   rulesSubtoTales: any;
 
@@ -37,7 +44,11 @@ export class ResumenPedidoComponent implements OnInit {
   frmConfirma: any = {};
   frmDelivery: any = {};
 
+  arrReqFrm: FormValidRptModel;
+
   rippleColor = 'rgb(255,238,88, 0.5)';
+
+  objCuenta: any = [];
 
   constructor(
     private miPedidoService: MipedidoService,
@@ -45,6 +56,9 @@ export class ResumenPedidoComponent implements OnInit {
     private navigatorService: NavigatorLinkService,
     private socketService: SocketService,
     private jsonPrintService: JsonPrintService,
+    private infoToken: InfoTockenService,
+    private crudService: CrudHttpService,
+    private listenStatusService: ListenStatusService,
     private dialog: MatDialog,
     ) { }
 
@@ -94,6 +108,10 @@ export class ResumenPedidoComponent implements OnInit {
       this._miPedido = res;
       this.pintarMiPedido();
       console.log(this._miPedido);
+    });
+
+    this.listenStatusService.hayCuentaBusqueda$.subscribe(res => {
+      this.isHayCuentaBusqueda = res;
     });
   }
 
@@ -163,6 +181,8 @@ export class ResumenPedidoComponent implements OnInit {
 
       this.isVisibleConfirmar = true;
       this.isVisibleConfirmarAnimated = true;
+
+      this.checkTiposDeConsumo();
       this.checkIsRequierMesa();
       this.checkIsDelivery();
 
@@ -181,9 +201,9 @@ export class ResumenPedidoComponent implements OnInit {
     // header //
 
     const _p_header = {
-      m: this.frmConfirma.mesa.toString().padStart(2, '0') || '00',
+      m: this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00',
       r: this.frmConfirma.referencia || '',
-      nom_us: '',
+      nom_us: this.infoToken.getInfoUs().usuario,
       delivery: this.frmConfirma.delivery ? 1 : 0,
       reservar: this.frmConfirma.reserva ? 1 : 0,
       solo_llevar: this.frmConfirma.solo_llevar ? 1 : 0,
@@ -241,21 +261,119 @@ export class ResumenPedidoComponent implements OnInit {
 
   }
 
-  private checkIsRequierMesa(): void {
-    const isTPCLocal = this.miPedidoService.findMiPedidoIsTPCLocal();
+  private checkTiposDeConsumo(): void {
+    this.arrReqFrm = <FormValidRptModel>this.miPedidoService.findEvaluateTPCMiPedido();
+    this.isRequiereMesa = this.arrReqFrm.isRequiereMesa;
+    this.frmConfirma.solo_llevar = this.arrReqFrm.isTpcSoloDelivery ? false : this.arrReqFrm.isTpcSoloLLevar;
+    this.frmConfirma.delivery = this.arrReqFrm.isTpcSoloDelivery;
+  }
+
+  checkIsRequierMesa(): void {
+    // const arrReqFrm = <FormValidRptModel>this.miPedidoService.findEvaluateTPCMiPedido();
+    // const isTPCLocal = arrReqFrm.isTpcLocal;
+    // this.isRequiereMesa = arrReqFrm.isRequiereMesa;
+
     const isMesaValid = this.frmConfirma.mesa ? this.frmConfirma.mesa !== '' ? true : false : false;
-    this.isRequiereMesa = isTPCLocal;
-    this.isRequiereMesa = !isMesaValid && !this.frmConfirma.reserva;
+    this.isRequiereMesa = this.arrReqFrm.isRequiereMesa;
+
+    // this.isRequiereMesa = isTPCLocal;
+    this.isRequiereMesa = this.isRequiereMesa && (!isMesaValid && !this.frmConfirma.reserva);
+
   }
 
   private checkIsDelivery() {
     this.isDelivery = this.miPedidoService.findMiPedidoIsTPCDelivery();
-    this.frmConfirma.delivery = this.isDelivery;
+    // this.frmConfirma.delivery = this.isDelivery;
   }
 
   checkDataDelivery($event: any) {
     this.isDeliveryValid = $event.formIsValid;
     this.frmDelivery = $event.formData;
+  }
+
+  xLoadCuentaMesa(mesa: string): void {
+    this.isHayCuentaBusqueda = null;
+    this.numMesaCuenta = mesa;
+    const datos = { mesa: mesa };
+    console.log('mesa a buscar', datos);
+
+    const _miPedidoCuenta: PedidoModel = new PedidoModel();
+    const c_tiposConsumo: TipoConsumoModel[] = [];
+    this.crudService.postFree(datos, 'pedido', 'lacuenta').subscribe((res: any) => {
+
+      // si se encontro cuenta
+      if (res.data.length === 0) {
+        this.isHayCuentaBusqueda = false;
+        this.listenStatusService.setHayCuentaBuesqueda(false);
+        return; }
+
+      this.isHayCuentaBusqueda = true;
+      this.listenStatusService.setHayCuentaBuesqueda(true);
+      // tipo consumo
+      res.data.map( (tp: any) => {
+        let hayTpc = c_tiposConsumo.filter(x => x.idtipo_consumo === tp.idtipo_consumo)[0];
+        if (!hayTpc) {
+          hayTpc = new TipoConsumoModel;
+          hayTpc.descripcion = tp.des_tp;
+          hayTpc.idtipo_consumo = parseInt(tp.idtipo_consumo, 0);
+          c_tiposConsumo.push(hayTpc);
+        }
+      });
+
+      // secciones
+      c_tiposConsumo.map((tp: TipoConsumoModel) => {
+        res.data
+          .filter((_tp: any) => _tp.idtipo_consumo === tp.idtipo_consumo)
+          .map((_s: any, i) => {
+            let haySeccion = tp.secciones.filter((s: SeccionModel) => s.idseccion = _s.idseccion)[0];
+            if (!haySeccion) {
+              haySeccion = new SeccionModel;
+              haySeccion.idseccion = parseInt(_s.idseccion.toString(), 0);
+              haySeccion.des = _s.des_seccion;
+              haySeccion.sec_orden = _s.sec_orden;
+              haySeccion.ver_stock_cero = 0;
+              tp.count_items_seccion = i + 1;
+              tp.secciones.push(haySeccion);
+            }
+          });
+      });
+
+      // items
+      c_tiposConsumo.map((tp: TipoConsumoModel) => {
+        tp.secciones.map((s: SeccionModel) => {
+          res.data
+          .filter((_tp: any) => _tp.idtipo_consumo === tp.idtipo_consumo && _tp.idseccion === s.idseccion)
+          .map((_i: any, i) => {
+            const hayItem = new ItemModel;
+            hayItem.cantidad_seleccionada = _i.cantidad;
+            hayItem.des = _i.descripcion;
+            hayItem.des = _i.descripcion;
+            hayItem.detalles = '';
+            hayItem.iditem = _i.iditem;
+            hayItem.idcarta_lista = _i.idcarta_lista;
+            hayItem.idseccion = _i.idseccion;
+            hayItem.isalmacen = _i.isalmacen;
+            hayItem.precio = _i.punitario;
+            hayItem.precio_print = _i.ptotal;
+            hayItem.precio_total = _i.ptotal;
+            hayItem.procede = _i.procede === '0' ? 1 : 0;
+            hayItem.seccion = _i.des_seccion;
+            s.count_items = i + 1;
+            s.items.push(hayItem);
+          });
+        });
+      });
+
+      console.log('cuenta de mesa', res);
+      console.log('c_tiposConsumo', c_tiposConsumo);
+
+      _miPedidoCuenta.tipoconsumo = c_tiposConsumo;
+      this.miPedidoService.setObjMiPedido(_miPedidoCuenta);
+      this._miPedido = this.miPedidoService.getMiPedido();
+
+      console.log('this._miPedido', this._miPedido);
+
+    });
   }
 
 }
