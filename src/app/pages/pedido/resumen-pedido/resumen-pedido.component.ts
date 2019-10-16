@@ -100,12 +100,19 @@ export class ResumenPedidoComponent implements OnInit {
   }
 
   pintarMiPedido() {
-    this.miPedidoService.validarReglasCarta(this.rulesCarta);
+    if (!this.isHayCuentaBusqueda) {
+      this.miPedidoService.validarReglasCarta(this.rulesCarta);
+    }
+
     this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
     this.hayItems = this._arrSubtotales[0].importe > 0 ? true : false;
   }
 
   listenMiPedido() {
+    this.miPedidoService.countItemsObserve$.subscribe((res) => {
+      this.hayItems = res > 0 ? true : false;
+    });
+
     this.miPedidoService.miPedidoObserver$.subscribe((res) => {
       this._miPedido = res;
       this.pintarMiPedido();
@@ -163,6 +170,10 @@ export class ResumenPedidoComponent implements OnInit {
     });
 
     this.newFomrConfirma();
+  }
+
+  nuevoPedidoFromCuenta(): void {
+    this.navigatorService.setPageActive('carta');
   }
 
   private backConfirmacion(): void {
@@ -325,11 +336,19 @@ export class ResumenPedidoComponent implements OnInit {
       });
 
       // secciones
+
+
+      // const _listSec = res.data.reduce(function(rv, x) {
+      //     (rv[x['idseccion']] = rv[x['idseccion']] || []).push(x);
+      //     return rv;
+      //   }, {});
+
+
       c_tiposConsumo.map((tp: TipoConsumoModel) => {
         res.data
           .filter((_tp: any) => _tp.idtipo_consumo === tp.idtipo_consumo)
-          .map((_s: any, i) => {
-            let haySeccion = tp.secciones.filter((s: SeccionModel) => s.idseccion = _s.idseccion)[0];
+          .map((_s: any, i: number) => {
+            let haySeccion = tp.secciones.filter((s: SeccionModel) => s.idseccion.toString() === _s.idseccion.toString())[0];
             if (!haySeccion) {
               haySeccion = new SeccionModel;
               haySeccion.idseccion = parseInt(_s.idseccion.toString(), 0);
@@ -346,20 +365,19 @@ export class ResumenPedidoComponent implements OnInit {
       c_tiposConsumo.map((tp: TipoConsumoModel) => {
         tp.secciones.map((s: SeccionModel) => {
           res.data
-          .filter((_tp: any) => _tp.idtipo_consumo === tp.idtipo_consumo && _tp.idseccion === s.idseccion)
-          .map((_i: any, i) => {
+          .filter((_tp: any) => _tp.idtipo_consumo.toString() === tp.idtipo_consumo.toString() && _tp.idseccion.toString() === s.idseccion.toString())
+          .map((_i: any, i: number) => {
             const hayItem = new ItemModel;
-            hayItem.cantidad_seleccionada = _i.cantidad;
-            hayItem.des = _i.descripcion;
             hayItem.des = _i.descripcion;
             hayItem.detalles = '';
             hayItem.iditem = _i.iditem;
             hayItem.idcarta_lista = _i.idcarta_lista;
             hayItem.idseccion = _i.idseccion;
             hayItem.isalmacen = _i.isalmacen;
+            hayItem.cantidad_seleccionada = parseInt(_i.cantidad, 0);
             hayItem.precio = _i.punitario;
-            hayItem.precio_print = _i.ptotal;
-            hayItem.precio_total = _i.ptotal;
+            hayItem.precio_print = parseFloat(_i.ptotal);
+            hayItem.precio_total = parseFloat(_i.ptotal);
             hayItem.procede = _i.procede === '0' ? 1 : 0;
             hayItem.seccion = _i.des_seccion;
             s.count_items = i + 1;

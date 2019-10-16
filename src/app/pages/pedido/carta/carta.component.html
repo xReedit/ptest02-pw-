@@ -155,8 +155,15 @@
                   <div class="text-right d-flex">
                     <div class="flag-stock text-center estado-color-{{getEstadoStockItem(item.cantidad)}}">
                       <div [ngClass]="{'xanimated xwobble': item.cantidad===0}">
+                                              
                         <span class="fs-9">Stock</span><br>
-                        <span class="fs-15">{{item.cantidad}}</span>
+                        <ng-container *ngIf="item.cantidad != 'ND'; else elseTemplate">
+                            <span class="fs-15">{{item.cantidad}}</span>
+                        </ng-container>
+                        <ng-template #elseTemplate>
+                            <span class="fs-15"><i class="fa fa-arrow-circle-up" aria-hidden="true"></i></span>
+                        </ng-template>  
+
                       </div>
                     </div>
                     <span>{{item.precio | number:'0.2' }}</span>
@@ -191,8 +198,8 @@
                           <td>
                             <div class="d-flex float-right">
                               <span [hidden]="tp.cantidad_seleccionada === 0" class="fs-19 pr-2">{{tp.cantidad_seleccionada}}</span>
-                              <div class="btn-tbl bg-danger xCursor" matRipple (click)="addItemToPedido(tp, 1)">-</div>
-                              <div class="btn-tbl bg-success xCursor" matRipple (click)="addItemToPedido(tp, 0)">+</div>
+                              <div class="btn-tbl bg-danger xCursor" matRipple (click)="addItemToPedidoFromBusqueda(tp, 1)">-</div>
+                              <div class="btn-tbl bg-success xCursor" matRipple (click)="addItemToPedidoFromBusqueda(tp, 0)">+</div>
                             </div>
                           </td>
                         </tr>

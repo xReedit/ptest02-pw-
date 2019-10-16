@@ -44,7 +44,16 @@
                     </li>
                 </ul>
             </div>        
-            <br><br><br><br><br><br>
+            <br>
+            
+            <ng-container *ngIf="isHayCuentaBusqueda">
+                <div class="text-center">                    
+                    <button mat-flat-button color="accent" (click)="nuevoPedidoFromCuenta()">Nuevo Pedido</button>
+                </div>
+            </ng-container>
+            <br>
+            <br><br>
+            <br><br>
         </div>
     <!-- </div> -->
 

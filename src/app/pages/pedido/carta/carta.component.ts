@@ -176,6 +176,18 @@ export class CartaComponent implements OnInit {
 
   }
 
+  private getItems_seccion_from_busqueda(_itemBus: any): any {
+    const _seccionBus = {
+      des: _itemBus.seccion,
+      idseccion: _itemBus.idseccion,
+      idimpresora: _itemBus.idimpresora,
+      sec_orden: _itemBus.sec_orden,
+      ver_stock_cero: _itemBus.ver_stock_cero,
+    };
+
+    this.miPedidoService.setObjSeccionSeleced(<SeccionModel>_seccionBus);
+  }
+
 
   /// busqueda
   loadItemsBusqueda() {
@@ -190,6 +202,9 @@ export class CartaComponent implements OnInit {
         s.items.map((i: ItemModel) => {
           _itemFind = i;
           _itemFind.seccion = s.des;
+          _itemFind.idimpresora = s.idimpresora;
+          _itemFind.sec_orden = s.sec_orden;
+          _itemFind.ver_stock_cero = s.ver_stock_cero;
           _itemFind.selected = false;
           _itemFind.visible = true;
           this.objCartaBus.push(_itemFind);
@@ -243,6 +258,14 @@ export class CartaComponent implements OnInit {
   }
 
   addItemToPedido(tpcSelect: ItemTipoConsumoModel, suma: number): void {
+    this.miPedidoService.addItem2(tpcSelect, this.itemSelected, suma);
+  }
+
+  addItemToPedidoFromBusqueda(tpcSelect: ItemTipoConsumoModel, suma: number): void {
+    // setea la seccion del item
+    this.getItems_seccion_from_busqueda(this.itemSelected);
+
+    // agrega el item
     this.miPedidoService.addItem2(tpcSelect, this.itemSelected, suma);
   }
 

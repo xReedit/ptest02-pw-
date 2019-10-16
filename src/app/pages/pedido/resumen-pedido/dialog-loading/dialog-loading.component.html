@@ -1,4 +1,13 @@
 <div class="text-center">
-  <span class="fw-100 fs-15">Enviando...</span>
-  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  <!-- <ng-container *ngIf="isSusccess; else elseTemplate"> -->
+      <div class="text-center" class="animated fadeInDown" *ngIf="isSusccess">
+        <img class="img-success" src="assets/images/success.gif" alt="..">
+      </div>    
+  <!-- </ng-container> -->
+  <!-- <ng-template #elseTemplate> -->
+    <div *ngIf="!isSusccess">
+      <span class="fw-100 fs-20">Enviando...</span>  
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </div>
+  <!-- </ng-template> -->
 </div>

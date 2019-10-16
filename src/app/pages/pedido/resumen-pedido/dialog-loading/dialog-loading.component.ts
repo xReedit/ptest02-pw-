@@ -8,6 +8,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 })
 export class DialogLoadingComponent implements OnInit {
 
+  isSusccess = false;
   constructor(
     private dialogRef: MatDialogRef<DialogLoadingComponent>
     ) {
@@ -15,7 +16,12 @@ export class DialogLoadingComponent implements OnInit {
 
   ngOnInit() {
     setTimeout(() => {
-      this.dialogRef.close();
+      // this.dialogRef.close();
+      this.isSusccess = true;
+      setTimeout(() => {
+        // this.isSusccess = false;
+        this.dialogRef.close();
+      }, 2500);
     }, 1200);
   }
 
