@@ -131,11 +131,10 @@
             #txt_mesa_cuenta
             >
         </mat-form-field>
-    </div>    
-    <br>
+    </div>        
+    <span class="fs-14 font-weight-bold text-danger animated flash" [hidden]="!msjErr">No se encontro cuenta de esta mesa.</span>
+    <br><br>
     <button mat-flat-button color="primary" (click)="xLoadCuentaMesa(txt_mesa_cuenta.value)">Listo, buscar</button>
-    <br>
-    <p class="text-danger" [hidden]="isHayCuentaBusqueda">No se encontro cuenta</p>
     <br><br><br>
 </div>
 

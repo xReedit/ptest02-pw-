@@ -37,6 +37,8 @@ export class ResumenPedidoComponent implements OnInit {
   rulesCarta: any;
   rulesSubtoTales: any;
 
+  msjErr = false;
+
   isReserva = false;
   isRequiereMesa = false;
   isDelivery = false;
@@ -292,7 +294,8 @@ export class ResumenPedidoComponent implements OnInit {
   }
 
   xLoadCuentaMesa(mesa: string): void {
-    this.isHayCuentaBusqueda = null;
+    this.isHayCuentaBusqueda = false;
+    this.msjErr = false;
     this.numMesaCuenta = mesa;
     const datos = { mesa: mesa };
     console.log('mesa a buscar', datos);
@@ -304,6 +307,7 @@ export class ResumenPedidoComponent implements OnInit {
       // si se encontro cuenta
       if (res.data.length === 0) {
         this.isHayCuentaBusqueda = false;
+        this.msjErr = true;
         this.listenStatusService.setHayCuentaBuesqueda(false);
         return; }
 

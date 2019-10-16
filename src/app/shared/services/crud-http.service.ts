@@ -106,6 +106,19 @@ export class CrudHttpService {
         return this.httpClient.post<any>(url, { headers: header });
     }
 
+    refreshToken() {
+        const _jwt = this.infoTockenService.getInfoUs();
+        const _data = {
+            nomusuario: _jwt.usuario,
+            pass: atob(_jwt.pass)
+          };
+
+        const url = this.setUrl('login-usuario-autorizado', '');
+        const header = this.getHeaderHttpClientFormNoToken();
+
+        return this.httpClient.post<any>(url, _data , { headers: header });
+    }
+
 
 
 

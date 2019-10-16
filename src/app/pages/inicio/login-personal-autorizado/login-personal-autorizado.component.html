@@ -1,12 +1,10 @@
 <div class="text-center">
-    <div class="text-center m-5">
-      <img src="assets/images/papaya_text.png" width="200px">
-      <div>
-        <h3>Personal Autorizado</h3>
-      </div>      
-      <hr>
+    <img src="assets/images/login-user.gif" alt=".."  width="95%">
+    <div class="text-center ml-5 mr-5">
+      <img src="assets/images/papaya_text.png" width="190px">
+      <p class="fs-16 fw-100 text-secondary">Personal Autorizado</p>            
 
-      <form (ngSubmit)="logear()" #frmpass="ngForm">
+      <form class="content-login-us" (ngSubmit)="logear()" #frmpass="ngForm">
         <div class="row ">
           <div class="col-sm-6">
             <mat-form-field class="w-100">
@@ -28,7 +26,8 @@
 
         <hr>
         <div class="text-center">
-          <button mat-flat-button [disabled]="!frmpass.valid">Listo, Ingresar</button>
+          <!-- <button mat-flat-button [disabled]="!frmpass.valid">Listo, Ingresar</button> -->
+          <button mat-flat-button color="primary" [disabled]="!frmpass.valid">Listo, Ingresar</button>
         </div>
       </form>
 
