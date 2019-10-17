@@ -22,5 +22,6 @@ export class ItemModel {
     detalles: string; // descripcion en detalle
     selected: boolean;
     itemtiposconsumo: ItemTipoConsumoModel[] = []; // para la vista -> listItemsPedido
+    seccion: string;
     sumar: boolean; // si suma o resta en el back end -- el back envia las cantidadees
 }
