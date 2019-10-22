@@ -15,6 +15,7 @@ import { TimerLimitService } from './timer-limit.service';
 import { NavigatorLinkService } from './navigator-link.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormValidRptModel } from 'src/app/modelos/from.valid.rpt.model';
+import { SubItem } from 'src/app/modelos/subitems.model';
 
 @Injectable({
   providedIn: 'root'
@@ -202,11 +203,37 @@ export class MipedidoService {
   // cantidad seleccionada y precio
   addCantItemMiPedido(elItem: ItemModel, cantidad_seleccionada: number) {
     const cantSeleccionadaTPC = cantidad_seleccionada;
-    const precioTotal = cantSeleccionadaTPC * parseFloat(elItem.precio);
+    const precioTotal = cantSeleccionadaTPC * parseFloat(elItem.precio_unitario);
+
+    // total subitems
+    // sumar el total
+    const totalSubItems = elItem.subitems_selected.map((subIt: SubItem) => subIt.precio * subIt.cantidad_seleccionada).reduce((a, b) => a + b , 0);
+    // precioTotal += totalSubItems;
+
     elItem.cantidad_seleccionada = cantSeleccionadaTPC;
-    elItem.precio_total = precioTotal;
+    elItem.precio_total = precioTotal + totalSubItems;
     // elItem.precio_total_calc = precioTotal;
-    elItem.precio_print = precioTotal;
+    elItem.precio_print = precioTotal + totalSubItems;
+  }
+
+  // agrega a subitem_selected -> lista de subitems seleccionados
+  private addItemSubItemMiPedido(elItem: ItemModel): void {
+    if (elItem.subitems) {
+      let _subItemExist: SubItem;
+      elItem.subitems.filter((x: SubItem) => x.selected).map((subItem: SubItem) => {
+        elItem.subitems_selected = elItem.subitems_selected ? elItem.subitems_selected : [];
+        _subItemExist = elItem.subitems_selected.filter((subIt: SubItem) => subIt === subItem)[0];
+        if ( _subItemExist ) {
+          _subItemExist.cantidad_seleccionada++;
+          // _subItemExist.precio += subItem.precio;
+        } else {
+          subItem.cantidad_seleccionada = 1;
+          elItem.subitems_selected.push(subItem);
+        }
+      });
+
+
+    }
   }
 
   // del socket nuevo item from monitoreo stock
@@ -297,6 +324,7 @@ export class MipedidoService {
   findItemMiPedido(_tpc: any, _seccion: SeccionModel, item: ItemModel, sumar: boolean): ItemModel {
     let rpt: ItemModel;
     // let elItem = item;
+    this.addItemSubItemMiPedido(item);
     let elItem = <ItemModel>JSON.parse(JSON.stringify(item));
     const cantSeleccionadaTPC = _tpc.cantidad_seleccionada;
     elItem.itemtiposconsumo = [];
@@ -312,13 +340,22 @@ export class MipedidoService {
           // indicaciones
           _rpt.indicaciones = elItem.indicaciones;
 
+          // actualiza subitems_selected
+          _rpt.subitems_selected = [];
+          _rpt.subitems_selected = elItem.subitems_selected;
+
           this.addCantItemMiPedido(_rpt, cantSeleccionadaTPC);
+
           elItem = _rpt;
+
+          // this.addItemSubItemMiPedido(elItem);
           // elItem.cantidad_seleccionada = this.addCantItemMiPedido(elItem.cantidad_seleccionada, sumar);
           rpt = elItem;
         } else {
           // si no existe item lo agrega
           // elItem.cantidad_seleccionada = 0;
+
+          // this.addItemSubItemMiPedido(elItem);
           findSecc.items.push(elItem);
           rpt = elItem;
         }
@@ -334,6 +371,7 @@ export class MipedidoService {
     } else {
       // si no existe tpc add
       // elItem.cantidad_seleccionada = 0;
+      // this.addItemSubItemMiPedido(elItem);
       const _newSeccion = <SeccionModel>JSON.parse(JSON.stringify(_seccion));
       _newSeccion.items = [];
       _newSeccion.items.push(elItem);
@@ -850,7 +888,7 @@ export class MipedidoService {
 
     this.socketService.onGetDatosSede().subscribe((res: any) => {
       this.max_minute_order = res[0].datossede[0].pwa_time_limit;
-      this.timerLimitService.maxTime = this.max_minute_order * 60;
+      this.timerLimitService.maxTime = this.max_minute_order * 600;
     });
 
     this.timerLimitService.countdown$.subscribe((countTime: number) => {

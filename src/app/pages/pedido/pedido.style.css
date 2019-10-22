@@ -167,3 +167,32 @@
   background: #757575;
   color: black;
 }
+
+/* subitems */
+.subitem-content {
+  display: inline-flex;
+  width: 100%;
+  padding-bottom: 20px;
+  background: lightgoldenrodyellow;
+  padding: 5px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  border-top: 1px solid #bdbdbd;
+  border-bottom: 1px solid #bdbdbd;
+}
+
+.subitem-content .xoption {
+  display: inline-flex;  
+  padding-right: 8px;
+}
+
+.subitem-content .xoption .agotado {
+  text-decoration: line-through;
+  color: palevioletred;
+}
+/* 
+.subitem-content .xoption .precio {
+  position: relative;
+  right: -50%;
+} */

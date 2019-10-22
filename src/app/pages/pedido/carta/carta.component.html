@@ -99,8 +99,17 @@
                     <div class="pl-3 pr-3">
                       <span class="fs-14 text-secondary">{{ item.detalles | lowercase }}</span>
                     </div>
-                    <hr>                    
+                    <hr [hidden]="item.subitems">                    
                   </ng-template>
+
+                  <!-- subitems -->                  
+                  <ng-container *ngIf="item.subitems">
+                    <div class="subitem-content pl-3 pr-3 pt-2">
+                      <div class="xoption w-50 fs-13" *ngFor="let subitem of item.subitems; let i = index">                      
+                          <mat-checkbox (change)="addSubItem(subitem)" [(ngModel)]="subitem.selected" >{{subitem.des | lowercase}} <span *ngIf="subitem.precio != 0" class="fs-11 text-secondary"> (+ {{subitem.precio | number:'0.2'}})</span></mat-checkbox>
+                      </div>                   
+                    </div>
+                  </ng-container>
                   
                   <!-- especificaciones -->
                   <div class="pl-3 pr-3">
@@ -182,6 +191,20 @@
                       </div>
                       <hr>                    
                     </ng-template>
+
+                    <!-- subitems -->
+                    <p>subtitems</p>
+                    <ng-container *ngIf="item.subitems">
+                      <div class="d-inline-flex">
+                        <div *ngFor="let subitem of item.subitems">
+                          <div>
+                            <p>{{subitem.des}} <span *ngIf="subitem.precio != 0" class="fs-10 text-secondary"> (+ {{subitem.precio}})</span></p>
+                            <p *ngIf="subitem.cantidad != 'ND'"> {{subitem.cantidad}}</p>
+                          </div>
+                        </div>                    
+                      </div>
+                    </ng-container>
+                    
                     
                     <!-- especificaciones -->
                     <div class="pl-3 pr-3">

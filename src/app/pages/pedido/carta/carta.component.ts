@@ -11,6 +11,7 @@ import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { ReglascartaService } from 'src/app/shared/services/reglascarta.service';
 import { JsonPrintService } from 'src/app/shared/services/json-print.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
+import { SubItem } from 'src/app/modelos/subitems.model';
 
 
 @Component({
@@ -308,6 +309,27 @@ export class CartaComponent implements OnInit {
       _charConcat = _charConcat.toLowerCase();
       i.visible = _charConcat.indexOf(charFind) > -1 ? true : false;
     });
+  }
+
+  addSubItem(subitem: SubItem): void {
+    // subitem.selected = !subitem.selected;
+
+    // if ( subitem.selected ) {
+      const listSubItemChecked = this.itemSelected.subitems.filter((x: SubItem) => x.selected);
+      let countSelectReq = listSubItemChecked.length;
+
+      // adicional el importe al precio del item
+      this.itemSelected.precio = this.itemSelected.precio_unitario + subitem.precio;
+      // this.itemSelected.precio_total = parseFloat(this.itemSelected.precio);
+
+
+      listSubItemChecked.map( (_subItem: SubItem, i: number) =>  {
+        if (countSelectReq > this.itemSelected.subitem_cant_select && _subItem !== subitem) {
+          _subItem.selected = false;
+          countSelectReq--;
+        }
+      });
+    // }
   }
 
 }
