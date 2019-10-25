@@ -1,5 +1,6 @@
 import { ItemTipoConsumoModel } from './item.tipoconsumo.model';
 import { SubItem } from './subitems.model';
+import { SubItemsView } from './subitems.view.model';
 
 export class ItemModel {
     iditem: number;
@@ -10,7 +11,7 @@ export class ItemModel {
     imprimir_comanda: number;
     procede: number; // tabla de donde descontar 0 = producto 1 = cartalista
     precio: string; // precio unitario
-    precio_unitario: string; // para calculo del precio item + precio subitem 
+    precio_unitario: string; // para calculo del precio item + precio subitem
     precio_print: number; // precio que se muestra
     precio_total_calc: number; // preciounitario * cantidad // para calular reglas carta
     precio_total = 0; // preciounitario * cantidad
@@ -29,5 +30,6 @@ export class ItemModel {
     subitem_required_select: number;
     subitem_cant_select: number;
     subitems_selected: SubItem[] = []; // subitems seleccionados
+    subitems_view: SubItemsView[] = []; // subitems vista y guardar pedido detalle
     sumar: boolean; // si suma o resta en el back end -- el back envia las cantidadees
 }

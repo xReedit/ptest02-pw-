@@ -17,6 +17,7 @@ import { DialogItemComponent } from './resumen-pedido/dialog-item/dialog-item.co
 import { DialogResetComponent } from './resumen-pedido/dialog-reset/dialog-reset.component';
 import { DialogLoadingComponent } from './resumen-pedido/dialog-loading/dialog-loading.component';
 import { BusquedaComponent } from './busqueda/busqueda.component';
+import { DialogSubitemRemoveComponent } from './resumen-pedido/dialog-subitem-remove/dialog-subitem-remove.component';
 
 
 
@@ -31,6 +32,7 @@ import { BusquedaComponent } from './busqueda/busqueda.component';
     DialogItemComponent,
     DialogResetComponent,
     DialogLoadingComponent,
+    DialogSubitemRemoveComponent,
     BusquedaComponent],
   imports: [
     CommonModule,
@@ -44,6 +46,6 @@ import { BusquedaComponent } from './busqueda/busqueda.component';
     DialogResetComponent,
     DialogLoadingComponent
   ],
-  entryComponents: [DialogItemComponent, DialogResetComponent, DialogLoadingComponent]
+  entryComponents: [DialogItemComponent, DialogResetComponent, DialogLoadingComponent, DialogSubitemRemoveComponent]
 })
 export class PedidoModule { }

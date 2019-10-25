@@ -275,10 +275,10 @@ export class CartaComponent implements OnInit {
     this.itemSelected.indicaciones = _indicaciones;
     itemCarta.indicaciones = _indicaciones;
 
-    const _itemInMipedido = this.miPedidoService.findOnlyItemMiPedido(itemCarta);
-    if ( _itemInMipedido ) {
-      _itemInMipedido.indicaciones = _indicaciones;
-    }
+    // const _itemInMipedido = this.miPedidoService.findOnlyItemMiPedido(itemCarta);
+    // if ( _itemInMipedido ) {
+    //   _itemInMipedido.indicaciones = _indicaciones;
+    // }
   }
 
   getEstadoStockItem(stock: string): string {

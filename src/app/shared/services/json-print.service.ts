@@ -58,6 +58,9 @@ export class JsonPrintService {
                   xArrayBodyPrint[indexP][i.iditem].des_seccion = s.des;
                   xArrayBodyPrint[indexP][i.iditem].cantidad = i.cantidad_seleccionada.toString().padStart(2, '0');
                   xArrayBodyPrint[indexP][i.iditem].precio_print = parseFloat(i.precio_print.toString()).toFixed(2);
+                  if ( !i.subitems_view ) {
+                    xArrayBodyPrint[indexP][i.iditem].subitems_view = null;
+                  }
                 });
               });
               // indexP++;

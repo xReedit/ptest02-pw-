@@ -26,19 +26,19 @@
                                             <div class="fw-100">{{item.precio_print | number:'0.2' }}</div>
                                         </li>
                                             <!-- subitems -->
-                                            <ng-container *ngIf="item.subitems_selected">                                                
+                                            <ng-container *ngIf="item.subitems_view">                                                
                                                 <div class="subitem-content-resumen">
                                                     <ul class="w-100">                                                        
-                                                        <div *ngFor="let subitem of item.subitems_selected">                                                        
-                                                            <li class="d-flex div-plr li-item fw-100 fs-13 text-secondary" matRipple [matRippleColor]="rippleColor">
+                                                        <div *ngFor="let subitem of item.subitems_view">                                                        
+                                                            <li class="d-flex div-plr li-item fw-100 fs-13 text-secondary" matRipple [matRippleColor]="rippleColor" (click)="openDlgSubItem(tpc, seccion, item, subitem)">
                                                                     <div class="pl-4 pr-2">{{subitem.cantidad_seleccionada | number: '2.'}}</div>
-                                                                    <div class="w-100">{{subitem.des | lowercase}} </div>
+                                                                    <div class="w-100">{{subitem.des | lowercase}} <span [hidden]="subitem.indicaciones === ''">( {{subitem.indicaciones}} )</span></div>
                                                                     <div class="fs-11 text-right" style="width: 45px;">
                                                                         <ng-container *ngIf="subitem.precio === 0; else elseTemplate">
                                                                             .
                                                                         </ng-container>
                                                                         <ng-template #elseTemplate>
-                                                                            + {{subitem.precio * subitem.cantidad_seleccionada | number:'0.2' }}
+                                                                            + {{subitem.precio | number:'0.2' }}
                                                                         </ng-template>
                                                                         
                                                                     </div>

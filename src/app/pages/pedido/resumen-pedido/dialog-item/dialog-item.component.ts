@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ItemModel } from 'src/app/modelos/item.model';
 import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
+import { SubItem } from 'src/app/modelos/subitems.model';
 
 
 @Component({
@@ -38,6 +39,11 @@ export class DialogItemComponent implements OnInit {
         this.item.cantidad = res.cantidad;
       }
     });
+
+    this.item.subitems_selected = null;
+    this.item.subitems_view = null;
+    this.item.subitems.map((sub: SubItem) => sub.selected = false);
+
   }
 
   getCantidadItemCarta(): number {
@@ -53,8 +59,29 @@ export class DialogItemComponent implements OnInit {
   }
 
   addItemToPedido(tpcSelect: ItemTipoConsumoModel, suma: number): void {
-    this.miPedidoService.addItem2(tpcSelect, this.item, suma, this.idTpcItemResumenSelect);
+    console.log('restar desde dialogitem');
+    this.miPedidoService.addItem2(tpcSelect, this.item, suma);
   }
 
+  addSubItem(subitem: SubItem): void {
+    // subitem.selected = !subitem.selected;
+
+    // if ( subitem.selected ) {
+      const listSubItemChecked = this.item.subitems.filter((x: SubItem) => x.selected);
+      let countSelectReq = listSubItemChecked.length;
+
+      // adicional el importe al precio del item
+      this.item.precio = this.item.precio_unitario + subitem.precio;
+      // this.itemSelected.precio_total = parseFloat(this.itemSelected.precio);
+
+
+      listSubItemChecked.map( (_subItem: SubItem, i: number) =>  {
+        if (countSelectReq > this.item.subitem_cant_select && _subItem !== subitem) {
+          _subItem.selected = false;
+          countSelectReq--;
+        }
+      });
+    // }
+  }
 
 }

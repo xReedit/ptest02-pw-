@@ -18,6 +18,8 @@ import { FormValidRptModel } from 'src/app/modelos/from.valid.rpt.model';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
+import { SubItemsView } from 'src/app/modelos/subitems.view.model';
+import { DialogSubitemRemoveComponent } from './dialog-subitem-remove/dialog-subitem-remove.component';
 
 @Component({
   selector: 'app-resumen-pedido',
@@ -128,13 +130,15 @@ export class ResumenPedidoComponent implements OnInit {
     const _idTpcItemResumenSelect = _tpc.idtipo_consumo;
     const _itemInList = this.miPedidoService.findItemFromArr(this.miPedidoService.listItemsPedido, _item);
     const dialogConfig = new MatDialogConfig();
+    const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
 
-    dialogConfig.width = '350px';
+    // dialogConfig.width = '350px';
+    dialogConfig.maxHeight = '80vh';
     dialogConfig.autoFocus = false;
     dialogConfig.data = {
       idTpcItemResumenSelect: _idTpcItemResumenSelect,
       seccion: _seccion,
-      item: _item,
+      item: _itemFromCarta,
       objItemTipoConsumoSelected: _itemInList.itemtiposconsumo
     };
 
@@ -147,6 +151,24 @@ export class ResumenPedidoComponent implements OnInit {
           console.log('data dialog', data);
         }
     );
+
+  }
+
+  openDlgSubItem(_tpc: ItemTipoConsumoModel, _seccion: SeccionModel, _item: ItemModel, subItemView: SubItemsView): void {
+    const _idTpcItemResumenSelect = _tpc.idtipo_consumo;
+    const _itemInList = this.miPedidoService.findItemFromArr(this.miPedidoService.listItemsPedido, _item);
+    const dialogConfig = new MatDialogConfig();
+    const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
+    dialogConfig.data = {
+      idTpcItemResumenSelect: _idTpcItemResumenSelect,
+      seccion: _seccion,
+      item: _itemFromCarta,
+      subItemView: subItemView,
+      objItemTipoConsumoSelected: _itemInList.itemtiposconsumo
+      // idTpcItemResumenSelect: _idTpcItemResumenSelect,
+    };
+
+    const dialogRef = this.dialog.open(DialogSubitemRemoveComponent, dialogConfig);
 
   }
 
