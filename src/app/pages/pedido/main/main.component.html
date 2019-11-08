@@ -5,7 +5,12 @@
       <app-tool-bar></app-tool-bar>
     </div>    
     
-    <div>
+    <div>      
+        <!-- <button mat-raised-button
+              matTooltip="Info about the action"
+              aria-label="Button that displays a tooltip when focused or hovered over">
+        Action
+      </button> -->
       <mat-tab-group (selectedTabChange)="clickTab($event)" backgroundColor="primary" color="accent"
         class="main-contemt transicion xanimated xfadeIn" [selectedIndex]="selectedTab"
         [ngClass]="{'header-less-tabs pt-0': isBusqueda}">
@@ -17,7 +22,8 @@
         </mat-tab>
         <mat-tab label="MiPedido">
           <ng-template matTabLabel>
-              <span>Mi Pedido</span>              
+              <span>Mi Orden</span>              
+              
               <div *ngIf="countTotalItems > 0" class="countItem countTotal animated fadeInUp d-flex">
                 {{countTotalItems | number: '2.'}}
                 <div class="div-spinner">

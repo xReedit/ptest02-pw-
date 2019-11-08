@@ -17,6 +17,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormValidRptModel } from 'src/app/modelos/from.valid.rpt.model';
 import { SubItem } from 'src/app/modelos/subitems.model';
 import { SubItemsView } from 'src/app/modelos/subitems.view.model';
+import { UtilitariosService } from './utilitarios.service';
+import { SubItemContent } from 'src/app/modelos/subitem.content.model';
+import { bindCallback } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -51,7 +54,8 @@ export class MipedidoService {
     private socketService: SocketService,
     private timerLimitService: TimerLimitService,
     private navigatorService: NavigatorLinkService,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private utilesService: UtilitariosService
     ) {
 
     }
@@ -147,18 +151,15 @@ export class MipedidoService {
     tipoconsumo.cantidad_seleccionada = cantSeleccionada;
 
     // listItemsPedido -> para el local storage recuperar y resetear
-    const itemInList = this.findItemListPedido(item); // <ItemModel>this.listItemsPedido.filter( x => x.iditem === item.iditem )[0];
-    let sumTotalTpcSelected = 1;
-    if (itemInList) {
-      sumTotalTpcSelected = this.totalItemTpcSelected(itemInList.itemtiposconsumo) || 0;
-      itemInList.cantidad_seleccionada = sumTotalTpcSelected;
+    // const itemInList = this.findItemListPedido(item); // <ItemModel>this.listItemsPedido.filter( x => x.iditem === item.iditem )[0];
+    // let sumTotalTpcSelected = 1;
+    // if (itemInList) {
+    //   sumTotalTpcSelected = this.totalItemTpcSelected(itemInList.itemtiposconsumo) || 0;
+    //   itemInList.cantidad_seleccionada = sumTotalTpcSelected;
 
-      // if ( item.isporcion !== 'ND' ) {
-      //   itemInList.cantidad = cantItem;
-      // }
-    } else {
-      this.listItemsPedido.push(item);
-    }
+    // } else {
+    //   this.listItemsPedido.push(item);
+    // }
 
     // item
     // sumTotalTpcSelected = this.totalItemTpcSelected(itemInList.itemtiposconsumo) || 0;
@@ -175,6 +176,24 @@ export class MipedidoService {
     // actualizar cantidades en item carta
     item = idTpcItemResumenSelect ? this.findItemCarta(item) : item;
     item = this.findItemCarta(item);
+
+    // emitir item modificado
+    item.sumar = sumar;
+    item.subitems_selected = itemInPedido.subitems_selected;
+    item.subitems_view = itemInPedido.subitems_view;
+
+    // listItemsPedido -> para el local storage recuperar y resetear
+    const itemInList = this.findItemListPedido(item); // <ItemModel>this.listItemsPedido.filter( x => x.iditem === item.iditem )[0];
+    let sumTotalTpcSelected = 1;
+    if (itemInList) {
+      sumTotalTpcSelected = this.totalItemTpcSelected(itemInList.itemtiposconsumo) || 0;
+      itemInList.cantidad_seleccionada = sumTotalTpcSelected;
+      itemInList.subitems_selected = itemInPedido.subitems_selected;
+      itemInList.subitems_view = itemInPedido.subitems_view;
+    } else {
+      this.listItemsPedido.push(item);
+    }
+
     item.cantidad_seleccionada = sumTotalTpcSelected;
     // if (item.isporcion !== 'ND') { item.cantidad = cantItem; } // la cantidad lo envia el socket
 
@@ -188,17 +207,19 @@ export class MipedidoService {
     this.setLocalStoragePedido();
 
     // emitir item modificado
-    item.sumar = sumar;
-    item.subitems_selected = itemInPedido.subitems_selected;
+    // item.sumar = sumar;
+    // item.subitems_selected = itemInPedido.subitems_selected;
+    // item.subitems_view = itemInPedido.subitems_view;
+
     this.socketService.emit('itemModificado', item);
 
     console.log('listItemsPedido', this.listItemsPedido);
     console.log('itemModificado en add', item);
     console.log('itemModificado en add', JSON.stringify(item));
 
-    item.subitems_selected = null;
-    itemInPedido.subitems_selected = null;
-    item.subitems_view = null;
+    // item.subitems_selected = null;
+    // itemInPedido.subitems_selected = null;
+    // item.subitems_view = null;
 
     this.playTimerLimit();
   }
@@ -230,53 +251,43 @@ export class MipedidoService {
   // agrega el precio sumado con los subitems si los hay del item mipedido
   private addPrecioItemMiPedido(elItem: ItemModel): void {
     const totalSubItems = elItem.subitems_view ? elItem.subitems_view.map((subIt: SubItemsView) => subIt.precio).reduce((a, b) => a + b , 0) : 0;
-    const precioTotal = elItem.cantidad_seleccionada * parseFloat(elItem.precio_unitario);
-    elItem.precio_total = precioTotal + totalSubItems;
-    elItem.precio_print = precioTotal + totalSubItems;
+    let precioTotal = elItem.cantidad_seleccionada * parseFloat(elItem.precio_unitario);
+    precioTotal += totalSubItems;
+    elItem.precio_total = precioTotal;
+    elItem.precio_print = precioTotal;
   }
 
   // agrega a subitem_selected -> lista de subitems seleccionados
   private addItemSubItemMiPedido(elItem: ItemModel, itemCarta: ItemModel, sumar: boolean): void {
     if (elItem.subitems) {
-      let _subItemExist: SubItem;
-      elItem.subitems.filter((x: SubItem) => x.selected).map((subItem: SubItem) => {
-        elItem.subitems_selected = elItem.subitems_selected ? elItem.subitems_selected : [];
-        _subItemExist = elItem.subitems_selected.filter((subIt: SubItem) => subIt === subItem)[0];
-        if ( _subItemExist ) {
-          _subItemExist.cantidad_seleccionada++;
-          _subItemExist.indicaciones = elItem.indicaciones || '';
-          // _subItemExist.precio += subItem.precio;
-        } else {
-          subItem.indicaciones = elItem.indicaciones || '';
-          subItem.cantidad_seleccionada = 1;
-          elItem.subitems_selected.push(subItem);
-        }
-      });
+      // elItem.subitems_view = elItem.subitems_view ? elItem.subitems_view : [];
 
       // subitemsviews
       if (elItem.subitems.length === 0 ) { return; }
       const newSubItemView: SubItemsView = new SubItemsView();
-      newSubItemView.id = 0;
+      newSubItemView.id = '';
       newSubItemView.des = '';
+      newSubItemView.listDes = [];
       newSubItemView.cantidad_seleccionada = 0;
       newSubItemView.precio = 0;
       newSubItemView.indicaciones = '';
       newSubItemView.subitems = [];
 
-
       if ( elItem.subitems_selected ) {
 
-        elItem.subitems_selected.map((x: SubItem) => {
-          newSubItemView.id += x.iditem_subitem;
-          newSubItemView.des += x.des + ' ';
+        elItem.subitems_selected.map((x) => {
+          newSubItemView.id += x.iditem_subitem.toString();
+          newSubItemView.listDes.push(this.utilesService.primeraConMayusculas(x.des.toLowerCase()));
           newSubItemView.cantidad_seleccionada = 1;
-          newSubItemView.precio += x.precio;
-          newSubItemView.indicaciones += x.indicaciones === '' ? '' :  x.indicaciones  + '. ';
+          newSubItemView.precio += parseFloat(x.precio.toString());
+          // newSubItemView.indicaciones += x.indicaciones === undefined ? '' :  ' (' + x.indicaciones + ')';
           newSubItemView.subitems.push(x);
         });
 
-        // itemCarta para sacar los indicadores
-        itemCarta.indicaciones = '';
+        newSubItemView.des = newSubItemView.listDes.join(', ');
+
+        newSubItemView.des += elItem.indicaciones === undefined || elItem.indicaciones === '' ? '' :  ', (' + elItem.indicaciones + ')';
+
         elItem.indicaciones = '';
         elItem.subitems_view = elItem.subitems_view ? elItem.subitems_view : [];
 
@@ -289,52 +300,92 @@ export class MipedidoService {
           } else {
             // resta
             this.restarCantSubItemView(elItem, isExistSubItemView);
-            // isExistSubItemView.cantidad_seleccionada -= 1;
-            // isExistSubItemView.precio -= newSubItemView.precio;
-            // isExistSubItemView.precio = isExistSubItemView.precio < 0 ? 0 : isExistSubItemView.precio;
-
-            // if ( isExistSubItemView.cantidad_seleccionada <= 0 ) {
-            //   // borrar el item
-            //   elItem.subitems_view = elItem.subitems_view.filter((subView: SubItemsView) => subView.cantidad_seleccionada > 0);
-            // }
           }
         } else {
+          // si no existe
           // isExistSubItemView.indicaciones = newSubItemView.indicaciones;
           if ( sumar ) {
             elItem.subitems_view.push(newSubItemView);
           } else {
             // si es restar y no existe en la lista quita el ultimo
             this.restarCantSubItemView(elItem, null);
-            // const lentSubItemView = elItem.subitems_view.length;
-            // const _SubItemView = elItem.subitems_view[lentSubItemView - 1];
-            // _SubItemView.cantidad_seleccionada --;
-
-            // if ( _SubItemView.cantidad_seleccionada <= 0 ) {
-            //   // borrar el item
-            //   elItem.subitems_view = elItem.subitems_view.filter((subView: SubItemsView) => subView.cantidad_seleccionada > 0);
-            // }
-
-            // elItem.subitems_selected = _SubItemView.subitems;
           }
         }
 
-      } else {
+        this.addPrecioItemMiPedido(elItem);
 
-        this.restarCantSubItemView(elItem, null);
-        // const lentSubItemView = elItem.subitems_view.length;
-        // const _SubItemView = elItem.subitems_view[lentSubItemView - 1];
-
-        // _SubItemView.cantidad_seleccionada --;
-
-        //    if ( _SubItemView.cantidad_seleccionada <= 0 ) {
-        //      // borrar el item
-        //      elItem.subitems_view = elItem.subitems_view.filter((subView: SubItemsView) => subView.cantidad_seleccionada > 0);
-        //    }
-        //    elItem.subitems_selected = _SubItemView.subitems;
       }
 
+      // let _subItemExist: SubItem;
+      // elItem.subitems.filter((x: SubItem) => x.selected).map((subItem: SubItem) => {
+      //   elItem.subitems_selected = elItem.subitems_selected ? elItem.subitems_selected : [];
+      //   _subItemExist = elItem.subitems_selected.filter((subIt: SubItem) => subIt === subItem)[0];
+      //   if ( _subItemExist ) {
+      //     _subItemExist.cantidad_seleccionada++;
+      //     _subItemExist.indicaciones = elItem.indicaciones || '';
+      //     // _subItemExist.precio += subItem.precio;
+      //   } else {
+      //     subItem.indicaciones = elItem.indicaciones || '';
+      //     subItem.cantidad_seleccionada = 1;
+      //     elItem.subitems_selected.push(subItem);
+      //   }
+      // });
+
+      // // subitemsviews
+      // if (elItem.subitems.length === 0 ) { return; }
+      // const newSubItemView: SubItemsView = new SubItemsView();
+      // newSubItemView.id = 0;
+      // newSubItemView.des = '';
+      // newSubItemView.cantidad_seleccionada = 0;
+      // newSubItemView.precio = 0;
+      // newSubItemView.indicaciones = '';
+      // newSubItemView.subitems = [];
+
+
+      // if ( elItem.subitems_selected ) {
+
+      //   elItem.subitems_selected.map((x: SubItem) => {
+      //     newSubItemView.id += x.iditem_subitem;
+      //     newSubItemView.des += x.des + ' ';
+      //     newSubItemView.cantidad_seleccionada = 1;
+      //     newSubItemView.precio += x.precio;
+      //     newSubItemView.indicaciones += x.indicaciones === '' ? '' :  x.indicaciones  + '. ';
+      //     newSubItemView.subitems.push(x);
+      //   });
+
+      //   // itemCarta para sacar los indicadores
+      //   itemCarta.indicaciones = '';
+      //   elItem.indicaciones = '';
+      //   elItem.subitems_view = elItem.subitems_view ? elItem.subitems_view : [];
+
+      //   const isExistSubItemView = elItem.subitems_view.filter((subView: SubItemsView) => subView.id === newSubItemView.id)[0];
+      //   if ( isExistSubItemView ) {
+      //     if ( sumar ) {
+      //       isExistSubItemView.indicaciones += newSubItemView.indicaciones;
+      //       isExistSubItemView.cantidad_seleccionada += 1;
+      //       isExistSubItemView.precio += newSubItemView.precio;
+      //     } else {
+      //       // resta
+      //       this.restarCantSubItemView(elItem, isExistSubItemView);
+
+      //     }
+      //   } else {
+      //     // isExistSubItemView.indicaciones = newSubItemView.indicaciones;
+      //     if ( sumar ) {
+      //       elItem.subitems_view.push(newSubItemView);
+      //     } else {
+      //       // si es restar y no existe en la lista quita el ultimo
+      //       this.restarCantSubItemView(elItem, null);
+      //     }
+      //   }
+
+      // } else {
+
+      //   this.restarCantSubItemView(elItem, null);
+      // }
+
       // sumar importe total con los subitems
-      this.addPrecioItemMiPedido(elItem);
+      // this.addPrecioItemMiPedido(elItem);
 
     }
   }
@@ -507,6 +558,7 @@ export class MipedidoService {
         }
 
         elItem.subitems = item.subitems;
+        elItem.subitems_selected = item.subitems_selected;
         this.addItemSubItemMiPedido(elItem, item, sumar);
         this.setCountCantItemTpcAndSeccion(findTpc, findSecc);
       } else {
@@ -521,6 +573,7 @@ export class MipedidoService {
       // si no existe tpc add
       // elItem.cantidad_seleccionada = 0;
       elItem.subitems = item.subitems;
+      elItem.subitems_selected = item.subitems_selected;
       this.addItemSubItemMiPedido(elItem, item, sumar);
       const _newSeccion = <SeccionModel>JSON.parse(JSON.stringify(_seccion));
       _newSeccion.items = [];
@@ -724,7 +777,7 @@ export class MipedidoService {
           cat.secciones.map((sec: SeccionModel) => {
             const itemUpdate = <ItemModel>sec.items.filter((x: ItemModel) => x.isporcion !== 'ND' && x.idcarta_lista === item.idcarta_lista)[0];
             if (itemUpdate) {
-              itemUpdate.cantidad = parseInt(itemUpdate.cantidad.toString(), 0) + item.cantidad_seleccionada;
+              // itemUpdate.cantidad = parseInt(itemUpdate.cantidad.toString(), 0) + item.cantidad_seleccionada;
             }
           });
         });
@@ -986,6 +1039,25 @@ export class MipedidoService {
     return sumSubTotal;
   }
 
+  // devuelve el importe total del item de la lista mi pedido
+  getImporteTotalItemFromMiPedido(item: ItemModel): number {
+    // const _itemFind = this.findOnlyItemMiPedido(item);
+    // return _itemFind ? _itemFind.precio_total : 0;
+
+    let sumSubTotal = 0;
+    this.miPedido.tipoconsumo
+      .map((tpc: TipoConsumoModel) => {
+        tpc.secciones.map((z: SeccionModel) => {
+          sumSubTotal += z.items
+            .filter((x: ItemModel) => x.iditem === item.iditem)
+            .map((x: ItemModel) => x.precio_print)
+            .reduce((a, b) => a + b, 0);
+        });
+      });
+
+    return sumSubTotal;
+  }
+
 
   // <------ sub totales ---->//
 
@@ -1016,9 +1088,22 @@ export class MipedidoService {
       // _itemInCarta.subitems = res.subitems;
       // actualizar cantidades subitems si existe
       if ( res.subitems ) {
-        res.subitems.map((asub: SubItem) => {
-          _itemInCarta.subitems.filter((bsub: SubItem) => asub.iditem_subitem === bsub.iditem_subitem)[0].cantidad = asub.cantidad;
+        // res.subitems.map((asub: SubItem) => {
+        //   // _itemInCarta.subitems.filter((bsub: SubItem) => asub.iditem_subitem === bsub.iditem_subitem)[0].cantidad = asub.cantidad;
+
+        // });
+        res.subitems.map((subitemOp: SubItemContent) => {
+          subitemOp.opciones.map((subitem: SubItem) => {
+            _itemInCarta.subitems.map((s: SubItemContent) => {
+              const itemFind = s.opciones.filter((_subItem: SubItem) => _subItem.iditem_subitem === subitem.iditem_subitem)[0];
+              if ( itemFind ) {
+                itemFind.cantidad = subitem.cantidad;
+              }
+            });
+          });
         });
+
+        // _itemInCarta.subitems = res.subitems;
       }
 
       _itemInCarta.cantidad = parseInt(res.cantidad.toString(), 0);
@@ -1033,6 +1118,7 @@ export class MipedidoService {
       // const _itemInList = this.findItemListPedido(res);
       // _itemInCarta.cantidad = Number.parseFloat(_itemInCarta.cantidad.toString()) +  Number.parseFloat(res.cantidad_reset.toString());
       _itemInCarta.cantidad = parseInt(res.cantidad.toString(), 0);
+      _itemInCarta.subitems = res.subitems;
       console.log('cant reset ', _itemInCarta);
       this.itemStockChangeSource.next(_itemInCarta);
       // _itemInList.cantidad += res.cantidad_reset;

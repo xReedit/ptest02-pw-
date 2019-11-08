@@ -1,6 +1,7 @@
 import { ItemTipoConsumoModel } from './item.tipoconsumo.model';
 import { SubItem } from './subitems.model';
 import { SubItemsView } from './subitems.view.model';
+import { SubItemContent } from './subitem.content.model';
 
 export class ItemModel {
     iditem: number;
@@ -26,7 +27,7 @@ export class ItemModel {
     selected: boolean;
     itemtiposconsumo: ItemTipoConsumoModel[] = []; // para la vista -> listItemsPedido
     seccion: string;
-    subitems: SubItem[];
+    subitems: SubItemContent[];
     subitem_required_select: number;
     subitem_cant_select: number;
     subitems_selected: SubItem[] = []; // subitems seleccionados

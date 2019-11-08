@@ -50,6 +50,13 @@ export class MainComponent implements OnInit {
     this.miPedidoService.countItemsObserve$.subscribe((res) => {
       this.countTotalItems = res;
     });
+
+    // this.tooltip.show();
+    // setTimeout(() => {
+    //   // this._matTooltip.position = 'below';
+    //   // this._matTooltip.tooltipClass = 'example-tooltip-red-1';
+    //   this._matTooltip.show();
+    // }, 1000);
   }
 
   onScroll($event: any): void {

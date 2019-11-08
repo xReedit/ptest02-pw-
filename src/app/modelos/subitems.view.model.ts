@@ -1,8 +1,9 @@
 import { SubItem } from './subitems.model';
 
 export class SubItemsView {
-    id: number;
+    id: string;
     des: string;
+    listDes: string[];
     cantidad: string;
     indicaciones: string;
     cantidad_seleccionada: number;

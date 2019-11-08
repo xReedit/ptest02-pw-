@@ -12,6 +12,8 @@ import { ReglascartaService } from 'src/app/shared/services/reglascarta.service'
 import { JsonPrintService } from 'src/app/shared/services/json-print.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 import { SubItem } from 'src/app/modelos/subitems.model';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
 
 
 @Component({
@@ -51,6 +53,7 @@ export class CartaComponent implements OnInit {
   private objItemTipoConsumoSelected: ItemTipoConsumoModel[];
   private objNewItemTiposConsumo: ItemTipoConsumoModel[] = [];
   private itemSelected: ItemModel;
+  private seccionSelected: SeccionModel;
   private countSeeBack = 2; // primera vista al dar goback
 
   constructor(
@@ -59,7 +62,8 @@ export class CartaComponent implements OnInit {
       private reglasCartaService: ReglascartaService,
       private jsonPrintService: JsonPrintService,
       private navigatorService: NavigatorLinkService,
-      private listenStatusService: ListenStatusService
+      private listenStatusService: ListenStatusService,
+      private dialog: MatDialog,
       ) {
 
   }
@@ -168,6 +172,7 @@ export class CartaComponent implements OnInit {
   getItems(seccion: SeccionModel) {
     this.miPedidoService.setObjSeccionSeleced(seccion);
     setTimeout(() => {
+      this.seccionSelected = seccion;
       this.objItems = seccion.items;
       this.showSecciones = false;
       this.showItems = true;
@@ -256,7 +261,35 @@ export class CartaComponent implements OnInit {
     }
 
     this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
+
+    this.openDlgItem(selectedItem);
   }
+
+  // abrir el dialog item
+  private openDlgItem(_item: ItemModel): void {
+    const dialogConfig = new MatDialogConfig();
+    const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
+
+    dialogConfig.autoFocus = false;
+    dialogConfig.data = {
+      idTpcItemResumenSelect: null,
+      seccion: this.seccionSelected,
+      item: _itemFromCarta,
+      objItemTipoConsumoSelected: this.itemSelected.itemtiposconsumo
+    };
+
+    const dialogRef = this.dialog.open(DialogItemEditComponent, dialogConfig);
+
+    // subscribe al cierre y obtiene los datos
+    dialogRef.afterClosed().subscribe(
+        data => {
+          if ( !data ) { return; }
+          console.log('data dialog', data);
+        }
+    );
+
+  }
+
 
   addItemToPedido(tpcSelect: ItemTipoConsumoModel, suma: number): void {
     this.miPedidoService.addItem2(tpcSelect, this.itemSelected, suma);
@@ -311,25 +344,27 @@ export class CartaComponent implements OnInit {
     });
   }
 
-  addSubItem(subitem: SubItem): void {
-    // subitem.selected = !subitem.selected;
+  // addSubItem(subitem: SubItem): void {
+  //   // subitem.selected = !subitem.selected;
 
-    // if ( subitem.selected ) {
-      const listSubItemChecked = this.itemSelected.subitems.filter((x: SubItem) => x.selected);
-      let countSelectReq = listSubItemChecked.length;
+  //   // if ( subitem.selected ) {
+  //     // const listSubItemChecked = this.itemSelected.subitems.filter((x: SubItem) => x.selected);
+  //     // let countSelectReq = listSubItemChecked.length;
 
-      // adicional el importe al precio del item
-      this.itemSelected.precio = this.itemSelected.precio_unitario + subitem.precio;
-      // this.itemSelected.precio_total = parseFloat(this.itemSelected.precio);
+  //     // // adicional el importe al precio del item
+  //     // this.itemSelected.precio = this.itemSelected.precio_unitario + subitem.precio;
+  //     // // this.itemSelected.precio_total = parseFloat(this.itemSelected.precio);
 
 
-      listSubItemChecked.map( (_subItem: SubItem, i: number) =>  {
-        if (countSelectReq > this.itemSelected.subitem_cant_select && _subItem !== subitem) {
-          _subItem.selected = false;
-          countSelectReq--;
-        }
-      });
-    // }
-  }
+  //     // listSubItemChecked.map( (_subItem: SubItem, i: number) =>  {
+  //     //   if (countSelectReq > this.itemSelected.subitem_cant_select && _subItem !== subitem) {
+  //     //     _subItem.selected = false;
+  //     //     countSelectReq--;
+  //     //   }
+  //     // });
+
+
+  //   // }
+  // }
 
 }

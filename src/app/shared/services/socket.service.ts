@@ -8,9 +8,9 @@ import { CartaModel } from 'src/app/modelos/carta.model';
 import { SeccionModel } from 'src/app/modelos/seccion.model';
 import { ItemModel } from 'src/app/modelos/item.model';
 import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
-import { retry } from 'rxjs/operators';
-import { observable } from 'rxjs';
+
 import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
+import { InfoTockenService } from './info-token.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +24,7 @@ export class SocketService {
 
   private resTipoConsumo: any = [];
 
-  constructor() { }
+  constructor(private infoTockenService: InfoTockenService) { }
 
   connect() {
     if ( this.isSocketOpen ) { return; } // para cuando se desconecta y conecta desde el celular
@@ -36,10 +36,22 @@ export class SocketService {
     //   forceNew: false
     // });
 
+    const infToken = this.infoTockenService.infoUsToken;
+
+    const dataSocket = {
+      idorg: infToken.idorg,
+      idsede: infToken.idsede,
+      idusuario: infToken.idusuario,
+      isFromApp: 1
+    };
+
+    console.log('dataSocket', dataSocket);
+
     // desarrollo
     this.socket = io(this.urlSocket, {
       secure: true,
       rejectUnauthorized: false,
+      query: dataSocket
       // forceNew: true
     });
 

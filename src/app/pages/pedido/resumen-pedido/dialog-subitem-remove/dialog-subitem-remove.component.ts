@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ViewEncapsulation } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { SubItemsView } from 'src/app/modelos/subitems.view.model';
@@ -13,6 +13,7 @@ import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
   selector: 'app-dialog-subitem-remove',
   templateUrl: './dialog-subitem-remove.component.html',
   styleUrls: ['./dialog-subitem-remove.component.css']
+  // encapsulation: ViewEncapsulation.None
 })
 export class DialogSubitemRemoveComponent implements OnInit {
 
@@ -59,9 +60,9 @@ export class DialogSubitemRemoveComponent implements OnInit {
       // tipo consumo
       const _tpc =  <ItemTipoConsumoModel>(this.objItemTipoConsumoSelected.filter((tpc: ItemTipoConsumoModel) => tpc.idtipo_consumo === this.idTpcItemResumenSelect)[0]);
 
-      this.item.subitems.map((_subItem: SubItem) => _subItem.selected = false);
-      this.item.subitems.filter((_subItem: SubItem) => _subItem.des.toLowerCase().trim() === this.subItemView.des.toLowerCase().trim())[0].selected = true;
-      this.item.subitems_selected = [];
+      // this.item.subitems.map((_subItem: SubItem) => _subItem.selected = false);
+      // this.item.subitems.filter((_subItem: SubItem) => _subItem.des.toLowerCase().trim() === this.subItemView.des.toLowerCase().trim())[0].selected = true;
+      // this.item.subitems_selected = [];
 
       this.miPedidoService.addItem2(_tpc, this.item, 1, this.idTpcItemResumenSelect);
       this.dialogRef.close();

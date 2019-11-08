@@ -5,6 +5,8 @@ import { SeccionModel } from 'src/app/modelos/seccion.model';
 import { ItemModel } from 'src/app/modelos/item.model';
 import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { SocketService } from 'src/app/shared/services/socket.service';
+import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
+import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
 
 @Component({
   selector: 'app-busqueda',
@@ -22,6 +24,7 @@ export class BusquedaComponent implements OnInit {
   constructor(
     private socketService: SocketService,
     private miPedidoService: MipedidoService,
+    private dialog: MatDialog,
   ) { }
 
   ngOnInit() {
@@ -49,7 +52,7 @@ export class BusquedaComponent implements OnInit {
     console.log('_objFind', this.objCartaBus);
   }
 
-  selectedItem(selectedItem: ItemModel) {
+  selectedItemBusq(selectedItem: ItemModel) {
     this.objCartaBus.map(x => x.selected = false);
     selectedItem.selected = true;
     this.itemSelected = selectedItem;
@@ -62,6 +65,32 @@ export class BusquedaComponent implements OnInit {
     }
 
     this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
+
+    this.openDlgItemBusq(selectedItem);
+  }
+
+  private openDlgItemBusq(_item: ItemModel): void {
+    const dialogConfig = new MatDialogConfig();
+    const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
+
+    dialogConfig.autoFocus = false;
+    dialogConfig.data = {
+      idTpcItemResumenSelect: null,
+      // seccion: this.seccionSelected,
+      item: _itemFromCarta,
+      objItemTipoConsumoSelected: this.itemSelected.itemtiposconsumo
+    };
+
+    const dialogRef = this.dialog.open(DialogItemEditComponent, dialogConfig);
+
+    // subscribe al cierre y obtiene los datos
+    dialogRef.afterClosed().subscribe(
+        data => {
+          if ( !data ) { return; }
+          console.log('data dialog', data);
+        }
+    );
+
   }
 
   getEstadoStockItem(stock: string): string {

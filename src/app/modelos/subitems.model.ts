@@ -6,5 +6,7 @@ export class SubItem {
     cantidad: string;
     cantidad_seleccionada: number;
     precio: number;
+    precio_visible: boolean;
+    cantidad_visible: boolean;
     selected: boolean;
 }

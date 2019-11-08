@@ -30,7 +30,7 @@ export class InfoTockenService {
 
   getToken(): any { return localStorage.getItem('::token'); }
 
-  private converToJSON() {
+  converToJSON(): void {
     if (localStorage.getItem('::token')) {
       const _token =  JSON.parse(atob(localStorage.getItem('::token').split('.')[1]));
       this.infoUsToken = <UsuarioTokenModel>_token.usuario;

@@ -13,11 +13,13 @@ import { BuscarItemComponent } from './buscar-item/buscar-item.component';
 import { PedidoRoutingModule } from './pedido.routing';
 import { CoreModule } from 'src/app/core/core.module';
 
-import { DialogItemComponent } from './resumen-pedido/dialog-item/dialog-item.component';
+// import { DialogItemComponent } from './resumen-pedido/dialog-item/dialog-item.component';
+import { BusquedaComponent } from './busqueda/busqueda.component';
+// import { DialogSubitemRemoveComponent } from './resumen-pedido/dialog-subitem-remove/dialog-subitem-remove.component';
+
 import { DialogResetComponent } from './resumen-pedido/dialog-reset/dialog-reset.component';
 import { DialogLoadingComponent } from './resumen-pedido/dialog-loading/dialog-loading.component';
-import { BusquedaComponent } from './busqueda/busqueda.component';
-import { DialogSubitemRemoveComponent } from './resumen-pedido/dialog-subitem-remove/dialog-subitem-remove.component';
+import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
 
 
 
@@ -29,10 +31,11 @@ import { DialogSubitemRemoveComponent } from './resumen-pedido/dialog-subitem-re
     ResumenPedidoComponent,
     EstadoPedidoComponent,
     BuscarItemComponent,
-    DialogItemComponent,
+    // DialogItemComponent,
     DialogResetComponent,
     DialogLoadingComponent,
-    DialogSubitemRemoveComponent,
+    // DialogSubitemRemoveComponent,
+    DialogItemEditComponent,
     BusquedaComponent],
   imports: [
     CommonModule,
@@ -42,10 +45,11 @@ import { DialogSubitemRemoveComponent } from './resumen-pedido/dialog-subitem-re
     ComponentesModule
   ],
   exports: [
-    DialogItemComponent,
+    // DialogItemComponent,
     DialogResetComponent,
-    DialogLoadingComponent
+    DialogLoadingComponent,
+    DialogItemEditComponent
   ],
-  entryComponents: [DialogItemComponent, DialogResetComponent, DialogLoadingComponent, DialogSubitemRemoveComponent]
+  entryComponents: [DialogResetComponent, DialogLoadingComponent, DialogItemEditComponent]
 })
 export class PedidoModule { }

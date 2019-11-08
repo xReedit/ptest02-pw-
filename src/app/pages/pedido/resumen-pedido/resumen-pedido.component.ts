@@ -1,25 +1,28 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { MipedidoService } from 'src/app/shared/services/mipedido.service';
-import { PedidoModel } from 'src/app/modelos/pedido.model';
+import { Component, OnInit } from '@angular/core';
 
+import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { ReglascartaService } from 'src/app/shared/services/reglascarta.service';
-import { ItemModel } from 'src/app/modelos/item.model';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { DialogItemComponent } from './dialog-item/dialog-item.component';
-import { SeccionModel } from 'src/app/modelos/seccion.model';
-import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
-import { DialogResetComponent } from './dialog-reset/dialog-reset.component';
-import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
+import { PedidoModel } from 'src/app/modelos/pedido.model';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { JsonPrintService } from 'src/app/shared/services/json-print.service';
-import { DialogLoadingComponent } from './dialog-loading/dialog-loading.component';
-import { InfoTockenService } from 'src/app/shared/services/info-token.service';
-import { FormValidRptModel } from 'src/app/modelos/from.valid.rpt.model';
+import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
-import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
+import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
+
+
+import { SeccionModel } from 'src/app/modelos/seccion.model';
+import { ItemModel } from 'src/app/modelos/item.model';
+import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
+import { FormValidRptModel } from 'src/app/modelos/from.valid.rpt.model';
+import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { SubItemsView } from 'src/app/modelos/subitems.view.model';
-import { DialogSubitemRemoveComponent } from './dialog-subitem-remove/dialog-subitem-remove.component';
+
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+
+import { DialogLoadingComponent } from './dialog-loading/dialog-loading.component';
+import { DialogResetComponent } from './dialog-reset/dialog-reset.component';
+import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
 
 @Component({
   selector: 'app-resumen-pedido',
@@ -51,6 +54,7 @@ export class ResumenPedidoComponent implements OnInit {
   arrReqFrm: FormValidRptModel;
 
   rippleColor = 'rgb(255,238,88, 0.5)';
+  rippleColorSubItem = 'rgba(117,117,117,0.1)';
 
   objCuenta: any = [];
 
@@ -126,23 +130,36 @@ export class ResumenPedidoComponent implements OnInit {
     });
   }
 
-  openDlgItem(_tpc: TipoConsumoModel, _seccion: SeccionModel, _item: ItemModel) {
-    const _idTpcItemResumenSelect = _tpc.idtipo_consumo;
-    const _itemInList = this.miPedidoService.findItemFromArr(this.miPedidoService.listItemsPedido, _item);
+  addItemToResumen(_tpc: ItemTipoConsumoModel, _seccion: SeccionModel, _item: ItemModel, _subItems: SubItemsView, suma: number): void {
+
+    this.miPedidoService.setObjSeccionSeleced(_seccion);
+    const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
+
+    // obtenemos el tipo consumo de carta
+    const _tpc_item_carta = _itemFromCarta.itemtiposconsumo.filter((x: ItemTipoConsumoModel) => x.idtipo_consumo === _tpc.idtipo_consumo)[0];
+
+    // this.miPedidoService.setobjItemTipoConsumoSelected( _itemInList.itemtiposconsumo);
+    _itemFromCarta.subitems_selected = _subItems.subitems;
+    _itemFromCarta.cantidad_seleccionada = _item.cantidad_seleccionada;
+
+    this.miPedidoService.addItem2(_tpc_item_carta, _itemFromCarta, suma);
+
+  }
+
+  openDlgItemToResumen(_seccion: SeccionModel, _item: ItemModel): void {
     const dialogConfig = new MatDialogConfig();
     const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
 
-    // dialogConfig.width = '350px';
-    dialogConfig.maxHeight = '80vh';
+    dialogConfig.panelClass = 'dialog-item-edit';
     dialogConfig.autoFocus = false;
     dialogConfig.data = {
-      idTpcItemResumenSelect: _idTpcItemResumenSelect,
+      idTpcItemResumenSelect: null,
       seccion: _seccion,
       item: _itemFromCarta,
-      objItemTipoConsumoSelected: _itemInList.itemtiposconsumo
+      objItemTipoConsumoSelected: _itemFromCarta.itemtiposconsumo
     };
 
-    const dialogRef = this.dialog.open(DialogItemComponent, dialogConfig);
+    const dialogRef = this.dialog.open(DialogItemEditComponent, dialogConfig);
 
     // subscribe al cierre y obtiene los datos
     dialogRef.afterClosed().subscribe(
@@ -154,23 +171,51 @@ export class ResumenPedidoComponent implements OnInit {
 
   }
 
-  openDlgSubItem(_tpc: ItemTipoConsumoModel, _seccion: SeccionModel, _item: ItemModel, subItemView: SubItemsView): void {
-    const _idTpcItemResumenSelect = _tpc.idtipo_consumo;
-    const _itemInList = this.miPedidoService.findItemFromArr(this.miPedidoService.listItemsPedido, _item);
-    const dialogConfig = new MatDialogConfig();
-    const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
-    dialogConfig.data = {
-      idTpcItemResumenSelect: _idTpcItemResumenSelect,
-      seccion: _seccion,
-      item: _itemFromCarta,
-      subItemView: subItemView,
-      objItemTipoConsumoSelected: _itemInList.itemtiposconsumo
-      // idTpcItemResumenSelect: _idTpcItemResumenSelect,
-    };
+  // openDlgItem(_tpc: TipoConsumoModel, _seccion: SeccionModel, _item: ItemModel) {
+  //   const _idTpcItemResumenSelect = _tpc.idtipo_consumo;
+  //   const _itemInList = this.miPedidoService.findItemFromArr(this.miPedidoService.listItemsPedido, _item);
+  //   const dialogConfig = new MatDialogConfig();
+  //   const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
 
-    const dialogRef = this.dialog.open(DialogSubitemRemoveComponent, dialogConfig);
+  //   // dialogConfig.width = '350px';
+  //   dialogConfig.maxHeight = '80vh';
+  //   dialogConfig.autoFocus = false;
+  //   dialogConfig.data = {
+  //     idTpcItemResumenSelect: _idTpcItemResumenSelect,
+  //     seccion: _seccion,
+  //     item: _itemFromCarta,
+  //     objItemTipoConsumoSelected: _itemInList.itemtiposconsumo
+  //   };
 
-  }
+  //   const dialogRef = this.dialog.open(DialogItemComponent, dialogConfig);
+
+  //   // subscribe al cierre y obtiene los datos
+  //   dialogRef.afterClosed().subscribe(
+  //       data => {
+  //         if ( !data ) { return; }
+  //         console.log('data dialog', data);
+  //       }
+  //   );
+
+  // }
+
+  // openDlgSubItem(_tpc: ItemTipoConsumoModel, _seccion: SeccionModel, _item: ItemModel, subItemView: SubItemsView): void {
+  //   const _idTpcItemResumenSelect = _tpc.idtipo_consumo;
+  //   const _itemInList = this.miPedidoService.findItemFromArr(this.miPedidoService.listItemsPedido, _item);
+  //   const dialogConfig = new MatDialogConfig();
+  //   const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
+  //   dialogConfig.data = {
+  //     idTpcItemResumenSelect: _idTpcItemResumenSelect,
+  //     seccion: _seccion,
+  //     item: _itemFromCarta,
+  //     subItemView: subItemView,
+  //     objItemTipoConsumoSelected: _itemInList.itemtiposconsumo
+  //     // idTpcItemResumenSelect: _idTpcItemResumenSelect,
+  //   };
+
+  //   const dialogRef = this.dialog.open(DialogSubitemRemoveComponent, dialogConfig);
+
+  // }
 
   nuevoPedido() {
     this.backConfirmacion();
@@ -402,6 +447,7 @@ export class ResumenPedidoComponent implements OnInit {
             hayItem.precio_total = parseFloat(_i.ptotal);
             hayItem.procede = _i.procede === '0' ? 1 : 0;
             hayItem.seccion = _i.des_seccion;
+            hayItem.subitems_view = _i.subitems === 'null' ? [] : JSON.parse(_i.subitems);
             s.count_items = i + 1;
             s.items.push(hayItem);
           });

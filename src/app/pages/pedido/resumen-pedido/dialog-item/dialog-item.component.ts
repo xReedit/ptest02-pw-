@@ -42,7 +42,7 @@ export class DialogItemComponent implements OnInit {
 
     this.item.subitems_selected = null;
     this.item.subitems_view = null;
-    this.item.subitems.map((sub: SubItem) => sub.selected = false);
+    // this.item.subitems.map((sub: SubItem) => sub.selected = false);
 
   }
 
@@ -67,20 +67,20 @@ export class DialogItemComponent implements OnInit {
     // subitem.selected = !subitem.selected;
 
     // if ( subitem.selected ) {
-      const listSubItemChecked = this.item.subitems.filter((x: SubItem) => x.selected);
-      let countSelectReq = listSubItemChecked.length;
+      // const listSubItemChecked = this.item.subitems.filter((x: SubItem) => x.selected);
+      // let countSelectReq = listSubItemChecked.length;
 
       // adicional el importe al precio del item
       this.item.precio = this.item.precio_unitario + subitem.precio;
       // this.itemSelected.precio_total = parseFloat(this.itemSelected.precio);
 
 
-      listSubItemChecked.map( (_subItem: SubItem, i: number) =>  {
-        if (countSelectReq > this.item.subitem_cant_select && _subItem !== subitem) {
-          _subItem.selected = false;
-          countSelectReq--;
-        }
-      });
+      // listSubItemChecked.map( (_subItem: SubItem, i: number) =>  {
+      //   if (countSelectReq > this.item.subitem_cant_select && _subItem !== subitem) {
+      //     _subItem.selected = false;
+      //     countSelectReq--;
+      //   }
+      // });
     // }
   }
 

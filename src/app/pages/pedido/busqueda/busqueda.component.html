@@ -4,10 +4,10 @@
 <div class="xtransicion m-main-pt-40 color-fondo-ul">
         <ng-container>
           <ul>
-            <li *ngFor="let item of objCartaBus"
-              [ngClass]="{'li-padding-selected': item.selected}">
+              <!-- [ngClass]="{'li-padding-selected': item.selected}" -->
+            <li *ngFor="let item of objCartaBus">
               <div class="xcontent border-left-item-{{getEstadoStockItem(item.cantidad)}}"> 
-                <div class="m1 d-flex xtitulo" matRipple [matRippleColor]="rippleColor" [ngClass]="{'li-tachado': item.cantidad==='0'}" (click)="selectedItem(item)">
+                <div class="m1 d-flex xtitulo" matRipple [matRippleColor]="rippleColor" [ngClass]="{'li-tachado': item.cantidad==='0'}" (click)="selectedItemBusq(item)">
                   <div class="w-100"><span>{{item.des}}</span></div>
                   <div class="text-right d-flex">
                     <div class="flag-stock text-center estado-color-{{getEstadoStockItem(item.cantidad)}}">
@@ -19,9 +19,10 @@
                     <span>{{item.precio | number:'0.2' }}</span>
                   </div>
                 </div>              
-                <ng-container *ngIf="item.selected">
+                
+                <!-- <ng-container *ngIf="item.selected">
                   <div>
-                    <!-- detalle -->                  
+                    -- detalle --
                     <ng-container *ngIf="item.detalles === ''; else elseTemplate">
                       <br>
                     </ng-container>
@@ -32,14 +33,14 @@
                       <hr>                    
                     </ng-template>
                     
-                    <!-- especificaciones -->
+                    -- especificaciones --
                     <div class="pl-3 pr-3">
                       <mat-form-field class="w-100 margin-input">
                         <input matInput placeholder="Escribe aqui las especificaciones" [(ngModel)]="itemSelected.indicaciones" name="indicaciones" #txtIdicaciones (keyup)="addItemIndicaciones(item, txtIdicaciones.value)">
                       </mat-form-field>
                     </div>
                     <hr>
-                    <!-- tipos de consumo -->
+                    -- tipos de consumo --
                     <div class="pl-3 pr-3">
                       <table width="100%" class="tb-tpc">
                         <tr *ngFor="let tp of objItemTipoConsumoSelected">
@@ -56,7 +57,7 @@
                       <br>
                     </div>                  
                   </div>                
-                </ng-container>
+                </ng-container> -->
                 
               </div>            
             </li>          

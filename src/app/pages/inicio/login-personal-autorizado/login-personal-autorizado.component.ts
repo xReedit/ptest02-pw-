@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UsuarioAutorizadoModel } from 'src/app/modelos/usuario-autorizado.model';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 
 @Component({
   selector: 'app-login-personal-autorizado',
@@ -14,7 +15,7 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
   loading = false;
   msjErr = false;
 
-  constructor(private router: Router, private authService: AuthService) { }
+  constructor(private router: Router, private authService: AuthService, private infoToken: InfoTockenService) { }
 
   ngOnInit() {
     this.usuario = new UsuarioAutorizadoModel();
@@ -31,6 +32,7 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
           this.authService.setLocalToken(res.token);
           this.authService.setLoggedStatus(true);
           this.authService.setLocalUsuario(this.usuario);
+          this.infoToken.converToJSON();
           this.router.navigate(['./pedido']);
           // this.loading = false;
         } else {

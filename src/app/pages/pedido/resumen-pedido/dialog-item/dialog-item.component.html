@@ -29,24 +29,24 @@
 
                 <!-- subitems -->                  
                 <ng-container *ngIf="item.subitems">
-                        <div class="subitem-content pl-3 pr-3 pt-2">
-                          <div class="xoption w-50 fs-13" *ngFor="let subitem of item.subitems; let i = index">
-                              <mat-checkbox 
-                                (change)="addSubItem(subitem)" 
-                                [(ngModel)]="subitem.selected" 
-                                [ngClass]="{'li-tachado': subitem.cantidad == '0'}"
-                                [disabled]="subitem.cantidad == '0'"
-                                >
-                                <div>
-                                  {{subitem.des | lowercase}} 
-                                  <span *ngIf="subitem.precio != 0" class="fs-11 text-secondary"> 
-                                    (+ {{subitem.precio | number:'0.2'}})
-                                  </span> {{subitem.cantidad}}
-                                </div>
-                              </mat-checkbox>
-                          </div>                   
-                        </div>
-                      </ng-container>
+                    <div class="subitem-content pl-3 pr-3 pt-2">
+                      <div class="xoption w-50 fs-13" *ngFor="let subitem of item.subitems; let i = index">
+                          <mat-checkbox 
+                            (change)="addSubItem(subitem)" 
+                            [(ngModel)]="subitem.selected" 
+                            [ngClass]="{'li-tachado': subitem.cantidad == '0'}"
+                            [disabled]="subitem.cantidad == '0'"
+                            >
+                            <div>
+                              {{subitem.des | lowercase}} 
+                              <span *ngIf="subitem.precio != 0" class="fs-11 text-secondary"> 
+                                (+ {{subitem.precio | number:'0.2'}})
+                              </span> {{subitem.cantidad}}
+                            </div>
+                          </mat-checkbox>
+                      </div>                   
+                    </div>
+                </ng-container>
 
                 <!-- especificaciones -->
                 <div class="pl-3 pr-3">
@@ -57,24 +57,19 @@
                 <hr>
                 <!-- tipos de consumo -->
                 <div class="pl-3 pr-3">
-                <table width="100%" class="tb-tpc">
-                    <tr *ngFor="let tp of objItemTipoConsumoSelected">
-                    <td>{{tp.descripcion}}</td>
-                    <td>
-                        <!-- <div class="d-flex float-right">
-                            <span class="fs-19 pr-2">{{tp.cantidad_seleccionada}}</span>
-                            <div class="btn-tbl bg-danger xCursor" matRipple (click)="addItemToPedido(tp, 1)">-</div>
-                            <div class="btn-tbl bg-success xCursor" matRipple (click)="addItemToPedido(tp, 0)">+</div>
-                        </div> -->
-                        <div class="d-flex float-right">
-                            <span [hidden]="tp.cantidad_seleccionada === 0" class="fs-19 pr-2">{{tp.cantidad_seleccionada}}</span>
-                            <div class="btn-tbl bg-danger xCursor" matRipple (click)="addItemToPedido(tp, 1)">-</div>
-                            <div class="btn-tbl bg-success xCursor" matRipple (click)="addItemToPedido(tp, 0)">+</div>
-                        </div>
-                    </td>
-                    </tr>
-                </table>
-                <br>
+                    <table width="100%" class="tb-tpc">
+                        <tr *ngFor="let tp of objItemTipoConsumoSelected">
+                        <td>{{tp.descripcion}}</td>
+                        <td>
+                            <div class="d-flex float-right">
+                                <span [hidden]="tp.cantidad_seleccionada === 0" class="fs-19 pr-2">{{tp.cantidad_seleccionada}}</span>
+                                <div class="btn-tbl bg-danger xCursor" matRipple (click)="addItemToPedido(tp, 1)">-</div>
+                                <div class="btn-tbl bg-success xCursor" matRipple (click)="addItemToPedido(tp, 0)">+</div>
+                            </div>
+                        </td>
+                        </tr>
+                    </table>
+                    <br>
                 </div>
             </div>
         </ng-container>
