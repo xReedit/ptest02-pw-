@@ -1134,7 +1134,7 @@ export class MipedidoService {
 
     this.socketService.onGetDatosSede().subscribe((res: any) => {
       this.max_minute_order = res[0].datossede[0].pwa_time_limit;
-      this.timerLimitService.maxTime = this.max_minute_order * 600;
+      this.timerLimitService.maxTime = this.max_minute_order * 100;
     });
 
     this.timerLimitService.countdown$.subscribe((countTime: number) => {

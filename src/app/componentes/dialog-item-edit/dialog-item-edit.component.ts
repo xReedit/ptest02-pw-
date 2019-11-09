@@ -171,7 +171,7 @@ export class DialogItemEditComponent implements OnInit {
 
   }
 
-  getEstadoStockItem(stock: string): string {
+  getEstadoStockItem(stock: any): string {
     if ( stock === 'ND' ) {
       return 'verde';
     } else {
