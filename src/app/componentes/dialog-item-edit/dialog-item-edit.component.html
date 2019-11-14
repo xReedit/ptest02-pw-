@@ -11,7 +11,7 @@
         </div>
     </div>    
 
-    <div class="i-body">
+    <div class="i-body fw-100 fs-13">
         <!-- detalles -->
         <ng-container *ngIf="item.detalles.length > 0">
             <p class="titlo-detalle" >{{item.detalles}}</p>
@@ -59,7 +59,7 @@
         <div class="borde-bajo mb-2">
             <span class="text-bold">Instrucciones adicionales</span>
             <mat-form-field class="w-100">
-                <input matInput placeholder="Agregue una nota (poco aji, sin arroz, etc.)" [(ngModel)]="item.indicaciones" name="indicaciones" #txtIdicaciones>
+                <input matInput placeholder="Agregue una nota (poco aji, sin arroz, etc.)" [(ngModel)]="item.indicaciones" (keyup)="setIndicaciones(txtIdicaciones.value)" name="indicaciones" #txtIdicaciones>
             </mat-form-field>
         </div>
 
@@ -84,7 +84,7 @@
     </div>
 
     <div class="i-footer">
-        <button mat-flat-button (click)="cerrarDlg()">Listo, continuar</button>
+        <button mat-flat-button color="primary" (click)="cerrarDlg()">Listo, continuar</button>
         <div class="i-precio">S/. {{precioProducto | number:'0.2'}}</div>
     </div>
 </div>

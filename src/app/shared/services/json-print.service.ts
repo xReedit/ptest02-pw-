@@ -18,18 +18,25 @@ export class JsonPrintService {
 
   constructor(private socketService: SocketService, private pedidoService: MipedidoService) {
 
+
+
   }
 
   // obtener los datos de la sede
-  getDataSede(): void {
-    this.socketService.onGetDatosSede().subscribe((res: any) => {
-      this.datosSede = res[0];
+  private getDataSede(): void {
+    // this.socketService.onGetDatosSede().subscribe((res: any) => {
+      // this.datosSede = res[0];
+      this.datosSede = this.pedidoService.objDatosSede;
       console.log('datos de la sede', this.datosSede);
-    });
+    // });
   }
 
   // relacionar secciones con impresoras
   private relationRowToPrint(): void {
+
+    // datos de la sede
+    this.getDataSede();
+
     const _objMiPedido = this.pedidoService.getMiPedido();
     const xRptPrint: any = []; // respuesta para enviar al backend
     let xImpresoraPrint: any = []; // array de impresoras

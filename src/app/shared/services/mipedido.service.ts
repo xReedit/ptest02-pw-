@@ -39,6 +39,8 @@ export class MipedidoService {
   public itemStockChangeObserve$ = this.itemStockChangeSource.asObservable();
 
   public objCarta: any;
+  public objDatosSede: any;
+
   listItemsPedido: ItemModel[] = [];
   miPedido: PedidoModel = new PedidoModel();
 
@@ -500,6 +502,15 @@ export class MipedidoService {
     return rpt;
   }
 
+  findItemSeccionCarta(idFind: number): SeccionModel {
+    let rpt: SeccionModel;
+    this.objCarta.carta.map((cat: CategoriaModel) => {
+      rpt = cat.secciones.filter((sec: SeccionModel) => sec.idseccion === idFind)[0];
+      return rpt;
+    });
+    return rpt;
+  }
+
   // bucar item en Mi pedido, update indicaciones
   findOnlyItemMiPedido(itemSearch: ItemModel): ItemModel {
     let rpt: ItemModel;
@@ -567,6 +578,7 @@ export class MipedidoService {
         _seccion.items.push(rpt);
         findTpc.secciones.push(_seccion);
 
+        this.addItemSubItemMiPedido(elItem, item, sumar);
         this.setCountCantItemTpcAndSeccion(findTpc, _seccion);
       }
     } else {
@@ -723,7 +735,7 @@ export class MipedidoService {
     this.storageService.clear('sys::order::all');
     this.storageService.clear('sys::tcount'); // timer count
     this.storageService.clear('sys::tnum'); // timer count
-    this.listItemsPedido = [];
+    // this.listItemsPedido = [];
     this.miPedido = new PedidoModel();
     this.miPedidoSource.next(this.miPedido);
     this.countItemsSource.next(0);
@@ -735,10 +747,19 @@ export class MipedidoService {
   // reset cantidades en vista tipos de consumo
   private resetTpcCarta(): void {
     this.listItemsPedido.map((item: ItemModel) => {
+      if ( !item.itemtiposconsumo ) { return; }
       item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
         tpc.cantidad_seleccionada = 0;
       });
+
+      const _item = this.findItemCarta(item);
+      _item.cantidad_seleccionada = 0;
+      _item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
+        tpc.cantidad_seleccionada = 0;
+      });
     });
+
+    this.listItemsPedido = [];
   }
 
   updatePedidoFromStrorage() {
@@ -771,6 +792,7 @@ export class MipedidoService {
   // solo local porque a los demas se le emite el socket
   updatePedidoFromClear() {
     // actualizar // buscar cada item en el obj carta
+    if ( !this.listItemsPedido ) {return; }
     this.listItemsPedido.map((item: ItemModel) => {
       if (item.isalmacen === 0) {
         this.objCarta.carta.map((cat: CategoriaModel) => {
@@ -1095,7 +1117,7 @@ export class MipedidoService {
         res.subitems.map((subitemOp: SubItemContent) => {
           subitemOp.opciones.map((subitem: SubItem) => {
             _itemInCarta.subitems.map((s: SubItemContent) => {
-              const itemFind = s.opciones.filter((_subItem: SubItem) => _subItem.iditem_subitem === subitem.iditem_subitem)[0];
+              const itemFind = s.opciones.filter((_subItem: SubItem) => _subItem.iditem_subitem === parseInt(subitem.iditem_subitem.toString(), 0))[0];
               if ( itemFind ) {
                 itemFind.cantidad = subitem.cantidad;
               }
@@ -1133,6 +1155,8 @@ export class MipedidoService {
     // tiempo limite
 
     this.socketService.onGetDatosSede().subscribe((res: any) => {
+      this.objDatosSede = res[0];
+      console.log('datos de la sede ps', this.objDatosSede);
       this.max_minute_order = res[0].datossede[0].pwa_time_limit;
       this.timerLimitService.maxTime = this.max_minute_order * 100;
     });

@@ -65,9 +65,9 @@
           <li *ngFor="let item of objItems">
             <div class="xcontent border-left-item-{{getEstadoStockItem(item.cantidad)}}"> 
               <!-- titulo item -->
-              <div class="m1 d-flex xtitulo" matRipple [matRippleColor]="rippleColor" [ngClass]="{'li-tachado': item.cantidad < 1, 'p-titulo-item-sin-detalle': item.detalles.length === 0, 'p-titulo-item-select': item.selected}" (click)="selectedItem(item)">
+              <div class="m1 d-flex xtitulo" matRipple [matRippleColor]="rippleColor" [ngClass]="{'li-tachado': item.cantidad < 1, 'p-titulo-item-sin-detalle': item.detalles.length === 0}" (click)="selectedItem(item)">
                 <div class="content-titulo-item w-100">
-                    <span>{{item.des}}</span>
+                    <span >{{item.des}}</span>
                     <ng-container *ngIf="item.detalles.length > 0">
                       <p class="titlo-detalle mb-1" >{{item.detalles}}</p>                    
                     </ng-container>

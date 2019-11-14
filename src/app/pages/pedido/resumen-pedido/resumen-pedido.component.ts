@@ -75,7 +75,7 @@ export class ResumenPedidoComponent implements OnInit {
     this._miPedido = this.miPedidoService.getMiPedido();
 
     this.reglasCartaService.loadReglasCarta().subscribe((res: any) => {
-      this.rulesCarta = res.reglas || res[0].reglas;
+      this.rulesCarta = res[0] ? res[0].reglas ? res[0].reglas : [] : res.reglas ? res.reglas : [];
       this.rulesSubtoTales = res.subtotales || res[0].subtotales;
       this.listenMiPedido();
 
@@ -352,8 +352,12 @@ export class ResumenPedidoComponent implements OnInit {
     // const arrReqFrm = <FormValidRptModel>this.miPedidoService.findEvaluateTPCMiPedido();
     // const isTPCLocal = arrReqFrm.isTpcLocal;
     // this.isRequiereMesa = arrReqFrm.isRequiereMesa;
+    const numMesasSede = parseInt(this.miPedidoService.objDatosSede.datossede[0].mesas, 0);
 
-    const isMesaValid = this.frmConfirma.mesa ? this.frmConfirma.mesa !== '' ? true : false : false;
+    let isMesaValid = this.frmConfirma.mesa ? this.frmConfirma.mesa !== '' ? true : false : false;
+    // valida la mesa que no sea mayor a las que hay
+    const numMesaIngresado = isMesaValid ? parseInt(this.frmConfirma.mesa, 0) : 0;
+    isMesaValid = numMesaIngresado === 0 || numMesaIngresado > numMesasSede ? false : true;
     this.isRequiereMesa = this.arrReqFrm.isRequiereMesa;
 
     // this.isRequiereMesa = isTPCLocal;

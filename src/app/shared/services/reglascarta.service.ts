@@ -17,11 +17,12 @@ export class ReglascartaService {
 
   loadReglasCarta() {
 
-    if ( this.storageService.isExistKey(this.keyStorage) ) {
-      return this.decodeObjInSotrage();
-    } else {
-      return this.dataReglasCarta();
-    }
+    // if ( this.storageService.isExistKey(this.keyStorage) ) {
+    //   return this.decodeObjInSotrage();
+    // } else {
+    //   return this.dataReglasCarta();
+    // }
+    return this.dataReglasCarta();
   }
 
   getObjReglasCarta(): any {

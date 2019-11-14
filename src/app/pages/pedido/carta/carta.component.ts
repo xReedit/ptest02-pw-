@@ -151,7 +151,7 @@ export class CartaComponent implements OnInit {
     // this.miPedidoService.listenChangeCantItem();
 
     // datos de la sede, impresoras
-    this.jsonPrintService.getDataSede();
+    // this.jsonPrintService.getDataSede();
   }
 
   getSecciones(categoria: CategoriaModel) {
@@ -269,11 +269,12 @@ export class CartaComponent implements OnInit {
   private openDlgItem(_item: ItemModel): void {
     const dialogConfig = new MatDialogConfig();
     const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
+    // const _seccionItemSelect = this.miPedidoService.findItemSeccionCarta(_itemFromCarta.idseccion);
 
     dialogConfig.autoFocus = false;
     dialogConfig.data = {
       idTpcItemResumenSelect: null,
-      seccion: this.seccionSelected,
+      seccion: !this.isBusqueda ? this.seccionSelected : this.miPedidoService.findItemSeccionCarta(_itemFromCarta.idseccion),
       item: _itemFromCarta,
       objItemTipoConsumoSelected: this.itemSelected.itemtiposconsumo
     };
@@ -314,8 +315,9 @@ export class CartaComponent implements OnInit {
     // }
   }
 
-  getEstadoStockItem(stock: string): string {
-    if ( stock === 'ND' ) {
+  getEstadoStockItem(stock: any): string {
+    if ( stock === 'ND' || isNaN(stock) ) {
+      // stock = 'ND';
       return 'verde';
     } else {
       const _stock = parseInt(stock, 0);

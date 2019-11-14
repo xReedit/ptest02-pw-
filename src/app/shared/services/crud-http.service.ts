@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { InfoTockenService } from './info-token.service';
-import { URL_SERVER } from '../config/config.const';
+import { URL_SERVER, URL_CONSULTA_RUC_DNI, TOKEN_CONSULTA } from '../config/config.const';
 
 
 @Injectable()
@@ -76,6 +76,16 @@ export class CrudHttpService {
         const header = conToken ? this.getHeaderHttpClientForm() : this.getHeaderHttpClientFormNoToken();
 
         return this.httpClient.post<any>(url, datos, { headers: header });
+    }
+
+    // consulta ruc o dni
+    getConsultaRucDni(controller: string, number: string): Observable<any> {
+        const url =  `${URL_CONSULTA_RUC_DNI}${controller}/${number}`;
+        const header = new HttpHeaders()
+            .set('Content-Type', 'application/json')
+            .set('Authorization', `Bearer ${TOKEN_CONSULTA}`);
+
+        return this.httpClient.get<any>(url, { headers: header });
     }
 
     getFilterBy(controller: string, evento: string,

@@ -20,6 +20,7 @@ export class DialogItemEditComponent implements OnInit {
   isOptionRequeridosComplet = false; // si todos los cheks requeridos estan marcados
   precioProducto: number;
   _precioProductoIni: number; // precio incio
+  isObjSubItems = false; // si el item tiene subitems
 
   constructor(
     public miPedidoService: MipedidoService,
@@ -35,7 +36,7 @@ export class DialogItemEditComponent implements OnInit {
     this.miPedidoService.setObjSeccionSeleced(data.seccion);
     this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
 
-    this.miPedidoService.listenChangeCantItem();
+    // this.miPedidoService.listenChangeCantItem();
 
   }
 
@@ -84,8 +85,11 @@ export class DialogItemEditComponent implements OnInit {
             });
         });
 
+        this.isObjSubItems = true;
         this.item.indicaciones = '';
+        this.checkOptionObligario();
     } else {
+      this.isObjSubItems = false;
       this.isOptionRequeridosComplet = true;
     }
   }
@@ -130,6 +134,9 @@ export class DialogItemEditComponent implements OnInit {
   // chequea si todas las opciones requeridas ya estan marcadas
   private checkOptionObligario(): void {
       let countOptionReq = 0;
+
+      if ( !this.item.subitems || this.item.subitems === null ) { this.isOptionRequeridosComplet = true; return; }
+
       this.item.subitems.map(t => {
           countOptionReq = t.isObligatorio ? + 1 : countOptionReq;
       });
@@ -167,12 +174,24 @@ export class DialogItemEditComponent implements OnInit {
     this.miPedidoService.addItem2(tpcSelect, this.item, suma);
 
     this.compItemSumImporte();
-    this.item.indicaciones = '';
+    this.item.indicaciones = this.isObjSubItems ? '' : this.item.indicaciones;
 
   }
 
+  setIndicaciones(val: string): void {
+    console.log('indicaciones', val);
+    this.item.indicaciones = val;
+
+    // agrega las indicaciones si existe en mipedido y si no tienen subitems
+    const _itemFromPedido = this.miPedidoService.findOnlyItemMiPedido(this.item);
+    if (_itemFromPedido && !this.isObjSubItems) {
+      _itemFromPedido.indicaciones = val;
+    }
+  }
+
   getEstadoStockItem(stock: any): string {
-    if ( stock === 'ND' ) {
+    if ( stock === 'ND' || isNaN(stock) ) {
+      // stock = 'ND';
       return 'verde';
     } else {
       const _stock = parseInt(stock, 0);

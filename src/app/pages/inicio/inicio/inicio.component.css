@@ -1,0 +1,7 @@
+.xfooter {
+    bottom: 0px;
+    /* position: fixed; */
+    text-align: center;
+    width: 100%;
+    padding: 20px;
+}

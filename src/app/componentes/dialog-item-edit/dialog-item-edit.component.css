@@ -20,6 +20,7 @@
     font-size: 13px;
     font-family: Ubuntu-Light;
     color: #616161;
+    text-transform: lowercase;
   }
 
 .i-stock {

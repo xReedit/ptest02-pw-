@@ -6,6 +6,13 @@
   <form [formGroup]="myForm">
     <div class="w-100">
       <mat-form-field class="w-100">
+        <input matInput placeholder="DNI" formControlName="dni" (keyup.enter)="buscarDNI()" required>
+        <div>
+          <mat-progress-bar style="bottom: -11px;" [hidden]="!loadConsulta" mode="indeterminate"></mat-progress-bar>
+        </div>
+      </mat-form-field>
+
+      <mat-form-field class="w-100">
         <input matInput placeholder="Nombre y apellidos" formControlName="nombre" required>
       </mat-form-field>
 
