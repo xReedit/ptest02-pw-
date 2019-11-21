@@ -19,7 +19,7 @@ import { SubItem } from 'src/app/modelos/subitems.model';
 import { SubItemsView } from 'src/app/modelos/subitems.view.model';
 import { UtilitariosService } from './utilitarios.service';
 import { SubItemContent } from 'src/app/modelos/subitem.content.model';
-import { bindCallback } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +38,7 @@ export class MipedidoService {
   private itemStockChangeSource = new BehaviorSubject<ItemModel>(new ItemModel());
   public itemStockChangeObserve$ = this.itemStockChangeSource.asObservable();
 
-  public objCarta: any;
+  private objCarta: any;
   public objDatosSede: any;
 
   listItemsPedido: ItemModel[] = [];
@@ -188,6 +188,12 @@ export class MipedidoService {
     const itemInList = this.findItemListPedido(item); // <ItemModel>this.listItemsPedido.filter( x => x.iditem === item.iditem )[0];
     let sumTotalTpcSelected = 1;
     if (itemInList) {
+
+      // por momentos pierde referencia al tipo de consumo, para evitar eso
+      if (!itemInList.itemtiposconsumo) {
+        itemInList.itemtiposconsumo = this.mpObjItemTipoConsumoSelected;
+      }
+
       sumTotalTpcSelected = this.totalItemTpcSelected(itemInList.itemtiposconsumo) || 0;
       itemInList.cantidad_seleccionada = sumTotalTpcSelected;
       itemInList.subitems_selected = itemInPedido.subitems_selected;
@@ -720,14 +726,15 @@ export class MipedidoService {
   // resetear stock
   resetAllNewPedido() {
     this.socketService.emit('resetPedido', this.listItemsPedido);
-    this.updatePedidoFromClear();
+    // this.updatePedidoFromClear();
+    this.prepareNewPedido();
   }
 
   // nuevo pedido // sin recuperar stock // cuando el envio fue exitoso
   prepareNewPedido(): void {
     // this.updatePedidoFromClear();
     this.resetTpcCarta();
-    this.findItemCartaAndClearIndicaciones();
+    // this.findItemCartaAndClearIndicaciones();
 
     // valor en blanco para nuevo pedido
     this.storageService.clear('sys::h');
@@ -741,23 +748,38 @@ export class MipedidoService {
     this.countItemsSource.next(0);
 
     this.stopTimerLimit();
+    // this.getOnlyCarta();
+
+    // this.
     // console.log('antes new', this.listItemsPedido);
+  }
+
+  // pide la carta nuevamente / despues de mandar el pedido o despues de reconectar
+  private getOnlyCarta(): void {
+    this.socketService.emit('getOnlyCarta', null);
   }
 
   // reset cantidades en vista tipos de consumo
   private resetTpcCarta(): void {
-    this.listItemsPedido.map((item: ItemModel) => {
-      if ( !item.itemtiposconsumo ) { return; }
-      item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
-        tpc.cantidad_seleccionada = 0;
-      });
+    try {
+      this.listItemsPedido.map((item: ItemModel) => {
+        if ( !item.itemtiposconsumo ) { return; }
+        // item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
+        //   tpc.cantidad_seleccionada = 0;
+        // });
 
-      const _item = this.findItemCarta(item);
-      _item.cantidad_seleccionada = 0;
-      _item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
-        tpc.cantidad_seleccionada = 0;
+        const _item = this.findItemCarta(item);
+        _item.cantidad_seleccionada = 0;
+        _item.itemtiposconsumo = null;
+        // _item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
+        //   tpc.cantidad_seleccionada = 0;
+        // });
       });
-    });
+    } catch (error) {
+      console.log(error);
+    }
+
+
 
     this.listItemsPedido = [];
   }
@@ -790,6 +812,7 @@ export class MipedidoService {
 
   // actualiza la carta del pedido reseteado por tiempo limite
   // solo local porque a los demas se le emite el socket
+  // el socket notifica a todos incluyendo al remitente lo que hace esta funcion obsoleta
   updatePedidoFromClear() {
     // actualizar // buscar cada item en el obj carta
     if ( !this.listItemsPedido ) {return; }
@@ -799,7 +822,7 @@ export class MipedidoService {
           cat.secciones.map((sec: SeccionModel) => {
             const itemUpdate = <ItemModel>sec.items.filter((x: ItemModel) => x.isporcion !== 'ND' && x.idcarta_lista === item.idcarta_lista)[0];
             if (itemUpdate) {
-              // itemUpdate.cantidad = parseInt(itemUpdate.cantidad.toString(), 0) + item.cantidad_seleccionada;
+              itemUpdate.cantidad = parseInt(itemUpdate.cantidad.toString(), 0) + item.cantidad_seleccionada;
             }
           });
         });

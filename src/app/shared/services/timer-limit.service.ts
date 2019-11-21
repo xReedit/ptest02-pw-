@@ -32,12 +32,13 @@ export class TimerLimitService {
 
   playCountTimerLimit(): void {
     if (this.isPlayTimer) {return; }
-    this.initCount();
     this.isPlayTimer = true;
+    this.initCount();
   }
 
   resetCountTimerLimit(): void {
     if (localStorage.getItem('sys::tcount') ) {
+      this.isPlayTimer = true;
       this.initCount();
     } else {
       this.stopCountTimerLimit();
@@ -53,6 +54,8 @@ export class TimerLimitService {
   }
 
   private progressCount(): void {
+    let lastValPorcentaje = 0;
+    if ( !this.isPlayTimer ) {return; }
     this.countdownTimerRef = setTimeout(() => {
       this.init = this.setTimeDate();
       this.valPorcentaje = Math.round((this.init / this.maxTime) * 100);
@@ -67,9 +70,14 @@ export class TimerLimitService {
         this.stopCountTimerLimit();
       } else {
         // console.log('timer limit', this.valPorcentaje);
-        this.countdownSource.next(this.valPorcentaje);
+        // para que no salga la alerta de incio solo una vez
+        if ( lastValPorcentaje !==  this.valPorcentaje) {
+          this.countdownSource.next(this.valPorcentaje);
+        }
         this.progressCount();
       }
+
+      lastValPorcentaje = this.valPorcentaje;
 
     }, 1000);
   }

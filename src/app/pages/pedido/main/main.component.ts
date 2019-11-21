@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
+import { SocketService } from 'src/app/shared/services/socket.service';
 
 @Component({
   selector: 'app-main',
@@ -22,11 +23,13 @@ export class MainComponent implements OnInit {
   constructor(
     private miPedidoService: MipedidoService,
     private navigatorService: NavigatorLinkService,
-    private listenStatusService: ListenStatusService
+    private listenStatusService: ListenStatusService,
+    public socketService: SocketService
     ) {
     }
 
   ngOnInit() {
+    this.socketService.isSocketOpenReconect = false;
     this.navigatorService.setPageActive('carta');
     // this.navigatorService.addLink('carta');
 

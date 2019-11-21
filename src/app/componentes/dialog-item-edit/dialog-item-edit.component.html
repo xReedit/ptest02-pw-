@@ -71,7 +71,7 @@
                 <td>{{tp.descripcion}}</td>
                 <td>
                     <div class="d-flex float-right">
-                        <span [hidden]="tp.cantidad_seleccionada === 0" class="fs-19 pr-2">{{tp.cantidad_seleccionada}}</span>                        
+                        <div [hidden]="tp.cantidad_seleccionada === 0" [ngClass]="{'bounceIn': tp.animar_cantidad}" class="fs-19 pr-2 animated">{{tp.cantidad_seleccionada}}</div>
                         <div class="btn-tbl bg-danger xCursor" matRipple (click)="addItemToDialogItem(tp, 1)">-</div>
                         <div class="btn-tbl bg-success xCursor" matRipple (click)="addItemToDialogItem(tp, 0)">+</div>                        
                     </div>

@@ -422,7 +422,7 @@ export class ResumenPedidoComponent implements OnInit {
             let haySeccion = tp.secciones.filter((s: SeccionModel) => s.idseccion.toString() === _s.idseccion.toString())[0];
             if (!haySeccion) {
               haySeccion = new SeccionModel;
-              haySeccion.idseccion = parseInt(_s.idseccion.toString(), 0);
+              haySeccion.idseccion = _s.idseccion.toString();
               haySeccion.des = _s.des_seccion;
               haySeccion.sec_orden = _s.sec_orden;
               haySeccion.ver_stock_cero = 0;
@@ -451,7 +451,7 @@ export class ResumenPedidoComponent implements OnInit {
             hayItem.precio_total = parseFloat(_i.ptotal);
             hayItem.procede = _i.procede === '0' ? 1 : 0;
             hayItem.seccion = _i.des_seccion;
-            hayItem.subitems_view = _i.subitems === 'null' ? [] : JSON.parse(_i.subitems);
+            hayItem.subitems_view = _i.subitems === 'null' || _i.subitems === '' || !_i.subitems ? [] : JSON.parse(_i.subitems);
             s.count_items = i + 1;
             s.items.push(hayItem);
           });

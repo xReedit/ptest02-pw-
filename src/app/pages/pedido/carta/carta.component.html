@@ -11,9 +11,9 @@
 
     <!-- categorias -->
     <div [hidden]="!showCategoria" class="xanimated xfadeIn">
-        <ng-container *ngIf="objCarta">
+        <ng-container *ngIf="objCartaCarta">
             <ul>
-                <li *ngFor="let item of objCarta.carta" class="xCursor"
+                <li *ngFor="let item of objCartaCarta.carta" class="xCursor"
                     matRipple [matRippleColor]="rippleColor"
                     (click)="getSecciones(item)">
                     <div class="m1">                          
@@ -47,8 +47,8 @@
               </div>
               <div>
                 <span class="fw-100 fs-19">{{item.des}}</span><br>
-                <div class="text-secondary">
-                  <span class="mt-2 fs-14">sopa, causa aaaaa, eeee , yyy.....</span>
+                <div class="titulo-detalle-seccion text-secondary">
+                  <span class="mt-2 fs-14">{{getObjDetalleSeccion(item)}}</span>
                 </div>
               </div>
             </div>

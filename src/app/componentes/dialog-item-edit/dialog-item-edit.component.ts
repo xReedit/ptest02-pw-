@@ -173,6 +173,11 @@ export class DialogItemEditComponent implements OnInit {
     this.item.subitems_selected = this._subitems_selected;
     this.miPedidoService.addItem2(tpcSelect, this.item, suma);
 
+    tpcSelect.animar_cantidad = true;
+    setTimeout(() => {
+      tpcSelect.animar_cantidad = false;
+    }, 500);
+
     this.compItemSumImporte();
     this.item.indicaciones = this.isObjSubItems ? '' : this.item.indicaciones;
 

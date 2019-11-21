@@ -3,4 +3,5 @@ export class ItemTipoConsumoModel {
     descripcion: string;
     titulo: string;
     cantidad_seleccionada: number;
+    animar_cantidad: boolean; // anima la cantidad cuando se modifoca + -
 }

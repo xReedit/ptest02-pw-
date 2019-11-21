@@ -88,3 +88,18 @@
 
 ::ng-deep.header-less-tabs.mat-tab-group .mat-tab-header { display: none; }
 
+/* #loader-wrapper .loader-msj {
+  color: #e0e0e0;
+  width: 100%;
+  z-index: 2000;
+  position: absolute;
+  text-align: center;
+  font-size: 12px;
+  bottom: 25%;
+} */
+
+/* .loaded #loader-wrapper .loader-msj {
+  opacity: 0;
+  -webkit-transition: all 0.3s ease-out;
+          transition: all 0.3s ease-out;
+} */

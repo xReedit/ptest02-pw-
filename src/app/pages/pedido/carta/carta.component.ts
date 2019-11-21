@@ -14,6 +14,7 @@ import { ListenStatusService } from 'src/app/shared/services/listen-status.servi
 import { SubItem } from 'src/app/modelos/subitems.model';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
+import { CartaModel } from 'src/app/modelos/carta.model';
 
 
 @Component({
@@ -23,7 +24,7 @@ import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/di
 })
 export class CartaComponent implements OnInit {
 
-  objCarta: any;
+  objCartaCarta: any;
   objCartaBus: any = [];
   isBusqueda = false;
   private isCargado = true;
@@ -87,28 +88,37 @@ export class CartaComponent implements OnInit {
     // if (!this.socketService.isSocketOpen) {
       this.socketService.onGetCarta().subscribe((res: any) => {
 
-        if (this.socketService.isSocketOpen) {
+        this.objCartaCarta = {
+          'carta': <CartaModel[]>res[0].carta,
+          'bodega': <SeccionModel[]>res[0].bodega
+        };
+
+        if (this.socketService.isSocketOpenReconect) {
           // actualizar cantidad actual (stock actual) de ObjCarta del item
           if ( !this.miPedidoService.findIsHayItems() ) {
-            this.objCarta = res;
+
+            // this.objCartaCarta = res;
             //
-            this.miPedidoService.setObjCarta(res);
+            this.miPedidoService.setObjCarta(this.objCartaCarta);
 
             this.isCargado = false;
+            // this.showCategoria = false;
+            // this.showSecciones = false;
+            // this.showItems = false;
             // this.showCategoria = true;
-            console.log('objCarta desde socket reconect', this.objCarta);
+            console.log('objCartaCarta desde socket reconect', this.objCartaCarta);
             this.navigatorService.setPageActive('carta');
           }
 
           return;
         }
-        this.objCarta = res;
+        // this.objCartaCarta = res;
         //
-        this.miPedidoService.setObjCarta(res);
+        this.miPedidoService.setObjCarta(this.objCartaCarta);
 
         this.isCargado = false;
         this.showCategoria = true;
-        console.log('objCarta', this.objCarta);
+        console.log('objCartaCarta', this.objCartaCarta);
 
         this.miPedidoService.clearPedidoIsLimitTime();
         this.miPedidoService.updatePedidoFromStrorage();
@@ -118,12 +128,14 @@ export class CartaComponent implements OnInit {
         this.miPedidoService.restoreTimerLimit();
 
         this.miPedidoService.listenChangeCantItem(); // cuando se reconecta para que actualize
+
+        this.loadItemsBusqueda();
       });
 
       // tipo de consumo
       this.socketService.onGetTipoConsumo().subscribe((res: TipoConsumoModel[]) => {
-        // console.log('tipo consumo ', res);
-        if (this.socketService.isSocketOpen) {return; }
+        console.log('tipo consumo ', res);
+        if (this.socketService.isSocketOpenReconect) {return; }
         this.tiposConsumo = res;
 
         // set tipos de consumo a new item tipo cosnumo para los item vista
@@ -141,7 +153,7 @@ export class CartaComponent implements OnInit {
         // console.log('this.objNewItemTiposConsumo', this.objNewItemTiposConsumo);
         // this.tiposConsumo.secciones = [];
 
-        this.loadItemsBusqueda();
+        // this.loadItemsBusqueda();
       });
     // }
 
@@ -241,34 +253,37 @@ export class CartaComponent implements OnInit {
     }
   }
 
-  selectedItem(selectedItem: ItemModel) {
-    if (!this.isBusqueda) {
-      this.objItems.map(x => x.selected = false);
-    } else {
-      this.objCartaBus.map(x => x.selected = false);
-    }
+  selectedItem(_selectedItem: ItemModel) {
+    // if (!this.isBusqueda) {
+    //   this.objItems.map(x => x.selected = false);
+    // } else {
+    //   this.objCartaBus.map(x => x.selected = false);
+    // }
 
-    if ( selectedItem.cantidad.toString() === '0' && !selectedItem.cantidad_seleccionada ) { return; }
+    if ( _selectedItem.cantidad.toString() === '0' && !_selectedItem.cantidad_seleccionada ) { return; }
 
-    selectedItem.selected = true;
-    this.itemSelected = selectedItem;
+    _selectedItem.selected = true;
+    this.itemSelected = _selectedItem;
 
     const _objNewItemTiposConsumo = JSON.parse(JSON.stringify(this.objNewItemTiposConsumo));
-    this.objItemTipoConsumoSelected = selectedItem.itemtiposconsumo ? selectedItem.itemtiposconsumo : _objNewItemTiposConsumo;
+    this.objItemTipoConsumoSelected = _selectedItem.itemtiposconsumo ? _selectedItem.itemtiposconsumo : _objNewItemTiposConsumo;
 
-    if ( !selectedItem.itemtiposconsumo ) {
-      selectedItem.itemtiposconsumo = this.objItemTipoConsumoSelected;
+    if ( !_selectedItem.itemtiposconsumo ) {
+      _selectedItem.itemtiposconsumo = this.objItemTipoConsumoSelected;
     }
 
     this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
 
-    this.openDlgItem(selectedItem);
+    this.openDlgItem(_selectedItem);
   }
 
   // abrir el dialog item
   private openDlgItem(_item: ItemModel): void {
     const dialogConfig = new MatDialogConfig();
     const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
+    if ( !_itemFromCarta.itemtiposconsumo ) {
+      _itemFromCarta.itemtiposconsumo = _item.itemtiposconsumo;
+    }
     // const _seccionItemSelect = this.miPedidoService.findItemSeccionCarta(_itemFromCarta.idseccion);
 
     dialogConfig.autoFocus = false;
@@ -344,6 +359,16 @@ export class CartaComponent implements OnInit {
       _charConcat = _charConcat.toLowerCase();
       i.visible = _charConcat.indexOf(charFind) > -1 ? true : false;
     });
+  }
+
+  getObjDetalleSeccion(seccion: SeccionModel): String {
+    let resp = '';
+    seccion.items.map((i: ItemModel, index: number) => {
+      if (index > 5) {return; }
+      resp += i.des.toLowerCase() + ', ';
+    });
+
+    return resp.slice(0, -2);
   }
 
   // addSubItem(subitem: SubItem): void {

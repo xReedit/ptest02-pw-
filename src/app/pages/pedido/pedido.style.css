@@ -110,6 +110,13 @@
   text-transform: lowercase;
 }
 
+.titulo-detalle-seccion {
+  width: 80%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .li-padding-selected .xtitulo {
   background: #e0e0e0;
   /* position: static; */

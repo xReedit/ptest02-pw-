@@ -5,12 +5,16 @@
 
   <form [formGroup]="myForm">
     <div class="w-100">
+      <!-- <i title="Cerrar Sesion" class="fa fa-search" aria-hidden="true"></i> -->
       <mat-form-field class="w-100">
-        <input matInput placeholder="DNI" formControlName="dni" (keyup.enter)="buscarDNI()" required>
-        <div>
-          <mat-progress-bar style="bottom: -11px;" [hidden]="!loadConsulta" mode="indeterminate"></mat-progress-bar>
-        </div>
+        <input matInput placeholder="DNI" type="number" formControlName="dni" (keyup.enter)="buscarDNI()" required>
+        <button mat-icon-button matSuffix (click)="buscarDNI()">            
+            <i class="fa fa-search" aria-hidden="true"></i>
+        </button>
       </mat-form-field>
+      <div class="w-100">
+        <mat-progress-bar style="bottom: 20px;" [hidden]="!loadConsulta" mode="indeterminate"></mat-progress-bar>
+      </div>
 
       <mat-form-field class="w-100">
         <input matInput placeholder="Nombre y apellidos" formControlName="nombre" required>
