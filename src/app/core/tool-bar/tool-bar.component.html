@@ -23,11 +23,11 @@
    </ng-container>
 
    <ng-container *ngIf="isBusqueda">
-      <div class="d-flex">
+      <div class="d-flex w-100">
        <div class="example-ripple-container text-success fs-15" style="margin-left: -15px;" matRipple matRippleCentered="true" [matRippleColor]="rippleColorPlomo" title="Cerrar Sesion" (click)="activaBusqueda()">
             <i title="Cerrar Sesion" class="fa fa-arrow-left" aria-hidden="true"></i>
        </div>
-       <input type="text" class="text-busqueda" placeholder="Buscar..." #txtBuscar (keyup)="buscarCharAhora(txtBuscar.value)" autofocus>
+       <input type="text" class="text-busqueda w-100" placeholder="Buscar..." #txtBuscar (keyup)="buscarCharAhora(txtBuscar.value)" autofocus>
        <div [hidden]="txtBuscar.value === ''" class="example-ripple-container text-dark fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColorPlomo"  (click)="clearTextBuqueda()">
             <i title="Cerrar Sesion" class="fa fa-times" aria-hidden="true"></i>
        </div>

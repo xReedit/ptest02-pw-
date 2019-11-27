@@ -24,7 +24,7 @@ import { CartaModel } from 'src/app/modelos/carta.model';
 })
 export class CartaComponent implements OnInit {
 
-  objCartaCarta: any;
+  // objCartaCarta: any;
   objCartaBus: any = [];
   isBusqueda = false;
   private isCargado = true;
@@ -59,7 +59,7 @@ export class CartaComponent implements OnInit {
 
   constructor(
       private socketService: SocketService,
-      private miPedidoService: MipedidoService,
+      public miPedidoService: MipedidoService,
       private reglasCartaService: ReglascartaService,
       private jsonPrintService: JsonPrintService,
       private navigatorService: NavigatorLinkService,
@@ -88,10 +88,10 @@ export class CartaComponent implements OnInit {
     // if (!this.socketService.isSocketOpen) {
       this.socketService.onGetCarta().subscribe((res: any) => {
 
-        this.objCartaCarta = {
-          'carta': <CartaModel[]>res[0].carta,
-          'bodega': <SeccionModel[]>res[0].bodega
-        };
+        // this.objCartaCarta = {
+        //   'carta': <CartaModel[]>res[0].carta,
+        //   'bodega': <SeccionModel[]>res[0].bodega
+        // };
 
         if (this.socketService.isSocketOpenReconect) {
           // actualizar cantidad actual (stock actual) de ObjCarta del item
@@ -99,14 +99,14 @@ export class CartaComponent implements OnInit {
 
             // this.objCartaCarta = res;
             //
-            this.miPedidoService.setObjCarta(this.objCartaCarta);
+            this.miPedidoService.setObjCarta(res);
 
             this.isCargado = false;
             // this.showCategoria = false;
             // this.showSecciones = false;
             // this.showItems = false;
             // this.showCategoria = true;
-            console.log('objCartaCarta desde socket reconect', this.objCartaCarta);
+            console.log('objCartaCarta desde socket reconect');
             this.navigatorService.setPageActive('carta');
           }
 
@@ -114,11 +114,11 @@ export class CartaComponent implements OnInit {
         }
         // this.objCartaCarta = res;
         //
-        this.miPedidoService.setObjCarta(this.objCartaCarta);
+        this.miPedidoService.setObjCarta(res);
 
         this.isCargado = false;
         this.showCategoria = true;
-        console.log('objCartaCarta', this.objCartaCarta);
+
 
         this.miPedidoService.clearPedidoIsLimitTime();
         this.miPedidoService.updatePedidoFromStrorage();

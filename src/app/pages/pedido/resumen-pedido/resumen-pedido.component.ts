@@ -120,6 +120,8 @@ export class ResumenPedidoComponent implements OnInit {
     });
 
     this.miPedidoService.miPedidoObserver$.subscribe((res) => {
+      // this.miPedidoService.clearObjMiPedido(); // quita las cantidades 0
+      // this._miPedido = this.miPedidoService.getMiPedido();
       this._miPedido = res;
       this.pintarMiPedido();
       console.log(this._miPedido);
@@ -283,7 +285,7 @@ export class ResumenPedidoComponent implements OnInit {
     const _p_header = {
       m: this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00',
       r: this.frmConfirma.referencia || '',
-      nom_us: this.infoToken.getInfoUs().usuario,
+      nom_us: this.infoToken.getInfoUs().nombres.split(' ')[0].toLowerCase(),
       delivery: this.frmConfirma.delivery ? 1 : 0,
       reservar: this.frmConfirma.reserva ? 1 : 0,
       solo_llevar: this.frmConfirma.solo_llevar ? 1 : 0,

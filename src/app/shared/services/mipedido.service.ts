@@ -19,6 +19,7 @@ import { SubItem } from 'src/app/modelos/subitems.model';
 import { SubItemsView } from 'src/app/modelos/subitems.view.model';
 import { UtilitariosService } from './utilitarios.service';
 import { SubItemContent } from 'src/app/modelos/subitem.content.model';
+import { CartaModel } from 'src/app/modelos/carta.model';
 
 
 @Injectable({
@@ -38,8 +39,10 @@ export class MipedidoService {
   private itemStockChangeSource = new BehaviorSubject<ItemModel>(new ItemModel());
   public itemStockChangeObserve$ = this.itemStockChangeSource.asObservable();
 
-  private objCarta: any;
+  public objCarta: any;
   public objDatosSede: any;
+
+  private isPreAvisoVisible = false;
 
   listItemsPedido: ItemModel[] = [];
   miPedido: PedidoModel = new PedidoModel();
@@ -81,9 +84,13 @@ export class MipedidoService {
     this.miPedidoSource.next(this.miPedido);
   }
 
-  setObjCarta(_objCarta: any) {
+  setObjCarta(res: any) {
 
-    this.objCarta = _objCarta;
+    // esto lo manda desde carta component
+    this.objCarta = {
+      'carta': <CartaModel[]>res[0].carta,
+      'bodega': <SeccionModel[]>res[0].bodega
+    };
 
     // colocamos la bodega en todas las cartas
     const _carta = this.objCarta.carta;
@@ -95,6 +102,8 @@ export class MipedidoService {
         });
       });
     }
+
+    console.log('objCartaCarta', this.objCarta);
   }
 
   getMiPedido(): PedidoModel {
@@ -545,8 +554,10 @@ export class MipedidoService {
 
     const findTpc = <TipoConsumoModel>this.miPedido.tipoconsumo.filter((x: TipoConsumoModel) => x.idtipo_consumo === _tpc.idtipo_consumo)[0];
     if (findTpc) {
+      // if (!sumar) { this.quitarTpcMiPedido(findTpc); return; }
       const findSecc = <SeccionModel>findTpc.secciones.filter((sec: SeccionModel) => sec.idseccion === _seccion.idseccion)[0];
       if (findSecc) {
+        // if (!sumar) { this.quitarTpcMiPedido(findTpc); }
         const _rpt = findSecc.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0];
         if (_rpt) {
 
@@ -581,11 +592,17 @@ export class MipedidoService {
       } else {
         // si no existe seccion add
         rpt = elItem;
-        _seccion.items.push(rpt);
-        findTpc.secciones.push(_seccion);
+        // _seccion.items.push(rpt);
+
+        const _newSeccion = <SeccionModel>JSON.parse(JSON.stringify(_seccion));
+        _newSeccion.items = [];
+        _newSeccion.items.push(elItem);
+        findTpc.secciones = findTpc.secciones ? findTpc.secciones : [];
+        findTpc.secciones.push(_newSeccion);
+        // findTpc.secciones.push(_seccion);
 
         this.addItemSubItemMiPedido(elItem, item, sumar);
-        this.setCountCantItemTpcAndSeccion(findTpc, _seccion);
+        this.setCountCantItemTpcAndSeccion(findTpc, _newSeccion);
       }
     } else {
       // si no existe tpc add
@@ -605,8 +622,23 @@ export class MipedidoService {
       rpt = elItem;
     }
 
-    this.miPedidoSource.next(this.miPedido);
+    this.clearObjMiPedido();
+    // this.miPedidoSource.next(this.miPedido);
     return rpt;
+  }
+
+  private quitarTpcMiPedido(tpcFind: TipoConsumoModel): void {
+    if ( tpcFind.count_items_seccion === 1 ) {
+      this.miPedido.tipoconsumo = this.miPedido.tipoconsumo.filter((tpc: TipoConsumoModel) => !tpcFind);
+    }
+  }
+
+  private quitarSeccionMiPedido(secFind: SeccionModel): void {
+    if ( secFind.count_items === 1 ) {
+      this.miPedido.tipoconsumo.map((tpc: TipoConsumoModel) => {
+        tpc.secciones.filter((sec: SeccionModel) => !secFind);
+      });
+    }
   }
 
   // busca si en el pedido hay para consumir en el local y si es asi, exigir numero de mesa
@@ -674,6 +706,39 @@ export class MipedidoService {
 
   findIsHayItems(): boolean {
     return this.setCountTotalImtesPedido() > 0 ? true : false;
+  }
+
+  // quita los items, secciones, tpc con cantidad 0
+  clearObjMiPedido(): void {
+    // limpia los tipos de consumo con items = 0
+    this.miPedido.tipoconsumo = this.miPedido.tipoconsumo.filter((tpc: TipoConsumoModel) => tpc.count_items_seccion > 0 );
+    if ( this.miPedido.tipoconsumo.length === 0 ) {
+      this.miPedido = new PedidoModel();
+
+      console.log('mi pedido clear', this.miPedido);
+      this.miPedidoSource.next(this.miPedido);
+      return;
+    }
+
+
+    // limpia las secciones con items = 0
+    this.miPedido.tipoconsumo = this.miPedido.tipoconsumo.map((tpc: TipoConsumoModel) => {
+      tpc.secciones = tpc.secciones.filter((sec: SeccionModel) => sec.count_items > 0);
+      return tpc;
+    });
+
+    // limpia las item con cantidad_seleccionada = 0
+    this.miPedido.tipoconsumo = this.miPedido.tipoconsumo.map((tpc: TipoConsumoModel) => {
+      tpc.secciones = tpc.secciones.map((sec: SeccionModel) => {
+        sec.items = sec.items.filter((item: ItemModel) => item.cantidad_seleccionada > 0);
+        return sec;
+      });
+      return tpc;
+    });
+
+    console.log('mi pedido clear', this.miPedido);
+    this.miPedidoSource.next(this.miPedido);
+
   }
 
   // <---------- Busquedas ------> //
@@ -763,12 +828,14 @@ export class MipedidoService {
   private resetTpcCarta(): void {
     try {
       this.listItemsPedido.map((item: ItemModel) => {
+        item.indicaciones = '';
         if ( !item.itemtiposconsumo ) { return; }
         // item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
         //   tpc.cantidad_seleccionada = 0;
         // });
 
         const _item = this.findItemCarta(item);
+        _item.indicaciones = '';
         _item.cantidad_seleccionada = 0;
         _item.itemtiposconsumo = null;
         // _item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
@@ -1187,19 +1254,23 @@ export class MipedidoService {
     this.timerLimitService.countdown$.subscribe((countTime: number) => {
       switch (countTime) {
         case 1:
-          if ( this._snackBar._openedSnackBarRef ) {return; }
-          this._snackBar.open(`Recuerde, ${this.max_minute_order} minutos para enviar su pedido.`, '', {
-            duration: 3000,
-          });
+          // if ( this._snackBar._openedSnackBarRef ) {return; }
+          // this._snackBar.open(`Recuerde, ${this.max_minute_order} minutos para enviar su pedido.`, '', {
+          //   duration: 3000,
+          // });
+          this.isPreAvisoVisible = false;
           break;
         case 80:
-          this._snackBar.open('Proximo a cumplir el tiempo de envio.', '', {
-            duration: 3000,
-          });
+          if (!this.isPreAvisoVisible) {
+            this.isPreAvisoVisible = true;
+            this._snackBar.open('Proximo a cumplir el tiempo de envio.', '', {
+              duration: 2000,
+            });
+          }
           break;
         case 100:
           this._snackBar.open('Tiempo agotado, debe realizar un nuevo pedido.', '', {
-            duration: 4000,
+            duration: 3000,
           });
           break;
       }

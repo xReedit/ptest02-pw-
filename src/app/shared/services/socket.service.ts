@@ -38,23 +38,15 @@ export class SocketService {
 
   constructor(private infoTockenService: InfoTockenService) {
 
-    // window.addEventListener('offline', () => {
-    //   this.showStatusConexNavigator(false);
-    // });
-
-    // window.addEventListener('load', () => {
-      // 1st, we set the correct status when the page loads
-      // navigator.onLine ? this.showStatusConexNavigator(true) : this.showStatusConexNavigator(false);
-      // now we listen for network status changes
-      window.addEventListener('online', () => {
-        this.showStatusConexNavigator(true, 'navigator_online');
-      });
-      window.addEventListener('offline', () => {
-        this.showStatusConexNavigator(false, 'navigator_offline');
-      });
+      // window.addEventListener('online', () => {
+      //   this.showStatusConexNavigator(true, 'navigator_online');
+      // });
+      // window.addEventListener('offline', () => {
+      //   this.showStatusConexNavigator(false, 'navigator_offline');
+      // });
 
       this.statusConexSocket(false, '');
-    // });
+
 
   }
 
@@ -94,7 +86,7 @@ export class SocketService {
         this.statusConexSocket(true, '');
         this.isSocketOpenReconect = true; // evita que cargen nuevamente las configuraciones basicas, solo carga carta
       }, 1000);
-      console.log('conected socket');
+      console.log('conected socket finishLoadDataInitial');
     });
 
     this.socket.on('connect_failed', (res: any) => {

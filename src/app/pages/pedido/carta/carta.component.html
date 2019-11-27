@@ -11,9 +11,9 @@
 
     <!-- categorias -->
     <div [hidden]="!showCategoria" class="xanimated xfadeIn">
-        <ng-container *ngIf="objCartaCarta">
+        <ng-container *ngIf="miPedidoService.objCarta">
             <ul>
-                <li *ngFor="let item of objCartaCarta.carta" class="xCursor"
+                <li *ngFor="let item of miPedidoService.objCarta.carta" class="xCursor"
                     matRipple [matRippleColor]="rippleColor"
                     (click)="getSecciones(item)">
                     <div class="m1">                          
@@ -48,7 +48,7 @@
               <div>
                 <span class="fw-100 fs-19">{{item.des}}</span><br>
                 <div class="titulo-detalle-seccion text-secondary">
-                  <span class="mt-2 fs-14">{{getObjDetalleSeccion(item)}}</span>
+                  <span class="fw-100 mt-2 fs-13">{{getObjDetalleSeccion(item)}}</span>
                 </div>
               </div>
             </div>

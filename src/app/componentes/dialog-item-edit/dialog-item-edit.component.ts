@@ -5,6 +5,7 @@ import { ItemModel } from 'src/app/modelos/item.model';
 import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { SubItem } from 'src/app/modelos/subitems.model';
 import { SubItemContent } from 'src/app/modelos/subitem.content.model';
+import { SubItemsView } from 'src/app/modelos/subitems.view.model';
 
 @Component({
   selector: 'app-dialog-item-edit',
@@ -170,7 +171,22 @@ export class DialogItemEditComponent implements OnInit {
 
   addItemToDialogItem(tpcSelect: ItemTipoConsumoModel, suma: number): void {
     console.log('restar desde dialogitem');
+    let paseCantSuItem = true;
     this.item.subitems_selected = this._subitems_selected;
+
+    // ver si selecciono subitems y si ese subitem tiene stock disponible
+    this.item.subitems_selected.map((t: SubItem) => {
+      if (t.cantidad !== 'ND') {
+        if ( parseFloat(t.cantidad.toString()) === 0 ) {
+          paseCantSuItem = false;
+          return;
+        }
+      }
+    });
+
+    if ( !paseCantSuItem ) {return; }
+    // ver si selecciono subitems y si ese subitem tiene stock disponible
+
     this.miPedidoService.addItem2(tpcSelect, this.item, suma);
 
     tpcSelect.animar_cantidad = true;

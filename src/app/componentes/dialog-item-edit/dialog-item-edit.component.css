@@ -6,6 +6,10 @@
     overflow: hidden;
 }
 
+::ng-deep .cdk-overlay-dark-backdrop {
+    background: rgba(0,0,0,.52);
+}
+
 .item-content {
     position: relative;
 }
@@ -83,7 +87,7 @@
     min-width: 150px;
     font-size: 12px;
     display: inline-flex;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #eeeeee;
     padding-bottom: 2px;
     padding-top: 2px;
 }
@@ -131,10 +135,11 @@
 .btn-tbl {
   text-align: center;
   color: white;
-  padding: 6px 15px 6px 15px;
+  padding: 7px 16px 7px 16px;
   font-size: 15px;
   border-radius: 5px;
-  margin-left: 2px;
+  margin-left: 4px;
+  margin-bottom: 4px;
 }
 
 #tpc_content[disabled] {
