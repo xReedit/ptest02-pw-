@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
@@ -15,6 +15,8 @@ import { SubItem } from 'src/app/modelos/subitems.model';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
 import { CartaModel } from 'src/app/modelos/carta.model';
+import { Subject } from 'rxjs/internal/Subject';
+import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 
 
 @Component({
@@ -22,7 +24,9 @@ import { CartaModel } from 'src/app/modelos/carta.model';
   templateUrl: './carta.component.html',
   styleUrls: ['./carta.component.css', '../pedido.style.css']
 })
-export class CartaComponent implements OnInit {
+export class CartaComponent implements OnInit, OnDestroy {
+
+  private unsubscribe$ = new Subject();
 
   // objCartaCarta: any;
   objCartaBus: any = [];
@@ -61,7 +65,7 @@ export class CartaComponent implements OnInit {
       private socketService: SocketService,
       public miPedidoService: MipedidoService,
       private reglasCartaService: ReglascartaService,
-      private jsonPrintService: JsonPrintService,
+      // private jsonPrintService: JsonPrintService,
       private navigatorService: NavigatorLinkService,
       private listenStatusService: ListenStatusService,
       private dialog: MatDialog,
@@ -75,7 +79,7 @@ export class CartaComponent implements OnInit {
 
     this.listeStatusBusqueda();
 
-    this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
+    this.navigatorService.resNavigatorSourceObserve$.pipe(takeUntil(this.unsubscribe$)).subscribe((res: any) => {
       if (res.pageActive === 'carta') {
         if (this.countSeeBack < 2) { this.countSeeBack++; return; }
         this.goBack();
@@ -86,7 +90,7 @@ export class CartaComponent implements OnInit {
 
     // console.log('aaa');
     // if (!this.socketService.isSocketOpen) {
-      this.socketService.onGetCarta().subscribe((res: any) => {
+      this.socketService.onGetCarta().pipe(takeUntil(this.unsubscribe$)).subscribe((res: any) => {
 
         // this.objCartaCarta = {
         //   'carta': <CartaModel[]>res[0].carta,
@@ -133,7 +137,7 @@ export class CartaComponent implements OnInit {
       });
 
       // tipo de consumo
-      this.socketService.onGetTipoConsumo().subscribe((res: TipoConsumoModel[]) => {
+      this.socketService.onGetTipoConsumo().pipe(takeUntil(this.unsubscribe$)).subscribe((res: TipoConsumoModel[]) => {
         console.log('tipo consumo ', res);
         if (this.socketService.isSocketOpenReconect) {return; }
         this.tiposConsumo = res;
@@ -164,6 +168,11 @@ export class CartaComponent implements OnInit {
 
     // datos de la sede, impresoras
     // this.jsonPrintService.getDataSede();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   getSecciones(categoria: CategoriaModel) {
@@ -341,11 +350,11 @@ export class CartaComponent implements OnInit {
   }
 
   private listeStatusBusqueda(): void {
-    this.listenStatusService.isBusqueda$.subscribe(res => {
+    this.listenStatusService.isBusqueda$.pipe(takeUntil(this.unsubscribe$)).subscribe(res => {
       this.isBusqueda = res;
     });
 
-    this.listenStatusService.charBuqueda$.subscribe((res: string) => {
+    this.listenStatusService.charBuqueda$.pipe(takeUntil(this.unsubscribe$)).subscribe((res: string) => {
       this.isBusquedaFindNow(res);
     });
   }

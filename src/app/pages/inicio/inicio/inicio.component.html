@@ -1,23 +1,32 @@
 <div>
   <div class="text-center">
     <div>
-      <div class="text-right text-secondary" style="position: absolute; right: 0px;">        
-        <i class="fa fa-user-circle-o p-2" aria-hidden="true" [routerLink]="['/lector-qr']"></i>
-      </div>      
-    </div>
-    <br><br><br>
-    <!-- <button mat-flat-button color="warn" [routerLink]="['/login-personal-autorizado']">Personal Autorizado</button> -->
-    <div>      
-      <img src="assets/images/papaya_text.png" width="190px">
-      <p>Restobar <span class="fs-13 text-secondary">v.1d</span></p>
-    </div>
+      <div>
+        <div class="text-right text-secondary" style="position: absolute; right: 0px;">        
+            <button *ngIf="isLogin" mat-button color="accent" (click)="cerrarSession()">Cerrar sesion</button>
+          <i class="fa fa-user-circle-o p-2" aria-hidden="true" [routerLink]="['/lector-qr']"></i>
+        </div>      
+      </div>
+      <br><br><br>
+      <!-- <button mat-flat-button color="warn" [routerLink]="['/login-personal-autorizado']">Personal Autorizado</button> -->
+      <div>      
+        <img src="assets/images/papaya_text.png" width="190px">
+        <p>Restobar <span class="fs-13 text-secondary">v.1d</span></p>
+      </div>
 
-    <div class="text-center p-4">
-      <img src="assets/images/img-ini.png" style="max-width: 320px; width: 100%;" alt="ini">
-      <p>Software especializado para negocios gastronomicos.</p>
+      <div class="text-center pl-4 pr-4">
+        <img src="assets/images/img-ini.png" style="max-width: 320px; width: 100%;" alt="ini">
+        <p>Software especializado para negocios gastronomicos.</p>
+      </div>
+
+      <div *ngIf="isLogin" class="border-bottom" style="background: blanchedalmond;">
+        <hr>
+        <p class="fs-13">Hola <strong>{{nombreClientSocket}}</strong>, que quieres comer hoy?</p>        
+      </div>
+
+      <br>
+      <hr>    
     </div>
-    <br>
-    <hr>    
     <div class="xfooter">
       <button mat-flat-button color="primary" [routerLink]="['/login-personal-autorizado']">Personal Autorizado</button>
     </div>    

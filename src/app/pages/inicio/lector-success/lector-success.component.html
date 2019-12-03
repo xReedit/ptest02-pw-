@@ -1,3 +1,56 @@
-<div class="animated fadeIn">
-    <p>lector-success works!</p>
+<div class="animated fadeIn text-center" *ngIf="dataSede">
+    <div class="content-body">    
+        <!-- mesa -->    
+        <div class="pt-3 pb-2 border-bottom fondo-beige">
+            <div class="text-center d-inline">
+                <div class="content-num-mesa">
+                    <h2 class="num-mesa">05</h2>
+                </div>
+            </div>
+        </div>    
+        <!-- estableciemiento -->
+        <div class="info-establecimiento-content pt-3">
+            <p class="fs-20">{{dataSede.nombre}}</p>
+            <p class="fw-100 fs-12 pb-2">{{dataSede.eslogan}}</p>
+            <p class="fw-100 fs-13">{{dataSede.pwa_msj_ini}}</p>
+        </div>
+        <hr>
+
+        <!-- reglas -->
+        <div class="pl-3 pr-3 mb-4">
+            <p class="pb-2">Información Básica</p>
+            <div class="text-left">            
+                    <div *ngFor="let item of listReglas" class="d-flex p-1 mb-3">
+                        <div class="pr-2"><img src="/assets/images/{{item.img}}" alt="i1"></div>
+                        <p class="fw-100 fs-13">{{item.descripcion}}</p>
+                    </div>            
+            </div>
+        </div>        
+    </div>
+    
+
+
+    <!-- footer -->
+    <footer>
+        <!-- login -->
+        <div style="min-height: 55px;">
+            <div class="content-register" *ngIf="!auth.loggedIn">
+                <div>
+                    <p class="fs-13 mb-2">Para obtener promociones y descuentos</p>
+                    <button mat-stroked-button style="background: #3f51b5;" (click)="auth.login('#')">Registrate aqui.</button>
+                    <!-- <a mat-raised-button routerLink=".">Registrate aqui.</a> -->
+                </div>
+
+                <!-- <div>
+                    <button mat-stroked-button style="background: #3f51b5;" (click)="auth.logout()">Cerrar sesion.</button>
+                </div> -->
+            </div>
+        </div>        
+
+        <!-- iniciar -->
+
+        <div matRipple class="content-ready" (click)="listoEmpezar()">
+            <p><span class="pr-2">Listo Empezar</span><i class="fa fa-arrow-right" aria-hidden="true"></i></p>
+        </div>
+    </footer>
 </div>

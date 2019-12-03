@@ -1,5 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
+import { Auth0Service } from 'src/app/shared/services/auth0.service';
+import { Subscription } from 'rxjs/internal/Subscription';
+import { take } from 'rxjs/operators';
 
 // import {QrScannerComponent} from 'angular2-qrscanner';
 
@@ -9,7 +13,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./lector-codigo-qr.component.css'],
   // encapsulation: ViewEncapsulation.None,
 })
-export class LectorCodigoQrComponent implements OnInit {
+export class LectorCodigoQrComponent implements OnInit, OnDestroy {
 
   codQR = '';
   hasDevices: boolean;
@@ -22,13 +26,32 @@ export class LectorCodigoQrComponent implements OnInit {
   indexSelectCamera = 0;
   isOptionChangeCamera = false;
   isCodigoQrValido = true;
+  isCameraReady = false;
 
-  constructor( private router: Router ) { }
+
+  // private veryfyClient: Subscription = null;
+
+  constructor(
+    private verifyClientService: VerifyAuthClientService,
+    private router: Router ) { }
 
   ngOnInit() {
 
     // const qrScanner = new QrScanner(this.videoplayer, (result: any) => console.log('decoded qr code:', result));
 
+    // verifica si hay usuario logeado
+    // this.verifyClientService.verifyClient();
+    // this.veryfyClient = this.verifyClientService.verifyClient()
+    //   .pipe(take(1))
+    //   .subscribe(res => {
+    //     console.log('res idcliente', res);
+    //   });
+  }
+
+  ngOnDestroy(): void {
+    // this.verifyClientService.unsubscribeClient();
+    // this.veryfyClient.unsubscribe();
+    this.currentDevice = null;
   }
 
   scanSuccessHandler($event: any) {
@@ -71,6 +94,7 @@ export class LectorCodigoQrComponent implements OnInit {
   }
 
   onDeviceSelectChange(): void {
+    this.isCameraReady = false;
     const countCamaras = this.availableDevices.length - 1;
     this.indexSelectCamera = this.indexSelectCamera === countCamaras ? 0 : this.indexSelectCamera + 1;
     this.deviceSelectChange();
@@ -79,12 +103,34 @@ export class LectorCodigoQrComponent implements OnInit {
   private deviceSelectChange(): void {
     const device = this.availableDevices[this.indexSelectCamera];
     this.currentDevice = device || null;
+
+    setTimeout(() => {
+      this.isCameraReady = true;
+    }, 1000);
   }
 
-  // leer qr // formato 5|-6.0283481:-76.9714528|1 -> mesa | coordenadas del local | idsede
+  // leer qr // formato keyQrPwa::5|-6.0283481:-76.9714528|1 -> mesa | coordenadas del local | idsede
   private leerDatosQR(divicePos: any) {
     this.isCodigoQrValido = true;
-    const dataQr = this.codQR.split('|');
+    let _codQr = [];
+
+    try {
+      _codQr = atob(this.codQR).split('::');
+    } catch (error) {
+      this.resValidQR(false);
+      return;
+    }
+
+    const isValidKeyQR = _codQr[0] === 'keyQrPwa' ? true : false;
+
+    // no se encuentra el key no es qr valido
+    if ( !isValidKeyQR ) {
+      this.resValidQR(isValidKeyQR);
+      return;
+    }
+
+    // const dataQr = this.codQR.split('|');
+    const dataQr = _codQr[1].split('|');
     const m = dataQr[0];
     const position = dataQr[1].split(':');
     const s = dataQr[2];
@@ -94,12 +140,20 @@ export class LectorCodigoQrComponent implements OnInit {
       s: s
     };
 
-    const localPos = { lat: position[0], lng: position[1] };
+    // setear idsede en clienteSOcket
+    this.verifyClientService.getDataClient();
+    this.verifyClientService.setIdSede(s);
+
+    const localPos = { lat: parseFloat(position[0]), lng: parseFloat(position[1]) };
 
     // si las coordenadas del dispositivo esta a 1 un km del local
     const isPositionCorrect = this.arePointsNear(localPos, divicePos, 1);
 
-    if ( isPositionCorrect ) {
+    this.resValidQR(isPositionCorrect);
+  }
+
+  private resValidQR(isValid: boolean): void {
+    if ( isValid ) {
       console.log('pase correcto');
       setTimeout(() => {
         this.router.navigate(['/lector-success']);

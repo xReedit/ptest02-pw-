@@ -12,7 +12,6 @@ import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
 import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { InfoTockenService } from './info-token.service';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { ThrowStmt } from '@angular/compiler';
 
 
 @Injectable({
@@ -38,14 +37,14 @@ export class SocketService {
 
   constructor(private infoTockenService: InfoTockenService) {
 
-      // window.addEventListener('online', () => {
-      //   this.showStatusConexNavigator(true, 'navigator_online');
-      // });
-      // window.addEventListener('offline', () => {
-      //   this.showStatusConexNavigator(false, 'navigator_offline');
-      // });
+      window.addEventListener('online', () => {
+        this.showStatusConexNavigator(true, 'navigator_online');
+      });
+      window.addEventListener('offline', () => {
+        this.showStatusConexNavigator(false, 'navigator_offline');
+      });
 
-      this.statusConexSocket(false, '');
+      // this.statusConexSocket(false, '');
 
 
   }
@@ -66,6 +65,8 @@ export class SocketService {
       idorg: infToken.idorg,
       idsede: infToken.idsede,
       idusuario: infToken.idusuario,
+      idcliente: infToken.idcliente,
+      iscliente: infToken.isCliente,
       isFromApp: 1
     };
 
@@ -80,12 +81,12 @@ export class SocketService {
     });
 
     this.socket.on('finishLoadDataInitial', () => {
-      setTimeout(() => {
+      // setTimeout(() => {
         // this.isSocketOpen = true;
         // this.isSocketOpenSource.next(true);
         this.statusConexSocket(true, '');
         this.isSocketOpenReconect = true; // evita que cargen nuevamente las configuraciones basicas, solo carga carta
-      }, 1000);
+      // }, 1000);
       console.log('conected socket finishLoadDataInitial');
     });
 

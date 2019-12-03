@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { ReglascartaService } from 'src/app/shared/services/reglascarta.service';
@@ -23,14 +23,18 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogLoadingComponent } from './dialog-loading/dialog-loading.component';
 import { DialogResetComponent } from './dialog-reset/dialog-reset.component';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
+import { Subject } from 'rxjs/internal/Subject';
+import { pipe } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-resumen-pedido',
   templateUrl: './resumen-pedido.component.html',
   styleUrls: ['./resumen-pedido.component.css']
 })
-export class ResumenPedidoComponent implements OnInit {
+export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
+  private unsubscribe$ = new Subject();
 
   _miPedido: PedidoModel = new PedidoModel();
   _arrSubtotales: any = [];
@@ -74,7 +78,9 @@ export class ResumenPedidoComponent implements OnInit {
 
     this._miPedido = this.miPedidoService.getMiPedido();
 
-    this.reglasCartaService.loadReglasCarta().subscribe((res: any) => {
+    this.reglasCartaService.loadReglasCarta()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((res: any) => {
       this.rulesCarta = res[0] ? res[0].reglas ? res[0].reglas : [] : res.reglas ? res.reglas : [];
       this.rulesSubtoTales = res.subtotales || res[0].subtotales;
       this.listenMiPedido();
@@ -84,7 +90,7 @@ export class ResumenPedidoComponent implements OnInit {
       // this.frmDelivery = new DatosDeliveryModel();
     });
 
-    this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
+    this.navigatorService.resNavigatorSourceObserve$.pipe(takeUntil(this.unsubscribe$)).subscribe((res: any) => {
           if (res.pageActive === 'mipedido') {
             if (res.url.indexOf('confirma') > 0) {
               this.confirmarPeiddo();
@@ -93,6 +99,11 @@ export class ResumenPedidoComponent implements OnInit {
             }
           }
         });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   private newFomrConfirma(): void {
@@ -115,11 +126,11 @@ export class ResumenPedidoComponent implements OnInit {
   }
 
   listenMiPedido() {
-    this.miPedidoService.countItemsObserve$.subscribe((res) => {
+    this.miPedidoService.countItemsObserve$.pipe(takeUntil(this.unsubscribe$)).subscribe((res) => {
       this.hayItems = res > 0 ? true : false;
     });
 
-    this.miPedidoService.miPedidoObserver$.subscribe((res) => {
+    this.miPedidoService.miPedidoObserver$.pipe(takeUntil(this.unsubscribe$)).subscribe((res) => {
       // this.miPedidoService.clearObjMiPedido(); // quita las cantidades 0
       // this._miPedido = this.miPedidoService.getMiPedido();
       this._miPedido = res;
@@ -127,7 +138,7 @@ export class ResumenPedidoComponent implements OnInit {
       console.log(this._miPedido);
     });
 
-    this.listenStatusService.hayCuentaBusqueda$.subscribe(res => {
+    this.listenStatusService.hayCuentaBusqueda$.pipe(takeUntil(this.unsubscribe$)).subscribe(res => {
       this.isHayCuentaBusqueda = res;
     });
   }

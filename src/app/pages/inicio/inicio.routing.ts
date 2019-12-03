@@ -6,6 +6,7 @@ import { InicioComponent } from './inicio/inicio.component';
 import { LoginPersonalAutorizadoComponent } from './login-personal-autorizado/login-personal-autorizado.component';
 import { LectorCodigoQrComponent } from './lector-codigo-qr/lector-codigo-qr.component';
 import { LectorSuccessComponent } from './lector-success/lector-success.component';
+import { CallbackAuthComponent } from './callback-auth/callback-auth.component';
 
 const routes: Routes = [{
     path: '', component: MainComponent,
@@ -33,6 +34,11 @@ const routes: Routes = [{
             path: 'lector-success',
             component: LectorSuccessComponent,
             data: { titulo: 'Lector QR' }
+        },
+        {
+            path: 'callback-auth',
+            component: CallbackAuthComponent,
+            data: { titulo: 'Callback Auth' }
         }
     ]
 }];

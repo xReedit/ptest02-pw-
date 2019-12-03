@@ -14,4 +14,6 @@ export class UsuarioTokenModel {
     rol: number;
     super: number;
     usuario: string;
+    idcliente: number;
+    isCliente: boolean;
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
+import { tokenName } from '@angular/compiler';
 
 
 @Injectable({
@@ -33,7 +34,22 @@ export class InfoTockenService {
   converToJSON(): void {
     if (localStorage.getItem('::token')) {
       const _token =  JSON.parse(atob(localStorage.getItem('::token').split('.')[1]));
-      this.infoUsToken = <UsuarioTokenModel>_token.usuario;
+
+      // si existe idcliente, setea al usuario
+      if ( _token.idcliente ) {
+        const _newUs = new UsuarioTokenModel();
+        _newUs.isCliente = true;
+        _newUs.idcliente = _token.idcliente;
+        _newUs.idorg = _token.idorg;
+        _newUs.idsede = _token.idsede;
+        _newUs.nombres = _token.datalogin.name;
+        _newUs.idusuario = 0;
+        _newUs.usuario = 'cliente';
+        this.infoUsToken = _newUs;
+      } else {
+        this.infoUsToken = <UsuarioTokenModel>_token.usuario;
+        this.infoUsToken.isCliente = false;
+      }
     } else {
       this.infoUsToken = null;
     }

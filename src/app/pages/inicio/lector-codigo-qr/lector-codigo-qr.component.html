@@ -6,7 +6,7 @@
             (camerasFound)="onCamerasFound($event)" 
             (permissionResponse)="onHasPermission($event)"
             (scanSuccess)="scanSuccessHandler($event)"></zxing-scanner>
-        <div class="linea-scan"></div>
+        <div *ngIf="isCameraReady" class="linea-scan"></div>
         <br>
         <button mat-button *ngIf="isOptionChangeCamera" (click)="onDeviceSelectChange()"><i class="fa fa-undo" aria-hidden="true"></i></button>        
     </div>
