@@ -90,6 +90,10 @@ export class SocketService {
       console.log('conected socket finishLoadDataInitial');
     });
 
+    // this.socket.on('connect', (res: any) => {
+    //   this.statusConexSocket(true, 'socket event connect');
+    // });
+
     this.socket.on('connect_failed', (res: any) => {
       console.log('itento fallido de conexion', res);
       this.statusConexSocket(false, 'connect_failed');
@@ -101,6 +105,7 @@ export class SocketService {
     });
 
     this.socket.on('disconnect', (res: any) => {
+      console.log('disconnect');
       this.statusConexSocket(false, 'disconnect');
     });
 

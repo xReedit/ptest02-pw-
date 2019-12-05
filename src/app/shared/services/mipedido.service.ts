@@ -30,6 +30,10 @@ export class MipedidoService {
   private miPedidoSource = new BehaviorSubject<PedidoModel>(new PedidoModel());
   public miPedidoObserver$ = this.miPedidoSource.asObservable();
 
+  // la carta observable
+  // private laCartaObjSource = new BehaviorSubject<any>({});
+  // public laCartaObj$ = this.laCartaObjSource.asObservable();
+
   // number tab Mi Pedido
   private countItemsSource = new BehaviorSubject<number>(0);
   public countItemsObserve$ = this.countItemsSource.asObservable();
@@ -87,23 +91,31 @@ export class MipedidoService {
   setObjCarta(res: any) {
 
     // esto lo manda desde carta component
-    this.objCarta = {
-      'carta': <CartaModel[]>res[0].carta,
-      'bodega': <SeccionModel[]>res[0].bodega
-    };
+    this.objCarta = {};
 
-    // colocamos la bodega en todas las cartas
-    const _carta = this.objCarta.carta;
-    const _bodega = this.objCarta.bodega;
-    if ( _bodega ) {
-      _carta.map((c: CategoriaModel) => {
-        _bodega.map((bs: SeccionModel) => {
-          c.secciones.push(bs);
+    // setTimeout(() => {
+      this.objCarta = {
+        'carta': null,
+        'bodega': null
+      };
+
+      this.objCarta.carta = <CartaModel[]>res[0].carta;
+      this.objCarta.bodega = <SeccionModel[]>res[0].bodega;
+
+      // colocamos la bodega en todas las cartas
+      const _carta = this.objCarta.carta;
+      const _bodega = this.objCarta.bodega;
+      if ( _bodega ) {
+        _carta.map((c: CategoriaModel) => {
+          _bodega.map((bs: SeccionModel) => {
+            c.secciones.push(bs);
+          });
         });
-      });
-    }
+      }
 
-    console.log('objCartaCarta', this.objCarta);
+      // this.laCartaObjSource.next(this.objCarta);
+      console.log('objCartaCarta', this.objCarta);
+    // }, 1000);
   }
 
   getMiPedido(): PedidoModel {
@@ -456,6 +468,7 @@ export class MipedidoService {
       });
     }
 
+    // this.laCartaObjSource.next(this.objCarta.carta);
     console.log('item new add in carta', this.objCarta.carta);
   }
 
@@ -499,6 +512,8 @@ export class MipedidoService {
               .map((x: ItemModel) => x.subitems_view = null);
       });
     });
+
+    // this.laCartaObjSource.next(this.objCarta);
   }
 
   // buscar item en la carta
@@ -808,6 +823,7 @@ export class MipedidoService {
     this.storageService.clear('sys::tcount'); // timer count
     this.storageService.clear('sys::tnum'); // timer count
     // this.listItemsPedido = [];
+    this.miPedido = null;
     this.miPedido = new PedidoModel();
     this.miPedidoSource.next(this.miPedido);
     this.countItemsSource.next(0);
@@ -847,6 +863,7 @@ export class MipedidoService {
     }
 
 
+    // this.laCartaObjSource.next(this.objCarta);
 
     this.listItemsPedido = [];
   }
@@ -875,6 +892,8 @@ export class MipedidoService {
         });
       }
     });
+
+    // this.laCartaObjSource.next(this.objCarta);
   }
 
   // actualiza la carta del pedido reseteado por tiempo limite
@@ -893,6 +912,8 @@ export class MipedidoService {
             }
           });
         });
+
+        // this.laCartaObjSource.next(this.objCarta);
       }
     });
 

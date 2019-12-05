@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { take } from 'rxjs/internal/operators/take';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
+import { WebsocketService } from 'src/app/shared/services/websocket.service';
 
 @Component({
   selector: 'app-inicio',
@@ -18,6 +19,7 @@ export class InicioComponent implements OnInit, OnDestroy {
 
   constructor(
     private verifyClientService: VerifyAuthClientService,
+    // private webSocketService: WebsocketService
     ) { }
 
   ngOnInit() {

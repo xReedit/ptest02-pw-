@@ -17,6 +17,7 @@ import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/di
 import { CartaModel } from 'src/app/modelos/carta.model';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 
 @Component({
@@ -26,7 +27,7 @@ import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 })
 export class CartaComponent implements OnInit, OnDestroy {
 
-  private unsubscribe$ = new Subject();
+  private unsubscribeCarta = new Subscription();
 
   // objCartaCarta: any;
   objCartaBus: any = [];
@@ -79,7 +80,7 @@ export class CartaComponent implements OnInit, OnDestroy {
 
     this.listeStatusBusqueda();
 
-    this.navigatorService.resNavigatorSourceObserve$.pipe(takeUntil(this.unsubscribe$)).subscribe((res: any) => {
+    this.unsubscribeCarta = this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
       if (res.pageActive === 'carta') {
         if (this.countSeeBack < 2) { this.countSeeBack++; return; }
         this.goBack();
@@ -90,7 +91,7 @@ export class CartaComponent implements OnInit, OnDestroy {
 
     // console.log('aaa');
     // if (!this.socketService.isSocketOpen) {
-      this.socketService.onGetCarta().pipe(takeUntil(this.unsubscribe$)).subscribe((res: any) => {
+      this.unsubscribeCarta = this.socketService.onGetCarta().subscribe((res: any) => {
 
         // this.objCartaCarta = {
         //   'carta': <CartaModel[]>res[0].carta,
@@ -99,20 +100,23 @@ export class CartaComponent implements OnInit, OnDestroy {
 
         if (this.socketService.isSocketOpenReconect) {
           // actualizar cantidad actual (stock actual) de ObjCarta del item
-          if ( !this.miPedidoService.findIsHayItems() ) {
+          // if ( !this.miPedidoService.findIsHayItems() ) {
+          //   this.miPedidoService.updatePedidoFromStrorage();
+          // }
 
             // this.objCartaCarta = res;
             //
             this.miPedidoService.setObjCarta(res);
 
-            this.isCargado = false;
-            // this.showCategoria = false;
-            // this.showSecciones = false;
-            // this.showItems = false;
-            // this.showCategoria = true;
+            this.resetParamsCarta();
+
+            if ( this.miPedidoService.findIsHayItems() ) {
+              this.miPedidoService.updatePedidoFromStrorage();
+            }
+
             console.log('objCartaCarta desde socket reconect');
             this.navigatorService.setPageActive('carta');
-          }
+          // }
 
           return;
         }
@@ -120,8 +124,17 @@ export class CartaComponent implements OnInit, OnDestroy {
         //
         this.miPedidoService.setObjCarta(res);
 
-        this.isCargado = false;
-        this.showCategoria = true;
+        this.resetParamsCarta();
+
+        // this.isCargado = false;
+        // // this.showCategoria = true;
+
+        // this.objSecciones = [];
+        // this.objItems = [];
+        // this.showCategoria = false;
+        // this.showSecciones = false;
+        // this.showItems = false;
+        // this.showCategoria = true;
 
 
         this.miPedidoService.clearPedidoIsLimitTime();
@@ -137,7 +150,7 @@ export class CartaComponent implements OnInit, OnDestroy {
       });
 
       // tipo de consumo
-      this.socketService.onGetTipoConsumo().pipe(takeUntil(this.unsubscribe$)).subscribe((res: TipoConsumoModel[]) => {
+      this.unsubscribeCarta = this.socketService.onGetTipoConsumo().subscribe((res: TipoConsumoModel[]) => {
         console.log('tipo consumo ', res);
         if (this.socketService.isSocketOpenReconect) {return; }
         this.tiposConsumo = res;
@@ -170,9 +183,24 @@ export class CartaComponent implements OnInit, OnDestroy {
     // this.jsonPrintService.getDataSede();
   }
 
+
+  // al obtener la carta
+  private resetParamsCarta(): void {
+    this.isCargado = false;
+    this.objSecciones = [];
+    this.objItems = [];
+    this.showCategoria = false;
+    this.showSecciones = false;
+    this.showItems = false;
+    this.showToolBar = false;
+    this.showCategoria = true;
+  }
+
   ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
+    console.log('======= unsubscribe ======= ');
+    this.unsubscribeCarta.unsubscribe();
+    // this.unsubscribe$.next();
+    // this.unsubscribe$.complete();
   }
 
   getSecciones(categoria: CategoriaModel) {
@@ -350,11 +378,11 @@ export class CartaComponent implements OnInit, OnDestroy {
   }
 
   private listeStatusBusqueda(): void {
-    this.listenStatusService.isBusqueda$.pipe(takeUntil(this.unsubscribe$)).subscribe(res => {
+    this.unsubscribeCarta = this.listenStatusService.isBusqueda$.subscribe(res => {
       this.isBusqueda = res;
     });
 
-    this.listenStatusService.charBuqueda$.pipe(takeUntil(this.unsubscribe$)).subscribe((res: string) => {
+    this.unsubscribeCarta = this.listenStatusService.charBuqueda$.subscribe((res: string) => {
       this.isBusquedaFindNow(res);
     });
   }

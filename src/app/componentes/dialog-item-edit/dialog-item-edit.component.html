@@ -72,8 +72,8 @@
                 <td>
                     <div class="d-flex float-right">
                         <div [hidden]="tp.cantidad_seleccionada === 0" [ngClass]="{'bounceIn': tp.animar_cantidad}" class="fs-19 pr-2 animated">{{tp.cantidad_seleccionada}}</div>
-                        <div class="btn-tbl bg-danger xCursor" matRipple (click)="addItemToDialogItem(tp, 1)">-</div>
-                        <div class="btn-tbl bg-success xCursor" matRipple (click)="addItemToDialogItem(tp, 0)">+</div>                        
+                        <div appDebounceClick (debounceClick)="addItemToDialogItem(tp, 1)" (debounceWait)="isWaitBtnMenos" class="btn-tbl bg-danger xCursor" matRipple><i class="fa fa-arrow-right" *ngIf="isWaitBtnMenos"></i>  -</div>
+                        <div appDebounceClick (debounceClick)="addItemToDialogItem(tp, 0)" class="btn-tbl bg-success xCursor" matRipple>+</div>
                     </div>
                 </td>
                 </tr>

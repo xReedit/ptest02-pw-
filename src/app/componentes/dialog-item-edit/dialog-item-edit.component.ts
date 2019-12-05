@@ -23,6 +23,8 @@ export class DialogItemEditComponent implements OnInit {
   _precioProductoIni: number; // precio incio
   isObjSubItems = false; // si el item tiene subitems
 
+  isWaitBtnMenos = false;
+
   constructor(
     public miPedidoService: MipedidoService,
     private dialogRef: MatDialogRef<DialogItemEditComponent>,

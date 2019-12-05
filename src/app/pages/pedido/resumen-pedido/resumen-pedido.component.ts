@@ -24,8 +24,8 @@ import { DialogLoadingComponent } from './dialog-loading/dialog-loading.componen
 import { DialogResetComponent } from './dialog-reset/dialog-reset.component';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
 import { Subject } from 'rxjs/internal/Subject';
-import { pipe } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'app-resumen-pedido',
@@ -34,7 +34,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
-  private unsubscribe$ = new Subject();
+  private unsubscribeRe = new Subscription();
 
   _miPedido: PedidoModel = new PedidoModel();
   _arrSubtotales: any = [];
@@ -78,8 +78,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     this._miPedido = this.miPedidoService.getMiPedido();
 
-    this.reglasCartaService.loadReglasCarta()
-      .pipe(takeUntil(this.unsubscribe$))
+    this.unsubscribeRe = this.reglasCartaService.loadReglasCarta()
       .subscribe((res: any) => {
       this.rulesCarta = res[0] ? res[0].reglas ? res[0].reglas : [] : res.reglas ? res.reglas : [];
       this.rulesSubtoTales = res.subtotales || res[0].subtotales;
@@ -90,7 +89,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       // this.frmDelivery = new DatosDeliveryModel();
     });
 
-    this.navigatorService.resNavigatorSourceObserve$.pipe(takeUntil(this.unsubscribe$)).subscribe((res: any) => {
+    this.unsubscribeRe = this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
           if (res.pageActive === 'mipedido') {
             if (res.url.indexOf('confirma') > 0) {
               this.confirmarPeiddo();
@@ -102,8 +101,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
+    // this.unsubscribe$.next();
+    // this.unsubscribe$.complete();
+    this.unsubscribeRe.unsubscribe();
   }
 
   private newFomrConfirma(): void {
@@ -126,11 +126,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   listenMiPedido() {
-    this.miPedidoService.countItemsObserve$.pipe(takeUntil(this.unsubscribe$)).subscribe((res) => {
+    this.unsubscribeRe = this.miPedidoService.countItemsObserve$.subscribe((res) => {
       this.hayItems = res > 0 ? true : false;
     });
 
-    this.miPedidoService.miPedidoObserver$.pipe(takeUntil(this.unsubscribe$)).subscribe((res) => {
+    this.unsubscribeRe = this.miPedidoService.miPedidoObserver$.subscribe((res) => {
       // this.miPedidoService.clearObjMiPedido(); // quita las cantidades 0
       // this._miPedido = this.miPedidoService.getMiPedido();
       this._miPedido = res;
@@ -138,8 +138,15 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       console.log(this._miPedido);
     });
 
-    this.listenStatusService.hayCuentaBusqueda$.pipe(takeUntil(this.unsubscribe$)).subscribe(res => {
+    this.unsubscribeRe = this.listenStatusService.hayCuentaBusqueda$.subscribe(res => {
       this.isHayCuentaBusqueda = res;
+    });
+
+    this.socketService.isSocketOpen$.subscribe(res => {
+      if (!res) {
+        console.log('===== unsubscribe unsubscribe =====');
+        this.unsubscribeRe.unsubscribe();
+      }
     });
   }
 
