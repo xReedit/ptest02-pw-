@@ -44,6 +44,8 @@ export class SocketService {
         this.showStatusConexNavigator(false, 'navigator_offline');
       });
 
+      console.log('contructor socket');
+
       // this.statusConexSocket(false, '');
 
 

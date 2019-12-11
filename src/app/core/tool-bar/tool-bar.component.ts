@@ -6,6 +6,7 @@ import { DialogResetComponent } from 'src/app/pages/pedido/resumen-pedido/dialog
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { Router } from '@angular/router';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-tool-bar',
@@ -17,6 +18,8 @@ export class ToolBarComponent implements OnInit {
   rippleColor = 'rgba(238,238,238,0.2)';
   rippleColorBusqueda = 'rgba(238,238,238,0.9)';
   rippleColorPlomo = 'rgba(158,158,158,0.5)';
+
+  nomSede = '';
 
   @ViewChild('txtBuscar', {static: false}) txtBuscar: ElementRef;
 
@@ -36,6 +39,14 @@ export class ToolBarComponent implements OnInit {
       this.isBusqueda = res;
       console.log('liste isBusqueda', res);
     });
+
+    this.listenStatusService.hayDatosSede$.pipe(filter(res => res === true)).subscribe(res => {
+      this.getNomSede();
+    });
+  }
+
+  private getNomSede(): void {
+    this.nomSede =  this.miPedidoService.objDatosSede.datossede[0].nombre;
   }
 
   activaBusqueda(): void {

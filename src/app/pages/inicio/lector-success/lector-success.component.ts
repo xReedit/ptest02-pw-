@@ -71,7 +71,11 @@ export class LectorSuccessComponent implements OnInit {
   }
 
   listoEmpezar(): void {
-    this.router.navigate(['/callback-auth']);
+    if (this.auth.loggedIn) {
+      this.router.navigate(['/callback-auth']);
+    } else {
+      this.auth.login('#');
+    }
   }
 
 }

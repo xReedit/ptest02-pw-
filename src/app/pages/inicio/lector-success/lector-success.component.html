@@ -17,7 +17,7 @@
         <hr>
 
         <!-- reglas -->
-        <div class="pl-3 pr-3 mb-4">
+        <div class="pl-3 pr-3 mb-4 animated fadeInUp" *ngIf="listReglas">
             <p class="pb-2">Información Básica</p>
             <div class="text-left">            
                     <div *ngFor="let item of listReglas" class="d-flex p-1 mb-3">
@@ -33,19 +33,14 @@
     <!-- footer -->
     <footer>
         <!-- login -->
-        <div style="min-height: 55px;">
+        <!-- <div style="min-height: 55px;">
             <div class="content-register" *ngIf="!auth.loggedIn">
                 <div>
-                    <p class="fs-13 mb-2">Para obtener promociones y descuentos</p>
-                    <button mat-stroked-button style="background: #3f51b5;" (click)="auth.login('#')">Registrate aqui.</button>
-                    <!-- <a mat-raised-button routerLink=".">Registrate aqui.</a> -->
+                    <p class="fs-13 mb-2">Para poder continuar es necesario que se registre.</p>
+                    <button mat-stroked-button style="background: #3f51b5;" (click)="auth.login('#')">Registrate aqui <i class="fa fa-arrow-right pl-2" aria-hidden="true"></i></button>                    
                 </div>
-
-                <!-- <div>
-                    <button mat-stroked-button style="background: #3f51b5;" (click)="auth.logout()">Cerrar sesion.</button>
-                </div> -->
             </div>
-        </div>        
+        </div>         -->
 
         <!-- iniciar -->
 

@@ -38,6 +38,11 @@ export class VerifyAuthClientService {
     this.setDataClient();
   }
 
+  setMesa(val: number): void {
+    this.clientSocket.numMesaLector = val;
+    this.setDataClient();
+  }
+
   verifyClient(): Observable<any> {
     let idClient = 0;
     this.getDataClient();
@@ -52,8 +57,8 @@ export class VerifyAuthClientService {
         this.subjectClient.next(null);
       } else {
 
-        console.log(res);
         this.clientSocket.datalogin = res;
+        console.log(this.clientSocket);
         this.setDataClient();
 
         // verifica y registra el cliente en la bd

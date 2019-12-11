@@ -1,7 +1,10 @@
 <div>
   <div class="text-center">
     <div>
-      <div>
+      <div class="d-flex">
+        <div>
+            <i class="fa fa-shield p-2" aria-hidden="true"></i>
+        </div>
         <div class="text-right text-secondary" style="position: absolute; right: 0px;">        
             <button *ngIf="isLogin" mat-button color="accent" (click)="cerrarSession()">Cerrar sesion</button>
           <i class="fa fa-user-circle-o p-2" aria-hidden="true" [routerLink]="['/lector-qr']"></i>
@@ -11,7 +14,7 @@
       <!-- <button mat-flat-button color="warn" [routerLink]="['/login-personal-autorizado']">Personal Autorizado</button> -->
       <div>      
         <img src="assets/images/papaya_text.png" width="190px">
-        <p>Restobar <span class="fs-13 text-secondary">v.1d</span></p>
+        <p>Restobar <span class="fs-13 text-secondary">v.1e</span></p>
       </div>
 
       <div class="text-center pl-4 pr-4">

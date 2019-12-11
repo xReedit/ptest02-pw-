@@ -18,6 +18,10 @@ export class ListenStatusService {
   private hayCuentaBusquedaSource = new BehaviorSubject<boolean>(false);
   public hayCuentaBusqueda$ = this.hayCuentaBusquedaSource.asObservable();
 
+  // datos de la sede estan disponible
+  private hayDatosSedeSource = new BehaviorSubject<boolean>(false);
+  public hayDatosSede$ = this.hayDatosSedeSource.asObservable();
+
   constructor() { }
 
   setIsBusqueda() {
@@ -37,4 +41,9 @@ export class ListenStatusService {
   setHayCuentaBuesqueda(value: boolean): void {
     this.hayCuentaBusquedaSource.next(value);
   }
+
+  setHayDatosSede(value: boolean): void {
+    this.hayDatosSedeSource.next(value);
+  }
+
 }

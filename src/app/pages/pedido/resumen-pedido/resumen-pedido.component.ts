@@ -24,8 +24,8 @@ import { DialogLoadingComponent } from './dialog-loading/dialog-loading.componen
 import { DialogResetComponent } from './dialog-reset/dialog-reset.component';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
 import { Subject } from 'rxjs/internal/Subject';
-import { takeUntil } from 'rxjs/operators';
-import { Subscription } from 'rxjs/internal/Subscription';
+import { takeUntil, take, last, takeLast } from 'rxjs/operators';
+// import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'app-resumen-pedido',
@@ -34,7 +34,8 @@ import { Subscription } from 'rxjs/internal/Subscription';
 })
 export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
-  private unsubscribeRe = new Subscription();
+  // private unsubscribeRe = new Subscription();
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   _miPedido: PedidoModel = new PedidoModel();
   _arrSubtotales: any = [];
@@ -62,6 +63,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   objCuenta: any = [];
 
+  isCliente: boolean; // si es cliente quien hace el pedido
+
+  private isFirstLoadListen = false; // si es la primera vez que se carga, para no volver a cargar los observables
+
   constructor(
     private miPedidoService: MipedidoService,
     private reglasCartaService: ReglascartaService,
@@ -78,18 +83,23 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     this._miPedido = this.miPedidoService.getMiPedido();
 
-    this.unsubscribeRe = this.reglasCartaService.loadReglasCarta()
+    this.reglasCartaService.loadReglasCarta()
+      .pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
       this.rulesCarta = res[0] ? res[0].reglas ? res[0].reglas : [] : res.reglas ? res.reglas : [];
       this.rulesSubtoTales = res.subtotales || res[0].subtotales;
+
       this.listenMiPedido();
 
       this.newFomrConfirma();
 
+
       // this.frmDelivery = new DatosDeliveryModel();
     });
 
-    this.unsubscribeRe = this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
+    this.navigatorService.resNavigatorSourceObserve$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((res: any) => {
           if (res.pageActive === 'mipedido') {
             if (res.url.indexOf('confirma') > 0) {
               this.confirmarPeiddo();
@@ -98,12 +108,18 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
             }
           }
         });
+
+    // si es cliente
+    this.isCliente = this.infoToken.isCliente();
   }
 
   ngOnDestroy(): void {
     // this.unsubscribe$.next();
     // this.unsubscribe$.complete();
-    this.unsubscribeRe.unsubscribe();
+    // this.unsubscribeRe.unsubscribe();
+    this.destroy$.next(true);
+    // Now let's also unsubscribe from the subject itself:
+    this.destroy$.unsubscribe();
   }
 
   private newFomrConfirma(): void {
@@ -126,26 +142,38 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   listenMiPedido() {
-    this.unsubscribeRe = this.miPedidoService.countItemsObserve$.subscribe((res) => {
+    if ( this.isFirstLoadListen ) {return; }
+    this.isFirstLoadListen = true; // para que no vuelva a cargar los observables cuando actualizan desde sockets
+
+    this.miPedidoService.countItemsObserve$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((res) => {
       this.hayItems = res > 0 ? true : false;
     });
 
-    this.unsubscribeRe = this.miPedidoService.miPedidoObserver$.subscribe((res) => {
+    // .pipe(last())
+    this.miPedidoService.miPedidoObserver$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((res) => {
       // this.miPedidoService.clearObjMiPedido(); // quita las cantidades 0
       // this._miPedido = this.miPedidoService.getMiPedido();
-      this._miPedido = res;
+      this._miPedido = <PedidoModel>res;
       this.pintarMiPedido();
       console.log(this._miPedido);
     });
 
-    this.unsubscribeRe = this.listenStatusService.hayCuentaBusqueda$.subscribe(res => {
+    this.listenStatusService.hayCuentaBusqueda$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(res => {
       this.isHayCuentaBusqueda = res;
     });
 
-    this.socketService.isSocketOpen$.subscribe(res => {
+    this.socketService.isSocketOpen$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(res => {
       if (!res) {
         console.log('===== unsubscribe unsubscribe =====');
-        this.unsubscribeRe.unsubscribe();
+        // this.unsubscribeRe.unsubscribe();
       }
     });
   }
@@ -298,18 +326,35 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private enviarPedido(): void {
+
+    // usuario o cliente
+    const dataUsuario = this.infoToken.getInfoUs();
+
+    const dataFrmConfirma: any = {};
+    if ( this.isCliente ) {
+      dataFrmConfirma.m = dataUsuario.numMesaLector;
+      dataFrmConfirma.r = this.infoToken.getInfoUs().nombres.toUpperCase();
+      dataFrmConfirma.nom_us = this.infoToken.getInfoUs().nombres.toLowerCase();
+    } else {
+      dataFrmConfirma.m = this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00';
+      dataFrmConfirma.r = this.frmConfirma.referencia || '';
+      dataFrmConfirma.nom_us = this.infoToken.getInfoUs().nombres.split(' ')[0].toLowerCase();
+    }
+
+
     // header //
 
     const _p_header = {
-      m: this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00',
-      r: this.frmConfirma.referencia || '',
-      nom_us: this.infoToken.getInfoUs().nombres.split(' ')[0].toLowerCase(),
+      m: dataFrmConfirma.m, // this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00',
+      r: dataFrmConfirma.r, // this.frmConfirma.referencia || '',
+      nom_us: dataFrmConfirma.nom_us, // this.infoToken.getInfoUs().nombres.split(' ')[0].toLowerCase(),
       delivery: this.frmConfirma.delivery ? 1 : 0,
       reservar: this.frmConfirma.reserva ? 1 : 0,
       solo_llevar: this.frmConfirma.solo_llevar ? 1 : 0,
       idcategoria: localStorage.getItem('sys::cat'),
       correlativo_dia: '', // en backend
       num_pedido: '', // en backend
+      isCliente: this.isCliente,
       arrDatosDelivery: this.frmDelivery
     };
 
@@ -337,7 +382,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     const dataSend = {
       dataPedido: dataPedido,
-      dataPrint: dataPrint
+      dataPrint: dataPrint,
+      dataUsuario: dataUsuario
     };
 
     console.log('printerComanda', dataSend);

@@ -1,7 +1,7 @@
 <mat-toolbar color="primary">   
  <mat-toolbar-row [ngClass]="{'toolbar-busqueda': isBusqueda}">
    <ng-container *ngIf="!isBusqueda">   
-    <span>Restobar</span>
+    <span>{{ nomSede | titlecase }}</span>
     <span class="example-spacer"></span>
     <div style="display: contents;">       
        <div class="example-ripple-container fs-15" matRipple 

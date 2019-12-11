@@ -10,7 +10,7 @@ import { throttleTime } from 'rxjs/internal/operators/throttleTime';
 })
 export class DebounceClickDirective implements OnInit, OnDestroy {
 
-  @Input() debounceTime = 550;
+  @Input() debounceTime = 500;
   @Output() debounceClick = new EventEmitter();
 
   private clicks = new Subject();

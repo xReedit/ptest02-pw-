@@ -8,4 +8,5 @@ export class SocketClientModel {
     nombres: string;
     usuario: string;
     datalogin: any;
+    numMesaLector: number; // numero de mesa del lector qr
 }

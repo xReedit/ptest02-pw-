@@ -1,25 +1,32 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
-import { StorageService } from './storage.service';
-import { SocketService } from './socket.service';
 
 import { ItemModel } from 'src/app/modelos/item.model';
 import { PedidoModel } from 'src/app/modelos/pedido.model';
 import { CategoriaModel } from 'src/app/modelos/categoria.model';
 import { SeccionModel } from 'src/app/modelos/seccion.model';
-// import { MAX_MINUTE_ORDER } from '../config/config.const';
 import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
 import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
+// import { MAX_MINUTE_ORDER } from '../config/config.const';
+
+// servicios
+import { StorageService } from './storage.service';
+import { SocketService } from './socket.service';
 import { TimerLimitService } from './timer-limit.service';
 import { NavigatorLinkService } from './navigator-link.service';
+import { UtilitariosService } from './utilitarios.service';
+import { ListenStatusService } from './listen-status.service';
+
+
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormValidRptModel } from 'src/app/modelos/from.valid.rpt.model';
 import { SubItem } from 'src/app/modelos/subitems.model';
 import { SubItemsView } from 'src/app/modelos/subitems.view.model';
-import { UtilitariosService } from './utilitarios.service';
 import { SubItemContent } from 'src/app/modelos/subitem.content.model';
 import { CartaModel } from 'src/app/modelos/carta.model';
+// import { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChanged';
+// import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 
 
 @Injectable({
@@ -64,7 +71,8 @@ export class MipedidoService {
     private timerLimitService: TimerLimitService,
     private navigatorService: NavigatorLinkService,
     private _snackBar: MatSnackBar,
-    private utilesService: UtilitariosService
+    private utilesService: UtilitariosService,
+    private listenStatusService: ListenStatusService
     ) {
 
     }
@@ -1267,7 +1275,10 @@ export class MipedidoService {
 
     this.socketService.onGetDatosSede().subscribe((res: any) => {
       this.objDatosSede = res[0];
+      this.listenStatusService.setHayDatosSede(true);
       console.log('datos de la sede ps', this.objDatosSede);
+
+
       this.max_minute_order = res[0].datossede[0].pwa_time_limit;
       this.timerLimitService.maxTime = this.max_minute_order * 100;
     });

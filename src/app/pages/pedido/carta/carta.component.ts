@@ -62,6 +62,8 @@ export class CartaComponent implements OnInit, OnDestroy {
   private seccionSelected: SeccionModel;
   private countSeeBack = 2; // primera vista al dar goback
 
+  private isFirstLoadListen = false; // si es la primera vez que se carga, para no volver a cargar los observables
+
   constructor(
       private socketService: SocketService,
       public miPedidoService: MipedidoService,
@@ -144,9 +146,11 @@ export class CartaComponent implements OnInit, OnDestroy {
         console.log('restore timer limt');
         this.miPedidoService.restoreTimerLimit();
 
-        this.miPedidoService.listenChangeCantItem(); // cuando se reconecta para que actualize
-
         this.loadItemsBusqueda();
+
+        if ( this.isFirstLoadListen ) {return; }
+        this.isFirstLoadListen = true; // para que no vuelva a cargar los observables cuando actualizan desde sockets
+        this.miPedidoService.listenChangeCantItem(); // cuando se reconecta para que actualize
       });
 
       // tipo de consumo
@@ -378,12 +382,19 @@ export class CartaComponent implements OnInit, OnDestroy {
   }
 
   private listeStatusBusqueda(): void {
-    this.unsubscribeCarta = this.listenStatusService.isBusqueda$.subscribe(res => {
+    this.listenStatusService.isBusqueda$.subscribe(res => {
       this.isBusqueda = res;
     });
 
-    this.unsubscribeCarta = this.listenStatusService.charBuqueda$.subscribe((res: string) => {
+    this.listenStatusService.charBuqueda$.subscribe((res: string) => {
       this.isBusquedaFindNow(res);
+    });
+
+    this.socketService.isSocketOpen$.subscribe(res => {
+      if (!res) {
+        console.log('===== unsubscribe unsubscribe Carta =====');
+        this.unsubscribeCarta.unsubscribe();
+      }
     });
   }
 

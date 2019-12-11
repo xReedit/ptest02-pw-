@@ -29,6 +29,10 @@ export class InfoTockenService {
     return this.infoUsToken.idorg.toString();
   }
 
+  isCliente(): boolean {
+    return this.infoUsToken.isCliente;
+  }
+
   getToken(): any { return localStorage.getItem('::token'); }
 
   converToJSON(): void {
@@ -45,6 +49,7 @@ export class InfoTockenService {
         _newUs.nombres = _token.datalogin.name;
         _newUs.idusuario = 0;
         _newUs.usuario = 'cliente';
+        _newUs.numMesaLector = _token.numMesaLector;
         this.infoUsToken = _newUs;
       } else {
         this.infoUsToken = <UsuarioTokenModel>_token.usuario;

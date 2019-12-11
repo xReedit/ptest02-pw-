@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, Inject, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { ItemModel } from 'src/app/modelos/item.model';
@@ -6,13 +6,15 @@ import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { SubItem } from 'src/app/modelos/subitems.model';
 import { SubItemContent } from 'src/app/modelos/subitem.content.model';
 import { SubItemsView } from 'src/app/modelos/subitems.view.model';
+import { Subject } from 'rxjs/internal/Subject';
+import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 
 @Component({
   selector: 'app-dialog-item-edit',
   templateUrl: './dialog-item-edit.component.html',
   styleUrls: ['./dialog-item-edit.component.css'],
 })
-export class DialogItemEditComponent implements OnInit {
+export class DialogItemEditComponent implements OnInit, OnDestroy {
 
   idTpcItemResumenSelect: number;
   item: ItemModel;
@@ -24,6 +26,9 @@ export class DialogItemEditComponent implements OnInit {
   isObjSubItems = false; // si el item tiene subitems
 
   isWaitBtnMenos = false;
+
+  private destroyDlg$: Subject<boolean> = new Subject<boolean>();
+  private isFirstOpen = true; // controla los observables // el observable de cantidad no se ejecuta en la primera interaccion
 
   constructor(
     public miPedidoService: MipedidoService,
@@ -46,7 +51,12 @@ export class DialogItemEditComponent implements OnInit {
   ngOnInit() {
 
     // listen cambios en el stock
-    this.miPedidoService.itemStockChangeObserve$.subscribe((res: ItemModel) => {
+    this.miPedidoService.itemStockChangeObserve$
+    .pipe(takeUntil(this.destroyDlg$))
+    .subscribe((res: ItemModel) => {
+      // para que la ultima cantidad modificada
+      if ( this.isFirstOpen ) {this.isFirstOpen = false; return; }
+
       if ( this.item.iditem === res.iditem ) {
         this.item.cantidad = res.cantidad;
       }
@@ -60,6 +70,11 @@ export class DialogItemEditComponent implements OnInit {
     this.compItemSumImporte();
     // this.item.subitems.map((sub: SubItem) => sub.selected = false);
 
+  }
+
+  ngOnDestroy(): void {
+    this.destroyDlg$.next(true);
+    this.destroyDlg$.unsubscribe();
   }
 
   getCantidadItemCarta(): number {
