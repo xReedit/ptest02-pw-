@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { EstadoPedidoModel } from 'src/app/modelos/estado.pedido.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +22,14 @@ export class ListenStatusService {
   // datos de la sede estan disponible
   private hayDatosSedeSource = new BehaviorSubject<boolean>(false);
   public hayDatosSede$ = this.hayDatosSedeSource.asObservable();
+
+  // si es cliente usuario
+  private isUsuarioClienteSource = new BehaviorSubject<boolean>(false);
+  public isUsuarioCliente$ = this.isUsuarioClienteSource.asObservable();
+
+  // estado del pedido enviado por el cliente
+  private estadoPedidoSource = new BehaviorSubject<EstadoPedidoModel>(new EstadoPedidoModel());
+  public estadoPedido$ = this.estadoPedidoSource.asObservable();
 
   constructor() { }
 
@@ -44,6 +53,14 @@ export class ListenStatusService {
 
   setHayDatosSede(value: boolean): void {
     this.hayDatosSedeSource.next(value);
+  }
+
+  setIsUsuarioCliente(value: boolean): void {
+    this.isUsuarioClienteSource.next(value);
+  }
+
+  setEstadoPedido(value: EstadoPedidoModel): void {
+    this.estadoPedidoSource.next(value);
   }
 
 }

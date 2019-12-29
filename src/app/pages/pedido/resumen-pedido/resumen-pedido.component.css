@@ -56,13 +56,6 @@
   background: #ffcc80;
 }
 
-.xfooter {
-    width: 100%;
-    bottom: 0px;
-    position: fixed;
-    background: #e0e0e0;
-    height: 48px;
-}
 
 .btn-footer-cancel {
     padding: 12px;

@@ -28,8 +28,9 @@ export class LectorSuccessComponent implements OnInit {
 
   private loadDataIni(): void {
     // datos sede
+    const usLog = this.verifyClientService.getDataClient();
     const _data = {
-      idsede: 1
+      idsede: usLog.idsede
     };
 
     this.crudService.postFree(_data, 'ini', 'info-sede', false)

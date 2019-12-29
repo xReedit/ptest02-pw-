@@ -47,7 +47,7 @@ export class AuthService {
     loggedOutUser() {
         localStorage.removeItem('::token');
         localStorage.removeItem('::us');
-        localStorage.clear();
+        // localStorage.clear();
         this.setLoggedStatus(false);
     }
 

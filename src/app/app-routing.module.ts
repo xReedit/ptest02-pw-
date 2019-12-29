@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { LayoutMainComponent } from './core/layout-main/layout-main.component';
+import { AuthGuard } from './shared/guards/auth.guard';
 
 const routes: Routes = [{
   path: '',
@@ -14,6 +15,7 @@ const routes: Routes = [{
     {
       path: 'pedido',
       loadChildren: () => import('./pages/pedido/pedido.module').then(m => m.PedidoModule),
+      canActivate: [AuthGuard],
       data: { 'tituloModulo': 'Pedido' }
     }
   ]

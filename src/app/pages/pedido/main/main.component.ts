@@ -3,6 +3,8 @@ import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
+import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
+import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 
 @Component({
   selector: 'app-main',
@@ -16,6 +18,7 @@ export class MainComponent implements OnInit {
   isHayCuentaBusqueda = false;
   countTotalItems = 0;
   selectedTab = 0;
+  isUsuarioCliente = false; // si es usuario cliente
 
 
   private lastValScrollTop = 0;
@@ -24,7 +27,8 @@ export class MainComponent implements OnInit {
     private miPedidoService: MipedidoService,
     private navigatorService: NavigatorLinkService,
     private listenStatusService: ListenStatusService,
-    public socketService: SocketService
+    public socketService: SocketService,
+    private verifyClientService: VerifyAuthClientService,
     ) {
     }
 
@@ -32,6 +36,12 @@ export class MainComponent implements OnInit {
     this.socketService.isSocketOpenReconect = false;
     this.navigatorService.setPageActive('carta');
     // this.navigatorService.addLink('carta');
+
+    this.verifyClientService.verifyClient().subscribe((res: SocketClientModel) => {
+      console.log('desde incio', res);
+      this.isUsuarioCliente = res.isCliente;
+      this.listenStatusService.setIsUsuarioCliente(this.isUsuarioCliente);
+    });
 
     this.listenStatusService.isBusqueda$.subscribe(res => {
       this.isBusqueda = res;

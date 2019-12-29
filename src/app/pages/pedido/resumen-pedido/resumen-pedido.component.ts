@@ -25,6 +25,7 @@ import { DialogResetComponent } from './dialog-reset/dialog-reset.component';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil, take, last, takeLast } from 'rxjs/operators';
+import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedido-cliente.service';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
@@ -76,6 +77,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     private infoToken: InfoTockenService,
     private crudService: CrudHttpService,
     private listenStatusService: ListenStatusService,
+    private estadoPedidoClientService: EstadoPedidoClienteService,
     private dialog: MatDialog,
     ) { }
 
@@ -176,6 +178,16 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
         // this.unsubscribeRe.unsubscribe();
       }
     });
+
+
+    // si es cliente escucha cunado termina de hacer el pedido
+    if ( this.isCliente ) {
+      this.socketService.onGetNuevoPedido()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        this.estadoPedidoClientService.calcTimeAprox();
+      });
+    }
   }
 
   addItemToResumen(_tpc: ItemTipoConsumoModel, _seccion: SeccionModel, _item: ItemModel, _subItems: SubItemsView, suma: number): void {
@@ -276,7 +288,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const dialogReset = this.dialog.open(DialogResetComponent);
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+
+    const dialogReset = this.dialog.open(DialogResetComponent, _dialogConfig);
     dialogReset.afterClosed().subscribe(result => {
       if (result ) {
         this.miPedidoService.resetAllNewPedido();
@@ -319,7 +335,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private prepararEnvio(): void {
-    const dialogLoading = this.dialog.open(DialogLoadingComponent);
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+
+    const dialogLoading = this.dialog.open(DialogLoadingComponent, _dialogConfig);
     dialogLoading.afterClosed().subscribe(result => {
       this.enviarPedido();
     });

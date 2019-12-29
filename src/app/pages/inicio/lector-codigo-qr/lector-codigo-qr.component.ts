@@ -144,6 +144,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     this.verifyClientService.getDataClient();
     this.verifyClientService.setIdSede(s);
     this.verifyClientService.setMesa(m);
+    this.verifyClientService.setQrSuccess(true);
 
     const localPos = { lat: parseFloat(position[0]), lng: parseFloat(position[1]) };
 

@@ -7,6 +7,7 @@ import { LoginPersonalAutorizadoComponent } from './login-personal-autorizado/lo
 import { LectorCodigoQrComponent } from './lector-codigo-qr/lector-codigo-qr.component';
 import { LectorSuccessComponent } from './lector-success/lector-success.component';
 import { CallbackAuthComponent } from './callback-auth/callback-auth.component';
+import { CodigoQrGuard } from 'src/app/shared/guards/codigo-qr.guard';
 
 const routes: Routes = [{
     path: '', component: MainComponent,
@@ -33,6 +34,7 @@ const routes: Routes = [{
         {
             path: 'lector-success',
             component: LectorSuccessComponent,
+            canActivate: [CodigoQrGuard],
             data: { titulo: 'Lector QR' }
         },
         {

@@ -59,4 +59,10 @@ export class InfoTockenService {
       this.infoUsToken = null;
     }
   }
+
+  cerrarSession(): void {
+    localStorage.removeItem('::token');
+    localStorage.removeItem('sys::rules');
+    // localStorage.removeItem('sys::tpm');
+  }
 }

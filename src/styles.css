@@ -3,3 +3,25 @@
 
 /* html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
+
+
+.xboder-abajo {
+    border-bottom: 1px solid rgba(199,199,199);
+}
+
+.xboder-derecha {
+    border-right: 1px solid rgba(199,199,199);
+}
+
+.xcontainer-center {
+    display: flex;    
+    align-items: center;
+}
+
+.xfooter {
+    width: 100%;
+    bottom: 0px;
+    position: fixed;
+    background: #e0e0e0;
+    /* height: 48px; */
+}

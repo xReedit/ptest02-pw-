@@ -15,6 +15,7 @@ export class VerifyAuthClientService {
 
   public clientSocket: SocketClientModel;
   private subjectClient = new Subject<any>();
+  private isClientValid = false;
 
   // private subjectClientSource = new BehaviorSubject<any>(null);
   // public subjectClient$ = this.subjectClientSource.asObservable();
@@ -41,6 +42,14 @@ export class VerifyAuthClientService {
   setMesa(val: number): void {
     this.clientSocket.numMesaLector = val;
     this.setDataClient();
+  }
+
+  setQrSuccess(val: boolean): void {
+    this.clientSocket.isQrSuccess = val;
+  }
+
+  getIsQrSuccess(): boolean {
+    return this.clientSocket.isQrSuccess;
   }
 
   verifyClient(): Observable<any> {
@@ -93,11 +102,14 @@ export class VerifyAuthClientService {
   }
 
   private setDataClient(): void {
-    localStorage.setItem('sys::tpm', JSON.stringify(this.clientSocket));
+    const dataClie = JSON.stringify(this.clientSocket);
+    localStorage.setItem('sys::tpm', btoa(dataClie));
   }
 
-  getDataClient(): void {
-    this.clientSocket = JSON.parse(localStorage.getItem('sys::tpm'));
+  getDataClient(): SocketClientModel {
+    const dataClie = localStorage.getItem('sys::tpm');
+    if ( !dataClie ) { this.clientSocket = new SocketClientModel(); } else { this.clientSocket = JSON.parse(atob(dataClie)); }
+    return this.clientSocket;
   }
 
 

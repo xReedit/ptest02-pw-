@@ -9,14 +9,10 @@ import { ItemModel } from 'src/app/modelos/item.model';
 import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
 import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { ReglascartaService } from 'src/app/shared/services/reglascarta.service';
-import { JsonPrintService } from 'src/app/shared/services/json-print.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
-import { SubItem } from 'src/app/modelos/subitems.model';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
-import { CartaModel } from 'src/app/modelos/carta.model';
-import { Subject } from 'rxjs/internal/Subject';
-import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+
 import { Subscription } from 'rxjs/internal/Subscription';
 
 

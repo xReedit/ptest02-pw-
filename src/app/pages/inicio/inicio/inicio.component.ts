@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { take } from 'rxjs/internal/operators/take';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
+import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 
 @Component({
   selector: 'app-inicio',
@@ -26,12 +27,13 @@ export class InicioComponent implements OnInit, OnDestroy {
     screen.orientation.unlock();
 
     this.isLogin = this.verifyClientService.isLogin();
-    console.log(this.isLogin);
+    console.log('desde incio', this.isLogin);
 
     this.veryfyClient = this.verifyClientService.verifyClient()
       .subscribe((res: SocketClientModel) => {
         this.nombreClientSocket = res.usuario;
         this.isLogin = this.verifyClientService.isLogin();
+        this.verifyClientService.setQrSuccess(false);
         console.log('res idcliente', res);
       });
   }

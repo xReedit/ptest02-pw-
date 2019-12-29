@@ -220,6 +220,15 @@ export class SocketService {
     });
   }
 
+  // respuesta de hacer un nuevo pedido
+  onGetNuevoPedido() {
+    return new Observable(observer => {
+      this.socket.on('nuevoPedido', (res: any) => {
+        observer.next(res);
+      });
+    });
+  }
+
   // onGetDatosSede() {
   //   return this.listen('getDataSede');
   // }

@@ -7,6 +7,7 @@ import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { Router } from '@angular/router';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 import { filter } from 'rxjs/operators';
+import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 
 @Component({
   selector: 'app-tool-bar',
@@ -31,7 +32,8 @@ export class ToolBarComponent implements OnInit {
     private navigatorService: NavigatorLinkService,
     private dialog: MatDialog,
     private listenStatusService: ListenStatusService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private infoTokenService: InfoTockenService
     ) { }
 
   ngOnInit() {
@@ -91,6 +93,7 @@ export class ToolBarComponent implements OnInit {
         this.miPedidoService.resetAllNewPedido();
         this.socketService.closeConnection();
         this.navigatorService.cerrarSession();
+        this.infoTokenService.cerrarSession();
       }
   });
 }

@@ -43,9 +43,16 @@
             <br>
           </div>
         </mat-tab>
-        <!-- <mat-tab label="Estado">
-          <app-estado-pedido></app-estado-pedido>
-        </mat-tab> -->
+
+        <!-- solo si es usuario cliente  -->
+        <mat-tab label="Estado" *ngIf="isUsuarioCliente">
+          <!-- <ng-container *ngIf="isUsuarioCliente"> -->
+            <div class="x100-toolbar-hidden" (scroll)="onScroll($event)"> 
+              <app-estado-pedido></app-estado-pedido>
+              <br>
+            </div>
+          <!-- </ng-container>         -->
+        </mat-tab>
       </mat-tab-group>
     </div>    
 

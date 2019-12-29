@@ -9,4 +9,5 @@ export class SocketClientModel {
     usuario: string;
     datalogin: any;
     numMesaLector: number; // numero de mesa del lector qr
+    isQrSuccess: boolean; // si paso por el lector qr
 }

@@ -150,7 +150,7 @@
 </div>
 
 <!-- ver la cuenta solo personal autorizado -->
-<div class="text-center" *ngIf="!hayItems">
+<div class="text-center" *ngIf="!hayItems && !isCliente">
     <br>    
     <img src="./assets/images/icon_1.gif" width="300px" alt="..">
     <br>
@@ -169,6 +169,14 @@
     <button mat-flat-button color="primary" (click)="xLoadCuentaMesa(txt_mesa_cuenta.value)">Listo, buscar</button>
     <br><br><br>
 </div>
+
+<!-- resumen de mi orden cuand es usuario cliente -->
+<ng-container *ngIf="!hayItems && isCliente">
+    <div class="text-center d-flex flex-column h-75">
+        <p class="m-auto">Aun no tiene ningun pedido en lista.</p>
+    </div>
+</ng-container>
+
 
 <!-- footer -->
 <ng-container *ngIf="hayItems && !isHayCuentaBusqueda">
