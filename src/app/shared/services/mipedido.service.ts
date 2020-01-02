@@ -877,7 +877,12 @@ export class MipedidoService {
   }
 
   updatePedidoFromStrorage() {
+
+    this.listenStatusService.setHayPedidoLocalStorage(false);
+
     if (!this.storageService.isExistKey('sys::order')) { return; }
+
+    this.listenStatusService.setHayPedidoLocalStorage(true);
     // if ( !this.storageService.isExistKey('sys::h') ) { return; }
     this.listItemsPedido = JSON.parse(atob(this.storageService.get('sys::order')));
     this.miPedido = JSON.parse(atob(this.storageService.get('sys::order::all')));
@@ -1046,12 +1051,12 @@ export class MipedidoService {
   private countCantItemsFromTpcSeccion(tipoconsumo: number, seccionSearch: number): number {
     let sum = 0;
     this.miPedido.tipoconsumo
-    .filter((tpc: TipoConsumoModel) => tpc.idtipo_consumo === tipoconsumo)
+    .filter((tpc: TipoConsumoModel) => tpc.idtipo_consumo.toString() === tipoconsumo.toString())
     .map((tpc: TipoConsumoModel) => {
       tpc.secciones
       .map((z: SeccionModel) => {
         sum += z.items
-          .filter((x: ItemModel) => x.idseccion === seccionSearch)
+          .filter((x: ItemModel) => x.idseccion.toString() === seccionSearch.toString())
           .map((x: ItemModel) => x.cantidad_seleccionada)
           .reduce((a, b) => a + b, 0);
       });

@@ -31,6 +31,10 @@ export class ListenStatusService {
   private estadoPedidoSource = new BehaviorSubject<EstadoPedidoModel>(new EstadoPedidoModel());
   public estadoPedido$ = this.estadoPedidoSource.asObservable();
 
+  // hay pedido en el storage, si es cliente usuario no cargar al cuenta.
+  private hayPedidoFromStorageSource = new BehaviorSubject<boolean>(false);
+  public hayPedidoFromStorage$ = this.hayPedidoFromStorageSource.asObservable();
+
   constructor() { }
 
   setIsBusqueda() {
@@ -61,6 +65,10 @@ export class ListenStatusService {
 
   setEstadoPedido(value: EstadoPedidoModel): void {
     this.estadoPedidoSource.next(value);
+  }
+
+  setHayPedidoLocalStorage(value: boolean): void {
+    this.hayPedidoFromStorageSource.next(value);
   }
 
 }

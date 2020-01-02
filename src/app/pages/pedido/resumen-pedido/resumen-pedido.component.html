@@ -86,63 +86,84 @@
         <div class="xcontent div-confirma-pedido w-100 p-3 transicion animated fadeInRight"
           [ngClass]="[isVisibleConfirmarAnimated ? 'show' : 'hide', isVisibleConfirmarAnimated ? 'fadeInRight' : 'fadeInLeft']">
             <div class="text-center">
-                <!-- datos del pedido -->
-                <div [hidden]="isDelivery">
-                    <form #frmconfirma="ngForm">
-                        <div *ngIf="frmConfirma.reserva" class="xanimated xfadeIn">
-                            <p class="fs-30 fw-100">RESERVAR</p>
-                        </div>
 
-                        <div *ngIf="!frmConfirma.reserva" class="xanimated xfadeIn">
-                        <span class="fw-100 fs-20">Indique # de mesa</span>
-                        <div class="w-100">
-                            <mat-form-field class="text-center fs-20">
-                            <input 
-                                type="number"
-                                matInput
-                                [(ngModel)]="frmConfirma.mesa" name="mesa"
-                                [required]="isRequiereMesa" (keyup)="checkIsRequierMesa()">
-                            </mat-form-field>
-                        </div>
-                        </div>
-                                        
-                        <div class="w-100">
-                        <mat-form-field class="w-100 text-center">
-                            <input matInput placeholder="Indique alguna referencia" [(ngModel)]="frmConfirma.referencia"
-                            name="referencia">
-                        </mat-form-field>
-                        </div>
-                        <br>
-                        <div class="w-50">                  
-                            <mat-checkbox [(ngModel)]="frmConfirma.reserva" name="reserva" (change)="checkIsRequierMesa()">
-                            Esto es una reserva.
-                            </mat-checkbox>
-                        </div>
+                <!-- cuando es usuario cliente -->
+                <ng-container *ngIf="isCliente; else divUsuarioAutorizado">
+                    <div>
                         <br><br>
                         <hr>
-                        <p class="fw-100 fs-17 text-secondary">
+                        <p class="fw-100 fs-17 text-dark">
                             <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
                             Por favor, verifique su pedido, una vez enviado ya no podra realizar ningun
                         cambio.</p>
                         <hr>
-                        <!-- {{isRequiereMesa}} -->
-                    </form>
-                </div>
-                <!-- datos del pedido -->
+                    </div>
+                </ng-container>
 
-                <!-- datos del delivery -->
-                <div [hidden]="!isDelivery">
-                    <app-datos-delivery (changeStatus)="checkDataDelivery($event)"></app-datos-delivery>
+                <!-- cuando es personal autorizado -->
+                <ng-template #divUsuarioAutorizado>
+
+                    <!-- datos del pedido -->
+                    <div [hidden]="isDelivery">
+                        <form #frmconfirma="ngForm">
+                            <div *ngIf="frmConfirma.reserva" class="xanimated xfadeIn">
+                                <p class="fs-30 fw-100">RESERVAR</p>
+                            </div>
+
+                            <div *ngIf="!frmConfirma.reserva" class="xanimated xfadeIn">
+                            <span class="fw-100 fs-20">Indique # de mesa</span>
+                            <div class="w-100">
+                                <mat-form-field class="text-center fs-20">
+                                <input 
+                                    type="number"
+                                    matInput
+                                    [(ngModel)]="frmConfirma.mesa" name="mesa"
+                                    [required]="isRequiereMesa" (keyup)="checkIsRequierMesa()">
+                                </mat-form-field>
+                            </div>
+                            </div>
+                                            
+                            <div class="w-100">
+                            <mat-form-field class="w-100 text-center">
+                                <input matInput placeholder="Indique alguna referencia" [(ngModel)]="frmConfirma.referencia"
+                                name="referencia">
+                            </mat-form-field>
+                            </div>
+                            <br>
+                            <div class="w-50">               
+                                <mat-checkbox [(ngModel)]="frmConfirma.reserva" name="reserva" (change)="checkIsRequierMesa()">
+                                Esto es una reserva.
+                                </mat-checkbox>
+                            </div>
+                            <br><br>
+                            <hr>
+                            <p class="fw-100 fs-17 text-secondary">
+                                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                Por favor, verifique su pedido, una vez enviado ya no podra realizar ningun
+                            cambio.</p>
+                            <hr>
+                            <!-- {{isRequiereMesa}} -->
+                        </form>
+                    </div>
+                    <!-- datos del pedido -->
+
+                    <!-- datos del delivery -->
+                    <div [hidden]="!isDelivery">
+                        <app-datos-delivery (changeStatus)="checkDataDelivery($event)"></app-datos-delivery>
+                        
+                        <p class="fw-100 fs-14 text-secondary">
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                        Por favor, verifique su pedido, una vez enviado ya no podra realizar ningun
+                        cambio.</p>
+                        <hr>
+                        <br><br><br><br>
+                    </div>
                     
-                    <p class="fw-100 fs-14 text-secondary">
-                      <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                      Por favor, verifique su pedido, una vez enviado ya no podra realizar ningun
-                      cambio.</p>
-                    <hr>
-                    <br><br><br><br>
-                </div>
+                    <!-- datos del delivery -->
+                    
+                </ng-template>
+                                
                 
-                <!-- datos del delivery -->
             </div>
         </div>
     </div>

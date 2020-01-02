@@ -63,6 +63,7 @@ export class InfoTockenService {
   cerrarSession(): void {
     localStorage.removeItem('::token');
     localStorage.removeItem('sys::rules');
+    localStorage.removeItem('sys::status');
     // localStorage.removeItem('sys::tpm');
   }
 }

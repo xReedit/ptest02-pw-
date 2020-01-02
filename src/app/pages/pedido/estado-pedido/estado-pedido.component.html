@@ -2,20 +2,28 @@
     <div class="row xboder-abajo m-0 p-2">
         <div class="col-4 text-center xboder-derecha">
             <span>Mesa</span>
-            <h3>05</h3>
+            <h3>{{infoToken.numMesaLector | number:'2.'}}</h3>
         </div>
-        <div class="col-8 xcontainer-center text-right">
-            <span>Tiempo de espera 5min aprox.</span>
+        <!-- <span *ngIf="!estadoPedido">.</span> -->    
+        <ng-template #elseTemplate>
+            
+        </ng-template>
+        
+        <div class="col-8 xcontainer-center text-right" *ngIf="estadoPedido">
+            <span *ngIf="estadoPedido.estado === 0">Tiempo de espera <strong>{{ tiempoEspera }} min</strong> aprox.</span>
+            <span *ngIf="estadoPedido.estado === 1">Su pedido esta por llegar.</span>
+            <span *ngIf="estadoPedido.estado === 2">Su pedido ya fue despachado.</span>
         </div>
     </div>
 
     <!-- importe -->
     <div class="row xboder-abajo m-0 p-2 xcontainer-center">
         <div class="col-6 pb-3 pt-3">
-            <span class="fs-13">Importe a pagar</span>            
+            <span class="fs-13">Importe a pagar</span><br>
+            <span *ngIf="estadoPedido.hayPedidoCliente" class="text-info xCursor" (click)="verCuenta()">Ver cuenta</span>
         </div>
         <div class="col-6 text-right">
-            <span class="fs-25">S/. 150.00</span>
+            <span class="fs-25">S/. {{ estadoPedido.importe | number: '.2' }}</span>
         </div>
     </div>
 

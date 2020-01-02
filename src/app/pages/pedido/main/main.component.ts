@@ -52,12 +52,26 @@ export class MainComponent implements OnInit {
     });
 
     this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
-      if (res.pageActive === 'carta') {
-        this.selectedTab = 0;
-
-        this.resetObjCuenta();
-        console.log(this.selectedTab);
+      switch (res.pageActive) {
+        case 'carta':
+          this.selectedTab = 0;
+          this.resetObjCuenta();
+          console.log(this.selectedTab);
+          break;
+        case 'estado':
+          this.selectedTab = 2;
+          break;
+        case 'mipedido':
+          this.selectedTab = 1;
+          break;
       }
+
+      // if (res.pageActive === 'carta') {
+      //   this.selectedTab = 0;
+      //   this.resetObjCuenta();
+      //   console.log(this.selectedTab);
+      // }
+
     });
 
     this.miPedidoService.countItemsObserve$.subscribe((res) => {
