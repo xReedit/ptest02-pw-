@@ -254,6 +254,8 @@ export class MipedidoService {
     console.log('itemModificado en add', item);
     console.log('itemModificado en add', JSON.stringify(item));
 
+    this.listenStatusService.setHayPedidoPendiente(true);
+
     // item.subitems_selected = null;
     // itemInPedido.subitems_selected = null;
     // item.subitems_view = null;
@@ -836,6 +838,8 @@ export class MipedidoService {
     this.miPedidoSource.next(this.miPedido);
     this.countItemsSource.next(0);
 
+    this.listenStatusService.setHayPedidoPendiente(false);
+
     this.stopTimerLimit();
     // this.getOnlyCarta();
 
@@ -878,11 +882,11 @@ export class MipedidoService {
 
   updatePedidoFromStrorage() {
 
-    this.listenStatusService.setHayPedidoLocalStorage(false);
+    this.listenStatusService.setHayPedidoPendiente(false);
 
     if (!this.storageService.isExistKey('sys::order')) { return; }
 
-    this.listenStatusService.setHayPedidoLocalStorage(true);
+    this.listenStatusService.setHayPedidoPendiente(true);
     // if ( !this.storageService.isExistKey('sys::h') ) { return; }
     this.listItemsPedido = JSON.parse(atob(this.storageService.get('sys::order')));
     this.miPedido = JSON.parse(atob(this.storageService.get('sys::order::all')));

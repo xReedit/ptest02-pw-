@@ -229,6 +229,15 @@ export class SocketService {
     });
   }
 
+  // cuando el cliente paga el pedido
+  onPedidoPagado() {
+    return new Observable(observer => {
+      this.socket.on('pedido-pagado-cliente', (res: any) => {
+        observer.next(res);
+      });
+    });
+  }
+
   // onGetDatosSede() {
   //   return this.listen('getDataSede');
   // }

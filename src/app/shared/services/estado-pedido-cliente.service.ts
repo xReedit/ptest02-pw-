@@ -16,7 +16,7 @@ export class EstadoPedidoClienteService {
   private keyStorage = 'sys::status';
   private timeInterval = null;
   private timeNow = new Date();
-  private hayPedidoFromStorage = false;
+  private hayPedidoPendiente = false;
 
   private timeRestanteAproxSource = new BehaviorSubject<number>(0);
   public timeRestanteAprox$ = this.timeRestanteAproxSource.asObservable();
@@ -37,8 +37,9 @@ export class EstadoPedidoClienteService {
       idcliente: this.infoTokenService.getInfoUs().idcliente
     };
 
-    this.listenStatusService.hayPedidoFromStorage$.subscribe((res: boolean) => {
-      this.hayPedidoFromStorage = res;
+    this.listenStatusService.hayPedidoPendiente$.subscribe((res: boolean) => {
+      console.log('======== listen setHayPedidoPendiente', res);
+      this.setHayPedidoPendiente(res);
     });
   }
 
@@ -125,6 +126,12 @@ export class EstadoPedidoClienteService {
   setTimeAprox(val: boolean): void {
     this.deserializar();
     this.estadoPedido.isTiempoAproxCumplido = val;
+    this.notifyChange();
+  }
+
+  setHayPedidoPendiente(val: boolean): void {
+    this.deserializar();
+    this.estadoPedido.hayPedidoClientePendiente = val;
     this.notifyChange();
   }
 

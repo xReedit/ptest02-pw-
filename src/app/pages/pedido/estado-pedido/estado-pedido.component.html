@@ -20,7 +20,13 @@
     <div class="row xboder-abajo m-0 p-2 xcontainer-center">
         <div class="col-6 pb-3 pt-3">
             <span class="fs-13">Importe a pagar</span><br>
-            <span *ngIf="estadoPedido.hayPedidoCliente" class="text-info xCursor" (click)="verCuenta()">Ver cuenta</span>
+            <ng-container *ngIf="estadoPedido.hayPedidoClientePendiente; else elseTemplateCuenta">
+                <span class="text-danger">Tiene pedido pendiente.</span>
+            </ng-container>
+            <ng-template #elseTemplateCuenta>                
+                <span class="text-info xCursor" (click)="verCuenta()">Ver cuenta</span>
+            </ng-template>
+            
         </div>
         <div class="col-6 text-right">
             <span class="fs-25">S/. {{ estadoPedido.importe | number: '.2' }}</span>
