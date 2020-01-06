@@ -5,6 +5,7 @@ import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedid
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
+import { SocketService } from 'src/app/shared/services/socket.service';
 
 @Component({
   selector: 'app-estado-pedido',
@@ -20,7 +21,8 @@ export class EstadoPedidoComponent implements OnInit {
     private listenStatusService: ListenStatusService,
     private estadoPedidoClienteService: EstadoPedidoClienteService,
     private infoTokenService: InfoTockenService,
-    private navigatorService: NavigatorLinkService
+    private navigatorService: NavigatorLinkService,
+    private socketService: SocketService
   ) { }
 
   ngOnInit() {
@@ -39,12 +41,26 @@ export class EstadoPedidoComponent implements OnInit {
     this.listenStatusService.estadoPedido$.subscribe(res => {
       this.estadoPedido = res;
       console.log('desde estado pedido', this.estadoPedido);
+
+      // recalcular cuenta si es 0 agradecimiento y lanzar encuesta si aun no la lleno
+      // if (this.estadoPedido.isPagada) {
+      //   this.navigatorService._router('../lanzar-encuesta');
+      // }
     });
 
     // tiempo de espera
     this.estadoPedidoClienteService.timeRestanteAprox$.subscribe((res: any) => {
       this.tiempoEspera = res;
       console.log('this.tiempoEspera', this.tiempoEspera);
+    });
+
+    this.socketService.onPedidoPagado().subscribe(res => {
+      console.log('notificado de pago recalcular', res);
+      // recalcular cuenta si es 0 agradecimiento y lanzar encuesta si aun no la lleno
+      const _importe = this.estadoPedidoClienteService.getCuentaTotales();
+      if ( _importe === 0 ) {
+        this.navigatorService._router('../lanzar-encuesta');
+      }
     });
   }
 

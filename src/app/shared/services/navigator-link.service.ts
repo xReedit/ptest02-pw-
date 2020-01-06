@@ -157,6 +157,11 @@ export class NavigatorLinkService {
     }
   }
 
+  // usar router de servicio
+  _router(link: string) {
+    this.router.navigate([link]);
+  }
+
   // private findAndApplyHistory(_pageActive): void {
   //   const itemHistory = this.findPageActiveInHistory(_pageActive);
   //   if (itemHistory) { // si existe

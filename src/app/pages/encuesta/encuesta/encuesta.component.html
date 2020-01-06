@@ -1,0 +1,38 @@
+<div class="animated fadeIn">
+    <div class="text-center p-3 encabezado-encuesta">
+        <p class="fs-17 fw-600 m-0">{{nomSede[0]}}</p>
+        <span class="fs-14 fw-100 p-0">{{nomSede[1]}}</span>        
+    </div>
+    <!-- <hr> -->
+    <div class="text-center xcontainer-centrado p-3">
+        <div> 
+            <div>
+                <div class="carousel-inner">
+                    <!-- <div class="carousel-item active" id="item-i">
+                        <p class="fs-17 fw-600">{{titulo_inicio}}</p>
+                        <img src="assets/images/reactions_1.gif" width="100%" alt=".">
+                    </div> -->
+
+                    <div *ngFor="let item of listPreguntas">
+                        <p class="fs-17 fw-600">{{item.pregunta}}</p>
+                        <app-encuesta-opcion class="d-flex" [ListOption] = "listOption"></app-encuesta-opcion>
+                    </div>
+
+                    <!-- <div class="carousel-item" id="item-i">
+                        <p class="fs-17 fw-600">{{titulo_fin}}</p>                        
+                    </div> -->
+
+                </div>                
+            </div>                   
+
+            <hr>
+
+            <button mat-flat-button color="primary">Listo, Comenzar</button>            
+
+        </div>    
+    </div>
+
+    <footer class="xfooter text-center bg-white p-3">
+        <button mat-flat-button color="accent">Salir no mas, gracias.</button>
+    </footer>
+</div>

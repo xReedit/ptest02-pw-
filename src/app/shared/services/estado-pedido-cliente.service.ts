@@ -65,15 +65,18 @@ export class EstadoPedidoClienteService {
   }
 
   // solo para estado pedido al momento de hacer clic en ver cuenta se mostrara la cuenta getCuenta()
-  getCuentaTotales(): any {
+  getCuentaTotales(): number {
 
+    let importeCuenta = 0;
     this.crudService.postFree(this.dataPost, 'pedido', 'lacuenta-cliente-totales', false).subscribe( (res: any) => {
       if ( res.data.length === 0 ) { this.estadoPedido.hayPedidoCliente = false; return; } // si no hay cuenta pedido del cliente
+      importeCuenta = res.data[0].importe || 0;
 
       this.estadoPedido.hayPedidoCliente = true;
       this.calcTimeAprox(); // calcula el tiempo aproximado
 
-      this.setImporte(res.data[0].importe);
+      this.setImporte(importeCuenta);
+      // this.setisPagada(importeCuenta === 0 ? true : false);
       // if (this.hayPedidoFromStorage) {
         // notificar pedido pediente por finalizar
         // return;
@@ -81,11 +84,14 @@ export class EstadoPedidoClienteService {
       console.log('cuenta cliente totales', res);
 
 
+
       // la cuenta
       // this.hayCuentaClienteSource.next(res);
       // this.notifyChange();
       // return res;
     });
+
+    return importeCuenta;
   }
 
   getCuenta(): any {
@@ -132,6 +138,12 @@ export class EstadoPedidoClienteService {
   setHayPedidoPendiente(val: boolean): void {
     this.deserializar();
     this.estadoPedido.hayPedidoClientePendiente = val;
+    this.notifyChange();
+  }
+
+  setisPagada(val: boolean): void {
+    this.deserializar();
+    this.estadoPedido.isPagada = val;
     this.notifyChange();
   }
 

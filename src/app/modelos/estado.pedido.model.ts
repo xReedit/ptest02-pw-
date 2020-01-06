@@ -6,4 +6,5 @@ export class EstadoPedidoModel {
     numMinAprox: number; // numero de minutos aproximadamente
     hayPedidoCliente: boolean; // si hay pedido, si hay cuenta
     hayPedidoClientePendiente: boolean; // si hay productos en lista de pedido pendientes por enviar.
+    isPagada: boolean; // si ya fue pagada
 }

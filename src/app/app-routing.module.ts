@@ -17,6 +17,12 @@ const routes: Routes = [{
       loadChildren: () => import('./pages/pedido/pedido.module').then(m => m.PedidoModule),
       canActivate: [AuthGuard],
       data: { 'tituloModulo': 'Pedido' }
+    },
+    {
+      path: 'lanzar-encuesta',
+      loadChildren: () => import('./pages/encuesta/encuesta.module').then(m => m.EncuestaModule),
+      canActivate: [AuthGuard],
+      data: { 'tituloModulo': 'Encuesta' }
     }
   ]
 }];

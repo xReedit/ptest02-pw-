@@ -1285,6 +1285,8 @@ export class MipedidoService {
     this.socketService.onGetDatosSede().subscribe((res: any) => {
       this.objDatosSede = res[0];
       this.listenStatusService.setHayDatosSede(true);
+      // nombre sede
+      localStorage.setItem('sys::s', this.objDatosSede.datossede[0].nombre + '|' + this.objDatosSede.datossede[0].ciudad);
       console.log('datos de la sede ps', this.objDatosSede);
 
 

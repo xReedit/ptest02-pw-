@@ -18,6 +18,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
     align-items: center;
 }
 
+.xcontainer-centrado {
+    display: grid;    
+    align-items: center;
+    height: 100vh;
+}
+
 .xfooter {
     width: 100%;
     bottom: 0px;
