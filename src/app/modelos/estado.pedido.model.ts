@@ -7,4 +7,5 @@ export class EstadoPedidoModel {
     hayPedidoCliente: boolean; // si hay pedido, si hay cuenta
     hayPedidoClientePendiente: boolean; // si hay productos en lista de pedido pendientes por enviar.
     isPagada: boolean; // si ya fue pagada
+    isRegisterOnePago: boolean; // si se registro algun pago aunque no se el total
 }

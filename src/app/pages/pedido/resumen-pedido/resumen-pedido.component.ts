@@ -191,15 +191,15 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
 
     // si es cliente escucha cunado termina de hacer el pedido
-    // if ( this.isCliente ) {
-    //   this.socketService.onGetNuevoPedido()
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe(res => {
-    //     this.estadoPedidoClientService.getCuenta();
-    //     // this.xLoadCuentaMesa('', this.estadoPedidoClientService.getCuenta());
-    //     // this.estadoPedidoClientService.setImporte(this._arrSubtotales[this._arrSubtotales.length - 1].importe);
-    //   });
-    // }
+    if ( this.isCliente ) {
+      this.socketService.onGetNuevoPedido()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        this.estadoPedidoClientService.getCuentaTotales();
+        // this.xLoadCuentaMesa('', this.estadoPedidoClientService.getCuenta());
+        // this.estadoPedidoClientService.setImporte(this._arrSubtotales[this._arrSubtotales.length - 1].importe);
+      });
+    }
 
     // escucha que haya cuenta del cliente
     this.estadoPedidoClientService.hayCuentaCliente$.subscribe((res: any) => {
@@ -388,6 +388,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // enviar a guardar // guarda pedido e imprime comanda
     this.socketService.emit('nuevoPedido', dataSend);
+    // hora del pedido
+    this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
 
     //
     // this.navigatorService.addLink('mipedido');

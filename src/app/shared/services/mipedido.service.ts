@@ -542,6 +542,20 @@ export class MipedidoService {
     return rpt;
   }
 
+  // resetear las cantidades seleccionadas en el item carta, luego de hacer un pedido para que no se quede marcado
+  private resetCantidadesTpcItemCarta(): void {
+    this.objCarta.carta.map((cat: CategoriaModel) => {
+      cat.secciones.map((sec: SeccionModel) => {
+        sec.items.map( x => {
+          x.indicaciones = '';
+          x.cantidad_seleccionada = 0;
+          x.itemtiposconsumo = null;
+          // return x;
+        });
+      });
+    });
+  }
+
   findItemSeccionCarta(idFind: number): SeccionModel {
     let rpt: SeccionModel;
     this.objCarta.carta.map((cat: CategoriaModel) => {
@@ -858,6 +872,7 @@ export class MipedidoService {
       this.listItemsPedido.map((item: ItemModel) => {
         item.indicaciones = '';
         if ( !item.itemtiposconsumo ) { return; }
+        // item.itemtiposconsumo = null;
         // item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
         //   tpc.cantidad_seleccionada = 0;
         // });
@@ -874,6 +889,7 @@ export class MipedidoService {
       console.log(error);
     }
 
+    this.resetCantidadesTpcItemCarta();
 
     // this.laCartaObjSource.next(this.objCarta);
 
@@ -1326,6 +1342,12 @@ export class MipedidoService {
         this.navigatorService.setPageActive('carta');
       }
     });
+  }
+
+  // cerrar session
+  cerrarSession(): void {
+    this.socketService.closeConnection();
+    this.navigatorService.cerrarSession();
   }
 
   // <--------- listen change -------> //

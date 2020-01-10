@@ -5,6 +5,10 @@ import { Auth0Service } from 'src/app/shared/services/auth0.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { take } from 'rxjs/operators';
 
+import {
+  toLatLon, toLatitudeLongitude, headingDistanceTo, moveTo, insidePolygon, insideCircle
+} from 'geolocation-utils';
+
 // import {QrScannerComponent} from 'angular2-qrscanner';
 
 @Component({
@@ -27,6 +31,9 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   isOptionChangeCamera = false;
   isCodigoQrValido = true;
   isCameraReady = false;
+  // hasPermissionPosition = false;
+
+  private isDemo = false;
 
 
   // private veryfyClient: Subscription = null;
@@ -46,6 +53,8 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     //   .subscribe(res => {
     //     console.log('res idcliente', res);
     //   });
+
+    // this.verifyAceptPosition();
   }
 
   ngOnDestroy(): void {
@@ -68,6 +77,8 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   getPosition(): void {
     this.hasPermissionPosition = true;
     navigator.geolocation.getCurrentPosition((position: any) => {
+
+
       const divicePos = { lat: position.coords.latitude, lng: position.coords.longitude};
       console.log('Latitude: ', position.coords.latitude);
       console.log('Longitude: ', position.coords.longitude);
@@ -77,10 +88,33 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     }, this.showPositionError);
   }
 
+  // verifyAceptPosition() {
+  //   navigator.geolocation.getCurrentPosition(this.getPosition, (error: any) => {
+  //     // El segundo parámetro es la función de error
+  //         switch (error.code) {
+  //             case error.PERMISSION_DENIED:
+  //               this.hasPermissionPosition = false;
+  //                 // El usuario denegó el permiso para la Geolocalización.
+  //                 break;
+  //             case error.POSITION_UNAVAILABLE:
+  //                 // La ubicación no está disponible.
+  //                 this.hasPermissionPosition = false;
+  //                 break;
+  //             case error.TIMEOUT:
+  //                 // Se ha excedido el tiempo para obtener la ubicación.
+  //                 break;
+  //             case error.UNKNOWN_ERROR:
+  //                 // Un error desconocido.
+  //                 this.hasPermissionPosition = false;
+  //                 break;
+  //         }
+  //   });
+  // }
+
   private showPositionError(error: any): void {
-    if ( error.PERMISSION_DENIED ) {
+    // if ( error.PERMISSION_DENIED ) {
       this.hasPermissionPosition = false;
-    }
+    // }
 
   }
 
@@ -122,9 +156,13 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     }
 
     const isValidKeyQR = _codQr[0] === 'keyQrPwa' ? true : false;
+    if ( !isValidKeyQR ) {
+      this.isDemo = _codQr[0] === 'keyQrPwaDemo' ? true : false;
+    }
+
 
     // no se encuentra el key no es qr valido
-    if ( !isValidKeyQR ) {
+    if ( !isValidKeyQR && !this.isDemo) {
       this.resValidQR(isValidKeyQR);
       return;
     }
@@ -149,7 +187,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     const localPos = { lat: parseFloat(position[0]), lng: parseFloat(position[1]) };
 
     // si las coordenadas del dispositivo esta a 1 un km del local
-    const isPositionCorrect = this.arePointsNear(localPos, divicePos, 1);
+    const isPositionCorrect = this.isDemo ? true : this.arePointsNear(localPos, divicePos, 1);
 
     this.resValidQR(isPositionCorrect);
   }
@@ -167,11 +205,17 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
 
   // calcula si esta dentro del rango
   private arePointsNear(checkPoint: any, centerPoint: any, km: number): boolean {
-    const ky = 40000 / 360;
-    const kx = Math.cos(Math.PI * centerPoint.lat / 180.0) * ky;
-    const dx = Math.abs(centerPoint.lng - checkPoint.lng) * kx;
-    const dy = Math.abs(centerPoint.lat - checkPoint.lat) * ky;
-    return Math.sqrt(dx * dx + dy * dy) <= km;
+    // const ky = 40000 / 360;
+    // const kx = Math.cos(Math.PI * centerPoint.lat / 180.0) * ky;
+    // const dx = Math.abs(centerPoint.lng - checkPoint.lng) * kx;
+    // const dy = Math.abs(centerPoint.lat - checkPoint.lat) * ky;
+    // return Math.sqrt(dx * dx + dy * dy) <= km;
+
+    const center = {lat: centerPoint.lat, lon: centerPoint.lng };
+    const radius = 45; // meters
+
+    // insideCircle({lat: 51.03, lon: 4.05}, center, radius) // true
+    return insideCircle({lat: checkPoint.lat, lon: checkPoint.lng}, center, radius);  // false
   }
 
   volverALeer(): void {

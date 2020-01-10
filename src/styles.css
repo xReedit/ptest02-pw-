@@ -6,11 +6,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
 
 
 .xboder-abajo {
-    border-bottom: 1px solid rgba(199,199,199);
+    border-bottom: 1px solid #c7c7c7;
 }
 
 .xboder-derecha {
-    border-right: 1px solid rgba(199,199,199);
+    border-right: 1px solid #c7c7c7;
 }
 
 .xcontainer-center {
@@ -31,3 +31,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
     background: #e0e0e0;
     /* height: 48px; */
 }
+
+/* .skiptranslate {
+    display: none;
+} */
+

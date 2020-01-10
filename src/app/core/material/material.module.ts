@@ -12,6 +12,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatStepperModule } from '@angular/material/stepper';
 // import { MatTooltipModule } from '@angular/material/tooltip';
 
 
@@ -29,6 +30,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatDialogModule,
     MatCheckboxModule,
     MatSnackBarModule,
+    MatStepperModule
     // MatTooltipModule
   ],
   exports: [
@@ -42,6 +44,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatDialogModule,
     MatCheckboxModule,
     MatSnackBarModule,
+    MatStepperModule
     // MatTooltipModule
   ]
 })

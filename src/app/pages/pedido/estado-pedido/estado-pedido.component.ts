@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 import { EstadoPedidoModel } from 'src/app/modelos/estado.pedido.model';
 import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedido-cliente.service';
@@ -6,16 +6,19 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'app-estado-pedido',
   templateUrl: './estado-pedido.component.html',
   styleUrls: ['./estado-pedido.component.css']
 })
-export class EstadoPedidoComponent implements OnInit {
+export class EstadoPedidoComponent implements OnInit, OnDestroy {
   estadoPedido: EstadoPedidoModel;
   infoToken: UsuarioTokenModel;
   tiempoEspera: number;
+
+  private unsubscribeEstado = new Subscription();
 
   constructor(
     private listenStatusService: ListenStatusService,
@@ -37,10 +40,23 @@ export class EstadoPedidoComponent implements OnInit {
 
   }
 
+  ngOnDestroy(): void {
+    this.unsubscribeEstado.unsubscribe();
+    // this.unsubscribe$.next();
+    // this.unsubscribe$.complete();
+  }
+
   private listenStatus(): void {
-    this.listenStatusService.estadoPedido$.subscribe(res => {
+    this.unsubscribeEstado = this.listenStatusService.estadoPedido$.subscribe(res => {
       this.estadoPedido = res;
       console.log('desde estado pedido', this.estadoPedido);
+
+      // if ( _importe === 0 ) {
+      if ( this.estadoPedido.importe === 0 && this.estadoPedido.isRegisterOnePago ) {
+        this.unsubscribeEstado.unsubscribe();
+        this.estadoPedidoClienteService.setisRegisterPago(false);
+        this.navigatorService._router('../lanzar-encuesta');
+      }
 
       // recalcular cuenta si es 0 agradecimiento y lanzar encuesta si aun no la lleno
       // if (this.estadoPedido.isPagada) {
@@ -57,10 +73,8 @@ export class EstadoPedidoComponent implements OnInit {
     this.socketService.onPedidoPagado().subscribe(res => {
       console.log('notificado de pago recalcular', res);
       // recalcular cuenta si es 0 agradecimiento y lanzar encuesta si aun no la lleno
-      const _importe = this.estadoPedidoClienteService.getCuentaTotales();
-      if ( _importe === 0 ) {
-        this.navigatorService._router('../lanzar-encuesta');
-      }
+      this.estadoPedidoClienteService.getCuentaTotales();
+      this.estadoPedidoClienteService.setisRegisterPago(true);
     });
   }
 

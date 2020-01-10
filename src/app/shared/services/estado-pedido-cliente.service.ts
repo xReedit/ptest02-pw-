@@ -32,6 +32,8 @@ export class EstadoPedidoClienteService {
     private infoTokenService: InfoTockenService
   ) {
 
+    this.deserializar();
+
     this.dataPost = {
       idsede: this.infoTokenService.getInfoUs().idsede,
       idcliente: this.infoTokenService.getInfoUs().idcliente
@@ -71,11 +73,11 @@ export class EstadoPedidoClienteService {
     this.crudService.postFree(this.dataPost, 'pedido', 'lacuenta-cliente-totales', false).subscribe( (res: any) => {
       if ( res.data.length === 0 ) { this.estadoPedido.hayPedidoCliente = false; return; } // si no hay cuenta pedido del cliente
       importeCuenta = res.data[0].importe || 0;
+      this.setImporte(importeCuenta);
 
       this.estadoPedido.hayPedidoCliente = true;
       this.calcTimeAprox(); // calcula el tiempo aproximado
 
-      this.setImporte(importeCuenta);
       // this.setisPagada(importeCuenta === 0 ? true : false);
       // if (this.hayPedidoFromStorage) {
         // notificar pedido pediente por finalizar
@@ -129,6 +131,12 @@ export class EstadoPedidoClienteService {
     this.notifyChange();
   }
 
+  setHoraInitPedido(val: number): void {
+    this.deserializar();
+    this.estadoPedido.horaInt = val;
+    this.notifyChange();
+  }
+
   setTimeAprox(val: boolean): void {
     this.deserializar();
     this.estadoPedido.isTiempoAproxCumplido = val;
@@ -147,13 +155,19 @@ export class EstadoPedidoClienteService {
     this.notifyChange();
   }
 
+  setisRegisterPago(val: boolean): void {
+    this.deserializar();
+    this.estadoPedido.isRegisterOnePago = val;
+    this.notifyChange();
+  }
+
   // obtener el tiempo aproximado del pedido
   calcTimeAprox(): void {
     this.crudService.postFree(this.dataPost, 'pedido', 'calc-time-despacho', false).subscribe( (res: any) => {
       // console.log('calc time despacho', res);
       this.estadoPedido.estado = 0; // en espera
       this.estadoPedido.numMinAprox = res.data[0].rpt;
-      this.estadoPedido.horaInt = this.estadoPedido.horaInt ? this.estadoPedido.horaInt : new Date().getTime();
+      // this.estadoPedido.horaInt = this.timeNow.getTime();
       this.estadoPedido.isTiempoAproxCumplido = false;
       this.notifyChange();
 
@@ -166,17 +180,21 @@ export class EstadoPedidoClienteService {
   getTimeAprox(): number {
     const rpt = 0;
     if ( this.estadoPedido.estado === 0 ) {
+      // this.timeInterval = setInterval(this.calTimeMin, 4000);
       this.timeInterval = setTimeout(() => {
         let min = this.calTimeMin();
         if ( min <= 0 ) {
           this.estadoPedido.estado = 1;
           this.notifyChange();
           this.clearTimeout();
+          clearTimeout(this.timeInterval);
           min = 0;
+        } else {
+          this.getTimeAprox();
         }
 
         this.timeRestanteAproxSource.next(min);
-      }, 4000);
+      }, 2000);
     } else {
       this.clearTimeout();
     }
@@ -185,17 +203,28 @@ export class EstadoPedidoClienteService {
   }
 
   private calTimeMin(): number {
-    let timeMin = this.timeNow.getTime() - this.estadoPedido.horaInt;
+    let timeMin = new Date().getTime() - this.estadoPedido.horaInt;
     timeMin = Math.round(((timeMin % 86400000) % 3600000) / 60000);
     timeMin = this.estadoPedido.numMinAprox - timeMin;
-    return  timeMin;
+
+    // let min = this.calTimeMin();
+        // if ( timeMin <= 0 ) {
+        //   this.estadoPedido.estado = 1;
+        //   this.notifyChange();
+        //   this.clearTimeout();
+        //   timeMin = 0;
+        // }
+
+        // this.timeRestanteAproxSource.next(timeMin);
+
+    return  isNaN(timeMin) ? 0 : timeMin;
   }
 
   private clearTimeout(): void {
-    if (this.timeInterval) {
+    // if (this.timeInterval) {
       clearTimeout(this.timeInterval);
       this.timeInterval = null;
-    }
+    // }
   }
 
   private notifyChange(): void {

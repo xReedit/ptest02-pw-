@@ -43,6 +43,11 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.veryfyClient.unsubscribe();
   }
 
+  // changeLenguage() {
+  //   const elements = this.elem.nativeElement.querySelectorAll('.goog-te-combo');
+  //   elements.value = 'es';
+  // }
+
   cerrarSession(): void {
     this.verifyClientService.loginOut();
   }

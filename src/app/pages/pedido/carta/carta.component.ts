@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
@@ -14,6 +14,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
 
 import { Subscription } from 'rxjs/internal/Subscription';
+import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 
 
 @Component({
@@ -21,7 +22,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
   templateUrl: './carta.component.html',
   styleUrls: ['./carta.component.css', '../pedido.style.css']
 })
-export class CartaComponent implements OnInit, OnDestroy {
+export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private unsubscribeCarta = new Subscription();
 
@@ -67,12 +68,21 @@ export class CartaComponent implements OnInit, OnDestroy {
       // private jsonPrintService: JsonPrintService,
       private navigatorService: NavigatorLinkService,
       private listenStatusService: ListenStatusService,
+      private infoToken: InfoTockenService,
       private dialog: MatDialog,
       ) {
 
   }
 
   ngOnInit() {
+    this.initCarta();
+  }
+
+  ngAfterViewInit() {
+    // this.initCarta();
+  }
+
+  initCarta() {
     this.isCargado = true;
     this.socketService.connect();
 
@@ -162,7 +172,11 @@ export class CartaComponent implements OnInit, OnDestroy {
           _objTpcAdd.idtipo_consumo = t.idtipo_consumo;
           _objTpcAdd.titulo = t.titulo;
 
-          this.objNewItemTiposConsumo.push(_objTpcAdd);
+          if ( this.infoToken.isCliente() && t.descripcion === 'DELIVERY' ) {
+
+          } else {
+            this.objNewItemTiposConsumo.push(_objTpcAdd);
+          }
         });
 
         this.navigatorService.addLink('carta-i-');

@@ -89,7 +89,7 @@
 
                 <!-- cuando es usuario cliente -->
                 <ng-container *ngIf="isCliente; else divUsuarioAutorizado">
-                    <div>
+                    <div class="text-center">
                         <br><br>
                         <hr>
                         <p class="fw-100 fs-17 text-dark">
@@ -97,6 +97,16 @@
                             Por favor, verifique su pedido, una vez enviado ya no podra realizar ningun
                         cambio.</p>
                         <hr>
+                        
+                        <br>
+                        <div class="text-center">
+                            <div class="btn-footer-next transicion w-50 m-auto" matRipple (click)="prepararEnvio()"
+                                        [ngClass]="{'xdisabled': isRequiereMesa}">
+                                <div>
+                                    <span class="animated fadeInLeft">Enviar Pedido</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </ng-container>
 
@@ -195,7 +205,7 @@
 <ng-container *ngIf="!hayItems && isCliente">
     <div class="text-center d-flex flex-column h-75">
         <p class="m-auto">Aun no tiene ningun pedido en lista.</p>
-    </div>
+    </div>    
 </ng-container>
 
 
@@ -218,7 +228,7 @@
         </ng-template>
         <ng-template #divBtnEnviar>
             <ng-container *ngIf="!isDelivery; else elseTemplate">
-              <div class="col-5 btn-footer-next transicion" matRipple (click)="prepararEnvio()"
+              <div *ngIf="!isCliente" class="col-5 btn-footer-next transicion" matRipple (click)="prepararEnvio()"
                 [ngClass]="{'xdisabled': isRequiereMesa}">
                 <div>
                   <span class="animated fadeInLeft">Enviar Pedido</span>

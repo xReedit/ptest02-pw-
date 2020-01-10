@@ -17,7 +17,9 @@ export class EncuestaOpcionComponent implements OnInit {
   }
 
   xNextPregunta(item: any) {
-    this.NextPregunta.emit(item);
+    setTimeout(() => {
+      this.NextPregunta.emit(item);
+    }, 300);
   }
 
 }

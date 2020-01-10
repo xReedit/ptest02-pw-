@@ -1,36 +1,43 @@
-<div class="container-scan animated fadeIn">    
-    <div class="video text-center" *ngIf="!isProcesando">
-        <p>Scanear codigo</p>
-        <zxing-scanner class="video-scan"
-            [(device)]="currentDevice" 
-            (camerasFound)="onCamerasFound($event)" 
-            (permissionResponse)="onHasPermission($event)"
-            (scanSuccess)="scanSuccessHandler($event)"></zxing-scanner>
-        <div *ngIf="isCameraReady" class="linea-scan"></div>
-        <br>
-        <button mat-button *ngIf="isOptionChangeCamera" (click)="onDeviceSelectChange()"><i class="fa fa-undo" aria-hidden="true"></i></button>        
-    </div>
+<div class="container-scan animated fadeIn">        
+    <!-- <div class="container-scan"> -->
 
-    <div *ngIf="isProcesando">
-        <div class="text-center">
-            <ng-container *ngIf="isCodigoQrValido; else elseTemplate">
-                <p>Obteniendo datos ...</p>
-                <mat-progress-bar mode="indeterminate"></mat-progress-bar>            
-            </ng-container>
-            <ng-template #elseTemplate>
-                <div class="animated pulse">
-                    <p class="text-danger">Codigo no valido.</p>
-                </div>                
+        <div class="video text-center" *ngIf="!isProcesando">
+            <div *ngIf="!hasPermissionPosition">
+                <p class="text-danger fs-14">Es necesario que active la ubicación de su dispositivo <i class="fa fa-map-marker"></i> </p>
                 <br>
-                <button mat-stroked-button (click)="volverALeer()"><i class="fa fa-arrow-left" aria-hidden="true"></i> Intentar nuevamente.</button>
-            </ng-template>            
-            
-            <div [hidden]="hasPermissionPosition">
-                <br>
-                <p class="text-info">Se requiere que acepte los permisos.</p>
-                <button mat-stroked-button (click)="getPosition()"><i class="fa fa-map-marker" aria-hidden="true"></i> Intentar nuevamente.</button>        
+            </div>
+            <p>Scanear codigo</p>
+            <zxing-scanner class="video-scan"
+                [(device)]="currentDevice" 
+                (camerasFound)="onCamerasFound($event)" 
+                (permissionResponse)="onHasPermission($event)"
+                (scanSuccess)="scanSuccessHandler($event)"></zxing-scanner>
+            <div *ngIf="isCameraReady" class="linea-scan"></div>
+            <br>
+            <button mat-button *ngIf="isOptionChangeCamera" (click)="onDeviceSelectChange()"><i class="fa fa-undo" aria-hidden="true"></i></button>        
+        </div>
+        
+        <div *ngIf="isProcesando">
+            <div class="text-center">
+                <ng-container *ngIf="isCodigoQrValido; else elseTemplate">
+                    <p>Obteniendo datos ...</p>
+                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>            
+                </ng-container>
+                <ng-template #elseTemplate>
+                    <div class="animated pulse">
+                        <p class="text-danger">Codigo no valido.</p>
+                    </div>                
+                    <br>
+                    <button mat-stroked-button (click)="volverALeer()"><i class="fa fa-arrow-left" aria-hidden="true"></i> Intentar nuevamente.</button>
+                </ng-template>            
+                
+                <div [hidden]="hasPermissionPosition">
+                    <br>
+                    <p class="text-info">Se requiere que acepte los permisos.</p>
+                    <button mat-stroked-button (click)="getPosition()"><i class="fa fa-map-marker" aria-hidden="true"></i> Intentar nuevamente.</button>        
+                </div>
             </div>
         </div>
-    </div>
+    <!-- </div> -->
 </div>
 

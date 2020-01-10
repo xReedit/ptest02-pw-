@@ -9,6 +9,7 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 })
 export class NavigatorLinkService {
 
+  public disabledBack = false;
   private resNavigatorSource = new BehaviorSubject<any[]>([]);
   public resNavigatorSourceObserve$ = this.resNavigatorSource.asObservable();
 
@@ -58,7 +59,11 @@ export class NavigatorLinkService {
       , bufferCount(2, 1)).subscribe((e: any) => {
         if (e !== null && e !== undefined) {
           if (e[1].navigationTrigger === 'popstate') {
-            const _url = e[0]['url'].substr(1).split(';')[1].split('=')[1];
+            // desahabilitar boton back
+            if ( this.disabledBack ) {return false; }
+
+            const elUrl = e[0]['url'];
+            const _url = elUrl.indexOf(';') ? e[0]['url'].substr(1).split(';')[1].split('=')[1] : e[0]['url'];
             // const _nextUrl = e[1]['url'].substr(1).split(';')[1].split('=')[1];
             if ( _url.length > 0) {
               this.lastUrlHistory = _url; // last url -- de donde viene
@@ -148,6 +153,9 @@ export class NavigatorLinkService {
         // _pageActive = '';
         // this.router.navigate(['../']);
         _pageActive = 'carta';
+        break;
+      case 'lanzar-encuesta':
+        _pageActive = 'lanzar-encuesta';
         break;
     }
 

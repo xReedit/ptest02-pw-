@@ -13,6 +13,7 @@ export class LectorSuccessComponent implements OnInit {
 
   dataSede: any;
   listReglas: any;
+  numMesa = 0;
 
   constructor(
     private crudService: CrudHttpService,
@@ -32,6 +33,8 @@ export class LectorSuccessComponent implements OnInit {
     const _data = {
       idsede: usLog.idsede
     };
+
+    this.numMesa = usLog.numMesaLector;
 
     this.crudService.postFree(_data, 'ini', 'info-sede', false)
       .subscribe((res: any) => {

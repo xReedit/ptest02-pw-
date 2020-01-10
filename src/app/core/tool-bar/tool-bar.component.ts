@@ -28,7 +28,7 @@ export class ToolBarComponent implements OnInit {
 
   constructor(
     private miPedidoService: MipedidoService,
-    private socketService: SocketService,
+    // private socketService: SocketService,
     private navigatorService: NavigatorLinkService,
     private dialog: MatDialog,
     private listenStatusService: ListenStatusService,
@@ -91,8 +91,9 @@ export class ToolBarComponent implements OnInit {
     dialogReset.afterClosed().subscribe(result => {
       if (result ) {
         this.miPedidoService.resetAllNewPedido();
-        this.socketService.closeConnection();
-        this.navigatorService.cerrarSession();
+        this.miPedidoService.cerrarSession();
+        // this.socketService.closeConnection();
+        // this.navigatorService.cerrarSession();
         this.infoTokenService.cerrarSession();
       }
   });

@@ -264,7 +264,9 @@ export class SocketService {
   }
 
   closeConnection(): void {
-    this.socket.disconnect();
+    try {
+      this.socket.disconnect();
+    } catch (error) {}
     // this.isSocketOpen = false;
     // this.isSocketOpenSource.next(false);
     this.statusConexSocket(false, 'disconnect');
