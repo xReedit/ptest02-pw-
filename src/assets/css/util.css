@@ -29,6 +29,12 @@
 body, html {
 	height: 100%;
 	font-family: Ubuntu-Regular, sans-serif;
+
+	/* para que no paresca el refresh del navegador overscroll-behavior-y: contain;*/
+	overscroll-behavior-y: contain;
+	-webkit-user-select: none;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-touch-callout: none;
 }
 
 /*---------------------------------------------*/

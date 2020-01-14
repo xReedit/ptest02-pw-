@@ -10,4 +10,5 @@ export class SocketClientModel {
     datalogin: any;
     numMesaLector: number; // numero de mesa del lector qr
     isQrSuccess: boolean; // si paso por el lector qr
+    isLoginByDNI: boolean; // si el logue fue por dni
 }

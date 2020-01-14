@@ -3,9 +3,10 @@
 
         <div class="video text-center" *ngIf="!isProcesando">
             <div *ngIf="!hasPermissionPosition">
-                <p class="text-danger fs-14">Es necesario que active la ubicación de su dispositivo <i class="fa fa-map-marker"></i> </p>
+                <p class="text-danger fs-14">Es necesario que active la ubicación de su telefono <i class="fa fa-map-marker"></i> </p>
                 <br>
             </div>
+            <!-- <span class="text-info fs-14 fw-100">Recuerde activar la ubicacion de su telefono <i class="fa fa-map-marker"></i></span> -->
             <p>Scanear codigo</p>
             <zxing-scanner class="video-scan"
                 [(device)]="currentDevice" 

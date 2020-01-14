@@ -13,10 +13,18 @@ import { LectorCodigoQrComponent } from './lector-codigo-qr/lector-codigo-qr.com
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { LectorSuccessComponent } from './lector-success/lector-success.component';
 import { CallbackAuthComponent } from './callback-auth/callback-auth.component';
+import { LoginClienteComponent } from './login-cliente/login-cliente.component';
 // import { CallbackAuth0Component } from './callback-auth0/callback-auth0.component';
 
 @NgModule({
-  declarations: [MainComponent, InicioComponent, LoginPersonalAutorizadoComponent, LectorCodigoQrComponent, LectorSuccessComponent, CallbackAuthComponent],
+  declarations: [
+    MainComponent,
+    InicioComponent,
+    LoginPersonalAutorizadoComponent,
+    LectorCodigoQrComponent,
+    LectorSuccessComponent,
+    CallbackAuthComponent,
+    LoginClienteComponent],
   imports: [
     CommonModule,
     FormsModule,

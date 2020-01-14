@@ -24,7 +24,7 @@ export class LectorSuccessComponent implements OnInit {
 
   ngOnInit() {
     this.loadDataIni();
-    // console.log(this.auth.userProfile$);
+    // // console.log(this.auth.userProfile$);
   }
 
   private loadDataIni(): void {
@@ -59,7 +59,7 @@ export class LectorSuccessComponent implements OnInit {
 
         // window.localStorage.setItem('sys::tpm', JSON.stringify(dataTpm));
 
-        console.log(this.dataSede);
+        // console.log(this.dataSede);
 
         // reglas del app
         this.crudService.getAll('ini', 'reglas-app', false, false, false)
@@ -68,17 +68,18 @@ export class LectorSuccessComponent implements OnInit {
               x.descripcion = x.descripcion.replace('?', this.dataSede.pwa_time_limit);
               return x;
             });
-            console.log('reglas', resp);
+            // console.log('reglas', resp);
           });
       });
 
   }
 
   listoEmpezar(): void {
-    if (this.auth.loggedIn) {
+    if (this.auth.loggedIn || this.verifyClientService.getIsLoginByDNI()) {
       this.router.navigate(['/callback-auth']);
     } else {
-      this.auth.login('#');
+      // this.auth.login();
+      this.router.navigate(['/login-client']);
     }
   }
 

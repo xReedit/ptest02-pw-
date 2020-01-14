@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
 import { InfoTockenService } from './info-token.service';
 import { URL_SERVER, URL_CONSULTA_RUC_DNI, TOKEN_CONSULTA } from '../config/config.const';
+import { catchError } from 'rxjs/operators';
 
 
 @Injectable()

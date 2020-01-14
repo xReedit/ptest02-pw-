@@ -26,15 +26,18 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.nombreClientSocket = '';
     screen.orientation.unlock();
 
+    this.verifyClientService.getDataClient();
+    this.verifyClientService.setQrSuccess(false);
+
     this.isLogin = this.verifyClientService.isLogin();
-    console.log('desde incio', this.isLogin);
+    // console.log('desde incio', this.isLogin);
 
     this.veryfyClient = this.verifyClientService.verifyClient()
       .subscribe((res: SocketClientModel) => {
         this.nombreClientSocket = res.usuario;
-        this.isLogin = this.verifyClientService.isLogin();
+        this.isLogin = this.verifyClientService.getIsLoginByDNI() ? true : this.verifyClientService.isLogin();
         this.verifyClientService.setQrSuccess(false);
-        console.log('res idcliente', res);
+        // console.log('res idcliente', res);
       });
   }
 

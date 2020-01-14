@@ -33,7 +33,7 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
       .subscribe(res => {
         if ( !res ) {return; }
         this.isProcesando = false;
-        console.log('res idcliente', res);
+        // console.log('res idcliente', res);
         this.setInfoToken(res);
       });
   }

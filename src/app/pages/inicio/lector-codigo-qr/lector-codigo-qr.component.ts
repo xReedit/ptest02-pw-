@@ -8,6 +8,7 @@ import { take } from 'rxjs/operators';
 import {
   toLatLon, toLatitudeLongitude, headingDistanceTo, moveTo, insidePolygon, insideCircle
 } from 'geolocation-utils';
+import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 
 // import {QrScannerComponent} from 'angular2-qrscanner';
 
@@ -31,20 +32,23 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   isOptionChangeCamera = false;
   isCodigoQrValido = true;
   isCameraReady = false;
+  isSedeRequiereGPS = false; // si sede ruquiere gps
   // hasPermissionPosition = false;
 
   private isDemo = false;
+  private divicePos: any;
 
 
   // private veryfyClient: Subscription = null;
 
   constructor(
     private verifyClientService: VerifyAuthClientService,
+    private crudService: CrudHttpService,
     private router: Router ) { }
 
   ngOnInit() {
 
-    // const qrScanner = new QrScanner(this.videoplayer, (result: any) => console.log('decoded qr code:', result));
+    // const qrScanner = new QrScanner(this.videoplayer, (result: any) => // console.log('decoded qr code:', result));
 
     // verifica si hay usuario logeado
     // this.verifyClientService.verifyClient();
@@ -64,10 +68,11 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   }
 
   scanSuccessHandler($event: any) {
-    console.log($event);
+    // console.log($event);
     this.codQR = $event;
     this.isProcesando = true;
-    this.getPosition();
+    this.leerDatosQR();
+    // this.getPosition();
   }
 
   onHasPermission(has: boolean) {
@@ -77,13 +82,9 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   getPosition(): void {
     this.hasPermissionPosition = true;
     navigator.geolocation.getCurrentPosition((position: any) => {
-
-
       const divicePos = { lat: position.coords.latitude, lng: position.coords.longitude};
-      console.log('Latitude: ', position.coords.latitude);
-      console.log('Longitude: ', position.coords.longitude);
-
-      this.leerDatosQR(divicePos);
+      // this.leerDatosQR(divicePos);
+      this.divicePos = this.divicePos;
 
     }, this.showPositionError);
   }
@@ -124,7 +125,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     this.indexSelectCamera = devices.length - 1;
     this.isOptionChangeCamera = this.indexSelectCamera > 0 ? true : false;
     this.deviceSelectChange();
-    console.log(this.availableDevices);
+    // console.log(this.availableDevices);
   }
 
   onDeviceSelectChange(): void {
@@ -144,7 +145,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   }
 
   // leer qr // formato keyQrPwa::5|-6.0283481:-76.9714528|1 -> mesa | coordenadas del local | idsede
-  private leerDatosQR(divicePos: any) {
+  private leerDatosQR() {
     this.isCodigoQrValido = true;
     let _codQr = [];
 
@@ -170,7 +171,6 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     // const dataQr = this.codQR.split('|');
     const dataQr = _codQr[1].split('|');
     const m = dataQr[0];
-    const position = dataQr[1].split(':');
     const s = dataQr[2];
 
     const dataSend = {
@@ -178,23 +178,39 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
       s: s
     };
 
-    // setear idsede en clienteSOcket
-    this.verifyClientService.getDataClient();
-    this.verifyClientService.setIdSede(s);
-    this.verifyClientService.setMesa(m);
-    this.verifyClientService.setQrSuccess(true);
+    // consultar si sede requiere geolocalizacion
+    const dataHeader = {
+      idsede: s
+    };
 
-    const localPos = { lat: parseFloat(position[0]), lng: parseFloat(position[1]) };
+    this.crudService.postFree(dataHeader, 'ini', 'info-sede-gps', false)
+      .subscribe((res: any) => {
+        this.isSedeRequiereGPS = res.data[0].pwa_requiere_gps === '0' ? false : true;
 
-    // si las coordenadas del dispositivo esta a 1 un km del local
-    const isPositionCorrect = this.isDemo ? true : this.arePointsNear(localPos, divicePos, 1);
 
-    this.resValidQR(isPositionCorrect);
+        // setear idsede en clienteSOcket
+        this.verifyClientService.getDataClient();
+        this.verifyClientService.setIdSede(s);
+        this.verifyClientService.setMesa(m);
+        this.verifyClientService.setQrSuccess(true);
+        // this.verifyClientService.setDataClient();
+
+        const position = dataQr[1].split(':');
+        const localPos = { lat: parseFloat(position[0]), lng: parseFloat(position[1]) };
+
+        let isPositionCorrect = true;
+        if ( this.isSedeRequiereGPS ) {
+          this.getPosition();
+          isPositionCorrect = this.isDemo ? true : this.arePointsNear(localPos, this.divicePos, 1);
+        }
+
+        this.resValidQR(isPositionCorrect);
+    });
   }
 
   private resValidQR(isValid: boolean): void {
     if ( isValid ) {
-      console.log('pase correcto');
+      // console.log('pase correcto');
       setTimeout(() => {
         this.router.navigate(['/lector-success']);
       }, 1000);
@@ -212,7 +228,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     // return Math.sqrt(dx * dx + dy * dy) <= km;
 
     const center = {lat: centerPoint.lat, lon: centerPoint.lng };
-    const radius = 45; // meters
+    const radius = 65; // meters
 
     // insideCircle({lat: 51.03, lon: 4.05}, center, radius) // true
     return insideCircle({lat: checkPoint.lat, lon: checkPoint.lng}, center, radius);  // false

@@ -71,13 +71,14 @@ export class Auth0Service {
     checkAuth$.subscribe();
   }
 
-  login(redirectPath: string = '/') {
+  login(redirectPath: string = '/', proveedor: string) {
     // A desired redirect path can be passed to login method
     // (e.g., from a route guard)
     // Ensure Auth0 client instance exists
     this.auth0Client$.subscribe((client: Auth0Client) => {
       // Call method to log in
       client.loginWithRedirect({
+        connection: proveedor,
         redirect_uri: `${window.location.origin}/#/callback-auth`,
         appState: { target: redirectPath }
       });
