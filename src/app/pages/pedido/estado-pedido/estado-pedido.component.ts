@@ -84,4 +84,10 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     this.navigatorService.setPageActive('mipedido');
   }
 
+  pagarCuenta() {
+    // this.navigatorService._router('./pagar-cuenta');
+    this.navigatorService._router('../pagar-cuenta');
+    this.listenStatusService.setIsPagePagarCuentaShow(true);
+  }
+
 }

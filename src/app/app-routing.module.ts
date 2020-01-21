@@ -23,6 +23,12 @@ const routes: Routes = [{
       loadChildren: () => import('./pages/encuesta/encuesta.module').then(m => m.EncuestaModule),
       canActivate: [AuthGuard],
       data: { 'tituloModulo': 'Encuesta' }
+    },
+    {
+      path: 'pagar-cuenta',
+      loadChildren: () => import('./pages/pagar-cuenta/pagar-cuenta.module').then(m => m.PagarCuentaModule),
+      canActivate: [AuthGuard],
+      data: { 'tituloModulo': 'Cuenta' }
     }
   ]
 }];

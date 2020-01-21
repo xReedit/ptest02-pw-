@@ -12,6 +12,7 @@ import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
 import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { InfoTockenService } from './info-token.service';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 
 @Injectable({
@@ -35,19 +36,9 @@ export class SocketService {
 
   private resTipoConsumo: any = [];
 
+  private verificandoConexion = false;
+
   constructor(private infoTockenService: InfoTockenService) {
-
-      window.addEventListener('online', () => {
-        this.showStatusConexNavigator(true, 'navigator_online');
-      });
-      window.addEventListener('offline', () => {
-        this.showStatusConexNavigator(false, 'navigator_offline');
-      });
-
-      console.log('contructor socket');
-
-      // this.statusConexSocket(false, '');
-
 
   }
 
@@ -78,38 +69,41 @@ export class SocketService {
     this.socket = io(this.urlSocket, {
       secure: true,
       rejectUnauthorized: false,
+      // forceNew: true,
       query: dataSocket
       // forceNew: true
     });
 
-    this.socket.on('finishLoadDataInitial', () => {
-      // setTimeout(() => {
-        // this.isSocketOpen = true;
-        // this.isSocketOpenSource.next(true);
-        this.statusConexSocket(true, '');
-        this.isSocketOpenReconect = true; // evita que cargen nuevamente las configuraciones basicas, solo carga carta
-      // }, 1000);
-      console.log('conected socket finishLoadDataInitial');
-    });
+    this.listenStatusSocket(); // escucha los estado del socket
 
-    // this.socket.on('connect', (res: any) => {
-    //   this.statusConexSocket(true, 'socket event connect');
+    // this.socket.on('finishLoadDataInitial', () => {
+    //   // setTimeout(() => {
+    //     // this.isSocketOpen = true;
+    //     // this.isSocketOpenSource.next(true);
+    //     this.statusConexSocket(true, '');
+    //     this.isSocketOpenReconect = true; // evita que cargen nuevamente las configuraciones basicas, solo carga carta
+    //   // }, 1000);
+    //   console.log('conected socket finishLoadDataInitial');
     // });
 
-    this.socket.on('connect_failed', (res: any) => {
-      console.log('itento fallido de conexion', res);
-      this.statusConexSocket(false, 'connect_failed');
-    });
+    // // this.socket.on('connect', (res: any) => {
+    // //   this.statusConexSocket(true, 'socket event connect');
+    // // });
 
-    this.socket.on('connect_error', (res: any) => {
-      console.log('error de conexion', res);
-      this.statusConexSocket(false, 'connect_error');
-    });
+    // this.socket.on('connect_failed', (res: any) => {
+    //   console.log('itento fallido de conexion', res);
+    //   this.statusConexSocket(false, 'connect_failed');
+    // });
 
-    this.socket.on('disconnect', (res: any) => {
-      console.log('disconnect');
-      this.statusConexSocket(false, 'disconnect');
-    });
+    // this.socket.on('connect_error', (res: any) => {
+    //   console.log('error de conexion', res);
+    //   this.statusConexSocket(false, 'connect_error');
+    // });
+
+    // this.socket.on('disconnect', (res: any) => {
+    //   console.log('disconnect');
+    //   this.statusConexSocket(false, 'disconnect');
+    // });
 
     // this.onListenSocketDisconnet();
   }
@@ -252,6 +246,8 @@ export class SocketService {
   // }
 
   emit(evento: string, data: any) {
+    // verificar estado del socket
+
     this.socket.emit(evento, data);
   }
 
@@ -270,6 +266,63 @@ export class SocketService {
     // this.isSocketOpen = false;
     // this.isSocketOpenSource.next(false);
     this.statusConexSocket(false, 'disconnect');
+  }
+
+  private listenStatusSocket(): void {
+
+    this.socket.on('finishLoadDataInitial', () => {
+      this.statusConexSocket(true, '');
+      this.isSocketOpenReconect = true; // evita que cargen nuevamente las configuraciones basicas, solo carga carta
+      console.log('conected socket finishLoadDataInitial');
+    });
+
+    // estados del navigator
+
+    window.addEventListener('focus', (event) => {
+      this.verifyConexionSocket();
+    });
+
+    window.addEventListener('online', () => {
+      this.showStatusConexNavigator(true, 'navigator_online');
+    });
+    window.addEventListener('offline', () => {
+      this.showStatusConexNavigator(false, 'navigator_offline');
+    });
+
+
+    // estado del socket
+    this.socket.on('connect', () => {
+      console.log('socket connect');
+      this.statusConexSocket(true, 'connect');
+    });
+
+    this.socket.on('connect_failed', (res: any) => {
+      console.log('itento fallido de conexion', res);
+      this.statusConexSocket(false, 'connect_failed');
+    });
+
+    this.socket.on('connect_error', (res: any) => {
+      console.log('error de conexion', res);
+      this.statusConexSocket(false, 'connect_error');
+    });
+
+    this.socket.on('disconnect', (res: any) => {
+      console.log('disconnect');
+      this.statusConexSocket(false, 'disconnect');
+    });
+
+    // escucha la verificacion de conexion
+    this.socket.on('verificar-conexion', (res: any) => {
+      if ( res === true ) { console.log('VERIFY CONECTION => OK'); this.verificandoConexion = false; return; }
+
+      // no hay conexion -- en pruebas ver comportamiento
+      console.log('VERIFY CONECTION => FALSE');
+      this.closeConnection();
+      this.statusConexSocket(false, 'disconnect');
+      this.connect();
+      this.verificandoConexion = false;
+    });
+
   }
 
   private statusConexSocket(isConncet: boolean, evento: string) {
@@ -291,7 +344,10 @@ export class SocketService {
         msj = 'Restableciendo conexion ...';
         break;
       case 'navigator_offline': // conectando
-        msj = 'Conexion cerrada ...';
+        msj = 'Conexion cerrada -b ...';
+        break;
+      case 'navigator_online': // conectando
+        msj = 'Conectando datos -b ...';
         break;
     }
 
@@ -309,5 +365,12 @@ export class SocketService {
     } else {
       console.log('!!! navegador desconectado !!');
     }
+  }
+
+  // verifica el estado del socket, si esta cerrado intenta abrirlo
+  verifyConexionSocket(): void {
+    if ( this.verificandoConexion ) {return; }
+    this.verificandoConexion = true;
+    this.emit('verificar-conexion', this.socket.id);
   }
 }

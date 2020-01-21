@@ -19,6 +19,7 @@ export class MainComponent implements OnInit {
   countTotalItems = 0;
   selectedTab = 0;
   isUsuarioCliente = false; // si es usuario cliente
+  isPagePagarShow = false;
 
 
   private lastValScrollTop = 0;
@@ -49,6 +50,10 @@ export class MainComponent implements OnInit {
 
     this.listenStatusService.hayCuentaBusqueda$.subscribe(res => {
       this.isHayCuentaBusqueda = res;
+    });
+
+    this.listenStatusService.isPagePagarCuentaShow$.subscribe(res => {
+      this.isPagePagarShow = res;
     });
 
     this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {

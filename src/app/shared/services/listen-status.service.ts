@@ -35,6 +35,10 @@ export class ListenStatusService {
   private hayPedidoPendienteSource = new BehaviorSubject<boolean>(false);
   public hayPedidoPendiente$ = this.hayPedidoPendienteSource.asObservable();
 
+  // form pagar la cuenta
+  private isPagePagarCuentaShowSource = new BehaviorSubject<boolean>(false);
+  public isPagePagarCuentaShow$ = this.isPagePagarCuentaShowSource.asObservable();
+
   constructor() { }
 
   setIsBusqueda() {
@@ -69,6 +73,10 @@ export class ListenStatusService {
 
   setHayPedidoPendiente(value: boolean): void {
     this.hayPedidoPendienteSource.next(value);
+  }
+
+  setIsPagePagarCuentaShow(value: boolean) {
+    this.isPagePagarCuentaShowSource.next(value);
   }
 
 }

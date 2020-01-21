@@ -12,6 +12,13 @@
     </div>    
 
     <div class="i-body fw-100 fs-13">
+        <!-- imagen -->
+        <ng-container *ngIf="item.img.length > 0">
+            <div>
+                <img class="img-carta" src="{{url_img}}{{item.img}}" alt="{{item.img}}">
+            </div>
+        </ng-container>
+        
         <!-- detalles -->
         <ng-container *ngIf="item.detalles.length > 0">
             <p class="titlo-detalle" >{{item.detalles}}</p>

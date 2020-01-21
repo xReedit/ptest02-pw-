@@ -1,0 +1,96 @@
+<div class="loader-pago" *ngIf="isLoaderTransaction">
+  <div>
+    <span>Verificando, un momento por favor...</span>
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+</div>
+
+<div class="animated fadeIn content-pago">    
+
+  <!-- header -->
+  <div class="header-pago p-3">
+    <i class="fa fa-arrow-left" (click)="goBack()" [routerLink]="['../']"></i>
+    <span class="pl-2">Resumen de la cuenta</span>
+  </div>
+
+
+  <!-- pago -->
+
+  <div *ngIf="!dataResTransaction" class="animated fadeInUp">    
+    <!-- body -->
+    <div class="p-3">
+
+      <mat-card class="mt-2 mb-2">
+        <div class="text-center">
+            <p>Importe a pagar:</p>
+            <div>              
+              <p class="fs-30 fw-600"><span class="fs-15">S/.</span>  80.00</p>
+            </div>            
+            <hr>
+            <mat-checkbox (click)="goPagar()">Acepto los <a href="#">Terminos y condiciones</a></mat-checkbox>
+            <hr>
+            <div class="div-btn">
+              <div id="btn_pago">
+  
+              </div>
+  
+              <div id="btn-disabled" class="btn-pago-disabled">
+                Pagar Aqui
+              </div>
+            </div>
+        </div>
+      </mat-card>      
+
+        <mat-accordion>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  Datos de Facturación
+                </mat-panel-title>                
+              </mat-expansion-panel-header>
+          
+              <mat-form-field>
+                <input matInput placeholder="First name">
+              </mat-form-field>
+          
+              <mat-form-field>
+                <input matInput placeholder="Age">
+              </mat-form-field>
+            </mat-expansion-panel>            
+        </mat-accordion>              
+    
+    </div>
+  </div>
+
+
+  <!-- respuesta -->
+  <div *ngIf="dataResTransaction" class="animated fadeIn">
+
+    <ng-container *ngIf="dataResTransaction.error; else elseTemplate">
+      <div class="text-center fs-20 fw-100 banner-res-error p-3">
+        <i class="fa fa-times-circle-o fa-2x" aria-hidden="true"></i>
+        <p>Ups! hubo un problema.</p>
+      </div>      
+      <div class="p-3">
+        <div class="text-center">
+          <p>{{dataResTransaction.errorMessage}}</p>
+          <hr>
+          <button mat-flat-button color="accent" (click)="goBack()">Regresar</button>          
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #elseTemplate>
+      <div class="text-center fs-20 fw-100 banner-res-ok p-3">
+        <i class="fa fa-check-circle-o fa-2x" aria-hidden="true"></i>
+        <p>Transacción Existosa.</p>
+      </div>    
+    </ng-template>        
+    <!-- <mat-card class="mt-2 mb-2">
+      <div class="text-center">
+         
+      </div>
+    </mat-card> -->
+  </div>
+</div>
+

@@ -13,6 +13,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCardModule } from '@angular/material/card';
 // import { MatTooltipModule } from '@angular/material/tooltip';
 
 
@@ -30,7 +32,9 @@ import { MatStepperModule } from '@angular/material/stepper';
     MatDialogModule,
     MatCheckboxModule,
     MatSnackBarModule,
-    MatStepperModule
+    MatStepperModule,
+    MatExpansionModule,
+    MatCardModule
     // MatTooltipModule
   ],
   exports: [
@@ -44,7 +48,9 @@ import { MatStepperModule } from '@angular/material/stepper';
     MatDialogModule,
     MatCheckboxModule,
     MatSnackBarModule,
-    MatStepperModule
+    MatStepperModule,
+    MatExpansionModule,
+    MatCardModule
     // MatTooltipModule
   ]
 })

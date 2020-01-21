@@ -71,6 +71,7 @@ export class LoginClienteComponent implements OnInit {
 
   buscarDNI(value: string) {
     if ( value.length < 8 || this.numDocumento === value ) { return; }
+
     this.isValidDNI = false;
     this.isListDateSelect = false;
 

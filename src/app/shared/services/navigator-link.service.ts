@@ -170,6 +170,14 @@ export class NavigatorLinkService {
     this.router.navigate([link]);
   }
 
+  disableGoBack(): void {
+    this.disabledBack = true;
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+        history.go(1);
+    };
+  }
+
   // private findAndApplyHistory(_pageActive): void {
   //   const itemHistory = this.findPageActiveInHistory(_pageActive);
   //   if (itemHistory) { // si existe

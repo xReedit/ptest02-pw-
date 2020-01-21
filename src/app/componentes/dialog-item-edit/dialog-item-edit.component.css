@@ -161,3 +161,8 @@
   background: #d81b60;
   color: #e0e0e0;
 }
+
+.img-carta {
+    width: 100%;
+    border-radius: 3px;
+}

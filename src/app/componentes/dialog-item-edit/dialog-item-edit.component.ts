@@ -8,6 +8,7 @@ import { SubItemContent } from 'src/app/modelos/subitem.content.model';
 import { SubItemsView } from 'src/app/modelos/subitems.view.model';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { URL_IMG_CARTA } from 'src/app/shared/config/config.const';
 
 @Component({
   selector: 'app-dialog-item-edit',
@@ -24,6 +25,8 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   precioProducto: number;
   _precioProductoIni: number; // precio incio
   isObjSubItems = false; // si el item tiene subitems
+
+  url_img = URL_IMG_CARTA;
 
   isWaitBtnMenos = false;
 

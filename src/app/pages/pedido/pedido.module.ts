@@ -20,6 +20,7 @@ import { BusquedaComponent } from './busqueda/busqueda.component';
 import { DialogResetComponent } from './resumen-pedido/dialog-reset/dialog-reset.component';
 import { DialogLoadingComponent } from './resumen-pedido/dialog-loading/dialog-loading.component';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
+// import { PagarCuentaComponent } from './pagar-cuenta/pagar-cuenta.component';
 
 
 
@@ -36,7 +37,9 @@ import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/di
     DialogLoadingComponent,
     // DialogSubitemRemoveComponent,
     DialogItemEditComponent,
-    BusquedaComponent],
+    BusquedaComponent,
+    // PagarCuentaComponent
+  ],
   imports: [
     CommonModule,
     FormsModule,

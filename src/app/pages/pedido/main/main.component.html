@@ -11,13 +11,19 @@
   </div>     
 <!-- loader -->
 
+
+<!-- <div *ngIf="isPagePagarShow">
+  <router-outlet></router-outlet>
+</div> -->
+
 <!-- <router-outlet></router-outlet> -->
-<div class="h-100 overflow-hidden">  
+<!-- *ngIf="!isPagePagarShow" -->
+<div class="h-100 overflow-hidden" >  
     <app-progress-time-limit></app-progress-time-limit>
     <div class="toolbar-main" [ngClass]="{'fadeInTool': isVisibleToolBar, 'fadeOutTool': !isVisibleToolBar}">
       <app-tool-bar></app-tool-bar>
-    </div>    
-    
+    </div>        
+
     <div>      
       <mat-tab-group (selectedTabChange)="clickTab($event)" backgroundColor="primary" color="accent"
         class="main-contemt transicion xanimated xfadeIn" [selectedIndex]="selectedTab"
@@ -55,5 +61,7 @@
         </mat-tab>
       </mat-tab-group>
     </div>    
+
+   
 
 </div>

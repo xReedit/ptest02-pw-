@@ -24,6 +24,7 @@ export class ItemModel {
     des: string;
     indicaciones: string; // indicaciones del pedido
     detalles: string; // descripcion en detalle
+    img: string; // imagen del item
     selected: boolean;
     itemtiposconsumo: ItemTipoConsumoModel[] = []; // para la vista -> listItemsPedido
     seccion: string;
