@@ -1,10 +1,9 @@
-var user = "integraciones.visanet@necomplus.com";
-var password = "d5e7nk$M";
+// var user = "integraciones.visanet@necomplus.com";
+// var password = "d5e7nk$M";
 var merchantId = '522591303';
-var importe = '10.00';
-var purchasenumber = 123123315;
+var importe;
+var purchasenumber;
 var cargando_transaction = false;
-var form;
 
 
 var urlApiSeguridad = "https://apitestenv.vnforapps.com/api.security/v1/security";
@@ -14,7 +13,18 @@ var urlApiAutorization =  "https://apitestenv.vnforapps.com/api.authorization/v3
 var urlJs = "https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true";
 
 
-function pagar() {
+// PROD
+// var urlApiSeguridad = "https://apiprod.vnforapps.com/api.security/v1/security";
+// var urlApiSesion = "https://apiprod.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/";
+// var urlApiAutorization =  "https://apiprod.vnforapps.com/api.authorization/v3/authorization/ecommerce/";
+// var urlJs = "https://static-content.vnforapps.com/v2/js/checkout.js";
+// var merchantId = '100128038';
+
+
+function pagar(_importe, _purchasenumber) {
+  importe = _importe;
+  purchasenumber = _purchasenumber;
+  
   loaderTransaction(0);
   loaderTransactionResponse(null, false);
   generarToken();
@@ -40,8 +50,6 @@ function generarToken() {
 }
 
 function generarSesion(token) {
-
-  // var merchantId = document.getElementById("merchantId").value;  
   console.log('importe: ', importe);
 
   var data = {
@@ -87,8 +95,9 @@ function generarBoton(sessionKey) {
   }
 
   localStorage.setItem("data", JSON.stringify(json));  
+  
 
-  form = document.createElement("form");
+  var form = document.createElement("form");
   form.setAttribute('method', "post");
   form.setAttribute('action', "javascript:responseForm(self)");
   form.setAttribute('id', "boton_pago");
@@ -124,8 +133,6 @@ function responseForm(event) {
 
 function generateAutorizacion(transactionToken) {
   cargando_transaction = true;
-  // var merchantId = document.getElementById("merchantId").value;
-  // var importe = document.getElementById("importe").value;
   var token = localStorage.getItem("token");
   var  data = { 
         "antifraud" : null,
@@ -139,16 +146,6 @@ function generateAutorizacion(transactionToken) {
             "currency" : "PEN"
         }
     };
-
-  // var settings = {
-  //   "method": "POST",
-  //   "headers": {
-  //     "Authorization": token,
-  //     "Content-Type": "application/json"
-  //   },    
-  //   "body": JSON.stringify(data)
-  // }
-
 
   const _url = urlApiAutorization + merchantId;
 
@@ -185,10 +182,10 @@ function loaderTransaction(val) {
 function loaderTransactionResponse(res, isError) {  
   if ( res ) {
     res.error = isError;
-  }
-  localStorage.setItem('sys::transaction-response', JSON.stringify(res));
 
-  if (form) {
-    form.remove(); 
+
+    var elem = document.querySelector('#visaNetWrapper');
+    elem.parentNode.removeChild(elem); 
   }
+  localStorage.setItem('sys::transaction-response', JSON.stringify(res));   
 }

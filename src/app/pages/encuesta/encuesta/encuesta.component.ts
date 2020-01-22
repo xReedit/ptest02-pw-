@@ -6,6 +6,7 @@ import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.ser
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { throwMatDialogContentAlreadyAttachedError } from '@angular/material/dialog';
 import { SocketService } from 'src/app/shared/services/socket.service';
+import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 
 @Component({
   selector: 'app-encuesta',
@@ -24,6 +25,7 @@ export class EncuestaComponent implements OnInit   {
   selectedTabEncuesta = 0;
 
   private intervalConteo = null;
+  private isBtnPagoShow = false; // si el boton de pago ha sido visible entonces recarga la pagina de pago
 
   private dataPost: any;
   private ListRespuestas: any = [];
@@ -35,6 +37,7 @@ export class EncuestaComponent implements OnInit   {
     private crudService: CrudHttpService,
     private navigatorService: NavigatorLinkService,
     private socketService: SocketService,
+    private listenStatusService: ListenStatusService,
   ) { }
 
   ngOnInit() {
@@ -57,6 +60,9 @@ export class EncuestaComponent implements OnInit   {
     window.onpopstate = function () {
         history.go(1);
     };
+
+    // escucha si bnPago show para reload
+    this.listenStatusService.isBtnPagoShow$.subscribe((res: boolean) => { this.isBtnPagoShow = res; });
   }
 
   private loadEncuesta(): void {
@@ -144,7 +150,7 @@ export class EncuestaComponent implements OnInit   {
   }
 
   private cerrarSession(): void {
-    this.navigatorService.cerrarSession();
+    this.navigatorService.cerrarSession(this.isBtnPagoShow);
     // this.miPedidoService.cerrarSession();
     this.infoTokenService.cerrarSession();
 

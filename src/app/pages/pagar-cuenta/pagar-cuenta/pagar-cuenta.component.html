@@ -8,8 +8,8 @@
 <div class="animated fadeIn content-pago">    
 
   <!-- header -->
-  <div class="header-pago p-3">
-    <i class="fa fa-arrow-left" (click)="goBack()" [routerLink]="['../']"></i>
+  <div class="header-pago p-3">    
+    <i *ngIf="!isTrasctionSuccess" class="fa fa-arrow-left" (click)="goBack()" [routerLink]="['../']"></i>    
     <span class="pl-2">Resumen de la cuenta</span>
   </div>
 
@@ -24,18 +24,20 @@
         <div class="text-center">
             <p>Importe a pagar:</p>
             <div>              
-              <p class="fs-30 fw-600"><span class="fs-15">S/.</span>  80.00</p>
+              <p class="fs-30 fw-600"><span class="fs-15">S/.</span>  <span id="importe">{{estadoPedido.importe | number: '0.2'}}</span> </p>
             </div>            
             <hr>
             <mat-checkbox (click)="goPagar()">Acepto los <a href="#">Terminos y condiciones</a></mat-checkbox>
+            <p *ngIf="isViewAlertTerminos" class="fw-100 fs-14 text-danger animated flash">Acepte los terminos.</p>
             <hr>
             <div class="div-btn">
               <div id="btn_pago">
   
               </div>
   
-              <div id="btn-disabled" class="btn-pago-disabled">
-                Pagar Aqui
+              <div id="btn-disabled" class="btn-pago-disabled" (click)="verificarCheckTerminos()">
+                <span [hidden]="!isLoadBtnPago" class="fa fa-spinner fa-spin"></span> 
+                <span [hidden]="isLoadBtnPago">Pagar Aqui</span>
               </div>
             </div>
         </div>
@@ -49,13 +51,15 @@
                 </mat-panel-title>                
               </mat-expansion-panel-header>
           
-              <mat-form-field>
+              <!-- <mat-form-field>
                 <input matInput placeholder="First name">
               </mat-form-field>
           
               <mat-form-field>
                 <input matInput placeholder="Age">
-              </mat-form-field>
+              </mat-form-field> -->
+
+              <span class="fw-100 text-secondary">Muy pronto podrás obtener tu comprobante de consumo. Por el momento lo puede solicitar en caja.</span>
             </mat-expansion-panel>            
         </mat-accordion>              
     
@@ -71,20 +75,68 @@
         <i class="fa fa-times-circle-o fa-2x" aria-hidden="true"></i>
         <p>Ups! hubo un problema.</p>
       </div>      
-      <div class="p-3">
+
+      <div class="p-3 bg-white">
         <div class="text-center">
-          <p>{{dataResTransaction.errorMessage}}</p>
-          <hr>
-          <button mat-flat-button color="accent" (click)="goBack()">Regresar</button>          
+          <span class="fw-100">
+            {{dataResTransaction.errorMessage}}
+          </span>
         </div>
       </div>
+
     </ng-container>
 
     <ng-template #elseTemplate>
       <div class="text-center fs-20 fw-100 banner-res-ok p-3">
         <i class="fa fa-check-circle-o fa-2x" aria-hidden="true"></i>
         <p>Transacción Existosa.</p>
-      </div>    
+      </div>
+
+      <div class="p-3 bg-white">
+        <div class="text-center">
+          <span class="fw-100">
+            {{dataResTransaction.dataMap.ACTION_DESCRIPTION}}
+          </span>
+        </div>
+      </div>
+
+      <div class="p-3">
+        <div class="text-left fw-100">
+          <table>
+            <tr>
+              <td>Fecha</td>
+              <td>: {{fechaTransaction | date: 'MMM dd, yy, h:mm:ss a'}}</td>
+            </tr>
+            <tr>
+              <td>N° Pedido</td>
+              <td>: {{dataResTransaction.order.purchaseNumber}}</td>
+            </tr>
+            <tr>
+              <td>N° Tarjeta</td>
+              <td>: {{dataResTransaction.dataMap.CARD}}</td>
+            </tr>
+            <tr>
+              <td>Importe</td>
+              <td>: {{estadoPedido.importe | number: '0.2'}} {{dataResTransaction.order.currency}}</td>
+            </tr>
+            <tr>
+              <td>Descripcion</td>
+              <td>: Pago de cuenta</td>
+            </tr>
+          </table>
+        </div>
+      </div>      
+
+
+      <div class="p-3 bg-white">
+        <div class="text-center">
+          <span class="fw-100 fs-30">
+            {{countFin | number: '2.'}}
+          </span>
+        </div>
+      </div>
+
+
     </ng-template>        
     <!-- <mat-card class="mt-2 mb-2">
       <div class="text-center">

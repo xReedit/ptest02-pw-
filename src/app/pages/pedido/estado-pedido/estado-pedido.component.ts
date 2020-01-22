@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 import { EstadoPedidoModel } from 'src/app/modelos/estado.pedido.model';
 import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedido-cliente.service';
@@ -18,6 +19,8 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
   infoToken: UsuarioTokenModel;
   tiempoEspera: number;
 
+  private isBtnPagoShow = false; // si el boton de pago ha sido visible entonces recarga la pagina de pago
+
   private unsubscribeEstado = new Subscription();
 
   constructor(
@@ -25,7 +28,8 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     private estadoPedidoClienteService: EstadoPedidoClienteService,
     private infoTokenService: InfoTockenService,
     private navigatorService: NavigatorLinkService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -76,6 +80,8 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
       this.estadoPedidoClienteService.getCuentaTotales();
       this.estadoPedidoClienteService.setisRegisterPago(true);
     });
+
+    this.listenStatusService.isBtnPagoShow$.subscribe((res: boolean) => { this.isBtnPagoShow = res; });
   }
 
   verCuenta() {
@@ -86,7 +92,13 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
 
   pagarCuenta() {
     // this.navigatorService._router('./pagar-cuenta');
-    this.navigatorService._router('../pagar-cuenta');
+    this.router.navigate(['./pagar-cuenta'])
+    .then(() => {
+      if ( this.isBtnPagoShow ) {
+        window.location.reload();
+      }
+    });
+
     this.listenStatusService.setIsPagePagarCuentaShow(true);
   }
 

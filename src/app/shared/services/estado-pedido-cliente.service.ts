@@ -116,6 +116,10 @@ export class EstadoPedidoClienteService {
   getObj(): EstadoPedidoModel {
     // const _data = localStorage.getItem(this.keyStorage);
     // this.estadoPedido = _data;
+    if ( !this.estadoPedido ) {
+      this.deserializar();
+    }
+
     return this.estadoPedido;
   }
 

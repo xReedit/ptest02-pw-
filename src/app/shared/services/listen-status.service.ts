@@ -39,6 +39,10 @@ export class ListenStatusService {
   private isPagePagarCuentaShowSource = new BehaviorSubject<boolean>(false);
   public isPagePagarCuentaShow$ = this.isPagePagarCuentaShowSource.asObservable();
 
+  // si el boton de pago ha sido visible // recargamos la pagina al volver a ingresar
+  private isBtnPagoShowSource = new BehaviorSubject<boolean>(false);
+  public isBtnPagoShow$ = this.isBtnPagoShowSource.asObservable();
+
   constructor() { }
 
   setIsBusqueda() {
@@ -77,6 +81,10 @@ export class ListenStatusService {
 
   setIsPagePagarCuentaShow(value: boolean) {
     this.isPagePagarCuentaShowSource.next(value);
+  }
+
+  setIsBtnPagoShow(value: boolean) {
+    this.isBtnPagoShowSource.next(value);
   }
 
 }

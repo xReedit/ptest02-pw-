@@ -109,8 +109,13 @@ export class NavigatorLinkService {
     this.saveHistoryPageActive(this.pageActive, params);
   }
 
-  cerrarSession() {
-    this.router.navigate(['../']);
+  cerrarSession(reload: boolean = false) {
+    this.router.navigate(['../'])
+    .then(() => {
+      if ( reload ) {
+        window.location.reload();
+      }
+    });
   }
 
   // maneja los back
