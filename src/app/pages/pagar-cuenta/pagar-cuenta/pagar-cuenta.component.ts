@@ -8,6 +8,9 @@ import { EstadoPedidoModel } from 'src/app/modelos/estado.pedido.model';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
+import { SocketClientModel } from 'src/app/modelos/socket.client.model';
+import { ClientePagoModel } from 'src/app/modelos/cliente.pago.model';
+import { RegistrarPagoService } from 'src/app/shared/services/registrar-pago.service';
 
 // import * as botonPago from 'src/assets/js/boton-pago.js';
 
@@ -21,6 +24,7 @@ declare const pagar: any;
 export class PagarCuentaComponent implements OnInit, OnDestroy {
   estadoPedido: EstadoPedidoModel;
   infoToken: UsuarioTokenModel;
+  // socketClient: SocketClientModel;
   importe: number;
   isLoaderTransaction = false;
   isLoadBtnPago = false;
@@ -29,7 +33,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   isViewAlertTerminos = false;
   dataResTransaction: any = null;
 
-  countFin = 4;
+  countFin = 5;
   private intervalConteo = null;
 
   fechaTransaction = new Date();
@@ -39,6 +43,8 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   private timeListenerKeys: any;
   private unsubscribeEstado = new Subscription();
 
+  private dataClientePago: ClientePagoModel = new ClientePagoModel();
+
   constructor(
     private infoTokenService: InfoTockenService,
     private navigatorService: NavigatorLinkService,
@@ -46,16 +52,21 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     private estadoPedidoClienteService: EstadoPedidoClienteService,
     private socketService: SocketService,
     private crudService: CrudHttpService,
+    private registrarPagoService: RegistrarPagoService,
+    // private verifyClientService: VerifyAuthClientService,
   ) { }
 
   ngOnInit() {
     this.navigatorService.disableGoBack();
     this.infoToken = this.infoTokenService.getInfoUs();
     this.estadoPedidoClienteService.get();
+    // this.socketClient = this.verifyClientService.getDataClient();
     this.listener();
+    this.getEmailCliente();
 
-    console.log(this.infoToken);
-    console.log(this.importe);
+    // console.log(this.infoToken);
+    // console.log(this.importe);
+    // console.log('cliente socket verify', this.socketClient);
   }
 
   ngOnDestroy(): void {
@@ -66,6 +77,48 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     this.unsubscribeEstado = this.listenStatusService.estadoPedido$.subscribe(res => {
       this.estadoPedido = res;
     });
+  }
+
+  // obtener datos del cliente
+  private getEmailCliente(): void {
+    const dataClient = {
+      id: this.infoToken.idcliente
+    };
+    this.crudService.postFree(dataClient, 'transaction', 'get-email-client', false).subscribe((res: any) => {
+      this.dataClientePago.email = res.data.email ? res.data.email : '';
+      this.dataClientePago.nombres = this.infoToken.nombres;
+      this.getNomApClientePago(this.dataClientePago.nombres);
+    });
+  }
+
+  // dividi nombre y apellidos
+  private getNomApClientePago(nombres: string): void {
+    const _names = nombres.split(' ');
+    let nameCliente = '';
+    let apPaternoCliente = '';
+    switch (_names.length) {
+      case 1:
+        nameCliente = _names[0];
+        break;
+      case 2:
+        nameCliente = _names[0];
+        apPaternoCliente = _names[1];
+        break;
+      case 3:
+        nameCliente = _names[0];
+        apPaternoCliente = _names[2];
+        break;
+      case 4:
+        nameCliente = _names[0];
+        apPaternoCliente = _names[2];
+        break;
+    }
+
+    this.dataClientePago.nombre = nameCliente;
+    this.dataClientePago.apellido = apPaternoCliente;
+
+    console.log('data cleinte pago', this.dataClientePago);
+
   }
 
   goPagar() {
@@ -84,9 +137,9 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   generarPurchasenumber() {
     this.crudService.getAll('transaction', 'get-purchasenumber', false, false, false).subscribe((res: any) => {
-      const _purchasenumber = res.data[0][0].purchasenumber;
+      const _purchasenumber = res.data[0].purchasenumber;
 
-      pagar(this.estadoPedido.importe, _purchasenumber);
+      pagar(this.estadoPedido.importe, _purchasenumber, this.dataClientePago);
       this.listenResponse();
       this.verificarCheckTerminos();
 
@@ -107,8 +160,13 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
         this.isTrasctionSuccess = !this.dataResTransaction.error;
 
-        // cuenta para cerrar
-        this.cuentaRegresiva();
+        if (this.isTrasctionSuccess) {
+          // registrar pago
+          this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString());
+          // cuenta para cerrar
+          this.cuentaRegresiva();
+        }
+
       } else {
         this.listenResponse();
       }

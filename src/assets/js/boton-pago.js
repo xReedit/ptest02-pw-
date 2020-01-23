@@ -1,29 +1,34 @@
 // var user = "integraciones.visanet@necomplus.com";
 // var password = "d5e7nk$M";
-var merchantId = '522591303';
+
 var importe;
 var purchasenumber;
 var cargando_transaction = false;
+var dataCliente;
 
-
+var user = "integraciones.visanet@necomplus.com";
+var password = "d5e7nk$M";
+var merchantId = '522591303';
 var urlApiSeguridad = "https://apitestenv.vnforapps.com/api.security/v1/security";
 var urlApiSesion = "https://apitestenv.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/";
 var urlApiAutorization =  "https://apitestenv.vnforapps.com/api.authorization/v3/authorization/ecommerce/";
-
 var urlJs = "https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true";
 
 
 // PROD
+// var user = "macraze.info@gmail.com";
+// var password = "j34Oz!nB";
+// var merchantId = '650149801';
 // var urlApiSeguridad = "https://apiprod.vnforapps.com/api.security/v1/security";
 // var urlApiSesion = "https://apiprod.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/";
 // var urlApiAutorization =  "https://apiprod.vnforapps.com/api.authorization/v3/authorization/ecommerce/";
-// var urlJs = "https://static-content.vnforapps.com/v2/js/checkout.js";
-// var merchantId = '100128038';
+// var urlJs = "https://static-content.vnforapps.com/v2/js/checkout.js"; bWFjcmF6ZS5pbmZvQGdtYWlsLmNvbTpqMzRPeiFuQg==
 
 
-function pagar(_importe, _purchasenumber) {
+function pagar(_importe, _purchasenumber, _dataClie) {
   importe = _importe;
   purchasenumber = _purchasenumber;
+  dataCliente = _dataClie;
   
   loaderTransaction(0);
   loaderTransactionResponse(null, false);
@@ -80,10 +85,16 @@ function generarSesion(token) {
 
 function generarBoton(sessionKey) {  
   var moneda = 'PEN';
-  var nombre = 'Integraciones';
-  var apellido = 'VisaNet';
-  // var importe = document.getElementById("importe").value;
-  var email = 'integraciones.visanet@necomplus.com';
+  
+  /// DEV
+  // var nombre = 'Integraciones';
+  // var apellido = 'VisaNet';
+  // var email = 'integraciones.visanet@necomplus.com';
+  
+  // PROD
+  var nombre = dataCliente.nombre;
+  var apellido = dataCliente.apellido;
+  var email = dataCliente.email;  
 
   var json = {
     "merchantId": merchantId,

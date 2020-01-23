@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { VerifyAuthClientService } from '../services/verify-auth-client.service';
 // import { InfoTockenService } from '../services/info-token.service';
 
 @Injectable({
@@ -9,7 +10,8 @@ import { AuthService } from '../services/auth.service';
 })
 export class AuthGuard implements CanActivate {
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
+    private verifyClientService: VerifyAuthClientService,
   ) {}
 
   // canActivate(
@@ -21,9 +23,10 @@ export class AuthGuard implements CanActivate {
 
   canActivate() {
     const us = this.authService.getLoggedStatus();
+    const res = this.verifyClientService.getIsQrSuccess() && us;
     console.log('canActivate', us);
     // if ( us )
-    return us;
+    return res;
   }
 
 }

@@ -452,7 +452,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this.msjErr = false;
     this.numMesaCuenta = mesa;
     const datos = { mesa: mesa };
-    console.log('mesa a buscar', datos);
+    // console.log('mesa a buscar', datos);
 
     if ( _resCuentaFromCliente ) {
       // cuando el usuario cliente realiza un nuevo pedido y se tiene que mostrar la cuenta
@@ -465,90 +465,6 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     this.crudService.postFree(datos, 'pedido', 'lacuenta').subscribe((res: any) => {
       this.desglozarCuenta(res);
-      // const _miPedidoCuenta: PedidoModel = new PedidoModel();
-      // const c_tiposConsumo: TipoConsumoModel[] = [];
-
-      // // si se encontro cuenta
-      // if (res.data.length === 0) {
-      //   this.isHayCuentaBusqueda = false;
-      //   this.msjErr = true;
-      //   this.listenStatusService.setHayCuentaBuesqueda(false);
-      //   return; }
-
-      // this.isHayCuentaBusqueda = true;
-      // this.listenStatusService.setHayCuentaBuesqueda(true);
-      // // tipo consumo
-      // res.data.map( (tp: any) => {
-      //   let hayTpc = c_tiposConsumo.filter(x => x.idtipo_consumo === tp.idtipo_consumo)[0];
-      //   if (!hayTpc) {
-      //     hayTpc = new TipoConsumoModel;
-      //     hayTpc.descripcion = tp.des_tp;
-      //     hayTpc.idtipo_consumo = parseInt(tp.idtipo_consumo, 0);
-      //     c_tiposConsumo.push(hayTpc);
-      //   }
-      // });
-
-      // // secciones
-
-
-      // // const _listSec = res.data.reduce(function(rv, x) {
-      // //     (rv[x['idseccion']] = rv[x['idseccion']] || []).push(x);
-      // //     return rv;
-      // //   }, {});
-
-
-      // c_tiposConsumo.map((tp: TipoConsumoModel) => {
-      //   res.data
-      //     .filter((_tp: any) => _tp.idtipo_consumo === tp.idtipo_consumo)
-      //     .map((_s: any, i: number) => {
-      //       let haySeccion = tp.secciones.filter((s: SeccionModel) => s.idseccion.toString() === _s.idseccion.toString())[0];
-      //       if (!haySeccion) {
-      //         haySeccion = new SeccionModel;
-      //         haySeccion.idseccion = _s.idseccion.toString();
-      //         haySeccion.des = _s.des_seccion;
-      //         haySeccion.sec_orden = _s.sec_orden;
-      //         haySeccion.ver_stock_cero = 0;
-      //         tp.count_items_seccion = i + 1;
-      //         tp.secciones.push(haySeccion);
-      //       }
-      //     });
-      // });
-
-      // // items
-      // c_tiposConsumo.map((tp: TipoConsumoModel) => {
-      //   tp.secciones.map((s: SeccionModel) => {
-      //     res.data
-      //     .filter((_tp: any) => _tp.idtipo_consumo.toString() === tp.idtipo_consumo.toString() && _tp.idseccion.toString() === s.idseccion.toString())
-      //     .map((_i: any, i: number) => {
-      //       const hayItem = new ItemModel;
-      //       hayItem.des = _i.descripcion;
-      //       hayItem.detalles = '';
-      //       hayItem.iditem = _i.iditem;
-      //       hayItem.idcarta_lista = _i.idcarta_lista;
-      //       hayItem.idseccion = _i.idseccion;
-      //       hayItem.isalmacen = _i.isalmacen;
-      //       hayItem.cantidad_seleccionada = parseInt(_i.cantidad, 0);
-      //       hayItem.precio = _i.punitario;
-      //       hayItem.precio_print = parseFloat(_i.ptotal);
-      //       hayItem.precio_total = parseFloat(_i.ptotal);
-      //       hayItem.procede = _i.procede === '0' ? 1 : 0;
-      //       hayItem.seccion = _i.des_seccion;
-      //       hayItem.subitems_view = _i.subitems === 'null' || _i.subitems === '' || !_i.subitems ? [] : JSON.parse(_i.subitems);
-      //       s.count_items = i + 1;
-      //       s.items.push(hayItem);
-      //     });
-      //   });
-      // });
-
-      // console.log('cuenta de mesa', res);
-      // console.log('c_tiposConsumo', c_tiposConsumo);
-
-      // _miPedidoCuenta.tipoconsumo = c_tiposConsumo;
-      // this.miPedidoService.setObjMiPedido(_miPedidoCuenta);
-      // this._miPedido = this.miPedidoService.getMiPedido();
-
-      // console.log('this._miPedido', this._miPedido);
-
     });
   }
 
@@ -635,6 +551,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     _miPedidoCuenta.tipoconsumo = c_tiposConsumo;
     this.miPedidoService.setObjMiPedido(_miPedidoCuenta);
     this._miPedido = this.miPedidoService.getMiPedido();
+
+    // para notificar antes del pago
+    this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
+    localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
 
     console.log('this._miPedido', this._miPedido);
   }

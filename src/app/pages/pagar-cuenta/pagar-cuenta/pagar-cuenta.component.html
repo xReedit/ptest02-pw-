@@ -59,7 +59,7 @@
                 <input matInput placeholder="Age">
               </mat-form-field> -->
 
-              <span class="fw-100 text-secondary">Muy pronto podrás obtener tu comprobante de consumo. Por el momento lo puede solicitar en caja.</span>
+              <span class="fw-100 text-secondary">Muy pronto podrás obtener tu comprobante de consumo por este medio. Por el momento lo puede solicitar en caja.</span>
             </mat-expansion-panel>            
         </mat-accordion>              
     
@@ -79,8 +79,17 @@
       <div class="p-3 bg-white">
         <div class="text-center">
           <span class="fw-100">
-            {{dataResTransaction.errorMessage}}
+            {{dataResTransaction.errorMessage}} <br>
+            {{dataResTransaction.data.ACTION_DESCRIPTION}} <br>
+            {{dataResTransaction.data.CARD}} <br>
           </span>
+        </div>
+      </div>
+
+
+      <div class="p-3 bg-white">
+        <div class="text-center">
+          <button mat-flat-button color="accent" (click)="actionAfterTransaction()">Regresar</button>
         </div>
       </div>
 
@@ -105,7 +114,7 @@
           <table>
             <tr>
               <td>Fecha</td>
-              <td>: {{fechaTransaction | date: 'MMM dd, yy, h:mm:ss a'}}</td>
+              <td>: {{fechaTransaction | date: 'dd/mm/yy, h:mm:ss a'}}</td>
             </tr>
             <tr>
               <td>N° Pedido</td>
@@ -130,12 +139,9 @@
 
       <div class="p-3 bg-white">
         <div class="text-center">
-          <span class="fw-100 fs-30">
-            {{countFin | number: '2.'}}
-          </span>
+          <span class="fw-100 fs-25">{{ countFin | number: '2.' }}</span>
         </div>
       </div>
-
 
     </ng-template>        
     <!-- <mat-card class="mt-2 mb-2">

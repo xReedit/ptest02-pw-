@@ -16,5 +16,6 @@ export class UsuarioTokenModel {
     usuario: string;
     idcliente: number;
     isCliente: boolean;
+    email: string;
     numMesaLector: number; // numero de mesa del lector qr
 }

@@ -32,6 +32,9 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.isLogin = this.verifyClientService.isLogin();
     // console.log('desde incio', this.isLogin);
 
+    this.verifyClientService.setMesa(null);
+    this.verifyClientService.setIdOrg(null);
+    this.verifyClientService.setIdSede(null);
     this.veryfyClient = this.verifyClientService.verifyClient()
       .subscribe((res: SocketClientModel) => {
         this.nombreClientSocket = res.usuario;

@@ -92,6 +92,8 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
 
   pagarCuenta() {
     // this.navigatorService._router('./pagar-cuenta');
+
+    this.estadoPedidoClienteService.getCuenta(); // get subtotales - esta listen resumen-pedido;
     this.router.navigate(['./pagar-cuenta'])
     .then(() => {
       if ( this.isBtnPagoShow ) {
