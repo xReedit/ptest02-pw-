@@ -15,6 +15,7 @@ import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/di
 
 import { Subscription } from 'rxjs/internal/Subscription';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+import { Subject } from 'rxjs/internal/Subject';
 
 
 @Component({
@@ -25,7 +26,7 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private unsubscribeCarta = new Subscription();
-
+  // private destroyCarta$: Subject<boolean> = new Subject<boolean>();
   // objCartaCarta: any;
   objCartaBus: any = [];
   isBusqueda = false;

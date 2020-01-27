@@ -8,6 +8,8 @@ import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { Subject } from 'rxjs/internal/Subject';
+import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 
 @Component({
   selector: 'app-estado-pedido',
@@ -18,10 +20,16 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
   estadoPedido: EstadoPedidoModel;
   infoToken: UsuarioTokenModel;
   tiempoEspera: number;
+  rippleColor = 'rgb(255,238,88, 0.5)';
+
+  isViewMsjSolicitudPersoanl = false;
 
   private isBtnPagoShow = false; // si el boton de pago ha sido visible entonces recarga la pagina de pago
 
-  private unsubscribeEstado = new Subscription();
+  // private unsubscribeEstado = new Subscription();
+  private destroyEstado$: Subject<boolean> = new Subject<boolean>();
+
+
 
   constructor(
     private listenStatusService: ListenStatusService,
@@ -36,7 +44,7 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
 
     // verificar en el localstorage
     this.infoToken = this.infoTokenService.getInfoUs();
-    this.estadoPedidoClienteService.get();
+    // this.estadoPedidoClienteService.get();
 
 
     // escuchar cambios
@@ -45,19 +53,53 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribeEstado.unsubscribe();
+    // this.unsubscribeEstado.unsubscribe();
     // this.unsubscribe$.next();
     // this.unsubscribe$.complete();
+
+    this.destroyEstado$.next(true);
+    this.destroyEstado$.unsubscribe();
   }
 
-  private listenStatus(): void {
-    this.unsubscribeEstado = this.listenStatusService.estadoPedido$.subscribe(res => {
+  private listenStatus() {
+
+    this.navigatorService.resNavigatorSourceObserve$
+    .pipe(takeUntil(this.destroyEstado$))
+    .subscribe((res: any) => {
+      if (res.pageActive === 'estado') {
+        // if ( this.estadoPedido.importe > 0 ) {
+          console.log('desde pago cuenta');
+          this.estadoPedidoClienteService.getCuentaTotales();
+        // }
+      }
+    });
+
+    this.navigatorService.resNavigatorSourceObserve$
+    .pipe(takeUntil(this.destroyEstado$))
+    .subscribe(async (res: any) => {
+      if (res.pageActive === 'estado') {
+        console.log('desde pago cuenta');
+        const _importe = await this.estadoPedidoClienteService.getImporteCuenta();
+        this.estadoPedido.importe = <number>_importe || 0;
+        // this.estadoPedidoClienteService.getCuentaTotales();
+      }
+    });
+
+    this.listenStatusService.hayPedidoPendiente$
+      .pipe(takeUntil(this.destroyEstado$))
+      .subscribe((res: boolean) => {
+        this.estadoPedidoClienteService.setHayPedidoPendiente(res);
+      });
+
+    this.listenStatusService.estadoPedido$
+    .pipe(takeUntil(this.destroyEstado$))
+    .subscribe(res => {
       this.estadoPedido = res;
       console.log('desde estado pedido', this.estadoPedido);
 
       // if ( _importe === 0 ) {
       if ( this.estadoPedido.importe === 0 && this.estadoPedido.isRegisterOnePago ) {
-        this.unsubscribeEstado.unsubscribe();
+        // this.unsubscribeEstado.unsubscribe();
         this.estadoPedidoClienteService.setisRegisterPago(false);
         this.navigatorService._router('../lanzar-encuesta');
       }
@@ -74,14 +116,18 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
       console.log('this.tiempoEspera', this.tiempoEspera);
     });
 
-    this.socketService.onPedidoPagado().subscribe(res => {
-      console.log('notificado de pago recalcular', res);
+    this.socketService.onPedidoPagado()
+    .pipe(takeUntil(this.destroyEstado$))
+    .subscribe(res => {
+      // console.log('notificado de pago recalcular', res);
       // recalcular cuenta si es 0 agradecimiento y lanzar encuesta si aun no la lleno
       this.estadoPedidoClienteService.getCuentaTotales();
       this.estadoPedidoClienteService.setisRegisterPago(true);
     });
 
-    this.listenStatusService.isBtnPagoShow$.subscribe((res: boolean) => { this.isBtnPagoShow = res; });
+    this.listenStatusService.isBtnPagoShow$
+    .pipe(takeUntil(this.destroyEstado$))
+    .subscribe((res: boolean) => { this.isBtnPagoShow = res; });
   }
 
   verCuenta() {
@@ -102,6 +148,16 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     });
 
     this.listenStatusService.setIsPagePagarCuentaShow(true);
+  }
+
+  // el cleinte solicita atencion del personal. -- notifica en caja
+  solicitarAtencion() {
+    if ( this.isViewMsjSolicitudPersoanl ) { return; }
+    this.socketService.emit('notificar-cliente-llamado', this.infoToken.numMesaLector);
+    this.isViewMsjSolicitudPersoanl = true;
+    setTimeout(() => {
+      this.isViewMsjSolicitudPersoanl = false;
+    }, 30000);
   }
 
 }

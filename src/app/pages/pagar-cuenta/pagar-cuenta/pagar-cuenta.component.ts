@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
@@ -11,10 +11,11 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { ClientePagoModel } from 'src/app/modelos/cliente.pago.model';
 import { RegistrarPagoService } from 'src/app/shared/services/registrar-pago.service';
+import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 
 // import * as botonPago from 'src/assets/js/boton-pago.js';
 
-declare const pagar: any;
+declare var pagar: any;
 
 @Component({
   selector: 'app-pagar-cuenta',
@@ -22,7 +23,7 @@ declare const pagar: any;
   styleUrls: ['./pagar-cuenta.component.css']
 })
 export class PagarCuentaComponent implements OnInit, OnDestroy {
-  estadoPedido: EstadoPedidoModel;
+  estadoPedido: any = [];
   infoToken: UsuarioTokenModel;
   // socketClient: SocketClientModel;
   importe: number;
@@ -31,9 +32,13 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   isCheckTerminos = false;
   isTrasctionSuccess = false;
   isViewAlertTerminos = false;
+  isViewAlertEmail = false;
+  isEmailValid = true;
+  isDisabledCheck = false; // desabilita el check de terminos
+  isRequiredEmail = false;
   dataResTransaction: any = null;
 
-  countFin = 5;
+  countFin = 6;
   private intervalConteo = null;
 
   fechaTransaction = new Date();
@@ -53,13 +58,14 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     private socketService: SocketService,
     private crudService: CrudHttpService,
     private registrarPagoService: RegistrarPagoService,
+    private utilService: UtilitariosService
     // private verifyClientService: VerifyAuthClientService,
   ) { }
 
   ngOnInit() {
     this.navigatorService.disableGoBack();
     this.infoToken = this.infoTokenService.getInfoUs();
-    this.estadoPedidoClienteService.get();
+    // this.estadoPedidoClienteService.get();
     // this.socketClient = this.verifyClientService.getDataClient();
     this.listener();
     this.getEmailCliente();
@@ -73,21 +79,66 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     this.unsubscribeEstado.unsubscribe();
   }
 
-  private listener() {
-    this.unsubscribeEstado = this.listenStatusService.estadoPedido$.subscribe(res => {
-      this.estadoPedido = res;
-    });
+  private async listener() {
+
+    this.estadoPedido.importe = await this.estadoPedidoClienteService.getImporteCuenta();
+    console.log(this.estadoPedido.importe);
+
+    // para proteger de los que actualizan luego de pagar
+    if ( this.estadoPedido.importe === 0 || this.estadoPedido.importe === null) {
+      this.cerrarSession();
+    }
+    // this.unsubscribeEstado = this.listenStatusService.estadoPedido$.subscribe(res => {
+    //   this.estadoPedido = res;
+    // });
   }
 
-  // obtener datos del cliente
+  private cerrarSession(): void {
+    this.navigatorService.cerrarSession(this.isCheckTerminos);
+    // this.miPedidoService.cerrarSession();
+    this.infoTokenService.cerrarSession();
+
+    // para cargar nuevamente al ingresar
+    this.socketService.isSocketOpenReconect = true;
+    this.socketService.closeConnection();
+  }
+
+  // obtener datos del clienteP
   private getEmailCliente(): void {
     const dataClient = {
       id: this.infoToken.idcliente
     };
+
     this.crudService.postFree(dataClient, 'transaction', 'get-email-client', false).subscribe((res: any) => {
-      this.dataClientePago.email = res.data.email ? res.data.email : '';
+      // this.dataClientePago.email = res.data[0].correo ? res.data[0].correo : '';
+      // this.dataClientePago.email = 'integraciones.visanet@necomplus.com'; // desarrollo
+      this.dataClientePago.email = 'review@cybersource.com';
+      this.dataClientePago.isSaveEmail = false;
+
+      // email
+      // this.isRequiredEmail = this.dataClientePago.email === '' ?  true : false;
+      // this.isEmailValid = !this.isRequiredEmail;
+      // this.dataClientePago.isSaveEmail = this.isRequiredEmail;
+
+      this.dataClientePago.idcliente = res.data[0].idcliente_card;
+      this.dataClientePago.diasRegistrado = res.data[0].dias_registrado;
       this.dataClientePago.nombres = this.infoToken.nombres;
+
+
+      // ip del client
+      this.dataClientePago.ip = this.infoToken.ipCliente;
+      if ( !this.dataClientePago.ip ) {
+        this.crudService.getFree('https://api.ipify.org?format=json').subscribe((_res: any) => {
+          this.dataClientePago.ip = _res.ip;
+          this.infoTokenService.setLocalIpCliente(this.dataClientePago.ip);
+          this.isDisabledCheck = true;
+        });
+      } else {
+        this.isDisabledCheck = true;
+      }
+
       this.getNomApClientePago(this.dataClientePago.nombres);
+
     });
   }
 
@@ -114,15 +165,26 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
         break;
     }
 
-    this.dataClientePago.nombre = nameCliente;
-    this.dataClientePago.apellido = apPaternoCliente;
+    this.dataClientePago.nombre = this.utilService.primeraConMayusculas(nameCliente);
+    this.dataClientePago.apellido = this.utilService.primeraConMayusculas(apPaternoCliente);
 
-    console.log('data cleinte pago', this.dataClientePago);
+    // console.log('data cleinte pago', this.dataClientePago);
 
   }
 
   goPagar() {
-    this.isCheckTerminos = true;
+    this.isViewAlertEmail = false;
+    this.isViewAlertTerminos = false;
+    this.isCheckTerminos = !this.isCheckTerminos;
+
+    const _pase = this.isCheckTerminos && this.isEmailValid;
+
+    if ( !_pase ) {
+      this.isViewAlertEmail = true;
+      // this.isViewAlertTerminos = true;
+      return;
+     }
+
     this.isLoadBtnPago = true;
     this.generarPurchasenumber();
   }
@@ -138,6 +200,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   generarPurchasenumber() {
     this.crudService.getAll('transaction', 'get-purchasenumber', false, false, false).subscribe((res: any) => {
       const _purchasenumber = res.data[0].purchasenumber;
+      console.log('_purchasenumber', _purchasenumber);
 
       pagar(this.estadoPedido.importe, _purchasenumber, this.dataClientePago);
       this.listenResponse();
@@ -162,9 +225,16 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
         if (this.isTrasctionSuccess) {
           // registrar pago
-          this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString());
+          const _dataTransactionRegister = {
+            purchaseNumber: this.dataResTransaction.order.purchaseNumber,
+            card: this.dataResTransaction.dataMap.CARD,
+            brand: this.dataResTransaction.dataMap.BRAND,
+            descripcion: this.dataResTransaction.dataMap.ACTION_DESCRIPTION
+          };
+
+          this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago);
           // cuenta para cerrar
-          this.cuentaRegresiva();
+          // this.cuentaRegresiva();
         }
 
       } else {
@@ -175,6 +245,13 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   verificarCheckTerminos() {
     this.isViewAlertTerminos = this.isCheckTerminos ? false : true;
+    // this.isViewAlertEmail = !this.isEmailValid;
+  }
+
+  verificarCorreo(el: any): void {
+    this.isEmailValid = el.checkValidity();
+    this.isViewAlertEmail = !this.isEmailValid;
+    this.dataClientePago.email = el.value;
   }
 
   private cuentaRegresiva() {

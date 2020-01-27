@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PagarCuentaComponent } from './pagar-cuenta/pagar-cuenta.component';
+import { PagoRespuestaComponent } from './pago-respuesta/pago-respuesta.component';
 
 const routes: Routes = [{
     path: '', component: PagarCuentaComponent,
@@ -8,6 +9,9 @@ const routes: Routes = [{
     children: [
         {
             path: '', redirectTo: 'pagar-cuenta'
+        }, {
+            path: 'pago-res',
+            component: PagoRespuestaComponent
         }
     ]
 }];

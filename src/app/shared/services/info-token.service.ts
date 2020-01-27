@@ -13,6 +13,7 @@ export class InfoTockenService {
   }
 
   getInfoUs(): UsuarioTokenModel {
+    this.getLocalIpCliente();
     return this.infoUsToken;
   }
 
@@ -29,8 +30,21 @@ export class InfoTockenService {
     return this.infoUsToken.idorg.toString();
   }
 
+  getInfoNomSede(): string {
+    return localStorage.getItem('sys::s');
+  }
+
   isCliente(): boolean {
     return this.infoUsToken.isCliente;
+  }
+
+  getLocalIpCliente(): string {
+    this.infoUsToken.ipCliente = localStorage.getItem('sys::it');
+    return this.infoUsToken.ipCliente;
+  }
+
+  setLocalIpCliente(val: string): void {
+    localStorage.setItem('sys::it', val);
   }
 
   getToken(): any { return localStorage.getItem('::token'); }

@@ -128,8 +128,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // this.unsubscribe$.next();
     // this.unsubscribe$.complete();
     // this.unsubscribeRe.unsubscribe();
-    this.destroy$.next(true);
     // Now let's also unsubscribe from the subject itself:
+    this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }
 
@@ -195,14 +195,16 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       this.socketService.onGetNuevoPedido()
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
-        this.estadoPedidoClientService.getCuentaTotales();
+        // this.estadoPedidoClientService.getCuentaTotales();
         // this.xLoadCuentaMesa('', this.estadoPedidoClientService.getCuenta());
         // this.estadoPedidoClientService.setImporte(this._arrSubtotales[this._arrSubtotales.length - 1].importe);
       });
     }
 
     // escucha que haya cuenta del cliente
-    this.estadoPedidoClientService.hayCuentaCliente$.subscribe((res: any) => {
+    this.estadoPedidoClientService.hayCuentaCliente$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((res: any) => {
       if ( res ) {
         console.log('cuenta del cliente desde resumen', res);
         this.xLoadCuentaMesa('', res);
@@ -350,7 +352,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       idcategoria: localStorage.getItem('sys::cat'),
       correlativo_dia: '', // en backend
       num_pedido: '', // en backend
-      isCliente: this.isCliente,
+      isCliente: this.isCliente ? 1 : 0,
       arrDatosDelivery: this.frmDelivery
     };
 

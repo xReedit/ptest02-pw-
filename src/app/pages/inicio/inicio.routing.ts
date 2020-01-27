@@ -46,6 +46,7 @@ const routes: Routes = [{
         },
         {
             path: 'callback-auth',
+            canActivate: [CodigoQrGuard],
             component: CallbackAuthComponent,
             data: { titulo: 'Callback Auth' }
         }

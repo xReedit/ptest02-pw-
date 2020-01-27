@@ -79,6 +79,10 @@ export class CrudHttpService {
         return this.httpClient.post<any>(url, datos, { headers: header });
     }
 
+    getFree(url: string): Observable<any> {
+        return this.httpClient.get<any>(url);
+    }
+
     // consulta ruc o dni
     getConsultaRucDni(controller: string, number: string): Observable<any> {
         const url =  `${URL_CONSULTA_RUC_DNI}${controller}/${number}`;

@@ -39,10 +39,10 @@ export class EstadoPedidoClienteService {
       idcliente: this.infoTokenService.getInfoUs().idcliente
     };
 
-    this.listenStatusService.hayPedidoPendiente$.subscribe((res: boolean) => {
-      console.log('======== listen setHayPedidoPendiente', res);
-      this.setHayPedidoPendiente(res);
-    });
+    // this.listenStatusService.hayPedidoPendiente$.subscribe((res: boolean) => {
+    //   console.log('======== listen setHayPedidoPendiente', res);
+    //   this.setHayPedidoPendiente(res);
+    // });
   }
 
   private deserializar(): void {
@@ -89,7 +89,7 @@ export class EstadoPedidoClienteService {
 
       // la cuenta
       // this.hayCuentaClienteSource.next(res);
-      // this.notifyChange();
+      this.notifyChange();
       // return res;
     });
 
@@ -110,6 +110,14 @@ export class EstadoPedidoClienteService {
       this.hayCuentaClienteSource.next(res);
       this.notifyChange();
       return res;
+    });
+  }
+
+  getImporteCuenta() {
+    return new Promise(resolve => {
+      this.crudService.postFree(this.dataPost, 'pedido', 'lacuenta-cliente-totales', false).subscribe( (res: any) => {
+        resolve(res.data[0].importe);
+      });
     });
   }
 

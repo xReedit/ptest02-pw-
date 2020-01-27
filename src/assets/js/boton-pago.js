@@ -1,39 +1,63 @@
-// var user = "integraciones.visanet@necomplus.com";
-// var password = "d5e7nk$M";
-
 var importe;
 var purchasenumber;
 var cargando_transaction = false;
 var dataCliente;
 
-var user = "integraciones.visanet@necomplus.com";
-var password = "d5e7nk$M";
-var merchantId = '522591303';
-var urlApiSeguridad = "https://apitestenv.vnforapps.com/api.security/v1/security";
-var urlApiSesion = "https://apitestenv.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/";
-var urlApiAutorization =  "https://apitestenv.vnforapps.com/api.authorization/v3/authorization/ecommerce/";
-var urlJs = "https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true";
+// 240120 - last update.
+
+// var user = "integraciones.visanet@necomplus.com";
+// var password = "d5e7nk$M";
+// var merchantId = '522591303';
+// var urlApiSeguridad = "https://apitestenv.vnforapps.com/api.security/v1/security";
+// var urlApiSesion = "https://apitestenv.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/";
+// var urlApiAutorization =  "https://apitestenv.vnforapps.com/api.authorization/v3/authorization/ecommerce/";
+// var urlJs = "https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true";
+// var logo = 'http://web-p.test:8080/images/l-pay-2.png';
+
+// aW50ZWdyYWNpb25lcy52aXNhbmV0QG5lY29tcGx1cy5jb206ZDVlN25rJE0=
 
 
 // PROD
-// var user = "macraze.info@gmail.com";
-// var password = "j34Oz!nB";
-// var merchantId = '650149801';
-// var urlApiSeguridad = "https://apiprod.vnforapps.com/api.security/v1/security";
-// var urlApiSesion = "https://apiprod.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/";
-// var urlApiAutorization =  "https://apiprod.vnforapps.com/api.authorization/v3/authorization/ecommerce/";
-// var urlJs = "https://static-content.vnforapps.com/v2/js/checkout.js"; bWFjcmF6ZS5pbmZvQGdtYWlsLmNvbTpqMzRPeiFuQg==
+var user = "macraze.info@gmail.com";
+var password = "j34Oz!nB";
+var merchantId = '650149801';
+var urlApiSeguridad = "https://apiprod.vnforapps.com/api.security/v1/security";
+var urlApiSesion = "https://apiprod.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/";
+var urlApiAutorization =  "https://apiprod.vnforapps.com/api.authorization/v3/authorization/ecommerce/";
+var urlJs = "https://static-content.vnforapps.com/v2/js/checkout.js"; 
+var logo = 'https://papaya.com.pe/images/l-pay-2.png';
+
+// bWFjcmF6ZS5pbmZvQGdtYWlsLmNvbTpqMzRPeiFuQg==
 
 
 function pagar(_importe, _purchasenumber, _dataClie) {
-  importe = _importe;
+  importe = parseFloat(_importe).toFixed(2).toString();  
   purchasenumber = _purchasenumber;
   dataCliente = _dataClie;
   
   loaderTransaction(0);
-  loaderTransactionResponse(null, false);
+  loaderTransactionResponse(null, false);  
+  getIpCliente();
+  // generarToken();
+}
+
+function getIpCliente() {
+
+  // antifraude
+  dataCliente.antifraud = {
+    "clientIp": dataCliente.ip,
+    "merchantDefineData":{
+      "MDD4": dataCliente.email,            
+      "MDD32": dataCliente.idcliente,
+      "MDD75": "Invitado",
+      "MDD77": dataCliente.diasRegistrado,
+      "MDD89": "1"
+      // "MDD70": "1", // correo electronico confirmado
+    }
+  };
   generarToken();
 }
+
 
 function generarToken() {
   var settings = {
@@ -42,20 +66,20 @@ function generarToken() {
     "url": urlApiSeguridad,
     "method": "POST",
     "headers": {
-      "Authorization": "Basic aW50ZWdyYWNpb25lcy52aXNhbmV0QG5lY29tcGx1cy5jb206ZDVlN25rJE0=",
+      "Authorization": "Basic bWFjcmF6ZS5pbmZvQGdtYWlsLmNvbTpqMzRPeiFuQg==",
       "Accept": "*/*"
     }
-  }
+  };
 
   $.ajax(settings).done(function (response) {
-    console.log(response);
+    // console.log(response);
     generarSesion(response);
     localStorage.setItem("token", response);
   });
 }
 
 function generarSesion(token) {
-  console.log('importe: ', importe);
+  // console.log('importe: ', importe);
 
   var data = {
     "amount": importe,
@@ -73,18 +97,20 @@ function generarSesion(token) {
       "Authorization": token,
       "Content-Type": "application/json",
     },
+    "dataMap": {
+      "userToken": dataCliente.email
+    },
     "processData": false,
     "data": JSON.stringify(data)
-  }
+  };
 
-  $.ajax(settings).done(function (response) {
-    console.log(response);
+  $.ajax(settings).done(function (response) {    
     generarBoton(response['sessionKey']);
   });
 }
 
 function generarBoton(sessionKey) {  
-  var moneda = 'PEN';
+  var moneda = 'PEN';  
   
   /// DEV
   // var nombre = 'Integraciones';
@@ -94,7 +120,7 @@ function generarBoton(sessionKey) {
   // PROD
   var nombre = dataCliente.nombre;
   var apellido = dataCliente.apellido;
-  var email = dataCliente.email;  
+  var email = dataCliente.email; 
 
   var json = {
     "merchantId": merchantId,
@@ -103,39 +129,48 @@ function generarBoton(sessionKey) {
     "apellido": apellido,
     "importe": importe,
     "email": email
-  }
+  };
 
   localStorage.setItem("data", JSON.stringify(json));  
   
 
   var form = document.createElement("form");
-  form.setAttribute('method', "post");
-  form.setAttribute('action', "javascript:responseForm(self)");
-  form.setAttribute('id', "boton_pago");
+  form.setAttribute('method', "post");      
+  form.setAttribute('action', 'javascript:responseForm(self)');
+  form.setAttribute('id', "boton_pago");  
   document.getElementById("btn_pago").appendChild(form);
 
-  let scriptEl = document.createElement('script');
+  var scriptEl = document.createElement('script');
   scriptEl.setAttribute('src', urlJs);
   scriptEl.setAttribute('data-sessiontoken', sessionKey);
-  scriptEl.setAttribute('data-merchantid', merchantId);
-  scriptEl.setAttribute('data-purchasenumber', purchasenumber);
   scriptEl.setAttribute('data-channel', 'web');
+  scriptEl.setAttribute('data-merchantid', merchantId);
+  
+  scriptEl.setAttribute('data-purchasenumber', purchasenumber);
   scriptEl.setAttribute('data-amount', importe);
+  
+  scriptEl.setAttribute('data-merchantlogo', logo);  
+    
+  scriptEl.setAttribute('data-expirationminutes', 8);
+  scriptEl.setAttribute('data-timeouturl', "javascript:responseForm(self)");
+
   scriptEl.setAttribute('data-cardholdername', nombre);
   scriptEl.setAttribute('data-cardholderlastname', apellido);
   scriptEl.setAttribute('data-cardholderemail', email);
-  scriptEl.setAttribute('data-timeouturl', "javascript:responseForm(self)");
+  scriptEl.setAttribute('data-usertoken', dataCliente.idcliente);
+
   document.getElementById("boton_pago").appendChild(scriptEl);
 
   document.getElementById("btn-disabled").classList.add("btn-hidden");
 
 }
 
+
 function responseForm(event) {
-  console.log('respuesta', event.message.args[0]);
+  // console.log('respuesta', event.message.args[0]);
   loaderTransaction(1);
 
-  const data = event.message.args[0];
+  var data = this.message.args[0];
   transactionToken  = data.token;
   
   generateAutorizacion(transactionToken);
@@ -146,19 +181,19 @@ function generateAutorizacion(transactionToken) {
   cargando_transaction = true;
   var token = localStorage.getItem("token");
   var  data = { 
-        "antifraud" : null,
+        "antifraud" : dataCliente.antifraud,
         "captureType" : "manual",
         "channel" : "web",
         "countable" : false,
         "order" : {
             "amount" : importe,
-            "tokenId" : transactionToken,
+            "currency" : "PEN",
             "purchaseNumber" : purchasenumber,
-            "currency" : "PEN"
+            "tokenId" : transactionToken,
         }
-    };
+  };
 
-  const _url = urlApiAutorization + merchantId;
+  var _url = urlApiAutorization + merchantId;
 
   fetch(_url, {
       method: 'POST',
@@ -172,15 +207,15 @@ function generateAutorizacion(transactionToken) {
       return response.json();
     })
     .then((res) => {
-      console.log(res);      
-      const hayError = res.errorCode ? true : false;
+      // console.log(res);
+      var hayError = res.errorCode ? true : false;
       loaderTransaction(0);            
       loaderTransactionResponse(res, hayError);
     })
     .catch((error) => {      
       loaderTransaction(0);
       loaderTransactionResponse(error, true);
-      console.log(error);
+      // console.log(error);
     });
 
 }

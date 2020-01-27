@@ -3,6 +3,7 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } fro
 import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { VerifyAuthClientService } from '../services/verify-auth-client.service';
+import { InfoTockenService } from '../services/info-token.service';
 // import { InfoTockenService } from '../services/info-token.service';
 
 @Injectable({
@@ -12,6 +13,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private authService: AuthService,
     private verifyClientService: VerifyAuthClientService,
+    private infoTokenService: InfoTockenService,
   ) {}
 
   // canActivate(
@@ -23,8 +25,9 @@ export class AuthGuard implements CanActivate {
 
   canActivate() {
     const us = this.authService.getLoggedStatus();
-    const res = this.verifyClientService.getIsQrSuccess() && us;
-    console.log('canActivate', us);
+    const infoToken = this.infoTokenService.getInfoUs();
+    const res = infoToken.isCliente ? this.verifyClientService.getIsQrSuccess() && us : us;
+    // console.log('canActivate', us);
     // if ( us )
     return res;
   }
