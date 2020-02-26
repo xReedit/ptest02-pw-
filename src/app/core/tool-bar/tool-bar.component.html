@@ -24,7 +24,7 @@
 
    <ng-container *ngIf="isBusqueda">
       <div class="d-flex w-100">
-       <div class="example-ripple-container text-success fs-15" style="margin-left: -15px;" matRipple matRippleCentered="true" [matRippleColor]="rippleColorPlomo" title="Cerrar Sesion" (click)="activaBusqueda()">
+       <div class="example-ripple-container text-success fs-15" style="margin-left: -15px;" matRipple matRippleCentered="true" [matRippleColor]="rippleColorPlomo" title="Atras" (click)="activaBusqueda()">
             <i title="Cerrar Sesion" class="fa fa-arrow-left" aria-hidden="true"></i>
        </div>
        <input type="text" class="text-busqueda w-100" placeholder="Buscar..." #txtBuscar (keyup)="buscarCharAhora(txtBuscar.value)" autofocus>

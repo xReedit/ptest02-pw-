@@ -28,22 +28,31 @@ export class RegistrarPagoService {
   registrarPago(_importe: string, _dataTransactionRegister: any, dataClientePago: ClientePagoModel): void {
     this.getSubtotales();
 
-    const _data = {
+    const _objOperacion = {
       idcliente: this.infoToken.idcliente,
       idorg: this.infoToken.idorg,
       idsede: this.infoToken.idsede,
       mesa: this.infoToken.numMesaLector,
-      importe: _importe,
+      importe: _importe
+    };
+
+    const _data = {
+      idcliente: _objOperacion.idcliente,
+      idorg: _objOperacion.idorg,
+      idsede: _objOperacion.idsede,
+      mesa: _objOperacion.mesa,
+      importe: _objOperacion.importe,
       objSubTotal: this.objTotales,
       objTransaction: _dataTransactionRegister,
-      objCliente: dataClientePago
+      objCliente: dataClientePago,
+      objOperacion: _objOperacion
     };
 
     this.crudService.postFree(_data, 'transaction', 'registrar-pago', false).subscribe((res: any) => {
       // console.log('registro-pago', res);
-      if ( res.success ) {
+      // if ( res.success ) {
         this.socketService.emit('notificar-pago-pwa', _data);
-      }
+      // }
     });
 
 

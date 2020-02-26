@@ -13,6 +13,8 @@ import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { InfoTockenService } from './info-token.service';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { MipedidoService } from './mipedido.service';
+import { Router } from '@angular/router';
 
 
 @Injectable({
@@ -38,7 +40,10 @@ export class SocketService {
 
   private verificandoConexion = false;
 
-  constructor(private infoTockenService: InfoTockenService) {
+  constructor(
+    private infoTockenService: InfoTockenService,
+    private router: Router
+    ) {
 
   }
 
@@ -156,7 +161,7 @@ export class SocketService {
 
   onItemModificado() {
     return new Observable(observer => {
-      this.socket.on('itemModificado', (res: any) => {
+      this.socket.on('itemModificado-pwa', (res: any) => {
         observer.next(res);
       });
     });
@@ -181,7 +186,7 @@ export class SocketService {
   // cuando se recupera el stock de pedido que caduco el tiempo
   onItemResetCant() {
     return new Observable(observer => {
-      this.socket.on('itemResetCant', (res: any) => {
+      this.socket.on('itemResetCant-pwa', (res: any) => {
         observer.next(res);
       });
     });
@@ -294,6 +299,13 @@ export class SocketService {
     this.socket.on('connect', () => {
       console.log('socket connect');
       this.statusConexSocket(true, 'connect');
+
+      // verifica el tiempo de session
+      if (!this.infoTockenService.verificarContunuarSession()) {
+        this.closeConnection();
+        this.cerrarSessionBeforeTimeSession();
+        return;
+      }
     });
 
     this.socket.on('connect_failed', (res: any) => {
@@ -313,6 +325,14 @@ export class SocketService {
 
     // escucha la verificacion de conexion
     this.socket.on('verificar-conexion', (res: any) => {
+
+      // verifica el tiempo de session
+      if (!this.infoTockenService.verificarContunuarSession()) {
+        this.closeConnection();
+        this.cerrarSessionBeforeTimeSession();
+        return;
+      }
+
       if ( res === true ) { console.log('VERIFY CONECTION => OK'); this.verificandoConexion = false; return; }
 
       // no hay conexion -- en pruebas ver comportamiento
@@ -372,5 +392,10 @@ export class SocketService {
     if ( this.verificandoConexion ) {return; }
     this.verificandoConexion = true;
     this.emit('verificar-conexion', this.socket.id);
+  }
+
+  // cierra session despues de que se comprueba que el tiempo de incio se de session supero lo establecido
+  private cerrarSessionBeforeTimeSession(reload: boolean = false) {
+    this.router.navigate(['../']);
   }
 }

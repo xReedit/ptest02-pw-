@@ -312,7 +312,7 @@ export class MipedidoService {
       newSubItemView.indicaciones = '';
       newSubItemView.subitems = [];
 
-      if ( elItem.subitems_selected ) {
+      if ( elItem.subitems_selected && elItem.subitems_selected.length > 0 ) {
 
         elItem.subitems_selected.map((x) => {
           newSubItemView.id += x.iditem_subitem.toString();
@@ -542,6 +542,22 @@ export class MipedidoService {
     return rpt;
   }
 
+  // buscar item en la carta x idItem
+  findItemCartaByIdCartaLista(id: number): ItemModel {
+    let rpt: ItemModel;
+    this.objCarta.carta.map((cat: CategoriaModel) => {
+      cat.secciones.map((sec: SeccionModel) => {
+        const _rpt = sec.items.filter((x: ItemModel) => x.idcarta_lista.toString() === id.toString())[0];
+        if (_rpt) {
+          rpt = _rpt;
+          return rpt;
+        }
+      });
+    });
+
+    return rpt;
+  }
+
   // resetear las cantidades seleccionadas en el item carta, luego de hacer un pedido para que no se quede marcado
   private resetCantidadesTpcItemCarta(): void {
     this.objCarta.carta.map((cat: CategoriaModel) => {
@@ -559,8 +575,11 @@ export class MipedidoService {
   findItemSeccionCarta(idFind: number): SeccionModel {
     let rpt: SeccionModel;
     this.objCarta.carta.map((cat: CategoriaModel) => {
-      rpt = cat.secciones.filter((sec: SeccionModel) => sec.idseccion === idFind)[0];
-      return rpt;
+      const _rpt = cat.secciones.filter((sec: SeccionModel) => sec.idseccion === idFind)[0];
+      if ( _rpt ) {
+        rpt = _rpt;
+        return;
+      }
     });
     return rpt;
   }
@@ -872,7 +891,7 @@ export class MipedidoService {
       this.listItemsPedido.map((item: ItemModel) => {
         item.indicaciones = '';
         if ( !item.itemtiposconsumo ) { return; }
-        // item.itemtiposconsumo = null;
+        item.itemtiposconsumo = null;
         // item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
         //   tpc.cantidad_seleccionada = 0;
         // });
@@ -1125,10 +1144,19 @@ export class MipedidoService {
       rpt.quitar = false;
       rpt.tachado = false;
       rpt.visible_cpe = isImpuesto;
-      rpt.importe = isImpuesto ? isActivo ? importe : 0 : importe;
-      rpt.importe = parseFloat(rpt.importe.toString()).toFixed(2);
 
-      sumaTotal += parseFloat(rpt.importe);
+      // rpt.importe = isImpuesto ? isActivo ? importe : 0 : importe;
+      // rpt.importe = parseFloat(rpt.importe.toString()).toFixed(2);
+      // sumaTotal += parseFloat(rpt.importe);
+
+      // implement igv 030220
+      if ( rpt.descripcion === 'I.G.V') {
+        rpt.importe = isActivo ? porcentaje : 0;
+      } else {
+        rpt.importe = isImpuesto ? isActivo ? importe : 0 : importe;
+        rpt.importe = parseFloat(rpt.importe.toString()).toFixed(2);
+        sumaTotal += parseFloat(rpt.importe);
+      }
 
       rptPorcentajes.push(rpt);
     });
@@ -1173,6 +1201,20 @@ export class MipedidoService {
     // juntamos
     rptPorcentajes.map(y => arrSubtotales.push(y));
     rptOtros.map(y => arrSubtotales.push(y));
+
+    // IGV filtramos los que no es impuesto IGV | 030220
+    const rowSubTotal =  arrSubtotales.filter(x => x.descripcion === 'SUB TOTAL')[0];
+    const rowImporteIGV = arrSubtotales.filter(x => x.descripcion === 'I.G.V')[0];
+    let _importeIGV = rowImporteIGV.importe;
+    let _importeSubTotal = rowSubTotal ? rowSubTotal.importe : 0;
+
+    if ( _importeIGV > 0 ) {
+      _importeIGV = parseFloat((_importeSubTotal *  _importeIGV).toString()).toFixed(2);
+      _importeSubTotal = _importeSubTotal - _importeIGV;
+      rowImporteIGV.importe = _importeIGV;
+      rowSubTotal.importe = _importeSubTotal.toFixed(2);
+    }
+    /// IGV --->
 
     _arrSubtotales = {};
     _arrSubtotales.id = 0;
@@ -1247,46 +1289,79 @@ export class MipedidoService {
   // <--------- listen change -------> //
   // escuha todos los cambios echos en las cantidades, from carta y listItemPedido ----resumen pedido
   listenChangeCantItem(): void {
-    this.socketService.onItemModificado().subscribe((res: ItemModel) => {
-      const _itemInCarta = this.findItemCarta(res);
+    this.socketService.onItemModificado().subscribe((res: any) => {
+
+      let _itemInCarta: ItemModel;
+      // tiene lista de items en porciones compartidaas (Ej 1/8 pollo 1/4 pollo)
+      if ( res.listItemPorcion != null ) {
+        res.listItemPorcion.map((x: any) => {
+          _itemInCarta = this.findItemCartaByIdCartaLista(x.idcarta_lista);
+          this.setCantidadItemModificadoPwa(res.item, _itemInCarta, parseInt(x.cantidad, 0));
+        });
+      } else {
+        res = res.item;
+        _itemInCarta = this.findItemCarta(res);
+        this.setCantidadItemModificadoPwa(res, _itemInCarta);
+      }
+
       // const _itemInList = this.findItemListPedido(res);
 
       // _itemInCarta.subitems = res.subitems;
       // actualizar cantidades subitems si existe
-      if ( res.subitems ) {
-        // res.subitems.map((asub: SubItem) => {
-        //   // _itemInCarta.subitems.filter((bsub: SubItem) => asub.iditem_subitem === bsub.iditem_subitem)[0].cantidad = asub.cantidad;
+      // if ( res.subitems ) {
+      //   // res.subitems.map((asub: SubItem) => {
+      //   //   // _itemInCarta.subitems.filter((bsub: SubItem) => asub.iditem_subitem === bsub.iditem_subitem)[0].cantidad = asub.cantidad;
 
-        // });
-        res.subitems.map((subitemOp: SubItemContent) => {
-          subitemOp.opciones.map((subitem: SubItem) => {
-            _itemInCarta.subitems.map((s: SubItemContent) => {
-              const itemFind = s.opciones.filter((_subItem: SubItem) => _subItem.iditem_subitem === parseInt(subitem.iditem_subitem.toString(), 0))[0];
-              if ( itemFind ) {
-                itemFind.cantidad = subitem.cantidad;
-              }
-            });
-          });
-        });
+      //   // });
+      //   res.subitems.map((subitemOp: SubItemContent) => {
+      //     subitemOp.opciones.map((subitem: SubItem) => {
+      //       _itemInCarta.subitems.map((s: SubItemContent) => {
+      //         const itemFind = s.opciones.filter((_subItem: SubItem) => _subItem.iditem_subitem === parseInt(subitem.iditem_subitem.toString(), 0))[0];
+      //         if ( itemFind ) {
+      //           itemFind.cantidad = subitem.cantidad;
+      //         }
+      //       });
+      //     });
+      //   });
 
-        // _itemInCarta.subitems = res.subitems;
-      }
+      //   // _itemInCarta.subitems = res.subitems;
+      // }
 
-      _itemInCarta.cantidad = parseInt(res.cantidad.toString(), 0);
+      // _itemInCarta.cantidad = parseInt(res.cantidad.toString(), 0);
 
 
-      this.itemStockChangeSource.next(_itemInCarta);
+      // this.itemStockChangeSource.next(_itemInCarta);
       console.log('socket list', this.listItemsPedido);
     });
 
-    this.socketService.onItemResetCant().subscribe((res: ItemModel) => {
-      const _itemInCarta = this.findItemCarta(res);
+    this.socketService.onItemResetCant().subscribe((res: any) => {
+
+      let _itemInCarta: ItemModel;
+      // tiene lista de items en porciones compartidaas (Ej 1/8 pollo 1/4 pollo)
+      if ( res.listItemPorcion != null ) {
+        res.listItemPorcion.map((x: any) => {
+          _itemInCarta = this.findItemCartaByIdCartaLista(x.idcarta_lista);
+          this.setCantidadItemModificadoPwa(res.item, _itemInCarta, parseInt(x.cantidad, 0));
+          // _itemInCarta.subitems = res.subitems;
+          _itemInCarta.cantidad = parseInt(x.cantidad, 0);
+          this.itemStockChangeSource.next(_itemInCarta);
+        });
+      } else {
+        res = res.item;
+        _itemInCarta = this.findItemCarta(res);
+        _itemInCarta.cantidad = parseInt(res.cantidad.toString(), 0);
+        _itemInCarta.subitems = res.subitems;
+        this.itemStockChangeSource.next(_itemInCarta);
+        // this.setCantidadItemModificadoPwa(res.item, _itemInCarta);
+      }
+      // const _itemInCarta = this.findItemCarta(res);
       // const _itemInList = this.findItemListPedido(res);
       // _itemInCarta.cantidad = Number.parseFloat(_itemInCarta.cantidad.toString()) +  Number.parseFloat(res.cantidad_reset.toString());
-      _itemInCarta.cantidad = parseInt(res.cantidad.toString(), 0);
-      _itemInCarta.subitems = res.subitems;
-      console.log('cant reset ', _itemInCarta);
-      this.itemStockChangeSource.next(_itemInCarta);
+
+      // _itemInCarta.cantidad = parseInt(res.cantidad.toString(), 0);
+      // _itemInCarta.subitems = res.subitems;
+      // console.log('cant reset ', _itemInCarta);
+      // this.itemStockChangeSource.next(_itemInCarta);
       // _itemInList.cantidad += res.cantidad_reset;
     });
 
@@ -1342,6 +1417,36 @@ export class MipedidoService {
         this.navigatorService.setPageActive('carta');
       }
     });
+  }
+
+  setCantidadItemModificadoPwa(res: ItemModel, _itemInCarta: ItemModel, cantidadSet: number = null) {
+    // actualizar cantidades subitems si existe
+    if ( res.subitems && res.idcarta_lista === _itemInCarta.idcarta_lista ) {
+      // res.subitems.map((asub: SubItem) => {
+      //   // _itemInCarta.subitems.filter((bsub: SubItem) => asub.iditem_subitem === bsub.iditem_subitem)[0].cantidad = asub.cantidad;
+
+      // });
+      res.subitems.map((subitemOp: SubItemContent) => {
+        subitemOp.opciones.map((subitem: SubItem) => {
+          _itemInCarta.subitems.map((s: SubItemContent) => {
+            const itemFind = s.opciones.filter((_subItem: SubItem) => _subItem.iditem_subitem === parseInt(subitem.iditem_subitem.toString(), 0))[0];
+            if ( itemFind ) {
+              if ( itemFind.cantidad !== 'ND' ) {
+                itemFind.cantidad = subitem.cantidad;
+              }
+            }
+          });
+        });
+      });
+
+      // _itemInCarta.subitems = res.subitems;
+    }
+
+    // _itemInCarta.cantidad = parseInt(res.cantidad.toString(), 0);
+    _itemInCarta.cantidad = cantidadSet ? cantidadSet : parseInt(res.cantidad.toString(), 0);
+
+
+    this.itemStockChangeSource.next(_itemInCarta);
   }
 
   // cerrar session

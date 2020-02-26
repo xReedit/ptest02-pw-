@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { LayoutMainComponent } from './core/layout-main/layout-main.component';
 import { AuthGuard } from './shared/guards/auth.guard';
+import { ClienteProfileGuard } from './shared/guards/cliente-profile-guards';
 
 const routes: Routes = [{
   path: '',
@@ -29,6 +30,12 @@ const routes: Routes = [{
       loadChildren: () => import('./pages/pagar-cuenta/pagar-cuenta.module').then(m => m.PagarCuentaModule),
       canActivate: [AuthGuard],
       data: { 'tituloModulo': 'Cuenta' }
+    },
+    {
+      path: 'cliente-profile',
+      loadChildren: () => import('./pages/cliente-profile/cliente-profile.module').then(m => m.ClienteProfileModule),
+      canActivate: [ClienteProfileGuard],
+      data: { 'tituloModulo': 'Cliente Profile' }
     }
   ]
 }];

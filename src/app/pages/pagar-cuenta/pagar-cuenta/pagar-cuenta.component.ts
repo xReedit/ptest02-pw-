@@ -38,6 +38,8 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   isRequiredEmail = false;
   dataResTransaction: any = null;
 
+  el_purchasenumber;
+
   countFin = 6;
   private intervalConteo = null;
 
@@ -91,6 +93,9 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     // this.unsubscribeEstado = this.listenStatusService.estadoPedido$.subscribe(res => {
     //   this.estadoPedido = res;
     // });
+
+    // aveces la conexion se pierde, verificar para volver a conectar
+    this.socketService.connect();
   }
 
   private cerrarSession(): void {
@@ -110,15 +115,16 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     };
 
     this.crudService.postFree(dataClient, 'transaction', 'get-email-client', false).subscribe((res: any) => {
-      // this.dataClientePago.email = res.data[0].correo ? res.data[0].correo : '';
-      // this.dataClientePago.email = 'integraciones.visanet@necomplus.com'; // desarrollo
-      this.dataClientePago.email = 'review@cybersource.com';
-      this.dataClientePago.isSaveEmail = false;
+      this.dataClientePago.email = res.data[0].correo ? res.data[0].correo : '';
 
-      // email
-      // this.isRequiredEmail = this.dataClientePago.email === '' ?  true : false;
-      // this.isEmailValid = !this.isRequiredEmail;
-      // this.dataClientePago.isSaveEmail = this.isRequiredEmail;
+      // this.dataClientePago.email = 'integraciones.visanet@necomplus.com'; // desarrollo
+      // this.dataClientePago.email = 'review@cybersource.com';
+      // this.dataClientePago.isSaveEmail = false;
+
+      // email // comentar si es review@cybersource.com
+      this.isRequiredEmail = this.dataClientePago.email === '' ?  true : false;
+      this.isEmailValid = !this.isRequiredEmail;
+      this.dataClientePago.isSaveEmail = this.isRequiredEmail;
 
       this.dataClientePago.idcliente = res.data[0].idcliente_card;
       this.dataClientePago.diasRegistrado = res.data[0].dias_registrado;
@@ -181,7 +187,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
     if ( !_pase ) {
       this.isViewAlertEmail = true;
-      // this.isViewAlertTerminos = true;
+      this.isViewAlertTerminos = true; // comentar si review@cybersoruce.com
       return;
      }
 
@@ -200,6 +206,8 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   generarPurchasenumber() {
     this.crudService.getAll('transaction', 'get-purchasenumber', false, false, false).subscribe((res: any) => {
       const _purchasenumber = res.data[0].purchasenumber;
+      this.el_purchasenumber = _purchasenumber;
+
       console.log('_purchasenumber', _purchasenumber);
 
       pagar(this.estadoPedido.importe, _purchasenumber, this.dataClientePago);
@@ -216,6 +224,9 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
       const dataResponse = localStorage.getItem(this.listenKeyData);
       this.isLoaderTransaction = localStorage.getItem(this.listenKeyLoader) === '0' ? false : true;
 
+
+      let _dataTransactionRegister;
+
       if ( dataResponse !== 'null' ) {
         this.isLoadBtnPago = false;
         console.log('dataResponse', dataResponse);
@@ -225,17 +236,36 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
         if (this.isTrasctionSuccess) {
           // registrar pago
-          const _dataTransactionRegister = {
+          // const _dataTransactionRegister = {
+          //   purchaseNumber: this.dataResTransaction.order.purchaseNumber,
+          //   card: this.dataResTransaction.dataMap.CARD,
+          //   brand: this.dataResTransaction.dataMap.BRAND,
+          //   descripcion: this.dataResTransaction.dataMap.ACTION_DESCRIPTION
+          // };
+
+          _dataTransactionRegister = {
             purchaseNumber: this.dataResTransaction.order.purchaseNumber,
             card: this.dataResTransaction.dataMap.CARD,
             brand: this.dataResTransaction.dataMap.BRAND,
-            descripcion: this.dataResTransaction.dataMap.ACTION_DESCRIPTION
+            descripcion: this.dataResTransaction.dataMap.ACTION_DESCRIPTION,
+            status: this.dataResTransaction.dataMap.STATUS,
+            error: this.dataResTransaction.error
           };
+        } else {
+          _dataTransactionRegister = {
+            purchaseNumber: this.el_purchasenumber,
+            card: this.dataResTransaction.data.CARD,
+            brand: this.dataResTransaction.data.BRAND,
+            descripcion: this.dataResTransaction.data.ACTION_DESCRIPTION,
+            status: this.dataResTransaction.data.STATUS,
+            error: this.dataResTransaction.error
+          };
+        }
 
           this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago);
           // cuenta para cerrar
           // this.cuentaRegresiva();
-        }
+        // }
 
       } else {
         this.listenResponse();
@@ -245,7 +275,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   verificarCheckTerminos() {
     this.isViewAlertTerminos = this.isCheckTerminos ? false : true;
-    // this.isViewAlertEmail = !this.isEmailValid;
+    this.isViewAlertEmail = !this.isEmailValid; // comentar si review@cybersoruce.com
   }
 
   verificarCorreo(el: any): void {

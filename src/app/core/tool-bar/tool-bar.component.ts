@@ -81,6 +81,7 @@ export class ToolBarComponent implements OnInit {
   clearTextBuqueda() {
     this.renderer.selectRootElement(this.txtBuscar.nativeElement).focus();
     this.txtBuscar.nativeElement.value = '';
+    window.localStorage.setItem('sys::find', '');
   }
 
   cerrarSession(): void {

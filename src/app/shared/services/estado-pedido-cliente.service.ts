@@ -116,7 +116,8 @@ export class EstadoPedidoClienteService {
   getImporteCuenta() {
     return new Promise(resolve => {
       this.crudService.postFree(this.dataPost, 'pedido', 'lacuenta-cliente-totales', false).subscribe( (res: any) => {
-        resolve(res.data[0].importe);
+        const _rpt = res.success ? res.data[0].importe : 0;
+        resolve(_rpt);
       });
     });
   }

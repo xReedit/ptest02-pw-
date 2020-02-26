@@ -4,7 +4,7 @@ var cargando_transaction = false;
 var dataCliente;
 
 // 240120 - last update.
-
+// DEV
 // var user = "integraciones.visanet@necomplus.com";
 // var password = "d5e7nk$M";
 // var merchantId = '522591303';
@@ -34,6 +34,8 @@ function pagar(_importe, _purchasenumber, _dataClie) {
   importe = parseFloat(_importe).toFixed(2).toString();  
   purchasenumber = _purchasenumber;
   dataCliente = _dataClie;
+  // dataCliente.email_token = dataCliente.idcliente +'@apitoken.com'; // para guardar las tarjetas - userToken
+  dataCliente.email_token = dataCliente.email;
   
   loaderTransaction(0);
   loaderTransactionResponse(null, false);  
@@ -157,7 +159,7 @@ function generarBoton(sessionKey) {
   scriptEl.setAttribute('data-cardholdername', nombre);
   scriptEl.setAttribute('data-cardholderlastname', apellido);
   scriptEl.setAttribute('data-cardholderemail', email);
-  scriptEl.setAttribute('data-usertoken', dataCliente.idcliente);
+  scriptEl.setAttribute('data-usertoken', email);
 
   document.getElementById("boton_pago").appendChild(scriptEl);
 

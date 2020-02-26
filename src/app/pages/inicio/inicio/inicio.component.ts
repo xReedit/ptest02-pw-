@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
-import { take } from 'rxjs/internal/operators/take';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
-import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
+import { Router } from '@angular/router';
+// import { take } from 'rxjs/internal/operators/take';
+// import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 
 @Component({
   selector: 'app-inicio',
@@ -19,6 +20,7 @@ export class InicioComponent implements OnInit, OnDestroy {
 
   constructor(
     private verifyClientService: VerifyAuthClientService,
+    private router: Router
     // private webSocketService: WebsocketService
     ) { }
 
@@ -56,6 +58,12 @@ export class InicioComponent implements OnInit, OnDestroy {
 
   cerrarSession(): void {
     this.verifyClientService.loginOut();
+  }
+
+  showClienteProfile() {
+    if ( this.isLogin ) {
+       this.router.navigate(['/cliente-profile']);
+    }
   }
 
 }

@@ -407,7 +407,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // si es usuario cliente lo envia a estado
     if ( this.isCliente ) {
       this.navigatorService.setPageActive('estado');
-      this.estadoPedidoClientService.get(); // inicia calc tiempo aprox y cuenta total
+      // this.estadoPedidoClientService.get(); // inicia calc tiempo aprox y cuenta total
     } else {
       this.navigatorService.setPageActive('carta');
     }

@@ -4,7 +4,7 @@
     "target": {
       "namespace": "android_app",
       "package_name": "xyz.appmaker.tbzdbz",
-      "sha256_cert_fingerprints": ["99:CF:F7:71:74:58:72:00:03:D4:C7:94:CD:58:C0:DD:BD:B3:9E:DD:9D:A8:EF:8B:09:72:2A:00:5B:0E:7A:48"]
+      "sha256_cert_fingerprints": ["99:CF:F7:71:74:58:72:00:03:D4:C7:94:CD:58:C0:DD:BD:B3:9E:DD:9D:A8:EF:8B:09:72:2A:00:5B:0E:7A:48", "B0:58:DD:1A:7D:59:11:05:9B:77:F3:F9:E1:B7:01:AF:8C:50:20:C5:13:A2:E7:43:33:F3:D4:17:1B:66:A6:53"]
     }
   }
 ]

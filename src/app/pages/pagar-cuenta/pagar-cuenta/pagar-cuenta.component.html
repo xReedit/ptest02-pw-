@@ -29,7 +29,7 @@
             <hr>
 
             <!-- correo -->
-            <!-- <div *ngIf="isRequiredEmail" class="w-100">              
+            <div *ngIf="isRequiredEmail" class="w-100">              
               <p class="fs-13 fw-100" ng [ngClass]="{'text-danger animated flash': isViewAlertEmail}">Se requiere un coreo para notificarle.</p>
               <mat-form-field class="w-100 text-center">
                 <input matInput         
@@ -40,23 +40,23 @@
                   placeholder="Correo electronico" 
                   (keyup) = "verificarCorreo(txtCorreo)"
                   #txtCorreo>
-                </mat-form-field>              
+                </mat-form-field>
                 <span class="fs-13 fw-100 text-danger m-0 p-0" [hidden]="isEmailValid">Correo no valido</span>
                 <hr>
-            </div> -->
+            </div>
 
             <!-- check terminos -->
-            <!-- <div class="text-center" *ngIf="isDisabledCheck && isEmailValid">
-              <mat-checkbox  (click)="goPagar()">Acepto los <a href="http://papaya.com.pe/terminos-condiciones.html" target="_blank">Terminos y condiciones</a></mat-checkbox>
-              <p *ngIf="isViewAlertTerminos" class="fw-100 fs-14 text-danger animated flash">Acepte los terminos.</p>
-              <hr>
-            </div> -->
-
-            <div class="w-70">
+            <div class="text-center" *ngIf="isDisabledCheck && isEmailValid">
               <mat-checkbox  (click)="goPagar()">Acepto los <a href="http://papaya.com.pe/terminos-condiciones.html" target="_blank">Terminos y condiciones</a></mat-checkbox>
               <p *ngIf="isViewAlertTerminos" class="fw-100 fs-14 text-danger animated flash">Acepte los terminos.</p>
               <hr>
             </div>
+
+            <!-- <div class="w-70">
+              <mat-checkbox  (click)="goPagar()">Acepto los <a href="http://papaya.com.pe/terminos-condiciones.html" target="_blank">Terminos y condiciones</a></mat-checkbox>
+              <p *ngIf="isViewAlertTerminos" class="fw-100 fs-14 text-danger animated flash">Acepte los terminos.</p>
+              <hr>
+            </div> -->
             
             <div class="div-btn">
               <div id="btn_pago">

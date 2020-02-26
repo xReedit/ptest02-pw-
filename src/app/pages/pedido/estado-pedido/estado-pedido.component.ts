@@ -68,8 +68,10 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     .subscribe((res: any) => {
       if (res.pageActive === 'estado') {
         // if ( this.estadoPedido.importe > 0 ) {
-          console.log('desde pago cuenta');
-          this.estadoPedidoClienteService.getCuentaTotales();
+          // console.log('desde pago cuenta');
+          setTimeout(() => {
+            this.estadoPedidoClienteService.getCuentaTotales();
+          }, 2500);
         // }
       }
     });
@@ -138,6 +140,10 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
 
   pagarCuenta() {
     // this.navigatorService._router('./pagar-cuenta');
+    if ( !localStorage.getItem('sys::st') ) {
+      this.verCuenta();
+      return;
+    }
 
     this.estadoPedidoClienteService.getCuenta(); // get subtotales - esta listen resumen-pedido;
     this.router.navigate(['./pagar-cuenta'])

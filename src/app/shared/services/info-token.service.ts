@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
-import { tokenName } from '@angular/compiler';
+
 
 
 @Injectable({
@@ -8,7 +8,9 @@ import { tokenName } from '@angular/compiler';
 })
 export class InfoTockenService {
   infoUsToken: UsuarioTokenModel;
-  constructor( ) {
+  constructor(
+    // private miPedidoService: MipedidoService,
+  ) {
     this.converToJSON();
   }
 
@@ -19,6 +21,10 @@ export class InfoTockenService {
 
   saveToken(token: any) {
     localStorage.setItem('::token', token);
+
+    // guardo tambien la hora que esta iniciando session
+    const ms_tieme_init_session = new Date().getTime();
+    localStorage.setItem('sys::numtis', ms_tieme_init_session.toString());
   }
 
   getInfoSedeToken(): string {
@@ -78,6 +84,40 @@ export class InfoTockenService {
     localStorage.removeItem('::token');
     localStorage.removeItem('sys::rules');
     localStorage.removeItem('sys::status');
+    localStorage.removeItem('sys::numtis');
     // localStorage.removeItem('sys::tpm');
+  }
+
+  // verifica el tiempo de inactividad para cerrar session
+  // cerrar session despues de 3:20 => ( 12000 sec )horas inciadas
+  verificarContunuarSession(): boolean {
+    if (!this.infoUsToken.isCliente) { // si es usuario autorizado no cuenta tiempo
+      return true;
+    }
+    const numTis = parseInt(localStorage.getItem('sys::numtis'), 0);
+    let continueSession = !isNaN(numTis);
+
+    if (!continueSession) {
+      this.cerrarSession();
+      // this.miPedidoService.cerrarSession();
+      return continueSession;
+    }
+
+    const ms_now = new Date().getTime();
+    const ms = ms_now - numTis;
+    const sec = Math.floor((ms / 1000));
+
+    if ( sec > 10000 ) {
+      continueSession = false;
+    }
+
+    if (!continueSession) {
+      this.cerrarSession();
+      // this.miPedidoService.cerrarSession();
+      return continueSession;
+    }
+
+    return true;
+    // const timeAfter = localStorage.getItem('sys::tnum') ? parseInt(localStorage.getItem('sys::tnum'), 0) : ms_new;
   }
 }

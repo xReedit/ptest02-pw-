@@ -48,8 +48,10 @@ export class JsonPrintService {
     const var_size_font_tall_comanda = this.datosSede.datossede[0].var_size_font_tall_comanda; // tamañao de letras
     const pie_pagina = this.datosSede.datossede[0].pie_pagina;
     const pie_pagina_comprobante = this.datosSede.datossede[0].pie_pagina_comprobante;
+    let isHayDatosPrintObj = true; // si hay datos en el obj xArrayBodyPrint para imprimir
     // let indexP = 0;
     this.impresoras.map((p: any) => {
+      isHayDatosPrintObj = false;
       xArrayBodyPrint = [];
       _objMiPedido.tipoconsumo
         .map((tpc: TipoConsumoModel, indexP: number) => {
@@ -60,6 +62,7 @@ export class JsonPrintService {
               s.items.map((i: ItemModel) => {
                 if (i.imprimir_comanda === 0) { return; } // no imprimir // productos bodega u otros
                   // xArrayBodyPrint[indexP][i.iditem] = [];
+                  isHayDatosPrintObj = true;
                   xArrayBodyPrint[indexP].conDatos = true; // si la seccion tiene items
                   xArrayBodyPrint[indexP][i.iditem] = i;
                   xArrayBodyPrint[indexP][i.iditem].des_seccion = s.des;
@@ -73,7 +76,8 @@ export class JsonPrintService {
               // indexP++;
           });
 
-      if (xArrayBodyPrint.length === 0 || !xArrayBodyPrint[xArrayBodyPrint.length - 1].conDatos) { return; }
+
+      if (xArrayBodyPrint.length === 0 || !isHayDatosPrintObj) { return; }
 
       xImpresoraPrint = [];
       const childPrinter: any = {};
