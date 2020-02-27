@@ -173,11 +173,18 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
           _objTpcAdd.idtipo_consumo = t.idtipo_consumo;
           _objTpcAdd.titulo = t.titulo;
 
-          if ( this.infoToken.isCliente() && t.descripcion === 'DELIVERY' ) {
+          // filtramos los tipos de consumo segun qr escaneado o personal autorizado
 
-          } else {
-            this.objNewItemTiposConsumo.push(_objTpcAdd);
+          if ( this.infoToken.isCliente() ) {
+            if ( t.descripcion === 'DELIVERY' ) { return; }
+            if ( this.infoToken.isSoloLlevar() && t.descripcion.indexOf('LLEVAR') === -1 ) { return; }
           }
+
+          // if ( this.infoToken.isCliente() && t.descripcion === 'DELIVERY' ) {
+
+          // } else {
+            this.objNewItemTiposConsumo.push(_objTpcAdd);
+          // }
         });
 
         this.navigatorService.addLink('carta-i-');

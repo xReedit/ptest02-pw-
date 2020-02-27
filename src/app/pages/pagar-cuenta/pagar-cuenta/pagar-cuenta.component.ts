@@ -83,7 +83,15 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   private async listener() {
 
-    this.estadoPedido.importe = await this.estadoPedidoClienteService.getImporteCuenta();
+    if ( this.infoToken.isSoloLLevar  ) {
+      // el importe lo toma del localstorage
+      const arrTotales = JSON.parse(atob(localStorage.getItem('sys::st')));
+      console.log('total st ', arrTotales);
+      this.estadoPedido.importe = arrTotales[arrTotales.length - 1].importe;
+    } else {
+      this.estadoPedido.importe = await this.estadoPedidoClienteService.getImporteCuenta();
+    }
+
     console.log(this.estadoPedido.importe);
 
     // para proteger de los que actualizan luego de pagar
@@ -251,6 +259,11 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
             status: this.dataResTransaction.dataMap.STATUS,
             error: this.dataResTransaction.error
           };
+
+          // notifica a resumen para enviar el pedido
+          if ( this.infoToken.isSoloLLevar ) {
+            this.listenStatusService.setPagoSuccess(true);
+          }
         } else {
           _dataTransactionRegister = {
             purchaseNumber: this.el_purchasenumber,
@@ -304,7 +317,12 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     if ( this.dataResTransaction.error ) {
       this.navigatorService._router('../pedido');
     } else {
-      this.navigatorService._router('../lanzar-encuesta');
+      if ( this.infoToken.isSoloLLevar ) {
+        this.goBack();
+        // this.navigatorService._router('../pedido');
+      } else {
+        this.navigatorService._router('../lanzar-encuesta');
+      }
     }
   }
 

@@ -33,6 +33,8 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   isCodigoQrValido = true;
   isCameraReady = false;
   isSedeRequiereGPS = false; // si sede ruquiere gps
+  isSoloLLevar = false; // si escanea qr solo para llevar
+
   // hasPermissionPosition = false;
 
   private isDemo = false;
@@ -173,6 +175,8 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     const m = dataQr[0];
     const s = dataQr[2];
 
+    this.isSoloLLevar =  m === 'tpc-llevar' ? true : false;
+
     const dataSend = {
       m: m,
       s: s
@@ -193,6 +197,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
         this.verifyClientService.setIdSede(s);
         this.verifyClientService.setMesa(m);
         this.verifyClientService.setQrSuccess(true);
+        this.verifyClientService.setIsSoloLLevar(this.isSoloLLevar);
         // this.verifyClientService.setDataClient();
 
         const position = dataQr[1].split(':');

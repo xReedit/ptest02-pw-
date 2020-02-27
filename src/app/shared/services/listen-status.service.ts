@@ -43,6 +43,10 @@ export class ListenStatusService {
   private isBtnPagoShowSource = new BehaviorSubject<boolean>(false);
   public isBtnPagoShow$ = this.isBtnPagoShowSource.asObservable();
 
+  // notifica el pago correcto para enviar el pedido cuando es solo para llevar
+  private isPagoSuccesSource = new BehaviorSubject<boolean>(false);
+  public isPagoSucces$ = this.isPagoSuccesSource.asObservable();
+
   constructor() { }
 
   setIsBusqueda() {
@@ -85,6 +89,10 @@ export class ListenStatusService {
 
   setIsBtnPagoShow(value: boolean) {
     this.isBtnPagoShowSource.next(value);
+  }
+
+  setPagoSuccess(value: boolean) {
+    this.isPagoSuccesSource.next(value);
   }
 
 }

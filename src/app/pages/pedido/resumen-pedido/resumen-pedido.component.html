@@ -87,8 +87,41 @@
           [ngClass]="[isVisibleConfirmarAnimated ? 'show' : 'hide', isVisibleConfirmarAnimated ? 'fadeInRight' : 'fadeInLeft']">
             <div class="text-center">
 
+                <!-- cuando es usuario cliente y escaneo codigo solo para llevar -->
+                <ng-container *ngIf="isCliente && isSoloLLevar">
+                    <div class="text-center">                        
+                        <hr>
+                        <p class="fw-100 fs-17">
+                            <i class="fa fa-info-circle" aria-hidden="true"></i>
+                            Para confirmar su pedido seleccione entre estas opciones:
+                            </p>
+                        <hr>
+                        
+                        <br>
+                        <div class="text-center">
+                            <!-- <button mat-flat-button color="primary" (click)="cerrarSession()">Pagar con tarjeta.</button> -->
+                            <!-- <br><br><br> -->
+                            <!-- <button mat-flat-button color="primary" (click)="cerrarSession()">Pagar en caja.</button> -->
+                            <div class="btn-footer-next transicion w-50 m-auto" matRipple (click)="pagarCuentaSoloLLevar()">
+                                <div>
+                                    <span class="animated fadeInLeft">Pagar con tarjeta</span>
+                                </div>
+                            </div>
+                            <br>
+                            <hr>
+                            <br>
+                            <div class="btn-footer-next transicion w-50 m-auto bg-primary" matRipple>
+                                <div>
+                                    <span class="animated fadeInLeft">Acercarse a pagar en caja.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+
+
                 <!-- cuando es usuario cliente -->
-                <ng-container *ngIf="isCliente; else divUsuarioAutorizado">
+                <ng-container *ngIf="isCliente && !isSoloLLevar">
                     <div class="text-center">
                         <br><br>
                         <hr>
@@ -111,7 +144,7 @@
                 </ng-container>
 
                 <!-- cuando es personal autorizado -->
-                <ng-template #divUsuarioAutorizado>
+                <ng-container *ngIf="!isCliente" #divUsuarioAutorizado>
 
                     <!-- datos del pedido -->
                     <div [hidden]="isDelivery">
@@ -171,7 +204,7 @@
                     
                     <!-- datos del delivery -->
                     
-                </ng-template>
+                </ng-container>
                                 
                 
             </div>

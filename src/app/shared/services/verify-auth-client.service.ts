@@ -44,6 +44,11 @@ export class VerifyAuthClientService {
     this.setDataClient();
   }
 
+  setIsSoloLLevar(val: boolean): void {
+    this.clientSocket.isSoloLLevar = val;
+    this.setDataClient();
+  }
+
   setQrSuccess(val: boolean): void {
     this.clientSocket.isQrSuccess = val;
     this.setDataClient();

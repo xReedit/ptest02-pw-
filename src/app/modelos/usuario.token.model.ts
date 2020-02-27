@@ -19,4 +19,5 @@ export class UsuarioTokenModel {
     email: string;
     numMesaLector: number; // numero de mesa del lector qr
     ipCliente: string; // ip del cliente api autorizacion
+    isSoloLLevar: boolean; // si escanea qr solo para llevar
 }

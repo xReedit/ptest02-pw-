@@ -44,6 +44,10 @@ export class InfoTockenService {
     return this.infoUsToken.isCliente;
   }
 
+  isSoloLlevar(): boolean {
+    return this.infoUsToken.isSoloLLevar;
+  }
+
   getLocalIpCliente(): string {
     this.infoUsToken.ipCliente = localStorage.getItem('sys::it');
     return this.infoUsToken.ipCliente;
@@ -70,6 +74,7 @@ export class InfoTockenService {
         _newUs.idusuario = 0;
         _newUs.usuario = 'cliente';
         _newUs.numMesaLector = _token.numMesaLector;
+        _newUs.isSoloLLevar = _token.isSoloLLevar;
         this.infoUsToken = _newUs;
       } else {
         this.infoUsToken = <UsuarioTokenModel>_token.usuario;

@@ -27,6 +27,8 @@ import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil, take, last, takeLast } from 'rxjs/operators';
 import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedido-cliente.service';
 import { throwToolbarMixedModesError } from '@angular/material/toolbar';
+import { Router } from '@angular/router';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
@@ -66,6 +68,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   objCuenta: any = [];
 
   isCliente: boolean; // si es cliente quien hace el pedido
+  isSoloLLevar: boolean; // si es solo llevar
 
   private isFirstLoadListen = false; // si es la primera vez que se carga, para no volver a cargar los observables
 
@@ -80,6 +83,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     private listenStatusService: ListenStatusService,
     private estadoPedidoClientService: EstadoPedidoClienteService,
     private dialog: MatDialog,
+    private router: Router
     ) { }
 
   ngOnInit() {
@@ -114,6 +118,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // si es cliente
     this.isCliente = this.infoToken.isCliente();
+    this.isSoloLLevar = this.infoToken.isSoloLlevar();
     this.isClienteSetValues();
   }
 
@@ -149,6 +154,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // }
 
     this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
+    localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
     this.hayItems = this._arrSubtotales[0].importe > 0 ? true : false;
 
   }
@@ -156,6 +162,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   listenMiPedido() {
     if ( this.isFirstLoadListen ) {return; }
     this.isFirstLoadListen = true; // para que no vuelva a cargar los observables cuando actualizan desde sockets
+
 
     this.miPedidoService.countItemsObserve$
     .pipe(takeUntil(this.destroy$))
@@ -178,6 +185,19 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.destroy$))
     .subscribe(res => {
       this.isHayCuentaBusqueda = res;
+    });
+
+    // cuando es solo llevar // estar pendiente de pago suscces para enviar el pedido
+    this.listenStatusService.isPagoSucces$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(res => {
+      // toma la respuesta de pago
+      const resPago = JSON.parse(localStorage.getItem('sys::transaction-response'));
+      const resPagoIsSucces = resPago ? !resPago.error : false;
+      if (resPagoIsSucces && this.isSoloLLevar) {
+        localStorage.removeItem('sys::transaction-response');
+        this.enviarPedido();
+      }
     });
 
     this.socketService.isSocketOpen$
@@ -330,7 +350,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     const dataFrmConfirma: any = {};
     if ( this.isCliente ) {
-      dataFrmConfirma.m = dataUsuario.numMesaLector;
+      this.frmConfirma.solo_llevar = this.isSoloLLevar ? true : this.frmConfirma.solo_llevar;
+      dataFrmConfirma.m = this.isSoloLLevar ? '' : dataUsuario.numMesaLector;
       dataFrmConfirma.r = this.infoToken.getInfoUs().nombres.toUpperCase();
       dataFrmConfirma.nom_us = this.infoToken.getInfoUs().nombres.toLowerCase();
     } else {
@@ -559,6 +580,24 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
 
     console.log('this._miPedido', this._miPedido);
+  }
+
+  pagarCuentaSoloLLevar() {
+    // this.navigatorService._router('./pagar-cuenta');
+    // if ( !localStorage.getItem('sys::st') ) {
+    //   this.verCuenta();
+    //   return;
+    // }
+
+    // this.estadoPedidoClientService.getCuenta(); // get subtotales - esta listen resumen-pedido;
+    this.router.navigate(['./pagar-cuenta']);
+    // .then(() => {
+    //   if ( this.isBtnPagoShow ) {
+    //     window.location.reload();
+    //   }
+    // });
+
+    this.listenStatusService.setIsPagePagarCuentaShow(true);
   }
 
 }
