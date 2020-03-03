@@ -5,12 +5,14 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MaterialModule } from '../core/material/material.module';
 import { DebounceClickDirective } from '../shared/directivas/debounce-click.directive';
 import { EncuestaOpcionComponent } from './encuesta-opcion/encuesta-opcion.component';
+import { DialogUbicacionComponent } from './dialog-ubicacion/dialog-ubicacion.component';
 
 @NgModule({
   declarations: [
     DatosDeliveryComponent,
     DebounceClickDirective,
-    EncuestaOpcionComponent
+    EncuestaOpcionComponent,
+    // DialogUbicacionComponent
   ],
   imports: [
     CommonModule,

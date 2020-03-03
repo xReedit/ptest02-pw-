@@ -12,6 +12,7 @@ export class RegistrarPagoService {
 
   private infoToken: UsuarioTokenModel;
   private objTotales: any;
+  private responseTransaction: any;
 
   constructor(
     private infoTokenService: InfoTockenService,
@@ -51,6 +52,7 @@ export class RegistrarPagoService {
     this.crudService.postFree(_data, 'transaction', 'registrar-pago', false).subscribe((res: any) => {
       // console.log('registro-pago', res);
       // if ( res.success ) {
+        this.setIdRegistroPagoTransaction(res.data[0].idregistro_pago);
         this.socketService.emit('notificar-pago-pwa', _data);
       // }
     });
@@ -65,5 +67,38 @@ export class RegistrarPagoService {
     });
 
     return _res;
+  }
+
+
+  // manejo de respuesta en local storage
+  getDataTrasaction(): any {
+    // toma la respuesta de pago
+    // this.responseTransaction = JSON.parse(localStorage.getItem('sys::transaction-response'));
+    this.loadDataTransaction();
+    const resPagoIsSucces = this.responseTransaction ? !this.responseTransaction.error : false;
+    this.responseTransaction.isSuccess = !resPagoIsSucces;
+
+
+    return this.responseTransaction;
+  }
+
+  private setIdRegistroPagoTransaction(id: number): void {
+    this.loadDataTransaction();
+    this.responseTransaction.idregistro_pago = id;
+    this.upDataTransaction();
+  }
+
+  private loadDataTransaction(): void {
+    // toma la respuesta de pago
+    this.responseTransaction = JSON.parse(localStorage.getItem('sys::transaction-response'));
+  }
+
+  private upDataTransaction(): void {
+    localStorage.setItem('sys::transaction-response', JSON.stringify(this.responseTransaction));
+  }
+
+  removeLocalDataTransaction(): void {
+    localStorage.removeItem('sys::transaction-response');
+    this.responseTransaction = null;
   }
 }

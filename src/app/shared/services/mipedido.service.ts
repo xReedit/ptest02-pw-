@@ -558,6 +558,30 @@ export class MipedidoService {
     return rpt;
   }
 
+  // buscar subitem del item segun idproducto + idporcion
+  // iditemFilter = iditem que se va a filtrar, porque ya fue actualizado
+  findSubItemCartaById(idFind: string, iditemFilter: string): SubItem[] {
+    const rptSubItem: SubItem[] = [];
+    this.objCarta.carta.map((cat: CategoriaModel) => {
+      cat.secciones.map((sec: SeccionModel) => {
+        sec.items
+        .filter((item: ItemModel) => item.iditem.toString() !== iditemFilter)
+        .filter((item: ItemModel) => item.subitems)
+        .map((item: ItemModel) => {
+          item.subitems.map((subItemContent: SubItemContent) => {
+            const _subItem = subItemContent.opciones.filter((x: SubItem) => x.idproducto.toString() + x.idporcion.toString() === idFind)[0];
+            if (_subItem) {
+              rptSubItem.push(_subItem);
+              // console.log(item);
+              // return rptSubItem;
+            }
+          });
+        });
+      });
+    });
+    return rptSubItem;
+  }
+
   // resetear las cantidades seleccionadas en el item carta, luego de hacer un pedido para que no se quede marcado
   private resetCantidadesTpcItemCarta(): void {
     this.objCarta.carta.map((cat: CategoriaModel) => {
@@ -1296,13 +1320,20 @@ export class MipedidoService {
       if ( res.listItemPorcion != null ) {
         res.listItemPorcion.map((x: any) => {
           _itemInCarta = this.findItemCartaByIdCartaLista(x.idcarta_lista);
-          this.setCantidadItemModificadoPwa(res.item, _itemInCarta, parseInt(x.cantidad, 0));
+
+          const cantidadSet = parseInt(x.cantidad, 0);
+          _itemInCarta.cantidad = cantidadSet ? cantidadSet : parseInt(res.item.cantidad.toString(), 0);
+          this.setCantidadItemModificadoPwa(res.item, _itemInCarta, parseInt(x.cantidad, 0), true);
         });
       } else {
         res = res.item;
         _itemInCarta = this.findItemCarta(res);
         this.setCantidadItemModificadoPwa(res, _itemInCarta);
       }
+
+
+      // actualiza subitems si son porciones o productos
+
 
       // const _itemInList = this.findItemListPedido(res);
 
@@ -1341,9 +1372,9 @@ export class MipedidoService {
       if ( res.listItemPorcion != null ) {
         res.listItemPorcion.map((x: any) => {
           _itemInCarta = this.findItemCartaByIdCartaLista(x.idcarta_lista);
-          this.setCantidadItemModificadoPwa(res.item, _itemInCarta, parseInt(x.cantidad, 0));
-          // _itemInCarta.subitems = res.subitems;
           _itemInCarta.cantidad = parseInt(x.cantidad, 0);
+          this.setCantidadItemModificadoPwa(res.item, _itemInCarta, parseInt(x.cantidad, 0), true);
+          // _itemInCarta.subitems = res.subitems;
           this.itemStockChangeSource.next(_itemInCarta);
         });
       } else {
@@ -1419,9 +1450,13 @@ export class MipedidoService {
     });
   }
 
-  setCantidadItemModificadoPwa(res: ItemModel, _itemInCarta: ItemModel, cantidadSet: number = null) {
+  setCantidadItemModificadoPwa(res: ItemModel, _itemInCarta: ItemModel, cantidadSet: number = null, isSubItemPorcion: boolean = false) {
     // actualizar cantidades subitems si existe
     if ( res.subitems && res.idcarta_lista === _itemInCarta.idcarta_lista ) {
+
+      // if ( !isReset ) {
+      //   _itemInCarta.cantidad = cantidadSet ? cantidadSet : parseInt(res.cantidad.toString(), 0);
+      // }
       // res.subitems.map((asub: SubItem) => {
       //   // _itemInCarta.subitems.filter((bsub: SubItem) => asub.iditem_subitem === bsub.iditem_subitem)[0].cantidad = asub.cantidad;
 
@@ -1433,6 +1468,14 @@ export class MipedidoService {
             if ( itemFind ) {
               if ( itemFind.cantidad !== 'ND' ) {
                 itemFind.cantidad = subitem.cantidad;
+
+                // buscar los demas items que tengan este subitem porcion o producto
+                const idFind = itemFind.idproducto.toString() + itemFind.idporcion.toString();
+                const _otherListSubItem = this.findSubItemCartaById(idFind, res.iditem.toString());
+                _otherListSubItem.map( (x: SubItem ) => {
+                  x.cantidad = subitem.cantidad;
+                });
+
               }
             }
           });
@@ -1443,8 +1486,11 @@ export class MipedidoService {
     }
 
     // _itemInCarta.cantidad = parseInt(res.cantidad.toString(), 0);
-    _itemInCarta.cantidad = cantidadSet ? cantidadSet : parseInt(res.cantidad.toString(), 0);
+    // _itemInCarta.cantidad = cantidadSet ? cantidadSet : parseInt(res.cantidad.toString(), 0);
 
+    if ( !isSubItemPorcion ) {
+        _itemInCarta.cantidad = cantidadSet ? cantidadSet : parseInt(res.cantidad.toString(), 0);
+    }
 
     this.itemStockChangeSource.next(_itemInCarta);
   }

@@ -1,14 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
-import { Auth0Service } from 'src/app/shared/services/auth0.service';
-import { Subscription } from 'rxjs/internal/Subscription';
-import { take } from 'rxjs/operators';
+// import { Auth0Service } from 'src/app/shared/services/auth0.service';
+// import { Subscription } from 'rxjs/internal/Subscription';
+// import { take } from 'rxjs/operators';
 
-import {
-  toLatLon, toLatitudeLongitude, headingDistanceTo, moveTo, insidePolygon, insideCircle
-} from 'geolocation-utils';
+// import {
+//   toLatLon, toLatitudeLongitude, headingDistanceTo, moveTo, insidePolygon, insideCircle
+// } from 'geolocation-utils';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DialogUbicacionComponent } from 'src/app/componentes/dialog-ubicacion/dialog-ubicacion.component';
 
 // import {QrScannerComponent} from 'angular2-qrscanner';
 
@@ -46,6 +48,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   constructor(
     private verifyClientService: VerifyAuthClientService,
     private crudService: CrudHttpService,
+    private dialog: MatDialog,
     private router: Router ) { }
 
   ngOnInit() {
@@ -81,15 +84,15 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     this.hasPermission = has;
   }
 
-  getPosition(): void {
-    this.hasPermissionPosition = true;
-    navigator.geolocation.getCurrentPosition((position: any) => {
-      const divicePos = { lat: position.coords.latitude, lng: position.coords.longitude};
-      // this.leerDatosQR(divicePos);
-      this.divicePos = this.divicePos;
+  // getPosition(): void {
+  //   this.hasPermissionPosition = true;
+  //   navigator.geolocation.getCurrentPosition((position: any) => {
+  //     const divicePos = { lat: position.coords.latitude, lng: position.coords.longitude};
+  //     // this.leerDatosQR(divicePos);
+  //     this.divicePos = divicePos;
 
-    }, this.showPositionError);
-  }
+  //   }, this.showPositionError);
+  // }
 
   // verifyAceptPosition() {
   //   navigator.geolocation.getCurrentPosition(this.getPosition, (error: any) => {
@@ -175,7 +178,8 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     const m = dataQr[0];
     const s = dataQr[2];
 
-    this.isSoloLLevar =  m === 'tpc-llevar' ? true : false;
+    // -1 = solo llevar // activa ubicacion
+    this.isSoloLLevar =  m === 'llevar' ? true : false;
 
     const dataSend = {
       m: m,
@@ -190,12 +194,13 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     this.crudService.postFree(dataHeader, 'ini', 'info-sede-gps', false)
       .subscribe((res: any) => {
         this.isSedeRequiereGPS = res.data[0].pwa_requiere_gps === '0' ? false : true;
+        this.isSedeRequiereGPS = this.isSoloLLevar ? true : this.isSedeRequiereGPS;
 
 
         // setear idsede en clienteSOcket
+        if ( !this.isSoloLLevar ) { this.verifyClientService.setMesa(m); }
         this.verifyClientService.getDataClient();
         this.verifyClientService.setIdSede(s);
-        this.verifyClientService.setMesa(m);
         this.verifyClientService.setQrSuccess(true);
         this.verifyClientService.setIsSoloLLevar(this.isSoloLLevar);
         // this.verifyClientService.setDataClient();
@@ -203,14 +208,37 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
         const position = dataQr[1].split(':');
         const localPos = { lat: parseFloat(position[0]), lng: parseFloat(position[1]) };
 
-        let isPositionCorrect = true;
+        const isPositionCorrect = true;
         if ( this.isSedeRequiereGPS ) {
-          this.getPosition();
-          isPositionCorrect = this.isDemo ? true : this.arePointsNear(localPos, this.divicePos, 1);
+          // this.getPosition();
+          // isPositionCorrect = this.isDemo ? true : this.arePointsNear(localPos, this.divicePos, 1);
+          this.openDialogPOS(localPos);
+        } else {
+          this.resValidQR(isPositionCorrect);
         }
 
-        this.resValidQR(isPositionCorrect);
     });
+  }
+
+  private openDialogPOS(localPos: any) {
+    let isPositionValid = false;
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.hasBackdrop = true;
+    dialogConfig.data = {
+      cLocal: localPos,
+      isDemo: this.isDemo
+    };
+    const dialogRef = this.dialog.open(DialogUbicacionComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(
+      data => {
+        if ( !data ) { isPositionValid = false; }
+        console.log('data dialog', data);
+        isPositionValid = data;
+        this.resValidQR(isPositionValid);
+      }
+    );
   }
 
   private resValidQR(isValid: boolean): void {
@@ -225,19 +253,19 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   }
 
   // calcula si esta dentro del rango
-  private arePointsNear(checkPoint: any, centerPoint: any, km: number): boolean {
-    // const ky = 40000 / 360;
-    // const kx = Math.cos(Math.PI * centerPoint.lat / 180.0) * ky;
-    // const dx = Math.abs(centerPoint.lng - checkPoint.lng) * kx;
-    // const dy = Math.abs(centerPoint.lat - checkPoint.lat) * ky;
-    // return Math.sqrt(dx * dx + dy * dy) <= km;
+  // private arePointsNear(checkPoint: any, centerPoint: any, km: number): boolean {
+  //   // const ky = 40000 / 360;
+  //   // const kx = Math.cos(Math.PI * centerPoint.lat / 180.0) * ky;
+  //   // const dx = Math.abs(centerPoint.lng - checkPoint.lng) * kx;
+  //   // const dy = Math.abs(centerPoint.lat - checkPoint.lat) * ky;
+  //   // return Math.sqrt(dx * dx + dy * dy) <= km;
 
-    const center = {lat: centerPoint.lat, lon: centerPoint.lng };
-    const radius = 65; // meters
+  //   const center = {lat: centerPoint.lat, lon: centerPoint.lng };
+  //   const radius = 65; // meters
 
-    // insideCircle({lat: 51.03, lon: 4.05}, center, radius) // true
-    return insideCircle({lat: checkPoint.lat, lon: checkPoint.lng}, center, radius);  // false
-  }
+  //   // insideCircle({lat: 51.03, lon: 4.05}, center, radius) // true
+  //   return insideCircle({lat: checkPoint.lat, lon: checkPoint.lng}, center, radius);  // false
+  // }
 
   volverALeer(): void {
     this.isProcesando = false;

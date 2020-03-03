@@ -14,6 +14,7 @@ import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { LectorSuccessComponent } from './lector-success/lector-success.component';
 import { CallbackAuthComponent } from './callback-auth/callback-auth.component';
 import { LoginClienteComponent } from './login-cliente/login-cliente.component';
+import { DialogUbicacionComponent } from 'src/app/componentes/dialog-ubicacion/dialog-ubicacion.component';
 // import { CallbackAuth0Component } from './callback-auth0/callback-auth0.component';
 
 @NgModule({
@@ -24,13 +25,19 @@ import { LoginClienteComponent } from './login-cliente/login-cliente.component';
     LectorCodigoQrComponent,
     LectorSuccessComponent,
     CallbackAuthComponent,
-    LoginClienteComponent],
+    LoginClienteComponent,
+    DialogUbicacionComponent
+  ],
   imports: [
     CommonModule,
     FormsModule,
     InicioRoutingModule,
     MaterialModule,
     ZXingScannerModule
-  ]
+  ],
+  exports : [
+    DialogUbicacionComponent
+  ],
+  entryComponents: [DialogUbicacionComponent]
 })
 export class InicioModule { }

@@ -9,4 +9,6 @@ export class SubItem {
     precio_visible: boolean;
     cantidad_visible: boolean;
     selected: boolean;
+    idproducto: string;
+    idporcion: string;
 }

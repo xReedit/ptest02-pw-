@@ -9,6 +9,7 @@ import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.ser
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
+import { RegistrarPagoService } from 'src/app/shared/services/registrar-pago.service';
 
 
 import { SeccionModel } from 'src/app/modelos/seccion.model';
@@ -83,7 +84,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     private listenStatusService: ListenStatusService,
     private estadoPedidoClientService: EstadoPedidoClienteService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private registrarPagoService: RegistrarPagoService,
     ) { }
 
   ngOnInit() {
@@ -192,10 +194,12 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.destroy$))
     .subscribe(res => {
       // toma la respuesta de pago
-      const resPago = JSON.parse(localStorage.getItem('sys::transaction-response'));
-      const resPagoIsSucces = resPago ? !resPago.error : false;
-      if (resPagoIsSucces && this.isSoloLLevar) {
-        localStorage.removeItem('sys::transaction-response');
+      // const resPago = JSON.parse(localStorage.getItem('sys::transaction-response'));
+      // const resPagoIsSucces = resPago ? !resPago.error : false;
+      const resPago = this.registrarPagoService.getDataTrasaction();
+      if (resPago.isSuccess && this.isSoloLLevar) {
+        // localStorage.removeItem('sys::transaction-response');
+        this.registrarPagoService.removeLocalDataTransaction();
         this.enviarPedido();
       }
     });
@@ -374,6 +378,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       correlativo_dia: '', // en backend
       num_pedido: '', // en backend
       isCliente: this.isCliente ? 1 : 0,
+      isSoloLLevar: this.isSoloLLevar,
+      idregistro_pago: this.isSoloLLevar ? this.registrarPagoService.getDataTrasaction().idregistro_pago : 0,
       arrDatosDelivery: this.frmDelivery
     };
 

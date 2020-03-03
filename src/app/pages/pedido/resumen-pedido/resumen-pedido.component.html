@@ -88,7 +88,7 @@
             <div class="text-center">
 
                 <!-- cuando es usuario cliente y escaneo codigo solo para llevar -->
-                <ng-container *ngIf="isCliente && isSoloLLevar">
+                <!-- <ng-container *ngIf="isCliente && isSoloLLevar">
                     <div class="text-center">                        
                         <hr>
                         <p class="fw-100 fs-17">
@@ -98,10 +98,7 @@
                         <hr>
                         
                         <br>
-                        <div class="text-center">
-                            <!-- <button mat-flat-button color="primary" (click)="cerrarSession()">Pagar con tarjeta.</button> -->
-                            <!-- <br><br><br> -->
-                            <!-- <button mat-flat-button color="primary" (click)="cerrarSession()">Pagar en caja.</button> -->
+                        <div class="text-center">                            
                             <div class="btn-footer-next transicion w-50 m-auto" matRipple (click)="pagarCuentaSoloLLevar()">
                                 <div>
                                     <span class="animated fadeInLeft">Pagar con tarjeta</span>
@@ -117,11 +114,11 @@
                             </div>
                         </div>
                     </div>
-                </ng-container>
+                </ng-container> -->
 
 
                 <!-- cuando es usuario cliente -->
-                <ng-container *ngIf="isCliente && !isSoloLLevar">
+                <ng-container *ngIf="isCliente && isSoloLLevar">
                     <div class="text-center">
                         <br><br>
                         <hr>
