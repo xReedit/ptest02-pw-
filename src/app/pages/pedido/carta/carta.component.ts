@@ -175,9 +175,14 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
           // filtramos los tipos de consumo segun qr escaneado o personal autorizado
 
+
           if ( this.infoToken.isCliente() ) {
-            if ( t.descripcion === 'DELIVERY' ) { return; }
-            if ( this.infoToken.isSoloLlevar() && t.descripcion.indexOf('LLEVAR') === -1 ) { return; }
+            if ( !this.infoToken.isDelivery() ) {
+              if ( t.descripcion === 'DELIVERY' ) { return; }
+              if ( this.infoToken.isSoloLlevar() && t.descripcion.indexOf('LLEVAR') === -1 ) { return; }
+            } else {
+              if ( t.descripcion !== 'DELIVERY' ) { return; } else {_objTpcAdd.descripcion = 'CANTIDAD'; }
+            }
           }
 
           // if ( this.infoToken.isCliente() && t.descripcion === 'DELIVERY' ) {

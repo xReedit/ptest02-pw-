@@ -8,7 +8,8 @@
             <div *ngFor="let tpc of _miPedido.tipoconsumo" class="xCursor">
                 <ng-container *ngIf="tpc.count_items_seccion > 0">
                     <div class="div-plr titulo-tpc">
-                        <span>{{tpc.descripcion}}</span>
+                        <span [hidden]="isDeliveryCliente">{{tpc.descripcion}}</span>
+                        <span [hidden]="!isDeliveryCliente">Resumen de mi orden</span>
                         <div class="countItem countTpc">{{tpc.count_items_seccion}}</div>
                     </div>
                     <div *ngFor="let seccion of tpc.secciones">
@@ -118,7 +119,7 @@
 
 
                 <!-- cuando es usuario cliente -->
-                <ng-container *ngIf="isCliente && isSoloLLevar">
+                <ng-container *ngIf="isCliente">
                     <div class="text-center">
                         <br><br>
                         <hr>

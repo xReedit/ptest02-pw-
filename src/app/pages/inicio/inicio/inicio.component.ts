@@ -30,6 +30,8 @@ export class InicioComponent implements OnInit, OnDestroy {
 
     this.verifyClientService.getDataClient();
     this.verifyClientService.setQrSuccess(false);
+    this.verifyClientService.setIsDelivery(false);
+    this.verifyClientService.setDireccionDeliverySelected(null);
 
     this.isLogin = this.verifyClientService.isLogin();
     // console.log('desde incio', this.isLogin);
@@ -63,6 +65,15 @@ export class InicioComponent implements OnInit, OnDestroy {
   showClienteProfile() {
     if ( this.isLogin ) {
        this.router.navigate(['/cliente-profile']);
+    }
+  }
+
+  showDelivery() {
+    if (this.isLogin)  {
+      this.router.navigate(['./zona-delivery']);
+    } else {
+      this.verifyClientService.setIsDelivery(true);
+      this.router.navigate(['/login-client']);
     }
   }
 

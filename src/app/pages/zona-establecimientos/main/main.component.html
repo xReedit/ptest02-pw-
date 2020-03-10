@@ -1,0 +1,15 @@
+<div class="animated fadeInUp content-body-app">
+    <div class="header-app p-3">            
+        <!-- <i class="fa fa-bar-chart"></i> -->
+        <div matRipple class="text-center" (click)="openDialogDireccion()">
+            <span class="pl-2 fs-13 fw-100">{{ nomDireccionCliente }}</span>
+            <i class="fa fa-caret-down pl-2" aria-hidden="true"></i>
+        </div>
+    </div>
+
+    <!-- body -->
+    <div>        
+        <router-outlet></router-outlet>
+    </div>
+    <!-- body -->
+</div>

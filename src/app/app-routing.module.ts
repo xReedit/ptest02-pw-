@@ -36,6 +36,12 @@ const routes: Routes = [{
       loadChildren: () => import('./pages/cliente-profile/cliente-profile.module').then(m => m.ClienteProfileModule),
       canActivate: [ClienteProfileGuard],
       data: { 'tituloModulo': 'Cliente Profile' }
+    },
+    {
+      path: 'zona-delivery',
+      loadChildren: () => import('./pages/zona-establecimientos/zona-establecimientos.module').then(m => m.ZonaEstablecimientosModule),
+      canActivate: [ClienteProfileGuard],
+      data: { 'tituloModulo': 'Cliente Zona Delivery' }
     }
   ]
 }];

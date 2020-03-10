@@ -1,0 +1,30 @@
+
+.content-img-comercio {
+    border: 1px solid lightgray;
+    border-radius: 2px;
+    text-align: center;
+}
+
+.img-comercio {
+    width: 100%;
+    max-width: 330px;
+    max-height: 115px;
+}
+
+.div-info-comercio {
+    padding-top: 15px;
+    margin: 0px;
+    line-height: 0.35em;
+}
+
+.div-sub-info-comercio{
+    background: #eeeeee;
+    margin-top: -15px;
+}
+
+.div-sub-info-comercio div {
+    border-radius: 2px;    
+    font-size: 13px;
+    padding: 5px;    
+    padding-right: 15px;
+}

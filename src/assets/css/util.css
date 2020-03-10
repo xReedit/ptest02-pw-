@@ -470,7 +470,37 @@ p, span, div {
 	  background: white;
 	  border-radius: 5px;
   }
+
+  .header-app {
+		/* background: #003770; */
+		position: relative;
+		background: #3f51b5;
+		color: white;
+		width: 100%;
+
+		top: 0;    
+		/* position: fixed; */
+		z-index: 1;
+	}
+
+.content-body-app {
+		height: 100vh;
+		background: #E5EFF7;
+	}
   
+
+/* dialog full screen */
+.my-full-screen-dialog {
+		max-width: none !important;
+		width: 100vw;
+		height: 100vh;
+	  }
+	  
+.my-full-screen-dialog .mat-dialog-container {
+	padding: 0px !important;
+	border-radius: 0px;
+}
+
   @-webkit-keyframes sk-scaleout {
 	0% { -webkit-transform: scale(0) }
 	100% {

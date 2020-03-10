@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Subject } from 'rxjs/internal/Subject';
 import { Observable } from 'rxjs';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
+import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 
 @Injectable({
   providedIn: 'root'
@@ -54,6 +55,16 @@ export class VerifyAuthClientService {
     this.setDataClient();
   }
 
+  setIsDelivery(val: boolean): void {
+    this.clientSocket.isDelivery = val;
+    this.setDataClient();
+  }
+
+  setDireccionDeliverySelected(val: DeliveryDireccionCliente): void {
+    this.clientSocket.direccionEnvioSelected = val;
+    this.setDataClient();
+  }
+
   setIsLoginByDNI(val: boolean): void {
     this.clientSocket.isLoginByDNI = val;
     this.setDataClient();
@@ -75,6 +86,16 @@ export class VerifyAuthClientService {
     }
 
     return this.clientSocket.isQrSuccess || false;
+  }
+
+
+  getIsDelivery(): boolean {
+    // this.getDataClient();
+    if (!this.clientSocket) {
+      this.getDataClient();
+    }
+
+    return this.clientSocket.isDelivery || false;
   }
 
   verifyClient(): Observable<any> {

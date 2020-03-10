@@ -1,3 +1,5 @@
+import { DeliveryDireccionCliente } from './delivery.direccion.cliente.model';
+
 export class SocketClientModel {
     idsocket_client: string; // obtiene cuando se conecta el socket
     idcliente: number; // cuando se loguea a un establecimiento
@@ -12,4 +14,6 @@ export class SocketClientModel {
     isQrSuccess: boolean; // si paso por el lector qr
     isLoginByDNI: boolean; // si el logue fue por dni
     isSoloLLevar: boolean; // si escanea codigo que sea solo para llevar
+    isDelivery: boolean;
+    direccionEnvioSelected: DeliveryDireccionCliente;
 }

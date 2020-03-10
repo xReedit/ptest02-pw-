@@ -1,0 +1,12 @@
+<div *ngIf="isNullselectedDireccion" class="div-img-gps p-3" (click)="openDialogDireccion()">
+    <img src="assets/images/_establesca_direccion.png" alt="direccione">
+    <p class="pt-2">Para comenzar, establesca una dirección de entrega.</p>
+</div>
+
+<div class="content-all-comercio p-3" *ngIf="listEstablecimientos">
+    <div *ngFor="let item of listEstablecimientos">
+        <app-item-comercio [itemEstablecimiento] = "item"  (itemSelected) = "itemSelected($event)"></app-item-comercio>
+    </div>
+    <br><br>
+    
+</div>

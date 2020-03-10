@@ -9,6 +9,7 @@ import { LectorSuccessComponent } from './lector-success/lector-success.componen
 import { CallbackAuthComponent } from './callback-auth/callback-auth.component';
 import { CodigoQrGuard } from 'src/app/shared/guards/codigo-qr.guard';
 import { LoginClienteComponent } from './login-cliente/login-cliente.component';
+import { SeleccionarUbicacionDeliveryComponent } from './seleccionar-ubicacion-delivery/seleccionar-ubicacion-delivery.component';
 
 const routes: Routes = [{
     path: '', component: MainComponent,
@@ -50,6 +51,16 @@ const routes: Routes = [{
             component: CallbackAuthComponent,
             data: { titulo: 'Callback Auth' }
         }
+
+        // delivery
+        ,
+        {
+            path: 'direccion-delivery',
+            // canActivate: [CodigoQrGuard],
+            component: SeleccionarUbicacionDeliveryComponent,
+            data: { titulo: 'Seleccionar Direccion' }
+        }
+
     ]
 }];
 

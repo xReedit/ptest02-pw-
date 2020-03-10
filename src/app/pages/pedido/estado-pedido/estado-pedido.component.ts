@@ -21,8 +21,10 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
   infoToken: UsuarioTokenModel;
   tiempoEspera: number;
   rippleColor = 'rgb(255,238,88, 0.5)';
+  tituloMesa = 'Mesa';
 
   isViewMsjSolicitudPersoanl = false;
+  isDeliveryCliente: boolean;
 
   private isBtnPagoShow = false; // si el boton de pago ha sido visible entonces recarga la pagina de pago
 
@@ -44,6 +46,8 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
 
     // verificar en el localstorage
     this.infoToken = this.infoTokenService.getInfoUs();
+    this.isDeliveryCliente = this.infoToken.isDelivery;
+    // console.log(this.infoToken);
     // this.estadoPedidoClienteService.get();
 
 
@@ -67,6 +71,7 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.destroyEstado$))
     .subscribe((res: any) => {
       if (res.pageActive === 'estado') {
+        this.tituloMesa = this.infoToken.isSoloLLevar ? 'Para Llevar' : 'Mesa';
         // if ( this.estadoPedido.importe > 0 ) {
           // console.log('desde pago cuenta');
           setTimeout(() => {

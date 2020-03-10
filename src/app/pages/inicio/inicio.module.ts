@@ -15,7 +15,10 @@ import { LectorSuccessComponent } from './lector-success/lector-success.componen
 import { CallbackAuthComponent } from './callback-auth/callback-auth.component';
 import { LoginClienteComponent } from './login-cliente/login-cliente.component';
 import { DialogUbicacionComponent } from 'src/app/componentes/dialog-ubicacion/dialog-ubicacion.component';
+import { SeleccionarUbicacionDeliveryComponent } from './seleccionar-ubicacion-delivery/seleccionar-ubicacion-delivery.component';
+import { ComponentesModule } from 'src/app/componentes/componentes.module';
 // import { CallbackAuth0Component } from './callback-auth0/callback-auth0.component';
+
 
 @NgModule({
   declarations: [
@@ -26,14 +29,16 @@ import { DialogUbicacionComponent } from 'src/app/componentes/dialog-ubicacion/d
     LectorSuccessComponent,
     CallbackAuthComponent,
     LoginClienteComponent,
-    DialogUbicacionComponent
+    DialogUbicacionComponent,
+    SeleccionarUbicacionDeliveryComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
     InicioRoutingModule,
     MaterialModule,
-    ZXingScannerModule
+    ComponentesModule,
+    ZXingScannerModule,
   ],
   exports : [
     DialogUbicacionComponent

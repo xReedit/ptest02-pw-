@@ -48,8 +48,12 @@ export class InfoTockenService {
     return this.infoUsToken.isSoloLLevar;
   }
 
+  isDelivery(): boolean {
+    return this.infoUsToken.isDelivery;
+  }
+
   getLocalIpCliente(): string {
-    this.infoUsToken.ipCliente = localStorage.getItem('sys::it');
+    this.infoUsToken.ipCliente = localStorage.getItem('sys::it') || '';
     return this.infoUsToken.ipCliente;
   }
 
@@ -75,6 +79,8 @@ export class InfoTockenService {
         _newUs.usuario = 'cliente';
         _newUs.numMesaLector = _token.numMesaLector;
         _newUs.isSoloLLevar = _token.isSoloLLevar;
+        _newUs.isDelivery = _token.isDelivery;
+        _newUs.direccionEnvioSelected = _token.direccionEnvioSelected;
         this.infoUsToken = _newUs;
       } else {
         this.infoUsToken = <UsuarioTokenModel>_token.usuario;

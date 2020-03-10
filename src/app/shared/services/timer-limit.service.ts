@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { InfoTockenService } from './info-token.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,9 @@ export class TimerLimitService {
   private isPorgressVisibleSource = new BehaviorSubject<boolean>(false);
   public isPorgressVisible$ = this.isPorgressVisibleSource.asObservable();
 
-  constructor() {
+  constructor(
+    private infoToken: InfoTockenService,
+  ) {
    }
 
   destroy(): void {
@@ -31,12 +34,14 @@ export class TimerLimitService {
   }
 
   playCountTimerLimit(): void {
+    if ( this.infoToken.isDelivery() ) { return; } // cuando es delivery no cuenta tiempo
     if (this.isPlayTimer) {return; }
     this.isPlayTimer = true;
     this.initCount();
   }
 
   resetCountTimerLimit(): void {
+    if ( this.infoToken.isDelivery() ) { return; } // cuando es delivery no cuenta tiempo
     if (localStorage.getItem('sys::tcount') ) {
       this.isPlayTimer = true;
       this.initCount();
@@ -46,6 +51,7 @@ export class TimerLimitService {
   }
 
   private initCount(): void {
+    if ( this.infoToken.isDelivery() ) { return; } // cuando es delivery no cuenta tiempo
     this.valPorcentaje = 0;
     this.init = localStorage.getItem('sys::tcount') ? parseInt(localStorage.getItem('sys::tcount'), 0) : 0;
     this.isTimeLimitSource.next(false);

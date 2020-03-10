@@ -179,7 +179,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     const s = dataQr[2];
 
     // -1 = solo llevar // activa ubicacion
-    this.isSoloLLevar =  m === 'llevar' ? true : false;
+    this.isSoloLLevar =  m === '-1' ? true : false;
 
     const dataSend = {
       m: m,

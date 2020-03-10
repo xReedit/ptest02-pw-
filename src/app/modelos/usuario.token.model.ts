@@ -1,3 +1,5 @@
+import { DeliveryDireccionCliente } from './delivery.direccion.cliente.model';
+
 export class UsuarioTokenModel {
     acc: string;
     cargo: string;
@@ -20,4 +22,6 @@ export class UsuarioTokenModel {
     numMesaLector: number; // numero de mesa del lector qr
     ipCliente: string; // ip del cliente api autorizacion
     isSoloLLevar: boolean; // si escanea qr solo para llevar
+    isDelivery: boolean; // si es delivery
+    direccionEnvioSelected: DeliveryDireccionCliente;
 }

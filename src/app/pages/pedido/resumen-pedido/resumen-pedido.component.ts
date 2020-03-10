@@ -70,6 +70,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   isCliente: boolean; // si es cliente quien hace el pedido
   isSoloLLevar: boolean; // si es solo llevar
+  isDeliveryCliente: boolean; // si es cliente delivery
 
   private isFirstLoadListen = false; // si es la primera vez que se carga, para no volver a cargar los observables
 
@@ -121,6 +122,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // si es cliente
     this.isCliente = this.infoToken.isCliente();
     this.isSoloLLevar = this.infoToken.isSoloLlevar();
+    this.isDeliveryCliente = this.infoToken.isDelivery();
     this.isClienteSetValues();
   }
 
@@ -379,7 +381,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       num_pedido: '', // en backend
       isCliente: this.isCliente ? 1 : 0,
       isSoloLLevar: this.isSoloLLevar,
-      idregistro_pago: this.isSoloLLevar ? this.registrarPagoService.getDataTrasaction().idregistro_pago : 0,
+      idregistro_pago: 0,
+      // idregistro_pago: this.isSoloLLevar ? this.registrarPagoService.getDataTrasaction().idregistro_pago : 0,
       arrDatosDelivery: this.frmDelivery
     };
 

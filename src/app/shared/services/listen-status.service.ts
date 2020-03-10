@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { EstadoPedidoModel } from 'src/app/modelos/estado.pedido.model';
+import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 
 @Injectable({
   providedIn: 'root'
@@ -46,6 +47,9 @@ export class ListenStatusService {
   // notifica el pago correcto para enviar el pedido cuando es solo para llevar
   private isPagoSuccesSource = new BehaviorSubject<boolean>(false);
   public isPagoSucces$ = this.isPagoSuccesSource.asObservable();
+
+  private isChangeDireccionDeliverySource = new BehaviorSubject<DeliveryDireccionCliente>(null);
+  public isChangeDireccionDelivery$ = this.isChangeDireccionDeliverySource.asObservable();
 
   constructor() { }
 
@@ -93,6 +97,10 @@ export class ListenStatusService {
 
   setPagoSuccess(value: boolean) {
     this.isPagoSuccesSource.next(value);
+  }
+
+  setChangeDireccionDelivery(value: DeliveryDireccionCliente) {
+    this.isChangeDireccionDeliverySource.next(value);
   }
 
 }
