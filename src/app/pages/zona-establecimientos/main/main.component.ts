@@ -27,7 +27,7 @@ export class MainComponent implements OnInit {
     this.infoClient = this.verifyClientService.getDataClient();
 
     this.setDireccion(this.infoClient.direccionEnvioSelected);
-    console.log('this.infoToken', this.infoClient);
+    // console.log('this.infoToken', this.infoClient);
 
     // si no hay direccion abre el dialog
     setTimeout(() => {
@@ -55,9 +55,9 @@ export class MainComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       data => {
         if ( !data ) { return; }
-        console.log('data dialog', data);
+        // console.log('data dialog', data);
         this.verifyClientService.setDireccionDeliverySelected(data);
-        // this.setDireccion(data);
+        this.setDireccion(data);
       }
     );
   }
@@ -67,7 +67,7 @@ export class MainComponent implements OnInit {
       this.isSelectedDireccion = true;
       const _direccion = direccion.direccion.split(',');
       this.nomDireccionCliente = _direccion[0] + ' ' + _direccion[1];
-      this.listenService.setChangeDireccionDelivery(direccion);
+      // this.listenService.setChangeDireccionDelivery(direccion);
     }
 
   }

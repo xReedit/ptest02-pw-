@@ -71,6 +71,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   isCliente: boolean; // si es cliente quien hace el pedido
   isSoloLLevar: boolean; // si es solo llevar
   isDeliveryCliente: boolean; // si es cliente delivery
+  isReadyClienteDelivery = false; // si el formulario(confirmacion) clienteDelivery esta listo
 
   private isFirstLoadListen = false; // si es la primera vez que se carga, para no volver a cargar los observables
 

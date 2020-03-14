@@ -11,6 +11,7 @@ import { AgregarDireccionComponent } from './agregar-direccion/agregar-direccion
 import { AgmCoreModule } from '@agm/core';
 import { ItemComercioComponent } from './item-comercio/item-comercio.component';
 import { SeleccionarDireccionComponent } from './seleccionar-direccion/seleccionar-direccion.component';
+import { ConfirmarDeliveryComponent } from './confirmar-delivery/confirmar-delivery.component';
 // import { DialogSelectDireccionComponent } from './dialog-select-direccion/dialog-select-direccion.component';
 
 @NgModule({
@@ -21,6 +22,7 @@ import { SeleccionarDireccionComponent } from './seleccionar-direccion/seleccion
     AgregarDireccionComponent,
     ItemComercioComponent,
     SeleccionarDireccionComponent,
+    ConfirmarDeliveryComponent,
     // DialogSelectDireccionComponent,
     // DialogUbicacionComponent
   ],
@@ -40,7 +42,8 @@ import { SeleccionarDireccionComponent } from './seleccionar-direccion/seleccion
     EncuestaOpcionComponent,
     AgregarDireccionComponent,
     ItemComercioComponent,
-    SeleccionarDireccionComponent
+    SeleccionarDireccionComponent,
+    ConfirmarDeliveryComponent
   ]
 })
 export class ComponentesModule { }

@@ -10,6 +10,8 @@ import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cli
 import { MatDialog } from '@angular/material/dialog';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-select-direccion/dialog-select-direccion.component';
+import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
@@ -22,9 +24,10 @@ export class CategoriasComponent implements OnInit {
 
   listEstablecimientos: DeliveryEstablecimiento[];
 
-  codigo_postal_actual: number;
+  codigo_postal_actual: string;
   infoClient: SocketClientModel;
   isNullselectedDireccion = true;
+  direccionCliente: DeliveryDireccionCliente;
   // private veryfyClient: Subscription = null;
 
   constructor(
@@ -35,6 +38,8 @@ export class CategoriasComponent implements OnInit {
     private verifyClientService: VerifyAuthClientService,
     private listenService: ListenStatusService,
     private dialogDireccion: MatDialog,
+    private calcDistanceService: CalcDistanciaService,
+    private establecimientoService: EstablecimientoService
   ) { }
 
   ngOnInit() {
@@ -42,10 +47,13 @@ export class CategoriasComponent implements OnInit {
     this.infoClient = this.verifyClientService.getDataClient();
 
     this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
-      if ( res && res.codigo !== this.codigo_postal_actual) {
-        this.codigo_postal_actual = res.codigo;
+      if ( res ) {
+        this.codigo_postal_actual = res.codigo || '0';
         this.isNullselectedDireccion = false;
+        this.direccionCliente = res;
         this.loadEstablecimientos();
+      } else {
+
       }
     });
   }
@@ -56,18 +64,34 @@ export class CategoriasComponent implements OnInit {
       codigo_postal: this.codigo_postal_actual
     };
 
+    this.listEstablecimientos = [];
     this.crudService.postFree(_data, 'delivery', 'get-establecimientos', false)
-      .subscribe((res: any) => {
-        this.listEstablecimientos = res.data;
-        console.log(this.listEstablecimientos);
+      .subscribe( (res: any) => {
+        // setTimeout(() => {
+          this.listEstablecimientos = res.data;
+          this.listEstablecimientos.map((dirEstablecimiento: DeliveryEstablecimiento) => {
+            // this.calcDistancia(x);
+            this.calcDistanceService.calculateRoute(this.direccionCliente, dirEstablecimiento);
+            // dirEstablecimiento.c_servicio = _c_servicio;
+
+          });
+        // }, 500);
+        // console.log(this.listEstablecimientos);
       });
   }
 
+
+  // private calcDistancia(direccionEstablecimiento: DeliveryEstablecimiento) {
+  //   this.calcDistanceService.calculateRoute(this.direccionCliente, direccionEstablecimiento);
+  // }
+
   itemSelected($event: DeliveryEstablecimiento) {
-    console.log($event);
+    console.log('establecimiento seleccionada', $event);
     this.verifyClientService.setIdSede($event.idsede);
     this.verifyClientService.setIdOrg($event.idorg);
     this.verifyClientService.setIsDelivery(true);
+
+    this.establecimientoService.set($event);
 
     this.router.navigate(['/callback-auth']);
 
@@ -89,30 +113,12 @@ export class CategoriasComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       data => {
         if ( !data ) { return; }
-        console.log('data dialog', data);
-        this.verifyClientService.setDireccionDeliverySelected(data);
+        // console.log('data dialog', data);
+        this.direccionCliente = data;
+        this.verifyClientService.setDireccionDeliverySelected(this.direccionCliente);
         // this.setDireccion(data);
       }
     );
   }
-
-  // setDireccion(direccion: DeliveryDireccionCliente) {
-  //   if ( direccion ) {
-  //     // this.isSelectedDireccion = true;
-  //     // const _direccion = direccion.direccion.split(',');
-  //     // this.nomDireccionCliente = _direccion[0] + ' ' + _direccion[1];
-  //     this.listenService.setChangeDireccionDelivery(direccion);
-  //   }
-
-  // }
-
-  // private setInfoToken(token: any): void {
-  //   const _token = `eyCJ9.${btoa(JSON.stringify(token))}`;
-  //   this.authService.setLocalToken(_token);
-  //   this.authService.setLoggedStatus(true);
-  //   this.infoToken.converToJSON();
-
-  //   this.router.navigate(['./pedido']);
-  // }
 
 }

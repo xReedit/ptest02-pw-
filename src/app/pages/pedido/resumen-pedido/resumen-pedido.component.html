@@ -85,7 +85,7 @@
     <!-- confirma pedido -->
     <div [hidden]="!isVisibleConfirmar">
         <div class="xcontent div-confirma-pedido w-100 p-3 transicion animated fadeInRight"
-          [ngClass]="[isVisibleConfirmarAnimated ? 'show' : 'hide', isVisibleConfirmarAnimated ? 'fadeInRight' : 'fadeInLeft']">
+          [ngClass]="[isVisibleConfirmarAnimated ? 'show' : 'hide', isVisibleConfirmarAnimated ? 'fadeInRight' : 'fadeInLeft', !isDeliveryCliente ? 'bg-1': 'bg-2']">
             <div class="text-center">
 
                 <!-- cuando es usuario cliente y escaneo codigo solo para llevar -->
@@ -118,27 +118,48 @@
                 </ng-container> -->
 
 
-                <!-- cuando es usuario cliente -->
+                <!-- cuando es usuario cliente -->                                
                 <ng-container *ngIf="isCliente">
-                    <div class="text-center">
-                        <br><br>
-                        <hr>
-                        <p class="fw-100 fs-17 text-dark">
-                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                            Por favor, verifique su pedido, una vez enviado ya no podra realizar ningun
-                        cambio.</p>
-                        <hr>
-                        
-                        <br>
+
+                    <ng-container *ngIf="!isDeliveryCliente; else templateDelivery">
+
                         <div class="text-center">
-                            <div class="btn-footer-next transicion w-50 m-auto" matRipple (click)="prepararEnvio()"
-                                        [ngClass]="{'xdisabled': isRequiereMesa}">
-                                <div>
-                                    <span class="animated fadeInLeft">Enviar Pedido</span>
+                            <br><br>
+                            <hr>
+                            <p class="fw-100 fs-17 text-dark">
+                                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                Por favor, verifique su pedido, una vez enviado ya no podra realizar ningun
+                            cambio.</p>
+                            <hr>
+                            
+                            <br>
+                            <div class="text-center">
+                                <div class="btn-footer-next transicion w-50 m-auto" matRipple (click)="prepararEnvio()"
+                                            [ngClass]="{'xdisabled': isRequiereMesa}">
+                                    <div>
+                                        <span class="animated fadeInLeft">Enviar Pedido</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    
+                    </ng-container>
+                    <ng-template #templateDelivery>
+                        
+                        <!-- si es cliente deliver -->
+
+
+                        <app-confirmar-delivery 
+                            [listSubtotales] = "_arrSubtotales" 
+                            (isReady)="isReadyClienteDelivery = $event"
+                            (dataDelivery) = "frmDelivery = $event">
+                        </app-confirmar-delivery>
+                       
+
+                        <!-- si es cliente deliver -->
+
+                    </ng-template>
+                    
                 </ng-container>
 
                 <!-- cuando es personal autorizado -->
@@ -274,7 +295,22 @@
                 </div>
               </div>
             </ng-template>
+
+
+            <!-- cliente delivery -->
+            <ng-container *ngIf="isDeliveryCliente">
+                <div class="col-5 btn-footer-next transicion" matRipple (click)="prepararEnvio()"
+                [ngClass]="{'xdisabled': !isReadyClienteDelivery}">
+                <div>
+                    <span class="animated fadeInLeft">Enviar Pedido</span>
+                </div>
+                </div>
+            </ng-container>
+
         </ng-template>        
+
+
+        
 
       </div>
     </div>

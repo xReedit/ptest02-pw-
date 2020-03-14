@@ -21,7 +21,7 @@ export class SeleccionarDireccionComponent implements OnInit {
 
   ngOnInit() {
     this.infoClienteLogueado = this.verifyClientService.getDataClient();
-    console.log(this.infoClienteLogueado);
+    // console.log(this.infoClienteLogueado);
 
     this.loadDireccion();
   }
@@ -31,11 +31,11 @@ export class SeleccionarDireccionComponent implements OnInit {
       idcliente : this.infoClienteLogueado.idcliente
     };
 
-    console.log(_dataClientDir);
+    // console.log(_dataClientDir);
 
     this.crudService.postFree(_dataClientDir, 'delivery', 'get-direccion-cliente', false)
       .subscribe((res: any) => {
-        console.log('direcciones', res);
+        // console.log('direcciones', res);
         this.listDirecciones = res.data;
 
         // si solo hay una direccion selecciona

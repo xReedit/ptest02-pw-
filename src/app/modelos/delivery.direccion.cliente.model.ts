@@ -7,8 +7,9 @@ export class DeliveryDireccionCliente {
     departamento: string;
     pais: string;
     titulo: string;
+    referencia: string;
     latitude: number;
     longitude: number;
-    codigo: number;
+    codigo: string;
     estado: number;
 }

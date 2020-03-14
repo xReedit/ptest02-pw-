@@ -25,6 +25,7 @@ import { SubItem } from 'src/app/modelos/subitems.model';
 import { SubItemsView } from 'src/app/modelos/subitems.view.model';
 import { SubItemContent } from 'src/app/modelos/subitem.content.model';
 import { CartaModel } from 'src/app/modelos/carta.model';
+import { EstablecimientoService } from './establecimiento.service';
 // import { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChanged';
 // import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 
@@ -72,7 +73,8 @@ export class MipedidoService {
     private navigatorService: NavigatorLinkService,
     private _snackBar: MatSnackBar,
     private utilesService: UtilitariosService,
-    private listenStatusService: ListenStatusService
+    private listenStatusService: ListenStatusService,
+    private establecimientoService: EstablecimientoService, // datos del estableciento // clienteSelivery
     ) {
 
     }
@@ -1132,6 +1134,8 @@ export class MipedidoService {
 
   // <------ sub totales ---->//
 
+  // isClienteDelivery = si es delivery el costo del servicio es segun calculo
+
   getArrSubTotales(rulesSubTotales: any[]): any {
     const subTotal = this.getSubTotalMiPedido();
     let sumaTotal = subTotal;
@@ -1182,21 +1186,40 @@ export class MipedidoService {
         sumaTotal += parseFloat(rpt.importe);
       }
 
-      rptPorcentajes.push(rpt);
+      // no muestra si tienen valor 0
+      if ( rpt.importe !== 0 ) {
+        rptPorcentajes.push(rpt);
+      }
+
     });
 
-    // otros no porcentajes
+    // otros no porcentajes // taper // delivery
     let importeOtros = 0;
     const rptOtros: any = [];
     const arrOtros = rulesSubTotales.filter(x => x.tipo === 'a');
+
+    // si existe estableciiento en localstorage entonces es un clienteDelivery
+    const isClienteDelivery = this.establecimientoService.get() ? true : false;
+    let isTieneDelivery = false; // si tiene la opcion de delivery configurado
     arrOtros.map(p => {
       const rpt: any = {};
-      importeOtros = parseFloat(p.monto); // aplica a todo el pedido
 
-      const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion);
-      if ( cantidad === 0 ) { return; } // si no encontro items con esos criterios
+      // si es servicio delivery y si es clienteDelivery
+      if ( p.descripcion.toUpperCase().indexOf('DELIVERY') > -1 && isClienteDelivery) {
+        isTieneDelivery = true;
+        p.descripcion = 'Entrega';
+        importeOtros = this.establecimientoService.get().c_servicio;
+      } else {
+        importeOtros = parseFloat(p.monto); // aplica a todo el pedido
+      }
+
+      // const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion);
+      // if ( cantidad === 0 ) { return; } // si no encontro items con esos criterios
 
       if (p.nivel === 0) { // aplica por item
+        const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion);
+        if ( cantidad === 0 ) { return; } // si no encontro items con esos criterios
+
         importeOtros = cantidad * parseFloat(p.monto);
       }
 
@@ -1222,6 +1245,23 @@ export class MipedidoService {
 
     });
 
+    // si no tiene la opcion delivery y es un clienteDelivery lo agrega
+    if ( !isTieneDelivery && isClienteDelivery) {
+      const rpt: any = {};
+      rpt.id = 'delivery';
+      rpt.descripcion = 'Entrega';
+      rpt.esImpuesto = 0;
+      rpt.visible = true;
+      rpt.quitar = false;
+      rpt.tachado = false;
+      rpt.visible_cpe = false;
+      rpt.importe = parseFloat(this.establecimientoService.get().c_servicio.toFixed(2));
+
+      sumaTotal += parseFloat(rpt.importe);
+
+      rptOtros.push(rpt);
+    }
+
     // juntamos
     rptPorcentajes.map(y => arrSubtotales.push(y));
     rptOtros.map(y => arrSubtotales.push(y));
@@ -1229,7 +1269,7 @@ export class MipedidoService {
     // IGV filtramos los que no es impuesto IGV | 030220
     const rowSubTotal =  arrSubtotales.filter(x => x.descripcion === 'SUB TOTAL')[0];
     const rowImporteIGV = arrSubtotales.filter(x => x.descripcion === 'I.G.V')[0];
-    let _importeIGV = rowImporteIGV.importe;
+    let _importeIGV = rowImporteIGV ? rowImporteIGV.importe : 0;
     let _importeSubTotal = rowSubTotal ? rowSubTotal.importe : 0;
 
     if ( _importeIGV > 0 ) {

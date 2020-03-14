@@ -100,7 +100,7 @@ export class AgregarDireccionComponent implements OnInit {
   }
 
   markerDragEnd($event: any) {
-    console.log($event);
+    // console.log($event);
     this.latitude = $event.coords.lat;
     this.longitude = $event.coords.lng;
     this.getAddress(this.latitude, this.longitude);
@@ -108,8 +108,8 @@ export class AgregarDireccionComponent implements OnInit {
 
   getAddress(latitude, longitude) {
     this.geoCoder.geocode({ 'location': { lat: latitude, lng: longitude } }, (results, status) => {
-      console.log(results);
-      console.log(status);
+      // console.log(results);
+      // console.log(status);
       if (status === 'OK') {
         if (results[0]) {
           this.zoom = 15;
@@ -129,7 +129,7 @@ export class AgregarDireccionComponent implements OnInit {
   private loadForm() {
     this.registerForm = this.formBuilder.group({
       direccion: ['', Validators.required],
-      referencia: ['', Validators.required],
+      referencia: [this.dataCliente.referencia, Validators.required],
       longitude: [this.longitude, Validators.required],
       latitude: [this.latitude, Validators.required],
       titulo: this.dataCliente.titulo || ''
@@ -156,6 +156,7 @@ export class AgregarDireccionComponent implements OnInit {
     this.dataCliente.idcliente = this.verifyClientService.getDataClient().idcliente;
     this.dataCliente.longitude = this.longitude;
     this.dataCliente.latitude = this.latitude;
+    // this.dataCliente.referencia =
     this.dataCliente.ciudad = this.searchTypeMap('locality');
     this.dataCliente.provincia = this.searchTypeMap('administrative_area_level_2');
     this.dataCliente.departamento = this.searchTypeMap('administrative_area_level_1');

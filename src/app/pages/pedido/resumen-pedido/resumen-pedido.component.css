@@ -96,6 +96,15 @@
 .div-confirma-pedido {        
     position: absolute;
     background: antiquewhite;
+    position: relative;
+}
+
+.bg-1 {
+    background: antiquewhite;
+}
+
+.bg-2 {
+    background: linen;
 }
 
 .div-confirma-pedido.hide {
