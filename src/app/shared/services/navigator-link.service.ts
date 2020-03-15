@@ -3,6 +3,9 @@ import { Injectable } from '@angular/core';
 import { Event as NavigationEvent, Router, NavigationStart } from '@angular/router';
 import { filter, bufferCount } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { InfoTockenService } from './info-token.service';
+import { EstadoPedidoClienteService } from './estado-pedido-cliente.service';
+import { ListenStatusService } from './listen-status.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +24,12 @@ export class NavigatorLinkService {
 
 
   constructor(
-    private router: Router
+    private router: Router,
+    private infoTokenService: InfoTockenService,
+    private listenService: ListenStatusService,
+    private estadoPedidoClienteService: EstadoPedidoClienteService,
+    // private dialog: MatDialog,
+    // private miPedidoService: MipedidoService,
   ) {
     // router.events.pipe(
     //   filter((event: NavigationEvent) => {
@@ -110,12 +118,16 @@ export class NavigatorLinkService {
   }
 
   cerrarSession(reload: boolean = false) {
-    this.router.navigate(['../'])
-    .then(() => {
-      if ( reload ) {
-        window.location.reload();
-      }
-    });
+    if ( this.infoTokenService.isDelivery() ) {
+      this.router.navigate(['../zona-delivery']);
+    } else {
+      this.router.navigate(['../'])
+      .then(() => {
+        if ( reload ) {
+          window.location.reload();
+        }
+      });
+    }
   }
 
   // maneja los back
@@ -139,9 +151,16 @@ export class NavigatorLinkService {
         this.addLink('carta-i-');
         break;
       case 'carta-i-':
-        _pageActive = 'carta';
-        this.addLink('carta');
+        _pageActive = 'carta-o-';
+        this.addLink('carta-o-');
+        console.log('=========================== listo para salir');
+        this.listoParaSalir();
         break;
+      // case 'carta-o':
+      //   _pageActive = 'carta';
+      //   this.addLink('carta');
+      //   console.log('listo para salir');
+      //   break;
       case 'mipedido-confirma':
         _pageActive = 'mipedido';
         this.addLink('mipedido');
@@ -149,6 +168,9 @@ export class NavigatorLinkService {
       case 'mipedido':
         _pageActive = 'carta';
         this.addLink('carta');
+
+        this.listoParaSalir();
+        // console.log('=========================== listo para salir');
         break;
       case 'estado':
         _pageActive = 'carta';
@@ -181,6 +203,17 @@ export class NavigatorLinkService {
     window.onpopstate = function () {
         history.go(1);
     };
+  }
+
+  private listoParaSalir(): void {
+    if ( this.infoTokenService.isDelivery() ) {
+      // abrir cerrarr
+      // if ( this.estadoPedidoClienteService.estadoPedido.hayPedidoCliente ) {
+
+        this.listenService.setIsOutEstablecimientoDelivery(true);
+
+      // }
+    }
   }
 
   // private findAndApplyHistory(_pageActive): void {

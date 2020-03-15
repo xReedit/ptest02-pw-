@@ -24,4 +24,7 @@ export class UsuarioTokenModel {
     isSoloLLevar: boolean; // si escanea qr solo para llevar
     isDelivery: boolean; // si es delivery
     direccionEnvioSelected: DeliveryDireccionCliente;
+    telefono: string;
+    orderDelivery: string; // pedido pendiente de confirmacion
+    importeDelivery: string; // importe pendiente de confirmacion
 }

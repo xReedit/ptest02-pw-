@@ -28,6 +28,12 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.nombreClientSocket = '';
     screen.orientation.unlock();
 
+    // setTimeout(() => {
+      this.loadInit();
+    // }, 800);
+  }
+
+  private loadInit(): void {
     this.verifyClientService.getDataClient();
     this.verifyClientService.setQrSuccess(false);
     this.verifyClientService.setIsDelivery(false);

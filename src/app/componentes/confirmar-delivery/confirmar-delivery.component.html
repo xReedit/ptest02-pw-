@@ -12,8 +12,13 @@
     <div class="m-0 pl-3 pr-3 pt-2" matRipple [matRippleColor]="rippleColor">
         
         <!-- <p class="m-0">Jr. Reyes Guerra 456</p> -->
+        <span class="text-danger fs-12 fw-100" [hidden]="isValidForm">Es necesario el numero de su telefono</span>
         <mat-form-field class="w-100">
-            <input type="number" matInput placeholder="Telefono" (keyup) = "verificarNum(telefono.value)" #telefono>
+            <input type="number" matInput 
+            placeholder="Telefono" 
+            (keyup) = "verificarNum(telefono.value)" 
+            [value] = "infoToken.telefono"
+            #telefono required>
         </mat-form-field>
         <span class="fw-100 fs-12 text-secondary">Añade un número de teléfono para que podamos contactarte e informarte de tu pedido.</span>
     </div>

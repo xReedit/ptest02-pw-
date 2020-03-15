@@ -27,7 +27,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
     direccion: '',
     telefono: '',
     paga_con: '',
-    dato_adicional: ''
+    dato_adicional: '',
+    referencia: ''
   };
 
   @Input() listSubtotales: any;
@@ -51,6 +52,15 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     // establecimiento seleccionado
     this.infoEstablecimiento = this.establecimientoService.get();
+
+    this.isValidForm = this.infoToken.telefono.length >= 5 ? true : false;
+    if ( this.isValidForm ) {
+      setTimeout(() => {
+        // this.isReady.emit(this.isValidForm);
+        // this.dataDelivery.emit(this.resData);
+        this.verificarNum(this.infoToken.telefono);
+      }, 500);
+    }
   }
 
   verificarNum(telefono: string): void {
@@ -60,10 +70,12 @@ export class ConfirmarDeliveryComponent implements OnInit {
     if (this.isValidForm) {
       this.resData.nombre = this.infoToken.nombres;
       this.resData.direccion = this.infoToken.direccionEnvioSelected.direccion;
-      this.resData.dato_adicional = this.infoToken.direccionEnvioSelected.referencia;
+      this.resData.referencia = this.infoToken.direccionEnvioSelected.referencia;
       this.resData.idcliente = this.infoToken.idcliente.toString();
       this.resData.paga_con = 'Tarjeta';
       this.resData.telefono = telefono;
+      this.infoToken.telefono = telefono;
+      this.infoTokenService.setTelefono(telefono);
 
       this.dataDelivery.emit(this.resData);
     }

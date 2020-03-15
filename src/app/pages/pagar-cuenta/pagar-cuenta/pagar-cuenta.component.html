@@ -10,7 +10,7 @@
   <!-- header -->
   <div class="header-pago p-3">    
     <i *ngIf="!isTrasctionSuccess" class="fa fa-arrow-left" (click)="goBack()" [routerLink]="['../']"></i>    
-    <span class="pl-2">Resumen de la cuenta</span>
+    <span class="pl-2">Pagar</span>
   </div>
 
 
@@ -124,56 +124,83 @@
     </ng-container>
 
     <ng-template #elseTemplate>
-      <div class="text-center fs-20 fw-100 banner-res-ok p-3">
-        <i class="fa fa-check-circle-o fa-2x" aria-hidden="true"></i>
-        <p>Transacción Existosa.</p>
-      </div>
+     
+      <!-- transaccion exitosa -->
+      <ng-container *ngIf="!this.infoToken.isDelivery; else esClienteDelivery">
+        
+        <!-- no delivery -->
+          <div class="text-center fs-20 fw-100 banner-res-ok p-3">
+            <i class="fa fa-check-circle-o fa-2x" aria-hidden="true"></i>
+            <p>Transacción Existosa.</p>
+          </div>
+    
+          <div class="p-3 bg-white">
+            <div class="text-center">
+              <span class="fw-100">
+                {{dataResTransaction.dataMap.ACTION_DESCRIPTION}}
+              </span>
+            </div>
+          </div>
+    
+          <div class="p-3">
+            <div class="text-left fw-100">
+              <table>
+                <tr>
+                  <td>Fecha</td>
+                  <td>: {{fechaTransaction | date: 'dd/mm/yy h:mm:ss a'}}</td>
+                </tr>
+                <tr>
+                  <td>N° Pedido</td>
+                  <td>: {{dataResTransaction.order.purchaseNumber}}</td>
+                </tr>
+                <tr>
+                  <td>N° Tarjeta</td>
+                  <td>: {{dataResTransaction.dataMap.CARD}}</td>
+                </tr>
+                <tr>
+                  <td>Descripcion</td>
+                  <td>: Pago de cuenta</td>
+                </tr>            
+                <tr>
+                  <td>Mesa</td>
+                  <td>: {{infoToken.numMesaLector}}</td>
+                </tr>
+                <tr>
+                  <td>Importe</td>
+                  <td>: {{estadoPedido.importe | number: '0.2'}} {{dataResTransaction.order.currency}}</td>
+                </tr>            
+              </table>
+            </div>
+          </div>     
+
+
+      </ng-container>
+      <ng-template #esClienteDelivery>
+        
+        <!-- cliente delivery -->
+        <div class="text-center fs-20 fw-100 banner-res-ok p-3">
+          <i class="fa fa-check-circle-o fa-2x" aria-hidden="true"></i>
+          <p>Transacción Existosa.</p>
+        </div>
+
+      </ng-template>
+      
+      
+
 
       <div class="p-3 bg-white">
         <div class="text-center">
-          <span class="fw-100">
-            {{dataResTransaction.dataMap.ACTION_DESCRIPTION}}
-          </span>
-        </div>
-      </div>
-
-      <div class="p-3">
-        <div class="text-left fw-100">
-          <table>
-            <tr>
-              <td>Fecha</td>
-              <td>: {{fechaTransaction | date: 'dd/mm/yy h:mm:ss a'}}</td>
-            </tr>
-            <tr>
-              <td>N° Pedido</td>
-              <td>: {{dataResTransaction.order.purchaseNumber}}</td>
-            </tr>
-            <tr>
-              <td>N° Tarjeta</td>
-              <td>: {{dataResTransaction.dataMap.CARD}}</td>
-            </tr>
-            <tr>
-              <td>Descripcion</td>
-              <td>: Pago de cuenta</td>
-            </tr>            
-            <tr>
-              <td>Mesa</td>
-              <td>: {{infoToken.numMesaLector}}</td>
-            </tr>
-            <tr>
-              <td>Importe</td>
-              <td>: {{estadoPedido.importe | number: '0.2'}} {{dataResTransaction.order.currency}}</td>
-            </tr>            
-          </table>
-        </div>
-      </div>      
-
-
-      <div class="p-3 bg-white">
-        <div class="text-center">
+          <p class="fs-20">Pedido Confirmado</p>
+          <hr>
+          <p>Su orden llegara pronto.</p>
+          <hr>
+          <img src="./assets/images/food_delivery.gif" alt="delivery" width="160px">
+          <hr>
+          <p>Puede ver el estado de este en <br><strong>Mis Pedidos</strong>.</p>
           <!-- <span class="fw-100 fs-25">{{ countFin | number: '2.' }}</span>
           <p>Notificando pago a control de caja ...</p> -->
-          <button mat-flat-button color="primary" (click)="actionAfterTransaction()"> Listo. </button>
+          <button mat-flat-button color="primary" (click)="finDelivery()"> Listo. </button>
+          <br>
         </div>
       </div>
 

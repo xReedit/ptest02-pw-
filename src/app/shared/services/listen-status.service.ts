@@ -51,6 +51,11 @@ export class ListenStatusService {
   private isChangeDireccionDeliverySource = new BehaviorSubject<DeliveryDireccionCliente>(null);
   public isChangeDireccionDelivery$ = this.isChangeDireccionDeliverySource.asObservable();
 
+
+  // notifica salir del establecimeinto cuando es cliente delivery goback
+  private isOutEstablecimientoDeliverySource = new BehaviorSubject<boolean>(false);
+  public isOutEstablecimientoDelivery$ = this.isOutEstablecimientoDeliverySource.asObservable();
+
   constructor() { }
 
   setIsBusqueda() {
@@ -101,6 +106,10 @@ export class ListenStatusService {
 
   setChangeDireccionDelivery(value: DeliveryDireccionCliente) {
     this.isChangeDireccionDeliverySource.next(value);
+  }
+
+  setIsOutEstablecimientoDelivery(value: boolean) {
+    this.isOutEstablecimientoDeliverySource.next(value);
   }
 
 }

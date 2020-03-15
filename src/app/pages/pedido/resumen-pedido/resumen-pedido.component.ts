@@ -75,6 +75,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private isFirstLoadListen = false; // si es la primera vez que se carga, para no volver a cargar los observables
 
+  private isBtnPagoShow = false; // si el boton de pago ha sido visible entonces recarga la pagina de pago
+
   constructor(
     private miPedidoService: MipedidoService,
     private reglasCartaService: ReglascartaService,
@@ -119,6 +121,17 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
             }
           }
         });
+
+    this.listenStatusService.isBtnPagoShow$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((res: boolean) => {
+          this.isBtnPagoShow = res;
+          if (!res) {
+            const localBtnP = localStorage.getItem('sys::btnP');
+            if ( localBtnP.toString() === '1' ) { this.isBtnPagoShow = true; }
+          }
+        });
+
 
     // si es cliente
     this.isCliente = this.infoToken.isCliente();
@@ -237,6 +250,17 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
         this.xLoadCuentaMesa('', res);
       }
     });
+
+
+    // escucha isOutEstablecimientoDelivery
+    this.listenStatusService.isOutEstablecimientoDelivery$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((res: any) => {
+      if ( res ) {
+        this.goBackOutEstablecimiento();
+        this.listenStatusService.setIsOutEstablecimientoDelivery(false);
+      }
+    });
   }
 
   addItemToResumen(_tpc: ItemTipoConsumoModel, _seccion: SeccionModel, _item: ItemModel, _subItems: SubItemsView, suma: number): void {
@@ -340,14 +364,20 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private prepararEnvio(): void {
-    const _dialogConfig = new MatDialogConfig();
-    _dialogConfig.disableClose = true;
-    _dialogConfig.hasBackdrop = true;
+    if ( !this.isDeliveryCliente ) {
+      const _dialogConfig = new MatDialogConfig();
+      _dialogConfig.disableClose = true;
+      _dialogConfig.hasBackdrop = true;
 
-    const dialogLoading = this.dialog.open(DialogLoadingComponent, _dialogConfig);
-    dialogLoading.afterClosed().subscribe(result => {
+      const dialogLoading = this.dialog.open(DialogLoadingComponent, _dialogConfig);
+      dialogLoading.afterClosed().subscribe(result => {
+        this.enviarPedido();
+      });
+    } else {
       this.enviarPedido();
-    });
+    }
+
+
   }
 
   private enviarPedido(): void {
@@ -374,7 +404,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       m: dataFrmConfirma.m, // this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00',
       r: dataFrmConfirma.r, // this.frmConfirma.referencia || '',
       nom_us: dataFrmConfirma.nom_us, // this.infoToken.getInfoUs().nombres.split(' ')[0].toLowerCase(),
-      delivery: this.frmConfirma.delivery ? 1 : 0,
+      delivery: this.frmConfirma.delivery || this.isDeliveryCliente ? 1 : 0,
       reservar: this.frmConfirma.reserva ? 1 : 0,
       solo_llevar: this.frmConfirma.solo_llevar ? 1 : 0,
       idcategoria: localStorage.getItem('sys::cat'),
@@ -415,12 +445,28 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       dataUsuario: dataUsuario
     };
 
-    console.log('printerComanda', dataSend);
+    // console.log('printerComanda', dataSend);
     console.log('printerComanda', JSON.stringify(dataSend));
     // this.socketService.emit('printerComanda', dataPrint);
 
+    // si es clienteDelivery no se emite nada
+    // primero confirma el pago y luego guarda pedido y posteriormente el pago
+    // guardamos el pedido
+
+    if ( this.isDeliveryCliente ) {
+      this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(this._arrSubtotales));
+      this.pagarCuentaDeliveryCliente();
+      // enviamos a pagar
+      return;
+    }
+
+
+
+
     // enviar a guardar // guarda pedido e imprime comanda
     this.socketService.emit('nuevoPedido', dataSend);
+
+
     // hora del pedido
     this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
 
@@ -592,7 +638,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     console.log('this._miPedido', this._miPedido);
   }
 
-  pagarCuentaSoloLLevar() {
+  pagarCuentaDeliveryCliente() {
     // this.navigatorService._router('./pagar-cuenta');
     // if ( !localStorage.getItem('sys::st') ) {
     //   this.verCuenta();
@@ -600,14 +646,37 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // }
 
     // this.estadoPedidoClientService.getCuenta(); // get subtotales - esta listen resumen-pedido;
-    this.router.navigate(['./pagar-cuenta']);
+    this.router.navigate(['./pagar-cuenta'])
+    .then(() => {
+      if ( this.isBtnPagoShow ) {
+        window.location.reload();
+      }
+    });
     // .then(() => {
     //   if ( this.isBtnPagoShow ) {
     //     window.location.reload();
     //   }
     // });
 
-    this.listenStatusService.setIsPagePagarCuentaShow(true);
+    // this.listenStatusService.setIsPagePagarCuentaShow(true);
+  }
+
+
+  private goBackOutEstablecimiento() {
+    const dialogConfig = new MatDialogConfig();
+        dialogConfig.data = {idMjs: 2};
+
+        const dialogReset = this.dialog.open(DialogResetComponent, dialogConfig);
+        dialogReset.afterClosed().subscribe(result => {
+          if (result ) {
+            this.miPedidoService.resetAllNewPedido();
+            this.miPedidoService.cerrarSession();
+            // this.socketService.closeConnection();
+            // this.navigatorService.cerrarSession();
+            this.infoToken.cerrarSession();
+          }
+        });
+
   }
 
 }

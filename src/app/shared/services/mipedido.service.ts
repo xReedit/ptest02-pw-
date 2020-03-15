@@ -586,6 +586,7 @@ export class MipedidoService {
 
   // resetear las cantidades seleccionadas en el item carta, luego de hacer un pedido para que no se quede marcado
   private resetCantidadesTpcItemCarta(): void {
+    if ( !this.objCarta ) {return; }
     this.objCarta.carta.map((cat: CategoriaModel) => {
       cat.secciones.map((sec: SeccionModel) => {
         sec.items.map( x => {
@@ -1199,7 +1200,7 @@ export class MipedidoService {
     const arrOtros = rulesSubTotales.filter(x => x.tipo === 'a');
 
     // si existe estableciiento en localstorage entonces es un clienteDelivery
-    const isClienteDelivery = this.establecimientoService.get() ? true : false;
+    const isClienteDelivery = this.establecimientoService.get().idsede ? true : false;
     let isTieneDelivery = false; // si tiene la opcion de delivery configurado
     arrOtros.map(p => {
       const rpt: any = {};
@@ -1248,14 +1249,15 @@ export class MipedidoService {
     // si no tiene la opcion delivery y es un clienteDelivery lo agrega
     if ( !isTieneDelivery && isClienteDelivery) {
       const rpt: any = {};
-      rpt.id = 'delivery';
+      rpt.id = -2;
       rpt.descripcion = 'Entrega';
       rpt.esImpuesto = 0;
       rpt.visible = true;
       rpt.quitar = false;
       rpt.tachado = false;
       rpt.visible_cpe = false;
-      rpt.importe = parseFloat(this.establecimientoService.get().c_servicio.toFixed(2));
+      rpt.importe = parseFloat(this.establecimientoService.get().c_servicio.toString()).toFixed(2);
+      // rpt.importe = parseFloat(importeOtros.toString()).toFixed(2);
 
       sumaTotal += parseFloat(rpt.importe);
 

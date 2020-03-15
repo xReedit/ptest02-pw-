@@ -8,6 +8,7 @@ import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimient
   styleUrls: ['./item-comercio.component.css']
 })
 export class ItemComercioComponent implements OnInit {
+  isCerrado = false;
 
   @Input() itemEstablecimiento: DeliveryEstablecimiento;
 
@@ -16,6 +17,7 @@ export class ItemComercioComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    this.isCerrado = this.itemEstablecimiento.cierrado === 1 ? true : false;
   }
 
   _itemSelected() {

@@ -61,6 +61,28 @@ export class InfoTockenService {
     localStorage.setItem('sys::it', val);
   }
 
+  // para el confirmar pago si es clienteDelivery
+  setOrderDelivery(_order: string, _importes: string): void {
+    this.infoUsToken.orderDelivery = btoa(_order);
+    this.infoUsToken.importeDelivery = btoa(_importes);
+
+    // const _token = `eyCJ9.${btoa(JSON.stringify(this.infoUsToken))}`;
+    // localStorage.setItem('::token', _token);
+    this.set();
+  }
+
+  setTelefono(val: string) {
+    this.infoUsToken.telefono = val;
+    this.set();
+  }
+
+  // guarda en el local storage
+  set() {
+    const _token = `eyCJ9.${btoa(JSON.stringify(this.infoUsToken))}`;
+    localStorage.setItem('::token', _token);
+  }
+  //
+
   getToken(): any { return localStorage.getItem('::token'); }
 
   converToJSON(): void {
@@ -74,13 +96,17 @@ export class InfoTockenService {
         _newUs.idcliente = _token.idcliente;
         _newUs.idorg = _token.idorg;
         _newUs.idsede = _token.idsede;
-        _newUs.nombres = _token.datalogin.name;
+        _newUs.nombres = _token.datalogin ? _token.datalogin.name : _token.nombres ;
         _newUs.idusuario = 0;
         _newUs.usuario = 'cliente';
         _newUs.numMesaLector = _token.numMesaLector;
+        _newUs.ipCliente = _token.ipCliente;
         _newUs.isSoloLLevar = _token.isSoloLLevar;
         _newUs.isDelivery = _token.isDelivery;
         _newUs.direccionEnvioSelected = _token.direccionEnvioSelected;
+        _newUs.telefono = _token.telefono;
+        _newUs.orderDelivery = _token.orderDelivery;
+        _newUs.importeDelivery = _token.importeDelivery;
         this.infoUsToken = _newUs;
       } else {
         this.infoUsToken = <UsuarioTokenModel>_token.usuario;
@@ -96,6 +122,13 @@ export class InfoTockenService {
     localStorage.removeItem('sys::rules');
     localStorage.removeItem('sys::status');
     localStorage.removeItem('sys::numtis');
+    localStorage.removeItem('sys::st');
+
+    localStorage.removeItem('token');
+    localStorage.removeItem('sys::ed');
+    localStorage.removeItem('sys::transaction-response');
+    localStorage.removeItem('sys::transaction-load');
+    localStorage.removeItem('data');
     // localStorage.removeItem('sys::tpm');
   }
 

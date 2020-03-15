@@ -19,6 +19,7 @@ export class ToolBarComponent implements OnInit {
   rippleColor = 'rgba(238,238,238,0.2)';
   rippleColorBusqueda = 'rgba(238,238,238,0.9)';
   rippleColorPlomo = 'rgba(158,158,158,0.5)';
+  isClienteDelivery = false;
 
   nomSede = '';
 
@@ -45,6 +46,8 @@ export class ToolBarComponent implements OnInit {
     this.listenStatusService.hayDatosSede$.pipe(filter(res => res === true)).subscribe(res => {
       this.getNomSede();
     });
+
+    this.isClienteDelivery = this.infoTokenService.isDelivery();
   }
 
   private getNomSede(): void {
@@ -98,6 +101,24 @@ export class ToolBarComponent implements OnInit {
         this.infoTokenService.cerrarSession();
       }
   });
+}
+
+
+goBackOutEstablecimiento() {
+  const dialogConfig = new MatDialogConfig();
+      dialogConfig.data = {idMjs: 2};
+
+      const dialogReset = this.dialog.open(DialogResetComponent, dialogConfig);
+      dialogReset.afterClosed().subscribe(result => {
+        if (result ) {
+          this.miPedidoService.resetAllNewPedido();
+          this.miPedidoService.cerrarSession();
+          // this.socketService.closeConnection();
+          // this.navigatorService.cerrarSession();
+          this.infoTokenService.cerrarSession();
+        }
+      });
+
 }
 
 

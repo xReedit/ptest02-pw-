@@ -11,15 +11,26 @@
         </div>
         <hr>
         <div class="d-flex div-sub-info-comercio">
-            <div>
-                <i class="fa fa-clock-o"></i>
-                10 - 15 min
-            </div>
-            <div>
-                <i class="fa fa-bicycle"></i>
-                S/.{{ itemEstablecimiento.c_servicio | number: '0.2'}}
-            </div>
-            <div>5.0</div>
+            <ng-container *ngIf="!isCerrado; else elseTemplate">
+                            
+                    <div>
+                        <i class="fa fa-clock-o"></i>
+                        10 - 15 min
+                    </div>
+                    <div>
+                        <i class="fa fa-bicycle"></i>
+                        S/.{{ itemEstablecimiento.c_servicio | number: '0.2'}}
+                    </div>
+                    <div>5.0</div>            
+
+            </ng-container>
+            <ng-template #elseTemplate>
+                
+                <div>Cerrado</div>
+
+            </ng-template>
+            
+            
         </div>
     </div>
     </mat-card>

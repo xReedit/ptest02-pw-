@@ -12,6 +12,7 @@ import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { ClientePagoModel } from 'src/app/modelos/cliente.pago.model';
 import { RegistrarPagoService } from 'src/app/shared/services/registrar-pago.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
+import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 
 // import * as botonPago from 'src/assets/js/boton-pago.js';
 
@@ -60,7 +61,8 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     private socketService: SocketService,
     private crudService: CrudHttpService,
     private registrarPagoService: RegistrarPagoService,
-    private utilService: UtilitariosService
+    private utilService: UtilitariosService,
+    private miPedidoService: MipedidoService,
     // private verifyClientService: VerifyAuthClientService,
   ) { }
 
@@ -83,11 +85,11 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   private async listener() {
 
-    if ( this.infoToken.isSoloLLevar  ) {
+    if ( this.infoToken.isDelivery  ) {
       // el importe lo toma del localstorage
       const arrTotales = JSON.parse(atob(localStorage.getItem('sys::st')));
       console.log('total st ', arrTotales);
-      this.estadoPedido.importe = arrTotales[arrTotales.length - 1].importe;
+      this.estadoPedido.importe = parseInt(arrTotales[arrTotales.length - 1].importe, 0);
     } else {
       this.estadoPedido.importe = await this.estadoPedidoClienteService.getImporteCuenta();
     }
@@ -104,6 +106,9 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
     // aveces la conexion se pierde, verificar para volver a conectar
     this.socketService.connect();
+
+    // marcar como si se dio btn pago para reload page
+    localStorage.setItem('sys::btnP', '0');
   }
 
   private cerrarSession(): void {
@@ -223,6 +228,9 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
       this.verificarCheckTerminos();
 
       this.listenStatusService.setIsBtnPagoShow(true);
+
+      // marcar como si se dio btn pago para reload page
+      localStorage.setItem('sys::btnP', '1');
     });
 
   }
@@ -261,9 +269,27 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
           };
 
           // notifica a resumen para enviar el pedido
-          if ( this.infoToken.isSoloLLevar ) {
-            this.listenStatusService.setPagoSuccess(true);
+          // if ( this.infoToken.isSoloLLevar ) {
+          //   this.listenStatusService.setPagoSuccess(true);
+          // }
+
+          // cuando es Cliente Delivery
+          // guarda primero el pedido
+          if ( this.infoToken.isDelivery ) {
+            this.isLoaderTransaction = true;
+            const _dataSendPedido = JSON.parse(atob(this.infoToken.orderDelivery));
+            this.socketService.emit('nuevoPedido', _dataSendPedido);
+
+            setTimeout(() => {
+              this.isLoaderTransaction = false;
+              this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago);
+              return;
+            }, 1900);
+          } else {
+            this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago);
           }
+
+
         } else {
           _dataTransactionRegister = {
             purchaseNumber: this.el_purchasenumber,
@@ -273,9 +299,10 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
             status: this.dataResTransaction.data.STATUS,
             error: this.dataResTransaction.error
           };
-        }
 
           this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago);
+        }
+
           // cuenta para cerrar
           // this.cuentaRegresiva();
         // }
@@ -326,6 +353,19 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     }
   }
 
+  finDelivery() {
+
+    // limpiar storage transaccion
+    this.miPedidoService.prepareNewPedido();
+    this.infoTokenService.cerrarSession();
+
+    this.socketService.isSocketOpenReconect = true;
+    this.socketService.closeConnection();
+
+    this.navigatorService._router('../zona-delivery');
+
+  }
 
 
 }
+

@@ -465,4 +465,6 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   //   // }
   // }
 
+
+
 }

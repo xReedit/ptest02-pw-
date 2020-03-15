@@ -21,6 +21,9 @@ export class DialogResetComponent implements OnInit {
       case 1:
         this.msj = 'Confirma que desea salir?';
         break;
+      case 2:
+        this.msj = 'Solo puede hacer un pedido por establecimiento a la vez. Confirma que desea salir?';
+        break;
     }
   }
 
