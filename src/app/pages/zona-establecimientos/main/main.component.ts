@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
@@ -6,13 +7,15 @@ import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cli
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-select-direccion/dialog-select-direccion.component';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
+import { SocketService } from 'src/app/shared/services/socket.service';
+
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit, OnDestroy {
   infoClient: SocketClientModel;
   nomDireccionCliente = 'Establecer una direccion de entrega';
   isSelectedDireccion = false;
@@ -20,7 +23,9 @@ export class MainComponent implements OnInit {
   constructor(
     private verifyClientService: VerifyAuthClientService,
     private dialogDireccion: MatDialog,
-    private listenService: ListenStatusService
+    private listenService: ListenStatusService,
+    private router: Router,
+    private socketService: SocketService,
   ) { }
 
   ngOnInit() {
@@ -43,6 +48,11 @@ export class MainComponent implements OnInit {
         this.setDireccion(res);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.socketService.isSocketOpenReconect = true;
+    this.socketService.closeConnection();
   }
 
   openDialogDireccion() {
@@ -69,7 +79,23 @@ export class MainComponent implements OnInit {
       this.nomDireccionCliente = _direccion[0] + ' ' + _direccion[1];
       // this.listenService.setChangeDireccionDelivery(direccion);
     }
+  }
 
+  clickTab($event) {
+    console.log($event);
+    let goToPage = '/categorias';
+    switch ($event.index) {
+      case 0:
+        goToPage = '/categorias';
+        break;
+      case 1:
+        goToPage = '/pedidos';
+        // this.router.navigate(['/mis-pedidos']);
+        break;
+      }
+
+    this.router.navigate([`zona-delivery${goToPage}`]);
+    // this.router.navigate([goToPage]);
   }
 
 }

@@ -7,6 +7,7 @@ import { CategoriasComponent } from './categorias/categorias.component';
 import { MaterialModule } from 'src/app/core/material/material.module';
 import { ComponentesModule } from 'src/app/componentes/componentes.module';
 import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-select-direccion/dialog-select-direccion.component';
+import { MisOrdenesComponent } from './mis-ordenes/mis-ordenes.component';
 
 
 
@@ -15,7 +16,8 @@ import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-selec
     MainComponent,
     EstablecimientosComponent,
     CategoriasComponent,
-    DialogSelectDireccionComponent
+    MisOrdenesComponent,
+    DialogSelectDireccionComponent,
   ],
   imports: [
     CommonModule,

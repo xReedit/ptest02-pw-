@@ -61,6 +61,11 @@ export class InfoTockenService {
     localStorage.setItem('sys::it', val);
   }
 
+  setIsPagoSuccess(val: boolean) {
+    this.infoUsToken.isPagoSuccess = val;
+    this.set();
+  }
+
   // para el confirmar pago si es clienteDelivery
   setOrderDelivery(_order: string, _importes: string): void {
     this.infoUsToken.orderDelivery = btoa(_order);
@@ -107,6 +112,7 @@ export class InfoTockenService {
         _newUs.telefono = _token.telefono;
         _newUs.orderDelivery = _token.orderDelivery;
         _newUs.importeDelivery = _token.importeDelivery;
+        _newUs.isPagoSuccess = _token.isPagoSuccess;
         this.infoUsToken = _newUs;
       } else {
         this.infoUsToken = <UsuarioTokenModel>_token.usuario;
@@ -135,7 +141,7 @@ export class InfoTockenService {
   // verifica el tiempo de inactividad para cerrar session
   // cerrar session despues de 3:20 => ( 12000 sec )horas inciadas
   verificarContunuarSession(): boolean {
-    if (!this.infoUsToken.isCliente) { // si es usuario autorizado no cuenta tiempo
+    if ( !this.infoUsToken || !this.infoUsToken.isCliente || !this.infoUsToken.isDelivery) { // si es usuario autorizado no cuenta tiempo
       return true;
     }
     const numTis = parseInt(localStorage.getItem('sys::numtis'), 0);

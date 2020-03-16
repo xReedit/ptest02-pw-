@@ -69,6 +69,15 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.navigatorService.disableGoBack();
     this.infoToken = this.infoTokenService.getInfoUs();
+
+    // marcador que ya pago, si actualiza cierra session
+    if ( this.infoTokenService.infoUsToken.isPagoSuccess ) {
+      if ( this.infoTokenService.isDelivery() ) {
+        this.finDelivery();
+      } else {
+        this.actionAfterTransaction();
+      }
+    }
     // this.estadoPedidoClienteService.get();
     // this.socketClient = this.verifyClientService.getDataClient();
     this.listener();
@@ -283,9 +292,13 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
             setTimeout(() => {
               this.isLoaderTransaction = false;
               this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago);
+
+              // marcador si actualiza la pagina cuando ya pago
+              this.infoTokenService.setIsPagoSuccess(true);
               return;
             }, 1900);
           } else {
+            this.infoTokenService.setIsPagoSuccess(true);
             this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago);
           }
 

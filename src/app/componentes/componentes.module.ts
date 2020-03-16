@@ -12,6 +12,7 @@ import { AgmCoreModule } from '@agm/core';
 import { ItemComercioComponent } from './item-comercio/item-comercio.component';
 import { SeleccionarDireccionComponent } from './seleccionar-direccion/seleccionar-direccion.component';
 import { ConfirmarDeliveryComponent } from './confirmar-delivery/confirmar-delivery.component';
+import { MenuLateralClienteComponent } from './menu-lateral-cliente/menu-lateral-cliente.component';
 // import { DialogSelectDireccionComponent } from './dialog-select-direccion/dialog-select-direccion.component';
 
 @NgModule({
@@ -23,6 +24,7 @@ import { ConfirmarDeliveryComponent } from './confirmar-delivery/confirmar-deliv
     ItemComercioComponent,
     SeleccionarDireccionComponent,
     ConfirmarDeliveryComponent,
+    MenuLateralClienteComponent,
     // DialogSelectDireccionComponent,
     // DialogUbicacionComponent
   ],

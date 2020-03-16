@@ -17,10 +17,11 @@ export class ItemComercioComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.isCerrado = this.itemEstablecimiento.cierrado === 1 ? true : false;
+    this.isCerrado = this.itemEstablecimiento.cerrado === 1 ? true : false;
   }
 
   _itemSelected() {
+    if ( this.isCerrado ) {return; }
     this.itemSelected.emit(this.itemEstablecimiento);
   }
 

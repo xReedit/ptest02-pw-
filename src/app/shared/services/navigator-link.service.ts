@@ -27,7 +27,7 @@ export class NavigatorLinkService {
     private router: Router,
     private infoTokenService: InfoTockenService,
     private listenService: ListenStatusService,
-    private estadoPedidoClienteService: EstadoPedidoClienteService,
+    // private estadoPedidoClienteService: EstadoPedidoClienteService,
     // private dialog: MatDialog,
     // private miPedidoService: MipedidoService,
   ) {

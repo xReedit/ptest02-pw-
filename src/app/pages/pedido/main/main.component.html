@@ -51,7 +51,7 @@
         </mat-tab>
 
         <!-- solo si es usuario cliente  -->
-        <mat-tab label="Estado" *ngIf="isUsuarioCliente">
+        <mat-tab label="Estado" *ngIf="isUsuarioCliente && !isClienteDelivery">
           <!-- <ng-container *ngIf="isUsuarioCliente"> -->
             <div class="x100-toolbar-hidden" (scroll)="onScroll($event)"> 
               <app-estado-pedido></app-estado-pedido>

@@ -12,7 +12,7 @@
     <div class="m-0 pl-3 pr-3 pt-2" matRipple [matRippleColor]="rippleColor">
         
         <!-- <p class="m-0">Jr. Reyes Guerra 456</p> -->
-        <span class="text-danger fs-12 fw-100" [hidden]="isValidForm">Es necesario el numero de su telefono</span>
+        <span class="text-danger fs-12 fw-100" [hidden]="isValidForm">Es necesario el numero de su telefono</span>        
         <mat-form-field class="w-100">
             <input type="number" matInput 
             placeholder="Telefono" 
@@ -23,20 +23,23 @@
         <span class="fw-100 fs-12 text-secondary">Añade un número de teléfono para que podamos contactarte e informarte de tu pedido.</span>
     </div>
 
-    <div class="m-0 p-3">
+    <div class="m-0 p-3">        
         <!-- <div class="row"> -->
             <!-- subtotales -->    
             <div class="div-total w-100">
                 <ul class="w-100 ul-total">
-                    <li class="d-flex div-plr li-item" *ngFor="let item of listSubtotales" matRipple
+                    <li class="d-flex div-plr li-item" *ngFor="let item of _listSubtotales" matRipple
                     [matRippleColor]="rippleColor">
                     <div class="w-100">{{item.descripcion | titlecase}}</div>
                     <div>{{item.importe | number:'0.2' }}</div>
                     </li>
                 </ul>
             </div>        
+            <div class="pb-2 text-right">
+                <span class="text-danger fs-12 fw-100" [hidden]="isValidForm">Importe minimo S/. {{montoMinimoPedido | number:'.2'}}</span>
+            </div>
             <br>
         <!-- </div> -->
-    </div>
+    </div>    
     <br><br>
 </div>

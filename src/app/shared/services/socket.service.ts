@@ -47,7 +47,7 @@ export class SocketService {
 
   }
 
-  connect() {
+  connect(infoUser: any = null) {
     if ( this.isSocketOpen ) { return; } // para cuando se desconecta y conecta desde el celular
 
     // produccion
@@ -57,7 +57,7 @@ export class SocketService {
     //   forceNew: false
     // });
 
-    const infToken = this.infoTockenService.infoUsToken;
+    const infToken = this.infoTockenService.infoUsToken || infoUser;
 
     const dataSocket = {
       idorg: infToken.idorg,
@@ -232,6 +232,15 @@ export class SocketService {
   onPedidoPagado() {
     return new Observable(observer => {
       this.socket.on('pedido-pagado-cliente', (res: any) => {
+        observer.next(res);
+      });
+    });
+  }
+
+
+  onDeliveryPedidoChangeStatus() {
+    return new Observable(observer => {
+      this.socket.on('delivery-pedido-estado', (res: any) => {
         observer.next(res);
       });
     });

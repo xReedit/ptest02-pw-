@@ -19,6 +19,7 @@ export class MainComponent implements OnInit {
   countTotalItems = 0;
   selectedTab = 0;
   isUsuarioCliente = false; // si es usuario cliente
+  isClienteDelivery = false;
   isPagePagarShow = false;
 
 
@@ -42,6 +43,7 @@ export class MainComponent implements OnInit {
       console.log('desde incio', res);
       this.isUsuarioCliente = res.isCliente;
       this.listenStatusService.setIsUsuarioCliente(this.isUsuarioCliente);
+      this.isClienteDelivery = res.isDelivery;
     });
 
     this.listenStatusService.isBusqueda$.subscribe(res => {

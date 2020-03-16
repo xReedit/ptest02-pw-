@@ -27,4 +27,5 @@ export class UsuarioTokenModel {
     telefono: string;
     orderDelivery: string; // pedido pendiente de confirmacion
     importeDelivery: string; // importe pendiente de confirmacion
+    isPagoSuccess: boolean; // si ya pago, si es que actualiza cuando ya pago
 }

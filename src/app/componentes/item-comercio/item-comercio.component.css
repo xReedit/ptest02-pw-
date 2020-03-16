@@ -28,3 +28,19 @@
     padding: 5px;    
     padding-right: 15px;
 }
+
+.div-cerrado {
+    width: 100%;
+    background: lavenderblush;
+    margin-top: -200px;
+    opacity: 0.6;
+    text-align: center;    
+}
+
+.div-cerrado p {
+    font-size: 25px;
+    font-weight: 800;
+    width: 100%;
+    top: 35%;
+    position: relative;
+}

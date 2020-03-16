@@ -48,7 +48,12 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
     this.authService.setLoggedStatus(true);
     this.infoToken.converToJSON();
 
-    this.router.navigate(['./pedido']);
+    if ( !this.infoToken.infoUsToken.direccionEnvioSelected && this.infoToken.isDelivery()) {
+      this.verifyClientService.setIsDelivery(true);
+      this.router.navigate(['./zona-delivery']);
+    } else {
+      this.router.navigate(['./pedido']);
+    }
   }
 
 }

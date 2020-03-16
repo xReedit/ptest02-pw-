@@ -2,7 +2,6 @@ import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
-import { emit } from 'cluster';
 import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimiento';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 
@@ -18,6 +17,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
   direccionCliente: DeliveryDireccionCliente;
   isValidForm = false;
 
+  montoMinimoPedido = 10; // monto minimo del pedido
+
   // return for printer
   private resData = {
     idcliente: '',
@@ -31,7 +32,15 @@ export class ConfirmarDeliveryComponent implements OnInit {
     referencia: ''
   };
 
-  @Input() listSubtotales: any;
+  _listSubtotales: any;
+
+  @Input()
+  set listSubtotales(val: any) {
+    this._listSubtotales = val;
+    this.loadData();
+  }
+
+
   @Output() isReady = new EventEmitter<boolean>();
   @Output() dataDelivery = new EventEmitter<any>();
 
@@ -79,6 +88,14 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
       this.dataDelivery.emit(this.resData);
     }
+
+    this.verificarMontoMinimo();
+  }
+
+  private verificarMontoMinimo() {
+    const importeTotal = parseInt(this._listSubtotales[0].importe, 0);
+    this.isValidForm = importeTotal >= this.montoMinimoPedido && this.isValidForm ? true : false;
+    this.isReady.emit(this.isValidForm);
   }
 
 }
