@@ -6,8 +6,8 @@
 }
 
 .img-comercio {
-    width: 100%;
-    max-width: 330px;
+    max-width: 100%;
+    /* max-width: 330px; */
     max-height: 115px;
 }
 
@@ -41,6 +41,6 @@
     font-size: 25px;
     font-weight: 800;
     width: 100%;
-    top: 35%;
+    top: 10%;
     position: relative;
 }

@@ -1,4 +1,5 @@
 import { DeliveryDireccionCliente } from './delivery.direccion.cliente.model';
+import { MetodoPagoModel } from './metodo.pago.model';
 
 export class UsuarioTokenModel {
     acc: string;
@@ -28,4 +29,5 @@ export class UsuarioTokenModel {
     orderDelivery: string; // pedido pendiente de confirmacion
     importeDelivery: string; // importe pendiente de confirmacion
     isPagoSuccess: boolean; // si ya pago, si es que actualiza cuando ya pago
+    metodoPago: MetodoPagoModel; // metodo pago seleccionado
 }

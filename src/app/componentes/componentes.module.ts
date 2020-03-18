@@ -13,6 +13,8 @@ import { ItemComercioComponent } from './item-comercio/item-comercio.component';
 import { SeleccionarDireccionComponent } from './seleccionar-direccion/seleccionar-direccion.component';
 import { ConfirmarDeliveryComponent } from './confirmar-delivery/confirmar-delivery.component';
 import { MenuLateralClienteComponent } from './menu-lateral-cliente/menu-lateral-cliente.component';
+import { DialogMetodoPagoComponent } from './dialog-metodo-pago/dialog-metodo-pago.component';
+import { DialogVerificarTelefonoComponent } from './dialog-verificar-telefono/dialog-verificar-telefono.component';
 // import { DialogSelectDireccionComponent } from './dialog-select-direccion/dialog-select-direccion.component';
 
 @NgModule({
@@ -25,6 +27,8 @@ import { MenuLateralClienteComponent } from './menu-lateral-cliente/menu-lateral
     SeleccionarDireccionComponent,
     ConfirmarDeliveryComponent,
     MenuLateralClienteComponent,
+    DialogMetodoPagoComponent,
+    DialogVerificarTelefonoComponent,
     // DialogSelectDireccionComponent,
     // DialogUbicacionComponent
   ],
@@ -45,7 +49,14 @@ import { MenuLateralClienteComponent } from './menu-lateral-cliente/menu-lateral
     AgregarDireccionComponent,
     ItemComercioComponent,
     SeleccionarDireccionComponent,
-    ConfirmarDeliveryComponent
+    ConfirmarDeliveryComponent,
+    DialogMetodoPagoComponent,
+    DialogVerificarTelefonoComponent
+  ],
+
+  entryComponents: [
+    DialogMetodoPagoComponent,
+    DialogVerificarTelefonoComponent
   ]
 })
 export class ComponentesModule { }

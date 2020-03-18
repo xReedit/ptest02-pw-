@@ -128,7 +128,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
           this.isBtnPagoShow = res;
           if (!res) {
             const localBtnP = localStorage.getItem('sys::btnP');
-            if ( localBtnP.toString() === '1' ) { this.isBtnPagoShow = true; }
+            if ( localBtnP && localBtnP.toString() === '1' ) {
+              this.isBtnPagoShow = true;
+             }
           }
         });
 
@@ -346,7 +348,15 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   private confirmarPeiddo(): void {
 
     if (this.isVisibleConfirmarAnimated ) { // enviar pedido
-      if (this.isRequiereMesa || !this.isDeliveryValid) { return; }
+      if (this.isRequiereMesa || !this.isDeliveryValid ) {
+
+        // si el pago del delivery es en efectivo procesa pago
+        if ( this.infoToken.infoUsToken.metodoPago.idtipo_pago === 1 ) {
+          this.prepararEnvio();
+        }
+        return;
+      }
+
       this.prepararEnvio();
     } else {
 
@@ -365,19 +375,35 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private prepararEnvio(): void {
     if ( !this.isDeliveryCliente ) {
-      const _dialogConfig = new MatDialogConfig();
-      _dialogConfig.disableClose = true;
-      _dialogConfig.hasBackdrop = true;
+      this.showLoaderPedido();
+      // const _dialogConfig = new MatDialogConfig();
+      // _dialogConfig.disableClose = true;
+      // _dialogConfig.hasBackdrop = true;
 
-      const dialogLoading = this.dialog.open(DialogLoadingComponent, _dialogConfig);
-      dialogLoading.afterClosed().subscribe(result => {
-        this.enviarPedido();
-      });
+      // const dialogLoading = this.dialog.open(DialogLoadingComponent, _dialogConfig);
+      // dialogLoading.afterClosed().subscribe(result => {
+      //   this.enviarPedido();
+      // });
     } else {
-      this.enviarPedido();
+      // si es delivery y paga en efectivo
+      if ( this.infoToken.infoUsToken.metodoPago.idtipo_pago === 1 ) {
+        this.showLoaderPedido();
+      } else {
+        this.enviarPedido();
+      }
     }
 
+  }
 
+  private showLoaderPedido(): void {
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+
+    const dialogLoading = this.dialog.open(DialogLoadingComponent, _dialogConfig);
+    dialogLoading.afterClosed().subscribe(result => {
+      this.enviarPedido();
+    });
   }
 
   private enviarPedido(): void {
@@ -453,7 +479,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // primero confirma el pago y luego guarda pedido y posteriormente el pago
     // guardamos el pedido
 
-    if ( this.isDeliveryCliente ) {
+    if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago === 2) {
       this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(this._arrSubtotales));
       this.pagarCuentaDeliveryCliente();
       // enviamos a pagar
@@ -480,6 +506,13 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this.backConfirmacion();
 
     this.miPedidoService.prepareNewPedido();
+
+    // si es delivery y el pago es en efectivo, notificamos
+    if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago === 1) {
+      this.pagarCuentaDeliveryCliente();
+      // enviamos a pagar
+      return;
+    }
 
     // si es usuario cliente lo envia a estado
     if ( this.isCliente ) {

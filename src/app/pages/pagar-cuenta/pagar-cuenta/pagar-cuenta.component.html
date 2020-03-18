@@ -10,7 +10,7 @@
   <!-- header -->
   <div class="header-pago p-3">    
     <i *ngIf="!isTrasctionSuccess" class="fa fa-arrow-left" (click)="goBack()" [routerLink]="['../']"></i>    
-    <span class="pl-2">Pagar</span>
+    <span class="pl-2">Pagar con {{ infoToken.metodoPago.descripcion }}</span>
   </div>
 
 
@@ -130,8 +130,9 @@
         
         <!-- no delivery -->
           <div class="text-center fs-20 fw-100 banner-res-ok p-3">
-            <i class="fa fa-check-circle-o fa-2x" aria-hidden="true"></i>
+            <i class="fa fa-check-circle-o fa-2x" aria-hidden="true"></i>            
             <p>Transacción Existosa.</p>
+            
           </div>
     
           <div class="p-3 bg-white">
@@ -180,7 +181,12 @@
         <!-- cliente delivery -->
         <div class="text-center fs-20 fw-100 banner-res-ok p-3">
           <i class="fa fa-check-circle-o fa-2x" aria-hidden="true"></i>
-          <p>Transacción Existosa.</p>
+          <ng-container *ngIf="!pagaConEefectivo; else divPagoEfectivo">              
+          </ng-container>
+            <p>Transacción Existosa.</p>
+          <ng-template #divPagoEfectivo>
+            <p>Listo.</p>
+          </ng-template>
         </div>
 
       </ng-template>

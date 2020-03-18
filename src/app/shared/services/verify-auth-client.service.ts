@@ -70,6 +70,11 @@ export class VerifyAuthClientService {
     this.setDataClient();
   }
 
+  setTelefono(val: string) {
+    this.clientSocket.telefono = val;
+    this.setDataClient();
+  }
+
   getIsLoginByDNI(): boolean {
     // this.getDataClient();
     if (!this.clientSocket) {
@@ -147,6 +152,7 @@ export class VerifyAuthClientService {
       this.clientSocket.nombres = this.clientSocket.datalogin.name;
       this.clientSocket.usuario = this.clientSocket.datalogin.given_name;
       this.clientSocket.isCliente = true;
+      this.clientSocket.telefono = rpt.data[0].telefono;
 
       // guarda en el usuario temporal
       // console.log(this.clientSocket);

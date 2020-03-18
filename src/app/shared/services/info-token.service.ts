@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
+import { MetodoPagoModel } from 'src/app/modelos/metodo.pago.model';
 
 
 
@@ -81,6 +82,21 @@ export class InfoTockenService {
     this.set();
   }
 
+  setMetodoPago( metodo: MetodoPagoModel) {
+    this.infoUsToken.metodoPago = metodo;
+    this.set();
+  }
+
+  setIniMetodoPago() {
+    const metodoPagoInit: MetodoPagoModel = new MetodoPagoModel;
+    metodoPagoInit.idtipo_pago = 2;
+    metodoPagoInit.descripcion = 'Tarjeta';
+    metodoPagoInit.importe = '0';
+    metodoPagoInit.checked = true;
+
+    this.setMetodoPago( metodoPagoInit );
+  }
+
   // guarda en el local storage
   set() {
     const _token = `eyCJ9.${btoa(JSON.stringify(this.infoUsToken))}`;
@@ -113,7 +129,11 @@ export class InfoTockenService {
         _newUs.orderDelivery = _token.orderDelivery;
         _newUs.importeDelivery = _token.importeDelivery;
         _newUs.isPagoSuccess = _token.isPagoSuccess;
+        _newUs.metodoPago = _token.metodoPago;
         this.infoUsToken = _newUs;
+
+        // agregar el metodo pago prederteminado tarjeta
+        if (!this.infoUsToken.metodoPago)  { this.setIniMetodoPago(); }
       } else {
         this.infoUsToken = <UsuarioTokenModel>_token.usuario;
         this.infoUsToken.isCliente = false;

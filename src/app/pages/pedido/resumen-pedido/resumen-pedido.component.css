@@ -8,6 +8,11 @@
     padding-right: 7px;
 }
 
+.div-content-all {
+    top: 0px;
+    position: sticky;
+}
+
 .titulo-tpc {
     background: #424242;
     color: #e0e0e0;
@@ -80,6 +85,8 @@
 /* RESUMEN pedido */
 .div-resumen-pedido {
   position: absolute;  
+  height: calc(100vh - 49px);
+  overflow: auto;
 }
 
 .div-resumen-pedido.hide {
@@ -93,10 +100,17 @@
 /* RESUMEN pedido */
 
 /* confirmar pedido */
+.div-confirma-pedido-mesa {
+    height: 100vh;
+    position: relative;
+}
+
 .div-confirma-pedido {        
     position: absolute;
     background: antiquewhite;
     position: relative;
+    /* height: calc(100vh - 50px); */
+    overflow: auto;
 }
 
 .bg-1 {
@@ -113,6 +127,10 @@
 
 .div-confirma-pedido.show {
     margin-left: 0;
+}
+
+.xh-100 {
+    height: 100vh;
 }
 
 /* confirmar pedido */

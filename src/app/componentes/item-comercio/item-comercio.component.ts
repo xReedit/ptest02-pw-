@@ -9,6 +9,7 @@ import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimient
 })
 export class ItemComercioComponent implements OnInit {
   isCerrado = false;
+  amPm = 'AM';
 
   @Input() itemEstablecimiento: DeliveryEstablecimiento;
 
@@ -18,6 +19,7 @@ export class ItemComercioComponent implements OnInit {
 
   ngOnInit() {
     this.isCerrado = this.itemEstablecimiento.cerrado === 1 ? true : false;
+    this.amPm = this.itemEstablecimiento.hora_ini ? parseInt(this.itemEstablecimiento.hora_ini.split(':')[0], 0) > 12 ? 'PM' : 'AM' : '';
   }
 
   _itemSelected() {

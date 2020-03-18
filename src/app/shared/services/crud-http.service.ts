@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { InfoTockenService } from './info-token.service';
-import { URL_SERVER, URL_CONSULTA_RUC_DNI, TOKEN_CONSULTA } from '../config/config.const';
+import { URL_SERVER, URL_CONSULTA_RUC_DNI, TOKEN_CONSULTA, TOKEN_SMS } from '../config/config.const';
 import { catchError } from 'rxjs/operators';
 
 
@@ -75,6 +75,14 @@ export class CrudHttpService {
     postFree(datos: any, controller: string, evento: string = 'update', conToken: boolean = true): Observable<any> {
         const url = this.setUrl(controller, evento);
         const header = conToken ? this.getHeaderHttpClientForm() : this.getHeaderHttpClientFormNoToken();
+
+        return this.httpClient.post<any>(url, datos, { headers: header });
+    }
+
+    // enviar mensaje SMS de seguridad
+    postSMS(datos: any, controller: string, evento: string , conTokenSMS: boolean = true): Observable<any> {
+        const url = this.setUrl(controller, evento);
+        const header = conTokenSMS ? this.getHeaderHttpClientFormSMS() : this.getHeaderHttpClientFormNoToken();
 
         return this.httpClient.post<any>(url, datos, { headers: header });
     }
@@ -167,6 +175,13 @@ export class CrudHttpService {
         const headers = new HttpHeaders()
             .set('Content-Type', 'application/json')
             .set('Authorization', this.infoTockenService.getToken());
+        return headers;
+    }
+
+    private getHeaderHttpClientFormSMS(): HttpHeaders {
+        const headers = new HttpHeaders()
+            .set('Content-Type', 'application/json')
+            .set('Authorization', TOKEN_SMS);
         return headers;
     }
 

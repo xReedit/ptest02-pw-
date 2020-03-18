@@ -38,6 +38,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   isDisabledCheck = false; // desabilita el check de terminos
   isRequiredEmail = false;
   dataResTransaction: any = null;
+  pagaConEefectivo = false;
 
   el_purchasenumber;
 
@@ -69,6 +70,15 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.navigatorService.disableGoBack();
     this.infoToken = this.infoTokenService.getInfoUs();
+    this.pagaConEefectivo = this.infoToken.metodoPago.idtipo_pago === 1 ? true : false;
+    this.isTrasctionSuccess = this.pagaConEefectivo;
+
+    // envia de frente a la respuesta
+    if ( this.pagaConEefectivo ) {
+      this.dataResTransaction = {
+        error: false
+      };
+    }
 
     // marcador que ya pago, si actualiza cierra session
     if ( this.infoTokenService.infoUsToken.isPagoSuccess ) {

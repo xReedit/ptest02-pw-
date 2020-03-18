@@ -2,7 +2,7 @@
     CUENTA DE LA MESA {{numMesaCuenta | number: '2.'}}
 </div>
 
-<div class="d-flex w-100 xanimated xfadeIn" *ngIf="hayItems">
+<div class="d-flex w-100 xanimated xfadeIn div-content-all" *ngIf="hayItems">
     <!-- <div class="w-100"> -->
         <div class="w-100 div-resumen-pedido">
             <div *ngFor="let tpc of _miPedido.tipoconsumo" class="xCursor">
@@ -83,8 +83,8 @@
     <!-- </div> -->
 
     <!-- confirma pedido -->
-    <div [hidden]="!isVisibleConfirmar">
-        <div class="xcontent div-confirma-pedido w-100 p-3 transicion animated fadeInRight"
+    <div [hidden]="!isVisibleConfirmar" class="w-100">
+        <div class="xcontent div-confirma-pedido w-100 xh-100 p-3 transicion animated fadeInRight"
           [ngClass]="[isVisibleConfirmarAnimated ? 'show' : 'hide', isVisibleConfirmarAnimated ? 'fadeInRight' : 'fadeInLeft', !isDeliveryCliente ? 'bg-1': 'bg-2']">
             <div class="text-center">
 
@@ -166,7 +166,7 @@
                 <ng-container *ngIf="!isCliente" #divUsuarioAutorizado>
 
                     <!-- datos del pedido -->
-                    <div [hidden]="isDelivery">
+                    <div [hidden]="isDelivery" class="div-confirma-pedido-mesa w-100">
                         <form #frmconfirma="ngForm">
                             <div *ngIf="frmConfirma.reserva" class="xanimated xfadeIn">
                                 <p class="fs-30 fw-100">RESERVAR</p>
@@ -302,7 +302,7 @@
                 <div class="col-5 btn-footer-next transicion" matRipple (click)="prepararEnvio()"
                 [ngClass]="{'xdisabled': !isReadyClienteDelivery}">
                 <div>
-                    <span class="animated fadeInLeft">Enviar Pedido</span>
+                    <span class="animated fadeInLeft">Confirmar</span>
                 </div>
                 </div>
             </ng-container>

@@ -16,4 +16,5 @@ export class SocketClientModel {
     isSoloLLevar: boolean; // si escanea codigo que sea solo para llevar
     isDelivery: boolean;
     direccionEnvioSelected: DeliveryDireccionCliente;
+    telefono: string;
 }

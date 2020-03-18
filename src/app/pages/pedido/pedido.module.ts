@@ -20,6 +20,8 @@ import { BusquedaComponent } from './busqueda/busqueda.component';
 import { DialogResetComponent } from './resumen-pedido/dialog-reset/dialog-reset.component';
 import { DialogLoadingComponent } from './resumen-pedido/dialog-loading/dialog-loading.component';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
+import { DialogVerificarTelefonoComponent } from 'src/app/componentes/dialog-verificar-telefono/dialog-verificar-telefono.component';
+// import { DialogMetodoPagoComponent } from 'src/app/componentes/dialog-metodo-pago/dialog-metodo-pago.component';
 // import { PagarCuentaComponent } from './pagar-cuenta/pagar-cuenta.component';
 
 
@@ -53,6 +55,12 @@ import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/di
     DialogLoadingComponent,
     DialogItemEditComponent
   ],
-  entryComponents: [DialogResetComponent, DialogLoadingComponent, DialogItemEditComponent]
+  entryComponents: [
+    DialogResetComponent,
+    DialogLoadingComponent,
+    DialogItemEditComponent,
+    DialogVerificarTelefonoComponent
+    // DialogMetodoPagoComponent
+  ]
 })
 export class PedidoModule { }
