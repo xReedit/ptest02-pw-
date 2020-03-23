@@ -12,7 +12,7 @@ export class DialogResetComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) data: any
   ) {
-    console.log('data dialog', data);
+    // console.log('data dialog', data);
     const idMsj = data ? data.idMjs : 0;
     switch (idMsj) {
       case 0:

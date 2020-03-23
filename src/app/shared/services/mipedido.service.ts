@@ -1206,7 +1206,7 @@ export class MipedidoService {
       const rpt: any = {};
 
       // si es servicio delivery y si es clienteDelivery
-      if ( p.descripcion.toUpperCase().indexOf('DELIVERY') > -1 && isClienteDelivery) {
+      if ( (p.descripcion.toUpperCase().indexOf('DELIVERY') > -1  || p.descripcion.toUpperCase().indexOf('ENTREGA') > -1) && isClienteDelivery) {
         isTieneDelivery = true;
         p.descripcion = 'Entrega';
         importeOtros = this.establecimientoService.get().c_servicio;

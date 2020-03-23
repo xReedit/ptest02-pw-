@@ -4,10 +4,12 @@ import { LayoutMainComponent } from './core/layout-main/layout-main.component';
 import { AuthGuard } from './shared/guards/auth.guard';
 import { ClienteProfileGuard } from './shared/guards/cliente-profile-guards';
 
-const routes: Routes = [{
-  path: '',
-  component: LayoutMainComponent,
-  children: [
+const routes: Routes = [
+  { path: '', redirectTo: '', pathMatch: 'full' },
+  // {
+  // path: '',
+  // component: LayoutMainComponent,
+  // children: [
     {
       path: '',
       loadChildren: () => import('./pages/inicio/inicio.module').then(m => m.InicioModule),
@@ -43,11 +45,17 @@ const routes: Routes = [{
       canActivate: [ClienteProfileGuard],
       data: { 'tituloModulo': 'Cliente Zona Delivery' }
     }
-  ]
-}];
+];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true })],
+  imports: [RouterModule.forRoot(
+    routes, {
+      useHash: true,
+      scrollPositionRestoration: 'enabled',
+      anchorScrolling: 'enabled',
+      paramsInheritanceStrategy: 'always'
+    }
+    )],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

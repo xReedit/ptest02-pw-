@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { Router } from '@angular/router';
+import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 // import { take } from 'rxjs/internal/operators/take';
 // import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 
@@ -20,7 +21,7 @@ export class InicioComponent implements OnInit, OnDestroy {
 
   constructor(
     private verifyClientService: VerifyAuthClientService,
-    private router: Router
+    private router: Router,
     // private webSocketService: WebsocketService
     ) { }
 

@@ -29,7 +29,7 @@
             ],
             "scripts": [
               "src/assets/js/jquery.js",
-              "src/assets/js/boton-pago.js"
+              "src/assets/js/boton-pago.js"              
             ]
           },
           "configurations": {

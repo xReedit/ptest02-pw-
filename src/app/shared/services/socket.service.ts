@@ -47,7 +47,7 @@ export class SocketService {
 
   }
 
-  connect(infoUser: any = null) {
+  connect(infoUser: any = null, opFrom: number = 1) {
     if ( this.isSocketOpen ) { return; } // para cuando se desconecta y conecta desde el celular
 
     // produccion
@@ -65,7 +65,7 @@ export class SocketService {
       idusuario: infToken.idusuario,
       idcliente: infToken.idcliente,
       iscliente: infToken.isCliente,
-      isFromApp: 1
+      isFromApp: opFrom
     };
 
     // console.log('dataSocket', dataSocket);

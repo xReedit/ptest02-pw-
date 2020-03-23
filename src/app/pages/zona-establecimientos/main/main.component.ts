@@ -15,7 +15,7 @@ import { SocketService } from 'src/app/shared/services/socket.service';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
-export class MainComponent implements OnInit, OnDestroy {
+export class MainComponent implements OnInit {
   infoClient: SocketClientModel;
   nomDireccionCliente = 'Establecer una direccion de entrega';
   isSelectedDireccion = false;
@@ -50,10 +50,10 @@ export class MainComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    this.socketService.isSocketOpenReconect = true;
-    this.socketService.closeConnection();
-  }
+  // ngOnDestroy(): void {
+  //   this.socketService.isSocketOpenReconect = true;
+  //   this.socketService.closeConnection();
+  // }
 
   openDialogDireccion() {
     // const dialogConfig = new MatDialogConfig();

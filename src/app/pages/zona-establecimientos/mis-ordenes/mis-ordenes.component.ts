@@ -1,17 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs/internal/Subject';
 
 @Component({
   selector: 'app-mis-ordenes',
   templateUrl: './mis-ordenes.component.html',
   styleUrls: ['./mis-ordenes.component.css']
 })
-export class MisOrdenesComponent implements OnInit {
+export class MisOrdenesComponent implements OnInit, OnDestroy {
 
+  private destroy$: Subject<boolean> = new Subject<boolean>();
   infoUser: UsuarioTokenModel;
   listMisPedidos: any;
 
@@ -26,22 +29,35 @@ export class MisOrdenesComponent implements OnInit {
 
     if ( this.infoTokenService.infoUsToken ) {
       this.infoUser = this.infoTokenService.infoUsToken;
-      this.listenChangeStatus();
+      this.conectSercices();
     } else {
       this.verifyClientService.verifyClient()
       .subscribe(res => {
         this.infoUser = res;
-        this.listenChangeStatus();
+        this.conectSercices();
       });
     }
   }
 
-  private listenChangeStatus(): void {
+  private conectSercices() {
+    // this.socketSerrvice.connect(this.infoUser, 0);
+
     this.loadMisPedidos();
+    this.listenChangeStatus();
+  }
 
-    this.socketSerrvice.connect(this.infoUser);
+  ngOnDestroy(): void {
+    // this.socketSerrvice.isSocketOpenReconect = true;
+    // this.socketSerrvice.closeConnection();
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
+  }
 
-    this.socketSerrvice.onDeliveryPedidoChangeStatus().subscribe(res => {
+  private listenChangeStatus(): void {
+
+    this.socketSerrvice.onDeliveryPedidoChangeStatus()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(res => {
       console.log('socket listen ', res);
       this.loadMisPedidos();
     });

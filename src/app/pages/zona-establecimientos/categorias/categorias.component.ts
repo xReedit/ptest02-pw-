@@ -51,6 +51,7 @@ export class CategoriasComponent implements OnInit {
         this.codigo_postal_actual = res.codigo || '0';
         this.isNullselectedDireccion = false;
         this.direccionCliente = res;
+        this.infoClient.direccionEnvioSelected = this.direccionCliente;
         this.loadEstablecimientos();
       } else {
 

@@ -4,15 +4,18 @@ import { ListenStatusService } from 'src/app/shared/services/listen-status.servi
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedido-cliente.service';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
-import { EstadoPedidoModel } from 'src/app/modelos/estado.pedido.model';
+// import { EstadoPedidoModel } from 'src/app/modelos/estado.pedido.model';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
-import { SocketClientModel } from 'src/app/modelos/socket.client.model';
+// import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { ClientePagoModel } from 'src/app/modelos/cliente.pago.model';
 import { RegistrarPagoService } from 'src/app/shared/services/registrar-pago.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
+import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 
 // import * as botonPago from 'src/assets/js/boton-pago.js';
 
@@ -64,6 +67,8 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     private registrarPagoService: RegistrarPagoService,
     private utilService: UtilitariosService,
     private miPedidoService: MipedidoService,
+    private dialog: MatDialog,
+    private pushNotificationSerice: NotificacionPushService
     // private verifyClientService: VerifyAuthClientService,
   ) { }
 
@@ -364,6 +369,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   }
 
   private actionAfterTransaction(): void {
+    this.lanzarPermisoNotificationPush(1);
     if ( this.dataResTransaction.error ) {
       this.navigatorService._router('../pedido');
     } else {
@@ -378,6 +384,8 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   finDelivery() {
 
+    this.lanzarPermisoNotificationPush(0);
+
     // limpiar storage transaccion
     this.miPedidoService.prepareNewPedido();
     this.infoTokenService.cerrarSession();
@@ -387,6 +395,31 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
     this.navigatorService._router('../zona-delivery');
 
+  }
+
+  private lanzarPermisoNotificationPush(option: number = 0) {
+    // this.pushNotificationSerice.suscribirse(option);
+
+    if ( this.pushNotificationSerice.getIsTienePermiso() ) {
+      this.pushNotificationSerice.suscribirse();
+      return;
+    }
+
+    // si no tiene permiso le pregunta
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+    _dialogConfig.data = {idMjs: option};
+
+    console.log('show dialog DialogDesicionComponent');
+    const dialogReset = this.dialog.open(DialogDesicionComponent, _dialogConfig);
+    dialogReset.afterClosed().subscribe(result => {
+      if (result ) {
+        console.log('result dialog DialogDesicionComponent', result);
+        // this.suscribirse();
+        this.pushNotificationSerice.suscribirse();
+      }
+    });
   }
 
 
