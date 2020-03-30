@@ -1,0 +1,6 @@
+<div class="d-flex content-propina" >
+    <div matRipple class="item-propina" 
+        [ngClass]="{'propina-selected': item.checked}" 
+        (click)="itemCheck(item)"
+        *ngFor="let item of listPropina">{{ item.descripcion }}</div>    
+</div>

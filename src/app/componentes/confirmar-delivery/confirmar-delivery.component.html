@@ -10,6 +10,21 @@
         <p class="m-0"><i class="fa fa-clock-o"></i><span class="fs-14"> Tiempo de entrega: {{infoEstablecimiento.tiempo_aprox_entrega}}</span></p>
     </div>
 
+    <!-- telefono -->
+    <div class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor" (click)="openDialogsendSMS()">                
+        <span class="text-danger fs-12 fw-100" [hidden]="isValidForm">Es necesario el numero de su telefono</span>        
+        <p class="m-0 fs-14">Telefono: <strong>{{ infoToken.telefono }}</strong></p>
+        <span class="fw-100 fs-12 text-secondary" [hidden]="isValidForm">Añade un número de teléfono para que podamos contactarte e informarte de tu pedido.</span>        
+    </div>
+    <!-- telefono -->
+
+    <!-- facturacion -->
+    <div class="border-bottom m-0 p-3 d-flex justify-content-between" matRipple [matRippleColor]="rippleColor" (click)="openDialogTipoComprobnate()">
+        <p class="m-0 fs-14">Comprobante: <strong>{{tipoComprobanteSelected.descripcion}}</strong></p>
+        <i class="fa fa-caret-down" aria-hidden="true"></i>
+    </div>
+    <!-- facturacion -->
+
     <!-- metodo de pago -->
     <div class="border-bottom m-0 p-3 d-flex justify-content-between" matRipple [matRippleColor]="rippleColor" (click)="openDialogMetodoPago()">
         <p class="m-0 fs-14">Metodo de pago: <strong>{{metodoPagoSelected.descripcion}}</strong></p>
@@ -17,19 +32,13 @@
     </div>
     <!-- metodo de pago -->
 
-    <!-- telefono -->
-    <div class="m-0 pl-3 pr-3 pt-2" matRipple [matRippleColor]="rippleColor" (click)="openDialogsendSMS()">                
-        <span class="text-danger fs-12 fw-100" [hidden]="isValidForm">Es necesario el numero de su telefono</span>        
-        <p class="m-0 fs-14">Telefono: <strong>{{ infoToken.telefono }}</strong></p>
-        <!-- <mat-form-field class="w-100">
-            <input type="number" matInput 
-            placeholder="Telefono" 
-            (keyup) = "verificarNum(telefono.value)" 
-            [value] = "infoToken.telefono"
-            #telefono required>
-        </mat-form-field> -->
-        <span class="fw-100 fs-12 text-secondary" [hidden]="isValidForm">Añade un número de teléfono para que podamos contactarte e informarte de tu pedido.</span>        
+    <!-- propina -->
+    <div class="m-0 p-3 d-flex justify-content-between">
+        <span class="m-0 fs-14">Propina:</span> <app-comp-propina-delivery [listSubtotales]="_listSubtotales"></app-comp-propina-delivery>
+        <!-- <i class="fa fa-question-circle" aria-hidden="true"></i> -->
     </div>
+    <!-- propina -->
+    
 
     <div class="m-0 p-3">        
         <!-- <div class="row"> -->

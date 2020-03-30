@@ -24,7 +24,7 @@ export class DialogMetodoPagoComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) data: any,
     private infoTokenService: InfoTockenService,
   ) {
-    this.importeTotal = parseInt(data.importeTotalPagar, 0);
+    this.importeTotal = parseFloat(data.importeTotalPagar);
   }
 
   ngOnInit() {
@@ -72,7 +72,7 @@ export class DialogMetodoPagoComponent implements OnInit {
   }
 
   verificarImporte(importe: string) {
-    this.importeValid = parseInt(importe, 0) >= this.importeTotal;
+    this.importeValid = parseFloat(importe) >= this.importeTotal;
     this.importeIndicado = importe;
     this.itemSelected.importe = this.importeIndicado;
     this.verificarValidForm();

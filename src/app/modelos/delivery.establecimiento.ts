@@ -15,6 +15,7 @@ export class DeliveryEstablecimiento {
     c_minimo: number; // costo minimo del servicio 1=costo_minimo
     c_km: number; // costo x km adicional > 1  = costo_minimo + (dif * c_km)
     c_servicio: number; // costo del servicio calculando la distancia
+    distancia_km: string; // distancia en kilomentros
     tiempo_aprox_entrega: string;
     abre_en: string; // tiempo que falta para abrir
     hora_ini: string; // hora que abre

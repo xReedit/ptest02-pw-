@@ -364,7 +364,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     dialogRef.afterClosed().subscribe(
         data => {
           if ( !data ) { return; }
-          console.log('data dialog', data);
+          // console.log('data dialog', data);
         }
     );
 

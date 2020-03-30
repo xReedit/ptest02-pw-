@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
 import { MetodoPagoModel } from 'src/app/modelos/metodo.pago.model';
+import { TipoComprobanteModel } from 'src/app/modelos/tipo.comprobante.model';
+import { PropinaModel } from 'src/app/modelos/propina.model';
 
 
 
@@ -87,6 +89,16 @@ export class InfoTockenService {
     this.set();
   }
 
+  setTipoComprobante( comprobante: TipoComprobanteModel) {
+    this.infoUsToken.tipoComprobante = comprobante;
+    this.set();
+  }
+
+  setPropina( propina: PropinaModel) {
+    this.infoUsToken.propina = propina;
+    this.set();
+  }
+
   setIniMetodoPago() {
     const metodoPagoInit: MetodoPagoModel = new MetodoPagoModel;
     metodoPagoInit.idtipo_pago = 2;
@@ -95,6 +107,24 @@ export class InfoTockenService {
     metodoPagoInit.checked = true;
 
     this.setMetodoPago( metodoPagoInit );
+  }
+
+  setIniTipoComprobante() {
+    const tipoComprobanteInit: TipoComprobanteModel = new TipoComprobanteModel;
+    tipoComprobanteInit.idtipo_comprobante = 1;
+    tipoComprobanteInit.descripcion = 'Boleta';
+    tipoComprobanteInit.checked = true;
+
+    this.setTipoComprobante( tipoComprobanteInit );
+  }
+
+  setIniPropina() {
+    const prpinaInt: PropinaModel = new PropinaModel;
+    prpinaInt.idpropina = 1;
+    prpinaInt.descripcion = 'S/. 0';
+    prpinaInt.checked = true;
+
+    this.setPropina( prpinaInt );
   }
 
   // guarda en el local storage
@@ -130,10 +160,12 @@ export class InfoTockenService {
         _newUs.importeDelivery = _token.importeDelivery;
         _newUs.isPagoSuccess = _token.isPagoSuccess;
         _newUs.metodoPago = _token.metodoPago;
+        _newUs.tipoComprobante = _token.tipoComprobante;
+        _newUs.propina = _token.propina;
         this.infoUsToken = _newUs;
 
         // agregar el metodo pago prederteminado tarjeta
-        if (!this.infoUsToken.metodoPago)  { this.setIniMetodoPago(); }
+        if (!this.infoUsToken.metodoPago)  { this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); }
       } else {
         this.infoUsToken = <UsuarioTokenModel>_token.usuario;
         this.infoUsToken.isCliente = false;

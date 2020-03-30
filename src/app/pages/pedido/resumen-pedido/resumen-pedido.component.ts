@@ -468,7 +468,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     const dataSend = {
       dataPedido: dataPedido,
       dataPrint: dataPrint,
-      dataUsuario: dataUsuario
+      dataUsuario: dataUsuario,
+      isDeliveryAPP: this.isDeliveryCliente
     };
 
     // console.log('printerComanda', dataSend);

@@ -1,5 +1,7 @@
 import { DeliveryDireccionCliente } from './delivery.direccion.cliente.model';
 import { MetodoPagoModel } from './metodo.pago.model';
+import { TipoComprobanteModel } from './tipo.comprobante.model';
+import { PropinaModel } from './propina.model';
 
 export class UsuarioTokenModel {
     acc: string;
@@ -30,4 +32,6 @@ export class UsuarioTokenModel {
     importeDelivery: string; // importe pendiente de confirmacion
     isPagoSuccess: boolean; // si ya pago, si es que actualiza cuando ya pago
     metodoPago: MetodoPagoModel; // metodo pago seleccionado
+    tipoComprobante: TipoComprobanteModel; // tipo comprobante en delivery
+    propina: PropinaModel; // propina para el repartidor delivery
 }

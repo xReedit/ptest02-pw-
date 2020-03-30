@@ -1,0 +1,39 @@
+<div class="p-4">
+    <p class="fs-18 fw-600">Tipo de Comprobante</p>
+    <hr>
+    <div class="xoption w-100" matRipple *ngFor="let subitem of listTipoComprobante">
+        <mat-checkbox 
+            class="w-100"
+            (change)="chageItem(subitem)" 
+            [(ngModel)]="subitem.checked"             
+        >
+            <div class="w-100 d-flex">
+                <span>{{subitem.descripcion}} </span>                
+            </div>
+        </mat-checkbox>                        
+    </div>    
+    <ng-container> 
+        <mat-form-field class="w-100">
+            <input type="number" matInput 
+            placeholder="DNI / RUC" 
+            [(ngModel)]="datosComprobante.dni"            
+            >
+        </mat-form-field>
+
+        <mat-form-field class="w-100">
+            <input type="text" matInput 
+            placeholder="Indicacion adicional" 
+            [(ngModel)]="datosComprobante.otro"
+            >
+        </mat-form-field>
+    </ng-container>    
+
+    <div class="text-center">
+        <span class="fs-12 fw-100 text-info">Verifique que los datos sean correctos.</span>        
+        <br>
+        <button 
+            mat-flat-button color="primary"
+            (click)="cerrarDlg()">Listo</button>
+    </div>
+    
+</div>

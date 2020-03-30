@@ -10,7 +10,8 @@ import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dia
 @NgModule({
   declarations: [
     PagarCuentaComponent,
-    PagoRespuestaComponent
+    PagoRespuestaComponent,
+    DialogDesicionComponent
   ],
   imports: [
     CommonModule,

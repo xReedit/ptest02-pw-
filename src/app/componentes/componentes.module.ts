@@ -15,7 +15,9 @@ import { ConfirmarDeliveryComponent } from './confirmar-delivery/confirmar-deliv
 import { MenuLateralClienteComponent } from './menu-lateral-cliente/menu-lateral-cliente.component';
 import { DialogMetodoPagoComponent } from './dialog-metodo-pago/dialog-metodo-pago.component';
 import { DialogVerificarTelefonoComponent } from './dialog-verificar-telefono/dialog-verificar-telefono.component';
-import { DialogDesicionComponent } from './dialog-desicion/dialog-desicion.component';
+import { DialogTipoComprobanteComponent } from './dialog-tipo-comprobante/dialog-tipo-comprobante.component';
+import { CompPropinaDeliveryComponent } from './comp-propina-delivery/comp-propina-delivery.component';
+// import { DialogDesicionComponent } from './dialog-desicion/dialog-desicion.component';
 // import { DialogSelectDireccionComponent } from './dialog-select-direccion/dialog-select-direccion.component';
 
 @NgModule({
@@ -30,8 +32,9 @@ import { DialogDesicionComponent } from './dialog-desicion/dialog-desicion.compo
     MenuLateralClienteComponent,
     DialogMetodoPagoComponent,
     DialogVerificarTelefonoComponent,
-    DialogDesicionComponent,
-    DialogDesicionComponent,
+    DialogTipoComprobanteComponent,
+    CompPropinaDeliveryComponent,
+    // DialogDesicionComponent,
     // DialogSelectDireccionComponent,
     // DialogUbicacionComponent
   ],
@@ -55,13 +58,16 @@ import { DialogDesicionComponent } from './dialog-desicion/dialog-desicion.compo
     ConfirmarDeliveryComponent,
     DialogMetodoPagoComponent,
     DialogVerificarTelefonoComponent,
-    DialogDesicionComponent
+    DialogTipoComprobanteComponent,
+    CompPropinaDeliveryComponent
+    // DialogDesicionComponent
   ],
 
   entryComponents: [
     DialogMetodoPagoComponent,
     DialogVerificarTelefonoComponent,
-    DialogDesicionComponent
+    DialogTipoComprobanteComponent
+    // DialogDesicionComponent
   ]
 })
 export class ComponentesModule { }

@@ -41,7 +41,10 @@ export class CalcDistanciaService {
       if (status === 'OK') {
         // this.directionsRenderer.setDirections(result);
         km = result.routes[0].legs[0].distance.value;
+        dirEstablecimiento.distancia_km = (km / 1000).toFixed(2);
+
         km = parseInt((km / 1000).toFixed(), 0);
+
 
         if ( km > 1 ) {
           c_servicio = (( km - 1 ) * c_km) + c_servicio;
