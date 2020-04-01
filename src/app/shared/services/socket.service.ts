@@ -47,8 +47,11 @@ export class SocketService {
 
   }
 
-  connect(infoUser: any = null, opFrom: number = 1) {
-    if ( this.isSocketOpen ) { return; } // para cuando se desconecta y conecta desde el celular
+  // _isOutCarta si esta fuera de la carta // si esta en la plataforma de deliverys estableciemientos
+  connect(infoUser: any = null, opFrom: number = 1, _isOutCarta = false) {
+    if ( this.isSocketOpen ) {
+      this.infoTockenService.setSocketId(this.socket.id);
+      return; } // para cuando se desconecta y conecta desde el celular
 
     // produccion
     // this.socket = io('/', {
@@ -65,7 +68,9 @@ export class SocketService {
       idusuario: infToken.idusuario,
       idcliente: infToken.idcliente,
       iscliente: infToken.isCliente,
-      isFromApp: opFrom
+      isOutCarta: _isOutCarta,
+      isFromApp: opFrom,
+      firts_socketid: infToken.socketId
     };
 
     // console.log('dataSocket', dataSocket);
@@ -240,11 +245,23 @@ export class SocketService {
 
   onDeliveryPedidoChangeStatus() {
     return new Observable(observer => {
-      this.socket.on('delivery-pedido-estado', (res: any) => {
-        observer.next(res);
+      this.socket.on('repartidor-notifica-estado-pedido', (estado: any) => {
+        observer.next(estado);
       });
     });
   }
+
+  onDeliveryUbicacionRepartidor() {
+    return new Observable(observer => {
+      this.socket.on('repartidor-notifica-ubicacion', (coordenadas: any) => {
+        observer.next(coordenadas);
+      });
+    });
+  }
+
+
+  // zona delivery establecimiento
+
 
   // onGetDatosSede() {
   //   return this.listen('getDataSede');
@@ -307,6 +324,9 @@ export class SocketService {
     // estado del socket
     this.socket.on('connect', () => {
       console.log('socket connect');
+
+      this.infoTockenService.setSocketId(this.socket.id);
+
       this.statusConexSocket(true, 'connect');
 
       // verifica el tiempo de session

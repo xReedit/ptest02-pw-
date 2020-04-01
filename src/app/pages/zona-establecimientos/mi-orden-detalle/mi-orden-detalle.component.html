@@ -1,0 +1,40 @@
+<div class="animated fadeInRight p-3">
+    <h4>Pedido # {{dataPedido.idpedido}}</h4>
+    <div>
+        <app-mapa-solo [origin]="origin" [destination]="destination"></app-mapa-solo>
+    </div>
+
+    <div class="div-flat-white-borde mb-3 fs-13">
+        <div class="d-flex justify-content-between">
+            <div>
+                <span class="fw-600">Repartidor: </span><br>
+                <div class="fw-100">
+                    <span>{{ dataPedido.nom_repartidor | titlecase }}  {{ dataPedido.ap_repartidor | titlecase }} </span><br>
+                    <span> {{ dataPedido.telefono_repartidor }} </span>
+                </div>
+            </div>
+            <div class="w-50 text-right">
+                <span class="fw-600 fs-20"> {{ estadoPedido }} </span>
+            </div>                
+        </div>        
+        <hr>
+        <div class="row text-center">
+            <div matRipple class="col-6 border-right text-info" (click)="callPhone()"><i class="fa fa-phone" aria-hidden="true"></i> LLamar</div>
+            <div matRipple class="col-6 text-info" (click)="redirectWhatsApp()"><i class="fa fa-commenting-o" aria-hidden="true"></i> Enviar Mensaje</div>
+        </div>
+    </div>
+    
+    <!--  detalle del pedido -->
+    <div class="div-flat-white-borde mb-3 fs-13">        
+        <app-comp-pedido-detalle [infoPedido] = "dataPedido" ></app-comp-pedido-detalle>
+    </div>
+
+    <!-- boton confirmar recibido -->
+    <ng-container *ngIf="dataPedido.pwa_delivery_status == '3'">
+        <div class="div-flat-white-borde mb-3 fs-13 text-center">
+            <button mat-flat-button 
+            color="primary" (click)="openDialogCalificacion()" >Recibi conforme.</button>
+        </div>
+    </ng-container>
+    
+</div>

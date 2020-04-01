@@ -4,6 +4,7 @@ import { MainComponent } from './main/main.component';
 import { EstablecimientosComponent } from './establecimientos/establecimientos.component';
 import { CategoriasComponent } from './categorias/categorias.component';
 import { MisOrdenesComponent } from './mis-ordenes/mis-ordenes.component';
+import { MiOrdenDetalleComponent } from './mi-orden-detalle/mi-orden-detalle.component';
 
 const routes: Routes = [{
     path: '', component: MainComponent,
@@ -26,6 +27,11 @@ const routes: Routes = [{
             path: 'pedidos',
             component: MisOrdenesComponent,
             data: { titulo: 'Mis Pedidos' }
+        },
+        {
+            path: 'pedido-detalle',
+            component: MiOrdenDetalleComponent,
+            data: { titulo: 'Pedido Detalle' }
         }
     ]
 }];

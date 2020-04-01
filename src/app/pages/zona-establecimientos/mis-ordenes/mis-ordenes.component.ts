@@ -6,6 +6,7 @@ import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-cli
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs/internal/Subject';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mis-ordenes',
@@ -23,6 +24,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
     private verifyClientService: VerifyAuthClientService,
     private crudService: CrudHttpService,
     private socketSerrvice: SocketService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -34,21 +36,22 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
       this.verifyClientService.verifyClient()
       .subscribe(res => {
         this.infoUser = res;
+        this.infoTokenService.infoUsToken = res;
+        this.infoTokenService.set();
+        this.infoTokenService.converToJSON();
         this.conectSercices();
       });
     }
   }
 
   private conectSercices() {
-    // this.socketSerrvice.connect(this.infoUser, 0);
+    // this.socketSerrvice.connect(this.infoUser, 0, true);
 
     this.loadMisPedidos();
     this.listenChangeStatus();
   }
 
   ngOnDestroy(): void {
-    // this.socketSerrvice.isSocketOpenReconect = true;
-    // this.socketSerrvice.closeConnection();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }
@@ -58,7 +61,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
     this.socketSerrvice.onDeliveryPedidoChangeStatus()
     .pipe(takeUntil(this.destroy$))
     .subscribe(res => {
-      console.log('socket listen ', res);
+      console.log('socket listen onDeliveryPedidoChangeStatus', res);
       this.loadMisPedidos();
     });
   }
@@ -78,9 +81,12 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
                 x.estado = 'Preparando';
               break;
             case '1':
+                x.estado = 'Asignado y preparando';
+              break;
+            case '3':
                 x.estado = 'En Camino';
               break;
-            case '2':
+            case '4':
                 x.estado = 'Entregado';
               break;
           }
@@ -88,6 +94,11 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
           return x;
         });
       });
+  }
+
+  openDetalle(item: any) {
+    this.infoTokenService.setOtro(item);
+    this.router.navigate(['/zona-delivery/pedido-detalle']);
   }
 
 }

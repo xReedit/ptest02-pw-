@@ -1,0 +1,19 @@
+<div class="border">
+    <agm-map appDirectionsMapDirective [showDirection]="displayDirections"
+            [origin]="origin"
+            [destination]="destination"
+
+            [zoom]="zoom"
+            [disableDefaultUI]="false"
+            [zoomControl]="false">
+
+        <agm-marker
+                [latitude]="destination.latitude"
+                [longitude]="destination.longitude"
+                [iconUrl]="'/src/assets/images/en.png'"
+                >
+        </agm-marker>
+    </agm-map>
+</div>
+
+

@@ -69,6 +69,12 @@ export class InfoTockenService {
     this.set();
   }
 
+  setSocketId( val: string) {
+    // this.infoUsToken.socketId = this.infoUsToken.socketId ? this.infoUsToken.socketId : val;
+    this.infoUsToken.socketId = val;
+    this.set();
+  }
+
   // para el confirmar pago si es clienteDelivery
   setOrderDelivery(_order: string, _importes: string): void {
     this.infoUsToken.orderDelivery = btoa(_order);
@@ -127,6 +133,11 @@ export class InfoTockenService {
     this.setPropina( prpinaInt );
   }
 
+  setOtro( val: any) {
+    this.infoUsToken.otro = val;
+    this.set();
+  }
+
   // guarda en el local storage
   set() {
     const _token = `eyCJ9.${btoa(JSON.stringify(this.infoUsToken))}`;
@@ -162,6 +173,8 @@ export class InfoTockenService {
         _newUs.metodoPago = _token.metodoPago;
         _newUs.tipoComprobante = _token.tipoComprobante;
         _newUs.propina = _token.propina;
+        _newUs.socketId = _token.socketId;
+        _newUs.otro = _token.otro;
         this.infoUsToken = _newUs;
 
         // agregar el metodo pago prederteminado tarjeta

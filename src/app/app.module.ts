@@ -8,11 +8,13 @@ import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+// import { DirectionsMapDirectiveDirective } from './shared/directivas/directions-map-directive.directive';
 
 
 @NgModule({
   declarations: [
     AppComponent,
+    // DirectionsMapDirectiveDirective,
     // DebounceClickDirective
   ],
   imports: [

@@ -20,6 +20,8 @@ export class MainComponent implements OnInit {
   nomDireccionCliente = 'Establecer una direccion de entrega';
   isSelectedDireccion = false;
 
+  infoUser: UsuarioTokenModel;
+
   constructor(
     private verifyClientService: VerifyAuthClientService,
     private dialogDireccion: MatDialog,
@@ -34,6 +36,7 @@ export class MainComponent implements OnInit {
     this.setDireccion(this.infoClient.direccionEnvioSelected);
     // console.log('this.infoToken', this.infoClient);
 
+    this.socketService.connect(this.infoClient, 0, true);
     // si no hay direccion abre el dialog
     setTimeout(() => {
       if ( !this.isSelectedDireccion ) {
@@ -96,6 +99,10 @@ export class MainComponent implements OnInit {
 
     this.router.navigate([`zona-delivery${goToPage}`]);
     // this.router.navigate([goToPage]);
+  }
+
+  goBack() {
+    window.history.back();
   }
 
 }

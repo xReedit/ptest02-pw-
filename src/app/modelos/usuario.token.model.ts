@@ -34,4 +34,6 @@ export class UsuarioTokenModel {
     metodoPago: MetodoPagoModel; // metodo pago seleccionado
     tipoComprobante: TipoComprobanteModel; // tipo comprobante en delivery
     propina: PropinaModel; // propina para el repartidor delivery
+    socketId: string;
+    otro: any;
 }

@@ -17,13 +17,21 @@ import { DialogMetodoPagoComponent } from './dialog-metodo-pago/dialog-metodo-pa
 import { DialogVerificarTelefonoComponent } from './dialog-verificar-telefono/dialog-verificar-telefono.component';
 import { DialogTipoComprobanteComponent } from './dialog-tipo-comprobante/dialog-tipo-comprobante.component';
 import { CompPropinaDeliveryComponent } from './comp-propina-delivery/comp-propina-delivery.component';
+import { MapaSoloComponent } from './mapa-solo/mapa-solo.component';
+import { DirectionsMapDirectiveDirective } from '../shared/directivas/directions-map-directive.directive';
+import { CompPedidoDetalleComponent } from './comp-pedido-detalle/comp-pedido-detalle.component';
+import { CompCalificacionComponent } from './comp-calificacion/comp-calificacion.component';
 // import { DialogDesicionComponent } from './dialog-desicion/dialog-desicion.component';
 // import { DialogSelectDireccionComponent } from './dialog-select-direccion/dialog-select-direccion.component';
+
+import { StarRatingModule } from 'angular-star-rating';
+import { DialogCalificacionComponent } from './dialog-calificacion/dialog-calificacion.component';
 
 @NgModule({
   declarations: [
     DatosDeliveryComponent,
     DebounceClickDirective,
+    DirectionsMapDirectiveDirective,
     EncuestaOpcionComponent,
     AgregarDireccionComponent,
     ItemComercioComponent,
@@ -34,6 +42,10 @@ import { CompPropinaDeliveryComponent } from './comp-propina-delivery/comp-propi
     DialogVerificarTelefonoComponent,
     DialogTipoComprobanteComponent,
     CompPropinaDeliveryComponent,
+    MapaSoloComponent,
+    CompPedidoDetalleComponent,
+    CompCalificacionComponent,
+    DialogCalificacionComponent,
     // DialogDesicionComponent,
     // DialogSelectDireccionComponent,
     // DialogUbicacionComponent
@@ -46,7 +58,9 @@ import { CompPropinaDeliveryComponent } from './comp-propina-delivery/comp-propi
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo',
       libraries: ['places']
-    })
+    }),
+
+    StarRatingModule.forRoot()
   ],
   exports: [
     DatosDeliveryComponent,
@@ -59,14 +73,19 @@ import { CompPropinaDeliveryComponent } from './comp-propina-delivery/comp-propi
     DialogMetodoPagoComponent,
     DialogVerificarTelefonoComponent,
     DialogTipoComprobanteComponent,
-    CompPropinaDeliveryComponent
+    CompPropinaDeliveryComponent,
+    MapaSoloComponent,
+    CompPedidoDetalleComponent,
+    CompCalificacionComponent,
+    DialogCalificacionComponent
     // DialogDesicionComponent
   ],
 
   entryComponents: [
     DialogMetodoPagoComponent,
     DialogVerificarTelefonoComponent,
-    DialogTipoComprobanteComponent
+    DialogTipoComprobanteComponent,
+    DialogCalificacionComponent
     // DialogDesicionComponent
   ]
 })

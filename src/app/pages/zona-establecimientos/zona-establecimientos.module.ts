@@ -8,6 +8,7 @@ import { MaterialModule } from 'src/app/core/material/material.module';
 import { ComponentesModule } from 'src/app/componentes/componentes.module';
 import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-select-direccion/dialog-select-direccion.component';
 import { MisOrdenesComponent } from './mis-ordenes/mis-ordenes.component';
+import { MiOrdenDetalleComponent } from './mi-orden-detalle/mi-orden-detalle.component';
 
 
 
@@ -18,6 +19,7 @@ import { MisOrdenesComponent } from './mis-ordenes/mis-ordenes.component';
     CategoriasComponent,
     MisOrdenesComponent,
     DialogSelectDireccionComponent,
+    MiOrdenDetalleComponent,
   ],
   imports: [
     CommonModule,
