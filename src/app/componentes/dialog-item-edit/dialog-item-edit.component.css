@@ -163,8 +163,16 @@
 }
 
 .img-carta {
-    width: 100%;
+    width: auto;
     border-radius: 3px;
-    border: solid 1px #e0e0e0;
+    /* border: solid 1px #e0e0e0; */
     margin-bottom: 5px;
+    height: 160px;
+    object-fit: cover;
+    transition: all 0.1s;
+}
+
+.img-carta:hover {
+    transform:scale(1.5);
+    z-index: 10;
 }

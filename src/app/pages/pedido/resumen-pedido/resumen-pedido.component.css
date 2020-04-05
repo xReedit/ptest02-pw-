@@ -106,11 +106,17 @@
 }
 
 .div-confirma-pedido {        
-    position: absolute;
+    /* position: absolute; */
     background: antiquewhite;
-    position: relative;
+    /* position: relative; */
     /* height: calc(100vh - 50px); */
-    overflow: auto;
+    /* overflow: auto; */
+
+    overflow: hidden;
+    height: 100%;
+    top: 0;
+    margin: 0;
+    position: relative;
 }
 
 .bg-1 {

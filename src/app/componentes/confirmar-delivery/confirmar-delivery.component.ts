@@ -128,6 +128,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this.infoToken.telefono = telefono;
       this.infoTokenService.setTelefono(telefono);
 
+      // this.infoTokenService.set();
+
       this.dataDelivery.emit(this.resData);
     }
 
@@ -159,6 +161,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
       // this.infoToken.telefono = telefono;
       // this.infoTokenService.setTelefono(telefono);
 
+      this.infoTokenService.set();
       this.dataDelivery.emit(this.resData);
     }
   }

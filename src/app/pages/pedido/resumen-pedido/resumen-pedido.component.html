@@ -84,7 +84,7 @@
 
     <!-- confirma pedido -->
     <div [hidden]="!isVisibleConfirmar" class="w-100">
-        <div class="xcontent div-confirma-pedido w-100 xh-100 p-3 transicion animated fadeInRight"
+        <div class="xcontent div-confirma-pedido w-100 p-3 transicion animated fadeInRight"
           [ngClass]="[isVisibleConfirmarAnimated ? 'show' : 'hide', isVisibleConfirmarAnimated ? 'fadeInRight' : 'fadeInLeft', !isDeliveryCliente ? 'bg-1': 'bg-2']">
             <div class="text-center">
 
@@ -152,7 +152,7 @@
                         <app-confirmar-delivery 
                             [listSubtotales] = "_arrSubtotales" 
                             (isReady)="isReadyClienteDelivery = $event"
-                            (dataDelivery) = "frmDelivery = $event">
+                            (dataDelivery) = "getDatosFormConfirmaDelivery($event)">
                         </app-confirmar-delivery>
                        
 

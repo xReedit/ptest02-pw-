@@ -27,9 +27,9 @@ import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/di
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil, take, last, takeLast } from 'rxjs/operators';
 import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedido-cliente.service';
-import { throwToolbarMixedModesError } from '@angular/material/toolbar';
+// import { throwToolbarMixedModesError } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+// import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
@@ -324,6 +324,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     const dialogReset = this.dialog.open(DialogResetComponent, _dialogConfig);
     dialogReset.afterClosed().subscribe(result => {
       if (result ) {
+        // enviamos this._miPedido esta visa no se modifica
         this.miPedidoService.resetAllNewPedido();
         this.navigatorService.setPageActive('carta');
       }
@@ -343,6 +344,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.isVisibleConfirmar = false;
     }, 300);
+  }
+
+  getDatosFormConfirmaDelivery($event: any) {
+    this.frmDelivery = $event;
   }
 
   private confirmarPeiddo(): void {

@@ -18,6 +18,7 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
   origin: ILatLng;
   destination: ILatLng;
   estadoPedido = '';
+  showTelefonoRepartidor = false;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   private direccionCliente: any;
@@ -58,21 +59,24 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
 
   private listenUbicacionRepartidor() {
     this.socketService.onDeliveryUbicacionRepartidor()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
         console.log('ubicacion repartidor', res);
+        if ( this.estadoPedido === '4' ) {return; }
         this.origin = <ILatLng>res;
       });
 
     this.socketService.onDeliveryPedidoChangeStatus()
     .pipe(takeUntil(this.destroy$))
     .subscribe(res => {
-
+      if ( this.estadoPedido === '4' ) {return; }
       this.readEstadoPedido(res);
     });
   }
 
   private readEstadoPedido(_estado: any) {
     let estado = '';
+    this.showTelefonoRepartidor = false;
     this.dataPedido.pwa_delivery_status = _estado;
       switch (_estado.toString()) {
         case '0':
@@ -80,12 +84,15 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
           break;
         case '1':
             estado = 'Asignado y preparando';
+            this.showTelefonoRepartidor = true;
           break;
         case '3':
             estado = 'En Camino';
+            this.showTelefonoRepartidor = true;
           break;
         case '4':
             estado = 'Entregado';
+            this.showTelefonoRepartidor = false;
           break;
       }
 
@@ -105,6 +112,7 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
     const dataCalificado: DatosCalificadoModel = new DatosCalificadoModel;
     dataCalificado.idrepartidor = this.dataPedido.idrepartidor;
     dataCalificado.idcliente = this.dataPedido.idcliente;
+    dataCalificado.idpedido = this.dataPedido.idpedido;
     dataCalificado.tipo = 1;
     dataCalificado.showNombre = true;
     dataCalificado.nombre = this.dataPedido.nom_repartidor + ' ' + this.dataPedido.ap_repartidor;
@@ -126,9 +134,12 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
       data => {
         // notificar al repartidor fin del pedido
         this.socketService.emit('repartidor-notifica-fin-pedido', this.dataPedido);
+        this.dataPedido.pwa_delivery_status = 4;
+        this.showTelefonoRepartidor = false;
+        this.estadoPedido = 'Entregado';
         console.log('data dialog', data);
       }
-  );
+    );
   }
 
 }

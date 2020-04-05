@@ -127,6 +127,7 @@ export class InfoTockenService {
   setIniPropina() {
     const prpinaInt: PropinaModel = new PropinaModel;
     prpinaInt.idpropina = 1;
+    prpinaInt.value = 0;
     prpinaInt.descripcion = 'S/. 0';
     prpinaInt.checked = true;
 
@@ -189,13 +190,15 @@ export class InfoTockenService {
   }
 
   cerrarSession(): void {
-    localStorage.removeItem('::token');
+    if (!this.infoUsToken.isDelivery) {
+      localStorage.removeItem('::token');
+      localStorage.removeItem('token');
+      localStorage.removeItem('sys::numtis');
+    }
     localStorage.removeItem('sys::rules');
     localStorage.removeItem('sys::status');
-    localStorage.removeItem('sys::numtis');
     localStorage.removeItem('sys::st');
 
-    localStorage.removeItem('token');
     localStorage.removeItem('sys::ed');
     localStorage.removeItem('sys::transaction-response');
     localStorage.removeItem('sys::transaction-load');
@@ -209,8 +212,14 @@ export class InfoTockenService {
     if ( !this.infoUsToken || !this.infoUsToken.isCliente || !this.infoUsToken.isDelivery) { // si es usuario autorizado no cuenta tiempo
       return true;
     }
-    const numTis = parseInt(localStorage.getItem('sys::numtis'), 0);
-    let continueSession = !isNaN(numTis);
+
+    if (this.infoUsToken.isDelivery) {
+      // si es delivery no cierra session
+      return true;
+    }
+
+    let numTis = parseInt(localStorage.getItem('sys::numtis'), 0);
+    let continueSession = this.infoUsToken.isDelivery ? this.infoUsToken.isDelivery : !isNaN(numTis);
 
     if (!continueSession) {
       this.cerrarSession();
@@ -218,6 +227,11 @@ export class InfoTockenService {
       return continueSession;
     }
 
+    if ( isNaN(numTis) ) {
+      localStorage.setItem('sys::numtis', new Date().getTime().toString());
+    }
+
+    numTis = isNaN(numTis) ?  new Date().getTime() : numTis;
     const ms_now = new Date().getTime();
     const ms = ms_now - numTis;
     const sec = Math.floor((ms / 1000));

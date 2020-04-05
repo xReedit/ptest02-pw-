@@ -12,6 +12,7 @@ import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-select-direccion/dialog-select-direccion.component';
 import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { SocketService } from 'src/app/shared/services/socket.service';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
@@ -39,7 +40,8 @@ export class CategoriasComponent implements OnInit {
     private listenService: ListenStatusService,
     private dialogDireccion: MatDialog,
     private calcDistanceService: CalcDistanciaService,
-    private establecimientoService: EstablecimientoService
+    private establecimientoService: EstablecimientoService,
+    private socketService: SocketService
   ) { }
 
   ngOnInit() {
@@ -61,7 +63,7 @@ export class CategoriasComponent implements OnInit {
 
   loadEstablecimientos() {
     const _data = {
-      idsede_categoria: 1,
+      idsede_categoria: 2,
       codigo_postal: this.codigo_postal_actual
     };
 
@@ -88,6 +90,9 @@ export class CategoriasComponent implements OnInit {
 
   itemSelected($event: DeliveryEstablecimiento) {
     console.log('establecimiento seleccionada', $event);
+
+    this.socketService.closeConnection();
+
     this.verifyClientService.setIdSede($event.idsede);
     this.verifyClientService.setIdOrg($event.idorg);
     this.verifyClientService.setIsDelivery(true);

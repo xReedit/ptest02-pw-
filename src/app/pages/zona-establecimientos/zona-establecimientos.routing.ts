@@ -11,7 +11,7 @@ const routes: Routes = [{
     data: { titulo: 'Inicio' },
     children: [
         {
-            path: '', redirectTo: 'categorias'
+            path: '', redirectTo: 'establecimientos'
         },
         {
             path: 'categorias',

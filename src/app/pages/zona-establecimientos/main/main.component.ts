@@ -8,6 +8,7 @@ import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-select-direccion/dialog-select-direccion.component';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
+import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 
 
 @Component({
@@ -23,6 +24,7 @@ export class MainComponent implements OnInit {
   infoUser: UsuarioTokenModel;
 
   constructor(
+    private infoTokenService: InfoTockenService,
     private verifyClientService: VerifyAuthClientService,
     private dialogDireccion: MatDialog,
     private listenService: ListenStatusService,
@@ -31,12 +33,26 @@ export class MainComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.infoTokenService.converToJSON();
     this.infoClient = this.verifyClientService.getDataClient();
 
     this.setDireccion(this.infoClient.direccionEnvioSelected);
     // console.log('this.infoToken', this.infoClient);
-
     this.socketService.connect(this.infoClient, 0, true);
+
+    // if ( this.infoTokenService.infoUsToken ) {
+    //   this.infoUser = this.infoTokenService.infoUsToken;
+    //   this.socketService.connect(this.infoClient, 0, true);
+    // } else {
+    //   this.verifyClientService.verifyClient()
+    //   .subscribe(res => {
+    //     this.infoUser = res;
+    //     this.infoTokenService.infoUsToken = res;
+    //     this.infoTokenService.set();
+    //     this.infoTokenService.converToJSON();
+    //     this.socketService.connect(this.infoClient, 0, true);
+    //   });
+    // }
     // si no hay direccion abre el dialog
     setTimeout(() => {
       if ( !this.isSelectedDireccion ) {

@@ -1,0 +1,26 @@
+.div-ico {
+    width: 180px;
+    padding: 10px;
+    text-align: left;
+}
+
+.img-ico {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    transition: all 0.1s;
+    border-radius: 10px;
+}
+
+.div-ico .titulo {
+    top: -28px;
+    position: relative;
+    padding: 2px;        
+    background: rgba(66,66,66,0.8);
+    border-radius: 0px 0px 10px 10px;
+}
+
+.div-otros {
+    margin-top: -50px;
+    padding: 1.6rem;
+}

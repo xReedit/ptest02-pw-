@@ -16,6 +16,7 @@ import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/di
 import { Subscription } from 'rxjs/internal/Subscription';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { Subject } from 'rxjs/internal/Subject';
+import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 
 
 @Component({
@@ -59,6 +60,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   private itemSelected: ItemModel;
   private seccionSelected: SeccionModel;
   private countSeeBack = 2; // primera vista al dar goback
+
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   private isFirstLoadListen = false; // si es la primera vez que se carga, para no volver a cargar los observables
 
@@ -226,6 +229,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     console.log('======= unsubscribe ======= ');
     this.unsubscribeCarta.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
     // this.unsubscribe$.next();
     // this.unsubscribe$.complete();
   }
@@ -409,11 +414,15 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.isBusqueda = res;
     });
 
-    this.listenStatusService.charBuqueda$.subscribe((res: string) => {
+    this.listenStatusService.charBuqueda$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res: string) => {
       this.isBusquedaFindNow(res);
     });
 
-    this.socketService.isSocketOpen$.subscribe(res => {
+    this.socketService.isSocketOpen$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(res => {
       if (!res) {
         console.log('===== unsubscribe unsubscribe Carta =====');
         this.unsubscribeCarta.unsubscribe();

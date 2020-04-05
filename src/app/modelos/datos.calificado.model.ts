@@ -1,6 +1,7 @@
 export class DatosCalificadoModel {
     idrepartidor: number;
     idcliente: number;
+    idpedido: number;
     idsede: number;
     nombre: string;
     titulo: string;

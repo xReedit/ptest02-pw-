@@ -2,6 +2,7 @@
 export const URL_SERVER = 'http://localhost:5819/v3/'; // desarrollo
 export const URL_SERVER_SOCKET = 'http://localhost:5819'; // desarrollo
 export const URL_IMG_CARTA = 'http://192.168.1.64/restobar/file/';
+export const URL_IMG_COMERCIO = 'http://192.168.1.64/restobar/print/logo/';
 
 // export const URL_CONSULTA_RUC_DNI = 'http://apifacturalo_a.test:8080/api/services/'; // consulta dni o ruc
 

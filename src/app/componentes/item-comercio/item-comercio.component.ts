@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimiento';
+import { URL_IMG_COMERCIO } from 'src/app/shared/config/config.const';
 
 
 @Component({
@@ -10,6 +11,7 @@ import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimient
 export class ItemComercioComponent implements OnInit {
   isCerrado = false;
   amPm = 'AM';
+  imgComercio = '';
 
   @Input() itemEstablecimiento: DeliveryEstablecimiento;
 
@@ -20,6 +22,7 @@ export class ItemComercioComponent implements OnInit {
   ngOnInit() {
     this.isCerrado = this.itemEstablecimiento.cerrado === 1 ? true : false;
     this.amPm = this.itemEstablecimiento.hora_ini ? parseInt(this.itemEstablecimiento.hora_ini.split(':')[0], 0) > 12 ? 'PM' : 'AM' : '';
+    this.imgComercio = URL_IMG_COMERCIO + this.itemEstablecimiento.pwa_delivery_img;
   }
 
   _itemSelected() {

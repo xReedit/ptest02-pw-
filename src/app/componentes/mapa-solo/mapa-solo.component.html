@@ -10,7 +10,14 @@
         <agm-marker
                 [latitude]="destination.latitude"
                 [longitude]="destination.longitude"
-                [iconUrl]="'/src/assets/images/en.png'"
+                [iconUrl]='{"url": "./assets/images/placeholder.png", "scaledSize": {"height": 30, "width": 30}}'
+                >
+        </agm-marker>
+
+        <agm-marker
+                [latitude]="origin.latitude"
+                [longitude]="origin.longitude"
+                [iconUrl]='{"url": "./assets/images/delivery-man.png", "scaledSize": {"height": 25, "width": 25}}'
                 >
         </agm-marker>
     </agm-map>

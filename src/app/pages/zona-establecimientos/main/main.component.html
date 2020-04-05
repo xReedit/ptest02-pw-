@@ -1,10 +1,11 @@
-<div class="animated fadeInUp overflow-hidden">
-    <div class="header-app-1 p-3 d-inline-box">            
+<div class="animated fadeIn overflow-hidden fondo-ini">
+    <div class="header-app-1 p-3 d-flex justify-content-between">            
+    <!-- <div> -->
         <i class="fa fa-arrow-left" (click)="goBack()"></i>
         <div matRipple class="text-center" (click)="openDialogDireccion()">
             <span class="pl-2 fs-13 fw-100">{{ nomDireccionCliente }}</span>
-            <i class="fa fa-caret-down pl-2" aria-hidden="true"></i>
         </div>
+        <i class="fa fa-caret-down pl-2" aria-hidden="true"></i>
     </div>
 
     <!-- body -->

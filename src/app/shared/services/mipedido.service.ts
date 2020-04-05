@@ -875,6 +875,7 @@ export class MipedidoService {
 
   // resetear stock
   resetAllNewPedido() {
+    // _mipedidoVista = _mipedidoVista ? _mipedidoVista : this.listItemsPedido;
     this.socketService.emit('resetPedido', this.listItemsPedido);
     // this.updatePedidoFromClear();
     this.prepareNewPedido();

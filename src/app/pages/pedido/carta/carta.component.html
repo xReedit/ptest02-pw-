@@ -43,7 +43,13 @@
               (click)="getItems(item)">
             <div class="m1">
               <div class="img">
-                <img src="assets/images/{{i}}.png" alt="">
+                <ng-container *ngIf="item.img === ''; else elseTemplateImg">
+                  <img src="assets/images/{{i}}.png" alt="img-icon">                  
+                </ng-container>
+                <ng-template #elseTemplateImg>
+                  <img src="assets/images/{{item.img}}" alt="img-icon">
+                </ng-template>
+                
               </div>
               <div>
                 <span class="fw-100 fs-19">{{item.des}}</span><br>
