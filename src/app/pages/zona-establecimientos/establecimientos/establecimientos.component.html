@@ -1,14 +1,14 @@
 <div class="animated fadeInUp">    
     <div class="d-flex text-center p-3">
         <!-- items principales -->
-        <div class="div-ico">
+        <div matRipple class="div-ico" (click)="goComercioCategoria(4)">
             <img class="img-ico" src="assets/images/icon-app/icon-p-4.jpg" alt="">
             <div class="titulo">
                 <span class="pl-1 fw-100 fs-13">Supermercados</span>
             </div>
         </div>
 
-        <div class="div-ico">
+        <div matRipple class="div-ico" (click)="goComercioCategoria(1)">
             <img class="img-ico" src="assets/images/icon-app/icon-p-2.PNG" alt="">
             <div class="titulo">
                 <span class="pl-1 fw-100 fs-13">Restaurantes</span>
@@ -18,10 +18,14 @@
 
     <!-- otras categorias -->
     <div class="div-otros">
-        <div class="div-flat-white-borde mb-3 fs-13 text-dark text-left">
-            <div>
-                <img src="" alt="">
-                <span>Licoreria</span>
+        <div class="div-flat-white-borde mb-3 fs-13 text-dark text-left bg-transparente">
+            <div class="div-content-ico">
+                <div matRipple (click)="goComercioCategoria(item.idsede_categoria)" class="div-ico-circle" *ngFor="let item of listIcoCategoria">
+                    <div class="img-ico-circle-border">
+                        <img src="{{imgIcoCategoria}}{{item.img}}" alt="">
+                    </div>
+                    <p class="fs-12 fw-600">{{ item.descripcion }}</p>
+                </div>
             </div>
         </div>
     </div>

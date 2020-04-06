@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimiento';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 // import { AuthService } from 'src/app/shared/services/auth.service';
 // import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
@@ -28,7 +28,10 @@ export class CategoriasComponent implements OnInit {
   codigo_postal_actual: string;
   infoClient: SocketClientModel;
   isNullselectedDireccion = true;
+  isSelectedDireccion = false;
   direccionCliente: DeliveryDireccionCliente;
+
+  private idcategoria_selected: any;
   // private veryfyClient: Subscription = null;
 
   constructor(
@@ -41,10 +44,17 @@ export class CategoriasComponent implements OnInit {
     private dialogDireccion: MatDialog,
     private calcDistanceService: CalcDistanciaService,
     private establecimientoService: EstablecimientoService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private activatedRoute: ActivatedRoute
   ) { }
 
   ngOnInit() {
+
+    this.activatedRoute.queryParams.subscribe(params => {
+      this.idcategoria_selected = params['id'];
+      console.log('this.idcategoria_selected', this.idcategoria_selected);
+    });
+
     // this.loadEstablecimientos();
     this.infoClient = this.verifyClientService.getDataClient();
 
@@ -59,11 +69,18 @@ export class CategoriasComponent implements OnInit {
 
       }
     });
+
+     // si no hay direccion abre el dialog
+     setTimeout(() => {
+      if ( this.isNullselectedDireccion ) {
+        this.openDialogDireccion();
+      }
+    }, 800);
   }
 
   loadEstablecimientos() {
     const _data = {
-      idsede_categoria: 2,
+      idsede_categoria: this.idcategoria_selected,
       codigo_postal: this.codigo_postal_actual
     };
 

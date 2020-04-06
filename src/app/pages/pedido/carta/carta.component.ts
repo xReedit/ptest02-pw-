@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { URL_IMG_CARTA } from 'src/app/shared/config/config.const';
 
 
 @Component({
@@ -31,6 +32,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   // objCartaCarta: any;
   objCartaBus: any = [];
   isBusqueda = false;
+  rutaImgItem = URL_IMG_CARTA;
   private isCargado = true;
 
   public showCategoria = false;
@@ -258,6 +260,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.showSecciones = false;
       this.showItems = true;
       this.tituloToolBar += ' / ' + seccion.des;
+
+      console.log('this.objItems', this.objItems);
+
       this.navigatorService.addLink('carta-i-secciones-items');
     }, 150);
 

@@ -24,3 +24,31 @@
     margin-top: -50px;
     padding: 1.6rem;
 }
+
+.bg-transparente {
+    background: rgba(250,250,250,0.6) !important
+}
+
+.div-content-ico {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;;
+}
+
+.div-ico-circle{
+    /* background: lightgreen; */
+    float: left;
+    text-align: center;
+
+}
+
+.img-ico-circle-border {
+    display: inline-block;    
+    border-radius: 50%;
+    background: white;
+    padding: 15px;
+    filter: drop-shadow(1px 1px 3px #757575);
+    border: 1px solid #eeeeee;
+    margin: 10px;
+    max-width: 64px;
+}

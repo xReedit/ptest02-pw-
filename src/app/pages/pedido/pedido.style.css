@@ -40,15 +40,15 @@
 }
 
 .border-left-item-verde {
-  border-left: 10px solid #43a047;
+  border-left: 5px solid #43a047;
 }
 
 .border-left-item-rojo {
-  border-left: 10px solid #d81b60;
+  border-left: 5px solid #d81b60;
 }
 
 .border-left-item-amarillo {
-  border-left: 10px solid #ffb300;
+  border-left: 5px solid #ffb300;
 }
 
 .m1-selected {
@@ -219,3 +219,16 @@
   position: relative;
   right: -50%;
 } */
+
+.item-titulo {
+  color: #424242;
+}
+
+.icon-item-carta {
+  height: 46px;
+  object-fit: cover;
+  transition: all 0.1s;
+  max-width: 50px;
+  border-radius: 5px;
+  margin-right: 5px;
+}

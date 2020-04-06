@@ -53,12 +53,14 @@ export class MainComponent implements OnInit {
     //     this.socketService.connect(this.infoClient, 0, true);
     //   });
     // }
+
+
     // si no hay direccion abre el dialog
-    setTimeout(() => {
-      if ( !this.isSelectedDireccion ) {
-        this.openDialogDireccion();
-      }
-    }, 800);
+    // setTimeout(() => {
+    //   if ( !this.isSelectedDireccion ) {
+    //     this.openDialogDireccion();
+    //   }
+    // }, 800);
 
 
     this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
