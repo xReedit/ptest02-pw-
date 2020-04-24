@@ -34,7 +34,7 @@ export class ReglascartaService {
       this.socketService.onReglasCarta().subscribe((res: any) => {
         this.objReglasCarta = res[0];
         this.codeObjInSotrage();
-        console.log(this.objReglasCarta);
+        // console.log(this.objReglasCarta);
         observer.next(this.objReglasCarta);
       });
     });
@@ -49,7 +49,7 @@ export class ReglascartaService {
       const objFromStorage = this.storageService.get(this.keyStorage);
       try {
         this.objReglasCarta = JSON.parse(atob(objFromStorage));
-        console.log(this.objReglasCarta);
+        // console.log(this.objReglasCarta);
         observer.next(this.objReglasCarta);
       } catch (error) {
         this.dataReglasCarta();

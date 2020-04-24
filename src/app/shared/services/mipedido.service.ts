@@ -26,6 +26,9 @@ import { SubItemsView } from 'src/app/modelos/subitems.view.model';
 import { SubItemContent } from 'src/app/modelos/subitem.content.model';
 import { CartaModel } from 'src/app/modelos/carta.model';
 import { EstablecimientoService } from './establecimiento.service';
+import { CrudHttpService } from './crud-http.service';
+import { match } from 'minimatch';
+
 // import { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChanged';
 // import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 
@@ -65,6 +68,16 @@ export class MipedidoService {
   time = new Date();
   max_minute_order: number;
 
+  // pwa_delivery_importe_min = 10; // delivery / el importe minimo por pedido
+  pwa_delivery_servicio_propio = false; // delivery / si el comercio tiene propio repartidores
+
+  deliveryCanItemsInOrder = 0; // cantidad de productos en el pedido // solo para delivery
+  deliveryArrConstantes = {
+    cantItemsScala: 0,
+    costoScala: 0
+  };
+
+
 
   constructor(
     private storageService: StorageService,
@@ -75,6 +88,7 @@ export class MipedidoService {
     private utilesService: UtilitariosService,
     private listenStatusService: ListenStatusService,
     private establecimientoService: EstablecimientoService, // datos del estableciento // clienteSelivery
+    private crudService: CrudHttpService,
     ) {
 
     }
@@ -124,7 +138,7 @@ export class MipedidoService {
       }
 
       // this.laCartaObjSource.next(this.objCarta);
-      console.log('objCartaCarta', this.objCarta);
+      // console.log('objCartaCarta', this.objCarta);
     // }, 1000);
   }
 
@@ -152,6 +166,28 @@ export class MipedidoService {
     this.mpObjSeccionSelected.idseccion = seccion.idseccion;
     this.mpObjSeccionSelected.sec_orden = seccion.sec_orden;
     this.mpObjSeccionSelected.ver_stock_cero = seccion.ver_stock_cero;
+  }
+
+  // obtener el DELIVERY_CANTIDAD_ITEMS_ESCALA // solo si es cliente delivery
+  getDeliveryConstCantEscala(): void {
+
+    // recuperar del storage
+    const _arrItemScala = localStorage.getItem('sys::ICS');
+    if ( _arrItemScala ) {
+      this.deliveryArrConstantes = JSON.parse(atob(_arrItemScala));
+    } else {
+      this.crudService.getAll('pedido', 'get-const-delivery-items-escala', false, false, false)
+        .subscribe((res: any) => {
+          this.deliveryArrConstantes = {
+            cantItemsScala: res.data[0].value,
+            costoScala: res.data[1].value
+          };
+          // = parseInt(res.data[0][0].value, 0);
+          // console.log('deliveryItemsScala', res);
+          localStorage.setItem('sys::ICS', btoa(JSON.stringify(this.deliveryArrConstantes)));
+        });
+    }
+
   }
 
   // suma cantidad seleccionada
@@ -252,9 +288,9 @@ export class MipedidoService {
 
     this.socketService.emit('itemModificado', item);
 
-    console.log('listItemsPedido', this.listItemsPedido);
-    console.log('itemModificado en add', item);
-    console.log('itemModificado en add', JSON.stringify(item));
+    // console.log('listItemsPedido', this.listItemsPedido);
+    // console.log('itemModificado en add', item);
+    // console.log('itemModificado en add', JSON.stringify(item));
 
     this.listenStatusService.setHayPedidoPendiente(true);
 
@@ -467,10 +503,10 @@ export class MipedidoService {
   addItemInCarta(newItem: any) {
     const newItemFind = this.findItemCarta(newItem);
     if ( newItemFind ) { // update
-      console.log('update');
+      // console.log('update');
       newItemFind.cantidad = newItemFind.cantidad;
     } else { // agrega a la carta
-      console.log('add in carta');
+      // console.log('add in carta');
       this.objCarta.carta.map((cat: CategoriaModel) => {
         cat.secciones
           .filter((sec: SeccionModel) => sec.idseccion === newItem.idseccion )
@@ -481,7 +517,7 @@ export class MipedidoService {
     }
 
     // this.laCartaObjSource.next(this.objCarta.carta);
-    console.log('item new add in carta', this.objCarta.carta);
+    // console.log('item new add in carta', this.objCarta.carta);
   }
 
   // actualizar las cantidades despues de connectar
@@ -800,7 +836,7 @@ export class MipedidoService {
     if ( this.miPedido.tipoconsumo.length === 0 ) {
       this.miPedido = new PedidoModel();
 
-      console.log('mi pedido clear', this.miPedido);
+      // console.log('mi pedido clear', this.miPedido);
       this.miPedidoSource.next(this.miPedido);
       return;
     }
@@ -821,7 +857,7 @@ export class MipedidoService {
       return tpc;
     });
 
-    console.log('mi pedido clear', this.miPedido);
+    // console.log('mi pedido clear', this.miPedido);
     this.miPedidoSource.next(this.miPedido);
 
   }
@@ -959,7 +995,7 @@ export class MipedidoService {
 
     // actualizar // buscar cada item en el obj carta
     this.listItemsPedido.map((item: ItemModel) => {
-      if (item.isalmacen === 0) {
+      // if (item.isalmacen === 0) { //
         this.objCarta.carta.map((cat: CategoriaModel) => {
           cat.secciones.map((sec: SeccionModel) => {
             const itemUpdate = sec.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0];
@@ -970,7 +1006,7 @@ export class MipedidoService {
             }
           });
         });
-      }
+      // }
     });
 
     // this.laCartaObjSource.next(this.objCarta);
@@ -1207,10 +1243,11 @@ export class MipedidoService {
       const rpt: any = {};
 
       // si es servicio delivery y si es clienteDelivery
-      if ( (p.descripcion.toUpperCase().indexOf('DELIVERY') > -1  || p.descripcion.toUpperCase().indexOf('ENTREGA') > -1) && isClienteDelivery) {
+      if ( (p.descripcion.toUpperCase().indexOf('DELIVERY') > -1  || p.descripcion.toUpperCase().indexOf('ENTREGA') > -1) && isClienteDelivery && !this.pwa_delivery_servicio_propio) {
         isTieneDelivery = true;
         p.descripcion = 'Entrega';
         importeOtros = this.establecimientoService.get().c_servicio;
+
       } else {
         importeOtros = parseFloat(p.monto); // aplica a todo el pedido
       }
@@ -1221,8 +1258,8 @@ export class MipedidoService {
       if (p.nivel === 0) { // aplica por item
         const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion);
         if ( cantidad === 0 ) { return; } // si no encontro items con esos criterios
-
-        importeOtros = cantidad * parseFloat(p.monto);
+        const _costoXCantItems = this.calcCostoCantItemsDelivery();
+        importeOtros = (cantidad * parseFloat(p.monto)) + _costoXCantItems;
       }
 
       rpt.id = p.tipo + p.id;
@@ -1248,7 +1285,9 @@ export class MipedidoService {
     });
 
     // si no tiene la opcion delivery y es un clienteDelivery lo agrega
-    if ( !isTieneDelivery && isClienteDelivery) {
+    if ( !isTieneDelivery && isClienteDelivery && !this.pwa_delivery_servicio_propio) {
+      const _costoXCantItems = this.calcCostoCantItemsDelivery();
+      const costoServicio = _costoXCantItems + this.establecimientoService.get().c_servicio;
       const rpt: any = {};
       rpt.id = -2;
       rpt.descripcion = 'Entrega';
@@ -1257,7 +1296,7 @@ export class MipedidoService {
       rpt.quitar = false;
       rpt.tachado = false;
       rpt.visible_cpe = false;
-      rpt.importe = parseFloat(this.establecimientoService.get().c_servicio.toString()).toFixed(2);
+      rpt.importe = parseFloat(costoServicio.toString()).toFixed(2);
       // rpt.importe = parseFloat(importeOtros.toString()).toFixed(2);
 
       sumaTotal += parseFloat(rpt.importe);
@@ -1295,21 +1334,43 @@ export class MipedidoService {
 
     arrSubtotales.push(_arrSubtotales);
 
-    console.log('totales', arrSubtotales);
+    // console.log('totales', arrSubtotales);
     return  arrSubtotales;
 
   }
 
+  private calcCostoCantItemsDelivery(): number {
+    let rpt = 0;
+    const _cantItemScala = parseInt(this.deliveryArrConstantes.cantItemsScala.toString(), 0);
+    if (this.deliveryCanItemsInOrder > _cantItemScala) {
+      const _div = this.deliveryCanItemsInOrder / this.deliveryArrConstantes.cantItemsScala;
+      // _div = Math.floor(_div);
+      if ( _div > 1 ) {
+        rpt = Math.floor(_div) * this.deliveryArrConstantes.costoScala;
+      }
+    } else {
+      rpt = 0;
+    }
+    return rpt;
+  }
+
   private getSubTotalMiPedido(): number {
     let sumSubTotal = 0;
+    let cantItemOrder = 0;
     this.miPedido.tipoconsumo
       .map((tpc: TipoConsumoModel) => {
         tpc.secciones.map((z: SeccionModel) => {
           sumSubTotal += z.items
-            .map((x: ItemModel) => x.precio_print)
+            .map((x: ItemModel) => {
+              cantItemOrder += x.cantidad_seleccionada;
+              return x.precio_print;
+            })
             .reduce((a, b) => a + b, 0);
         });
       });
+
+    // cantidad total de items para calcular costo servicio delivery
+    this.deliveryCanItemsInOrder = cantItemOrder;
 
     return sumSubTotal;
   }
@@ -1441,7 +1502,7 @@ export class MipedidoService {
 
     // from monitoreo stock - add item in carta
     this.socketService.onNuevoItemAddInCarta().subscribe((res: any) => {
-      console.log('onNuevoItemAddInCarta', res);
+      // console.log('onNuevoItemAddInCarta', res);
       this.addItemInCarta(res);
     });
 
@@ -1456,6 +1517,8 @@ export class MipedidoService {
 
 
       this.max_minute_order = res[0].datossede[0].pwa_time_limit;
+      // this.pwa_delivery_importe_min = res[0].datossede[0].pwa_delivery_importe_min;
+      this.pwa_delivery_servicio_propio = res[0].datossede[0].pwa_delivery_servicio_propio === 0 ? false : true;
       this.timerLimitService.maxTime = this.max_minute_order * 100;
     });
 

@@ -40,7 +40,7 @@ export class ToolBarComponent implements OnInit {
   ngOnInit() {
     this.listenStatusService.isBusqueda$.subscribe(res => {
       this.isBusqueda = res;
-      console.log('liste isBusqueda', res);
+      // console.log('liste isBusqueda', res);
     });
 
     this.listenStatusService.hayDatosSede$.pipe(filter(res => res === true)).subscribe(res => {
@@ -68,7 +68,7 @@ export class ToolBarComponent implements OnInit {
   }
 
   buscarCharAhora(charFind: string): void {
-    console.log(charFind);
+    // console.log(charFind);
     this.listenStatusService.setCharBusqueda(charFind);
     this.setStorageBusqueda(charFind);
   }

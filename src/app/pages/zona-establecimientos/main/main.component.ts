@@ -107,7 +107,7 @@ export class MainComponent implements OnInit {
     let goToPage = '/categorias';
     switch ($event.index) {
       case 0:
-        goToPage = '/categorias';
+        goToPage = '/establecimientos';
         break;
       case 1:
         goToPage = '/pedidos';

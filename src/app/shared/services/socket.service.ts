@@ -304,7 +304,7 @@ export class SocketService {
     this.socket.on('finishLoadDataInitial', () => {
       this.statusConexSocket(true, '');
       this.isSocketOpenReconect = true; // evita que cargen nuevamente las configuraciones basicas, solo carga carta
-      console.log('conected socket finishLoadDataInitial');
+      // console.log('conected socket finishLoadDataInitial');
     });
 
     // estados del navigator
@@ -323,7 +323,7 @@ export class SocketService {
 
     // estado del socket
     this.socket.on('connect', () => {
-      console.log('socket connect');
+      // console.log('socket connect');
 
       this.infoTockenService.setSocketId(this.socket.id);
 
@@ -338,17 +338,17 @@ export class SocketService {
     });
 
     this.socket.on('connect_failed', (res: any) => {
-      console.log('itento fallido de conexion', res);
+      // console.log('itento fallido de conexion', res);
       this.statusConexSocket(false, 'connect_failed');
     });
 
     this.socket.on('connect_error', (res: any) => {
-      console.log('error de conexion', res);
+      // console.log('error de conexion', res);
       this.statusConexSocket(false, 'connect_error');
     });
 
     this.socket.on('disconnect', (res: any) => {
-      console.log('disconnect');
+      // console.log('disconnect');
       this.statusConexSocket(false, 'disconnect');
     });
 

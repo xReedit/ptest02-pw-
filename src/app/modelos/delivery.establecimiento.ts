@@ -19,5 +19,7 @@ export class DeliveryEstablecimiento {
     tiempo_aprox_entrega: string;
     abre_en: string; // tiempo que falta para abrir
     hora_ini: string; // hora que abre
-    cerrado: number; // 0 abierto 1 cerrado
+    cerrado: number; // 0 abierto 1 cerrado,
+    pwa_delivery_servicio_propio: number; // delivery / el importe minimo por pedido
+    pwa_delivery_importe_min: number; // cantidad de productos en el pedido // solo para delivery
 }

@@ -94,6 +94,11 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.listeStatusBusqueda();
 
+    // descarga la constate del items scala delivery
+    if ( this.infoToken.isDelivery) {
+      this.miPedidoService.getDeliveryConstCantEscala();
+    }
+
     this.unsubscribeCarta = this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
       if (res.pageActive === 'carta') {
         if (this.countSeeBack < 2) { this.countSeeBack++; return; }
@@ -128,7 +133,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
               this.miPedidoService.updatePedidoFromStrorage();
             }
 
-            console.log('objCartaCarta desde socket reconect');
+            // console.log('objCartaCarta desde socket reconect');
             this.navigatorService.setPageActive('carta');
           // }
 
@@ -155,7 +160,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
         this.miPedidoService.updatePedidoFromStrorage();
 
         // restaurar cuenta de timepo limite
-        console.log('restore timer limt');
+        // console.log('restore timer limt');
         this.miPedidoService.restoreTimerLimit();
 
         this.loadItemsBusqueda();
@@ -167,7 +172,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // tipo de consumo
       this.unsubscribeCarta = this.socketService.onGetTipoConsumo().subscribe((res: TipoConsumoModel[]) => {
-        console.log('tipo consumo ', res);
+        // console.log('tipo consumo ', res);
         if (this.socketService.isSocketOpenReconect) {return; }
         this.tiposConsumo = res;
 
@@ -229,7 +234,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    console.log('======= unsubscribe ======= ');
+    // console.log('======= unsubscribe ======= ');
     this.unsubscribeCarta.unsubscribe();
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
@@ -261,7 +266,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.showItems = true;
       this.tituloToolBar += ' / ' + seccion.des;
 
-      console.log('this.objItems', this.objItems);
+      // console.log('this.objItems', this.objItems);
 
       this.navigatorService.addLink('carta-i-secciones-items');
     }, 150);
@@ -307,7 +312,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     // reset busqueda
     window.localStorage.setItem('sys::find', '');
     // tipo consumo
-    console.log('_objFind', this.objCartaBus);
+    // console.log('_objFind', this.objCartaBus);
   }
 
 
@@ -394,7 +399,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   addItemIndicaciones(itemCarta: ItemModel, _indicaciones: string): void {
-    console.log('indicaciones', _indicaciones);
+    // console.log('indicaciones', _indicaciones);
     this.itemSelected.indicaciones = _indicaciones;
     itemCarta.indicaciones = _indicaciones;
 
@@ -429,7 +434,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     .pipe(takeUntil(this.destroy$))
     .subscribe(res => {
       if (!res) {
-        console.log('===== unsubscribe unsubscribe Carta =====');
+        // console.log('===== unsubscribe unsubscribe Carta =====');
         this.unsubscribeCarta.unsubscribe();
       }
     });
@@ -437,7 +442,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private isBusquedaFindNow(charFind: string): void {
     charFind = charFind.toLowerCase();
-    console.log(charFind);
+    // console.log(charFind);
     let _charConcat = '';
     this.objCartaBus.map((i: any) => {
       _charConcat = `${i.des} ${i.seccion} ${i.detalles}`;

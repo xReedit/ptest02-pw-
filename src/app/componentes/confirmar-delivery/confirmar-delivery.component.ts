@@ -77,7 +77,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   ngOnInit() {
     this.loadData();
-
+    const _datosEstablecieminto = this.establecimientoService.get();
+    this.montoMinimoPedido = _datosEstablecieminto.pwa_delivery_importe_min;
     this.metodoPagoSelected = this.infoTokenService.infoUsToken.metodoPago;
     this.tipoComprobanteSelected = this.infoTokenService.infoUsToken.tipoComprobante;
     this.propinaSelected = this.infoTokenService.infoUsToken.propina;
@@ -87,7 +88,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     // direccion de entrega
     this.infoToken = this.infoTokenService.getInfoUs();
     this.direccionCliente = this.infoToken.direccionEnvioSelected;
-    console.log('info cliente from confirmacion', this.infoToken);
+    // console.log('info cliente from confirmacion', this.infoToken);
 
     // establecimiento seleccionado
     this.infoEstablecimiento = this.establecimientoService.get();

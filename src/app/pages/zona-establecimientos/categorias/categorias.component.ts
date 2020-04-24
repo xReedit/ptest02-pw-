@@ -50,9 +50,14 @@ export class CategoriasComponent implements OnInit {
 
   ngOnInit() {
 
+    this.idcategoria_selected = localStorage.getItem('sys::cat');
+
     this.activatedRoute.queryParams.subscribe(params => {
-      this.idcategoria_selected = params['id'];
-      console.log('this.idcategoria_selected', this.idcategoria_selected);
+      if ( params['id'] ) {
+        this.idcategoria_selected = params['id'];
+        localStorage.setItem('sys::cat', this.idcategoria_selected.toString());
+        console.log('this.idcategoria_selected', this.idcategoria_selected);
+      }
     });
 
     // this.loadEstablecimientos();

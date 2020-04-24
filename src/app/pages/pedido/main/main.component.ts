@@ -40,7 +40,7 @@ export class MainComponent implements OnInit {
     // this.navigatorService.addLink('carta');
 
     this.verifyClientService.verifyClient().subscribe((res: SocketClientModel) => {
-      console.log('desde incio', res);
+      // console.log('desde incio', res);
       this.isUsuarioCliente = res.isCliente;
       this.listenStatusService.setIsUsuarioCliente(this.isUsuarioCliente);
       this.isClienteDelivery = res.isDelivery;
@@ -63,7 +63,7 @@ export class MainComponent implements OnInit {
         case 'carta':
           this.selectedTab = 0;
           this.resetObjCuenta();
-          console.log(this.selectedTab);
+          // console.log(this.selectedTab);
           break;
         case 'estado':
           this.selectedTab = 2;
@@ -103,7 +103,7 @@ export class MainComponent implements OnInit {
   }
 
   clickTab($event: any) {
-    console.log('event tab', $event);
+    // console.log('event tab', $event);
     this.selectedTab = $event.index;
     const _pageActive = $event.tab.textLabel.toLowerCase();
     this.navigatorService.setPageActive(_pageActive);

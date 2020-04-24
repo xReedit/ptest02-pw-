@@ -42,11 +42,20 @@
 }
 
 .countItem {
-    padding: 4px 7px 4px 7px;
+    /* padding: 4px 7px 4px 7px;
     border-radius: 90%;
     line-height: 1;
     font-size: 12px;
     margin-top: 2px;
+     */
+    
+    border-radius: 50%;
+    line-height: 1.2;
+    font-size: 12px;
+    min-width: 20px;
+    min-height: 20px;    
+    padding: 4px;
+    text-align: center;
 }
 
 .countTpc{

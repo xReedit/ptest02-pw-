@@ -31,7 +31,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
 
     if ( this.infoTokenService.infoUsToken ) {
       this.infoUser = this.infoTokenService.infoUsToken;
-      this.conectSercices();
+      this.conectServices();
     } else {
       this.verifyClientService.verifyClient()
       .subscribe(res => {
@@ -39,12 +39,12 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
         this.infoTokenService.infoUsToken = res;
         this.infoTokenService.set();
         this.infoTokenService.converToJSON();
-        this.conectSercices();
+        this.conectServices();
       });
     }
   }
 
-  private conectSercices() {
+  private conectServices() {
     // this.socketSerrvice.connect(this.infoUser, 0, true);
 
     this.loadMisPedidos();

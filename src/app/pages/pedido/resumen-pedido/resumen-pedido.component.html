@@ -23,7 +23,7 @@
                                     <ng-container *ngIf="item.cantidad_seleccionada > 0">
                                         <li class="d-flex div-plr li-item" matRipple [matRippleColor]="rippleColor" (click)="openDlgItemToResumen(seccion, item)">
                                             <div class="pr-2 fw-100">{{item.cantidad_seleccionada | number: '2.'}}</div>
-                                            <div class="w-100 fw-100">{{item.des | lowercase}}  <span [hidden]="!item.indicaciones">( {{item.indicaciones}} )</span></div>
+                                            <div class="w-100 fw-100 pr-1">{{item.des | lowercase}}  <span [hidden]="!item.indicaciones">( {{item.indicaciones}} )</span></div>
                                             <div class="fw-100">{{item.precio_print | number:'0.2' }}</div>
                                         </li>
                                             <!-- subitems -->

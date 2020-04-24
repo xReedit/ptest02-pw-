@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimiento';
-
+import { GeoPositionModel } from 'src/app/modelos/geoposition.model';
+import {
+  insideCircle
+} from 'geolocation-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -61,6 +64,11 @@ export class CalcDistanciaService {
       }
     });
 
+    // si tiene repartidores propios
+    if ( dirEstablecimiento.pwa_delivery_servicio_propio === 1 ) {
+      c_servicio = 0;
+    }
+
     setTimeout(() => {
       dirEstablecimiento.c_servicio = c_servicio;
       return c_servicio;
@@ -73,6 +81,14 @@ export class CalcDistanciaService {
   // regla x km adicional
   private reglaKm() {
 
+  }
+
+
+  // retorna true si esta cerca
+  calcDistancia(coordOrigen: GeoPositionModel, coordDetino: GeoPositionModel): boolean {
+    const center = {lat: coordDetino.latitude, lon: coordDetino.longitude };
+    const radius = 75; // meters
+    return insideCircle({lat: coordOrigen.latitude, lon: coordOrigen.longitude}, center, radius);  // false
   }
 }
 

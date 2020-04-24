@@ -20,7 +20,7 @@
                 </div>                
             </div>                
             <hr>
-            <div class="row text-center" *ngIf="showTelefonoRepartidor">
+            <div class="row text-center" *ngIf="dataPedido.idrepartidor && dataPedido.pwa_delivery_status !== '4'">
                 <div matRipple class="col-6 border-right text-info" (click)="callPhone()"><i class="fa fa-phone" aria-hidden="true"></i> LLamar</div>
                 <div matRipple class="col-6 text-info" (click)="redirectWhatsApp()"><i class="fa fa-commenting-o" aria-hidden="true"></i> Enviar Mensaje</div>
             </div>
@@ -32,13 +32,15 @@
     </div>
 
     <!-- boton confirmar recibido -->
-    <ng-container *ngIf="dataPedido.pwa_delivery_status == '3'">
-        <div class="div-flat-white-borde mb-3 fs-13 text-center">
-            <p class="text-secondary fs-13">Por favor revise su pedido antes de confirmar.</p>
-            
-            <button mat-flat-button 
-            color="primary" (click)="openDialogCalificacion()" >Listo, recibi conforme.</button>
-        </div>
-    </ng-container>
+    <div *ngIf="dataPedido.pwa_delivery_status !== '4' && dataPedido.idrepartidor">
+        <ng-container *ngIf="dataPedido.pwa_delivery_status == '3' || dataPedido.pwa_delivery_servicio_propio===1">
+            <div class="div-flat-white-borde mb-3 fs-13 text-center">
+                <p class="text-secondary fs-13">Por favor revise su pedido antes de confirmar.</p>
+                
+                <button mat-flat-button 
+                color="primary" (click)="openDialogCalificacion()" >Listo, recibi conforme.</button>
+            </div>
+        </ng-container>
+    </div>
     
 </div>

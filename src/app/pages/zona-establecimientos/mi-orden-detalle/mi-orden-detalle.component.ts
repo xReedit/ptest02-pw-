@@ -7,6 +7,8 @@ import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DatosCalificadoModel } from 'src/app/modelos/datos.calificado.model';
 import { DialogCalificacionComponent } from 'src/app/componentes/dialog-calificacion/dialog-calificacion.component';
+import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
+import { GeoPositionModel } from 'src/app/modelos/geoposition.model';
 
 @Component({
   selector: 'app-mi-orden-detalle',
@@ -26,14 +28,15 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
     private infoTokenService: InfoTockenService,
     private socketService: SocketService,
     private dialog: MatDialog,
+    private calcDistanciaService: CalcDistanciaService,
   ) { }
 
   ngOnInit() {
     this.dataPedido = this.infoTokenService.infoUsToken.otro;
 
     console.log('this.dataPedido otro', this.dataPedido);
-
-    this.direccionCliente = JSON.parse(this.infoTokenService.infoUsToken.otro.direccionEnvioSelected);
+    this.direccionCliente = this.infoTokenService.infoUsToken.otro.direccionEnvioSelected || this.infoTokenService.infoUsToken.direccionEnvioSelected;
+    this.direccionCliente = typeof this.direccionCliente !== 'object' ? JSON.parse(this.direccionCliente) : this.direccionCliente;
 
     if ( !this.origin ) {
       // direccion del establecimiento
@@ -48,7 +51,10 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
       longitude: this.direccionCliente.longitude,
     };
 
-    this.listenUbicacionRepartidor();
+    if ( this.dataPedido.pwa_delivery_status !== '4' ) {
+      this.listenUbicacionRepartidor();
+    }
+
     this.readEstadoPedido(this.dataPedido.pwa_delivery_status);
   }
 
@@ -61,9 +67,24 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
     this.socketService.onDeliveryUbicacionRepartidor()
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
+
+        if ( this.dataPedido.pwa_delivery_status === 4 ) {return; }
+
+        const _geoPosition = <ILatLng>res;
         console.log('ubicacion repartidor', res);
+        // calcular la distancia con el repartidor si esta cerca activa "recibi conforme" y "llamar a repartidor"
+        const isLLego = this.calcDistanciaService.calcDistancia(<GeoPositionModel>_geoPosition, <GeoPositionModel>this.destination);
+        console.log('distancia listen llego ?', isLLego);
+
+        if ( isLLego ) {
+          // this.dataPedido.pwa_delivery_status = 3;
+          this.readEstadoPedido(3);
+        } else {
+          this.readEstadoPedido(1);
+        }
+
         if ( this.estadoPedido === '4' ) {return; }
-        this.origin = <ILatLng>res;
+        this.origin = _geoPosition;
       });
 
     this.socketService.onDeliveryPedidoChangeStatus()
@@ -135,6 +156,7 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
         // notificar al repartidor fin del pedido
         this.socketService.emit('repartidor-notifica-fin-pedido', this.dataPedido);
         this.dataPedido.pwa_delivery_status = 4;
+        this.infoTokenService.set();
         this.showTelefonoRepartidor = false;
         this.estadoPedido = 'Entregado';
         console.log('data dialog', data);

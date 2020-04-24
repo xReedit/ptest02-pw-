@@ -75,7 +75,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.navigatorService.disableGoBack();
     this.infoToken = this.infoTokenService.getInfoUs();
-    this.pagaConEefectivo = this.infoToken.metodoPago.idtipo_pago === 1 ? true : false;
+    this.pagaConEefectivo = this.infoToken.metodoPago.idtipo_pago !== 2 ? true : false; // si es en efectivo o yape //diferente de tarjeta 2
     this.isTrasctionSuccess = this.pagaConEefectivo;
 
     // envia de frente a la respuesta

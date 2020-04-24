@@ -198,7 +198,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       // this._miPedido = this.miPedidoService.getMiPedido();
       this._miPedido = <PedidoModel>res;
       this.pintarMiPedido();
-      console.log(this._miPedido);
+      // console.log(this._miPedido);
     });
 
     this.listenStatusService.hayCuentaBusqueda$
@@ -226,7 +226,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.destroy$))
     .subscribe(res => {
       if (!res) {
-        console.log('===== unsubscribe unsubscribe =====');
+        // console.log('===== unsubscribe unsubscribe =====');
         // this.unsubscribeRe.unsubscribe();
       }
     });
@@ -248,7 +248,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.destroy$))
     .subscribe((res: any) => {
       if ( res ) {
-        console.log('cuenta del cliente desde resumen', res);
+        // console.log('cuenta del cliente desde resumen', res);
         this.xLoadCuentaMesa('', res);
       }
     });
@@ -300,7 +300,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(
         data => {
           if ( !data ) { return; }
-          console.log('data dialog', data);
+          // console.log('data dialog', data);
         }
     );
 
@@ -390,8 +390,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       //   this.enviarPedido();
       // });
     } else {
-      // si es delivery y paga en efectivo
-      if ( this.infoToken.infoUsToken.metodoPago.idtipo_pago === 1 ) {
+      // si es delivery y paga en efectivo o yape envia de
+      // 1 efectivo 2 tarjeta 3 yape
+      if ( this.infoToken.infoUsToken.metodoPago.idtipo_pago !== 2 ) {
         this.showLoaderPedido();
       } else {
         this.enviarPedido();
@@ -454,8 +455,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       p_subtotales: this._arrSubtotales
     };
 
-    console.log('nuevoPedido', dataPedido);
-    console.log('nuevoPedido', JSON.stringify(dataPedido));
+    // console.log('nuevoPedido', dataPedido);
+    // console.log('nuevoPedido', JSON.stringify(dataPedido));
 
 
     // enviar a print_server_detalle // para imprimir
@@ -478,7 +479,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     };
 
     // console.log('printerComanda', dataSend);
-    console.log('printerComanda', JSON.stringify(dataSend));
+    // console.log('printerComanda', JSON.stringify(dataSend));
     // this.socketService.emit('printerComanda', dataPrint);
 
     // si es clienteDelivery no se emite nada
@@ -509,16 +510,18 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // this.isVisibleConfirmar = false;
     //
     this.newFomrConfirma();
-    this.backConfirmacion();
+    // this.backConfirmacion();
 
     this.miPedidoService.prepareNewPedido();
 
-    // si es delivery y el pago es en efectivo, notificamos
-    if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago === 1) {
+    // si es delivery y el pago es en efectivo o en yape, notificamos
+    if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
       this.pagarCuentaDeliveryCliente();
       // enviamos a pagar
       return;
     }
+
+    this.backConfirmacion();
 
     // si es usuario cliente lo envia a estado
     if ( this.isCliente ) {
@@ -663,8 +666,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       });
     });
 
-    console.log('cuenta de mesa', res);
-    console.log('c_tiposConsumo', c_tiposConsumo);
+    // console.log('cuenta de mesa', res);
+    // console.log('c_tiposConsumo', c_tiposConsumo);
 
     _miPedidoCuenta.tipoconsumo = c_tiposConsumo;
     this.miPedidoService.setObjMiPedido(_miPedidoCuenta);
@@ -674,7 +677,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
 
-    console.log('this._miPedido', this._miPedido);
+    // console.log('this._miPedido', this._miPedido);
   }
 
   pagarCuentaDeliveryCliente() {
