@@ -105,6 +105,11 @@ export class InfoTockenService {
     this.set();
   }
 
+  setPasoRecoger( val: boolean) {
+    this.infoUsToken.pasoRecoger = val;
+    this.set();
+  }
+
   setIniMetodoPago() {
     const metodoPagoInit: MetodoPagoModel = new MetodoPagoModel;
     metodoPagoInit.idtipo_pago = 2;
@@ -176,10 +181,11 @@ export class InfoTockenService {
         _newUs.propina = _token.propina;
         _newUs.socketId = _token.socketId;
         _newUs.otro = _token.otro;
+        _newUs.pasoRecoger = _token.pasoRecoger;
         this.infoUsToken = _newUs;
 
-        // agregar el metodo pago prederteminado tarjeta
-        if (!this.infoUsToken.metodoPago)  { this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); }
+        // agregar el metodo pago prederteminado tarjeta // valores iniciales
+        if (!this.infoUsToken.metodoPago)  { this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); this.setPasoRecoger(false); }
       } else {
         this.infoUsToken = <UsuarioTokenModel>_token.usuario;
         this.infoUsToken.isCliente = false;

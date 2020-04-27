@@ -36,4 +36,5 @@ export class UsuarioTokenModel {
     propina: PropinaModel; // propina para el repartidor delivery
     socketId: string;
     otro: any;
+    pasoRecoger: boolean; // si el cliente pasa a recoger
 }

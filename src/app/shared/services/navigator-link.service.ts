@@ -66,11 +66,15 @@ export class NavigatorLinkService {
       filter(e => e instanceof NavigationStart)
       , bufferCount(2, 1)).subscribe((e: any) => {
         if (e !== null && e !== undefined) {
+          // this.managerGoZonaEstablecimiento(e[1]['url']); // a la pagina que va
+          if ( this.disabledBack ) {return false; }
+
           if (e[1].navigationTrigger === 'popstate') {
             // desahabilitar boton back
             if ( this.disabledBack ) {return false; }
 
             const elUrl = e[0]['url'];
+
             const _url = elUrl.indexOf(';') ? e[0]['url'].substr(1).split(';')[1].split('=')[1] : e[0]['url'];
             // const _nextUrl = e[1]['url'].substr(1).split(';')[1].split('=')[1];
             if ( _url.length > 0) {
@@ -190,6 +194,26 @@ export class NavigatorLinkService {
       this.pageActive = _pageActive;
       this.setPageActive(_pageActive);
     }
+  }
+
+  // control alos backs de zona establecimiento
+  private managerGoZonaEstablecimiento(previusUrl: string): void {
+    previusUrl = previusUrl.split('?')[0];
+    // switch (previusUrl) {
+    //   case '/zona-delivery/establecimientos':
+    //     console.log('desde navigatot service establecimientos');
+    //     this.disabledBack = true;
+    //     this.disableGoBack();
+    //     break;
+    //   case '/zona-delivery/pedidos':
+    //     console.log('desde navigatot service establecimientos');
+    //     this.disabledBack = false;
+    //     break;
+    //   case '/zona-delivery/categorias':
+    //     console.log('desde navigatot service establecimientos');
+    //     this.disabledBack = false;
+    //     break;
+    // }
   }
 
   // usar router de servicio

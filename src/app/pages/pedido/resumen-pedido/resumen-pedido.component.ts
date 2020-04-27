@@ -29,6 +29,7 @@ import { takeUntil, take, last, takeLast } from 'rxjs/operators';
 import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedido-cliente.service';
 // import { throwToolbarMixedModesError } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
@@ -90,9 +91,14 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router,
     private registrarPagoService: RegistrarPagoService,
+    // private establecimientoService: EstablecimientoService
     ) { }
 
   ngOnInit() {
+
+    // this.establecimientoService.get();
+    // console.log('this.establecimientoService.establecimiento)', this.establecimientoService.establecimiento);
+    // console.log('this.infoToken.getInfoUs()', this.infoToken.getInfoUs());
 
     this._miPedido = this.miPedidoService.getMiPedido();
 
@@ -449,10 +455,12 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       arrDatosDelivery: this.frmDelivery
     };
 
+    const _subTotalesSave = this.frmDelivery.subTotales || this._arrSubtotales;
+
     const dataPedido = {
       p_header: _p_header,
       p_body: this._miPedido,
-      p_subtotales: this._arrSubtotales
+      p_subtotales: _subTotalesSave
     };
 
     // console.log('nuevoPedido', dataPedido);
@@ -465,7 +473,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     arrPrint.map((x: any) => {
       dataPrint.push({
         Array_enca: _p_header,
-        ArraySubTotales: this._arrSubtotales,
+        ArraySubTotales: _subTotalesSave,
         ArrayItem: x.arrBodyPrint,
         Array_print: x.arrPrinters
       });
@@ -475,7 +483,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       dataPedido: dataPedido,
       dataPrint: dataPrint,
       dataUsuario: dataUsuario,
-      isDeliveryAPP: this.isDeliveryCliente
+      isDeliveryAPP: this.isDeliveryCliente,
+      isClienteRecogeLocal: this.infoToken.infoUsToken.pasoRecoger // indica si el cliente pasa a recoger entonces ya no busca repartidor
     };
 
     // console.log('printerComanda', dataSend);
@@ -487,7 +496,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // guardamos el pedido
 
     if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago === 2) {
-      this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(this._arrSubtotales));
+      this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
       this.pagarCuentaDeliveryCliente();
       // enviamos a pagar
       return;

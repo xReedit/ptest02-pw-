@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
@@ -25,6 +25,14 @@ export class MainComponent implements OnInit {
 
   private lastValScrollTop = 0;
 
+
+  // tamaño de la pamtalla
+  isScreenIsMobile = true;
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.detectScreenSize();
+  }
+
   constructor(
     private miPedidoService: MipedidoService,
     private navigatorService: NavigatorLinkService,
@@ -34,7 +42,12 @@ export class MainComponent implements OnInit {
     ) {
     }
 
+  private detectScreenSize() {
+    this.isScreenIsMobile = window.innerWidth > 599 ? false : true;
+  }
+
   ngOnInit() {
+    this.detectScreenSize();
     this.socketService.isSocketOpenReconect = false;
     this.navigatorService.setPageActive('carta');
     // this.navigatorService.addLink('carta');
@@ -103,8 +116,14 @@ export class MainComponent implements OnInit {
   }
 
   clickTab($event: any) {
+
+
+
     // console.log('event tab', $event);
     this.selectedTab = $event.index;
+
+    // if ( this.selectedTab === 1 && !this.isScreenIsMobile ) {return false; }
+
     const _pageActive = $event.tab.textLabel.toLowerCase();
     this.navigatorService.setPageActive(_pageActive);
     // $event.srcElement.scrollTop = 0;

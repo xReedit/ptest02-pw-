@@ -22,4 +22,9 @@ export class DeliveryEstablecimiento {
     cerrado: number; // 0 abierto 1 cerrado,
     pwa_delivery_servicio_propio: number; // delivery / el importe minimo por pedido
     pwa_delivery_importe_min: number; // cantidad de productos en el pedido // solo para delivery
+    idsede_categoria: number;
+    idsede_subcategoria: string; // group concat id_subcategoria
+    visible: boolean;
+    pwa_delivery_habilitar_recojo_local: number;
+    pwa_delivery_acepta_yape: number;
 }

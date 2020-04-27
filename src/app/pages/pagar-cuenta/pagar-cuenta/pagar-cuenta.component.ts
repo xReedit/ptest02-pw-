@@ -108,17 +108,17 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   }
 
   private async listener() {
-
+    let arrTotales;
     if ( this.infoToken.isDelivery  ) {
       // el importe lo toma del localstorage
-      const arrTotales = JSON.parse(atob(localStorage.getItem('sys::st')));
+      arrTotales = JSON.parse(atob(localStorage.getItem('sys::st')));
       console.log('total st ', arrTotales);
-      this.estadoPedido.importe = parseInt(arrTotales[arrTotales.length - 1].importe, 0);
+      this.estadoPedido.importe = parseFloat(arrTotales[arrTotales.length - 1].importe);
     } else {
       this.estadoPedido.importe = await this.estadoPedidoClienteService.getImporteCuenta();
     }
 
-    console.log(this.estadoPedido.importe);
+    console.log('arrTotales', arrTotales);
 
     // para proteger de los que actualizan luego de pagar
     if ( this.estadoPedido.importe === 0 || this.estadoPedido.importe === null) {

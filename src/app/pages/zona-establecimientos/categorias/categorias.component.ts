@@ -31,6 +31,8 @@ export class CategoriasComponent implements OnInit {
   isSelectedDireccion = false;
   direccionCliente: DeliveryDireccionCliente;
 
+  listSubCatFiltros: any = []; // sub categoria para filtrar
+
   private idcategoria_selected: any;
   // private veryfyClient: Subscription = null;
 
@@ -49,16 +51,29 @@ export class CategoriasComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    window.history.forward();
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+        history.go(1);
+    };
+    // history.pushState(null, null, document.title);
 
     this.idcategoria_selected = localStorage.getItem('sys::cat');
+    this.listSubCatFiltros = JSON.parse(atob(localStorage.getItem('sys:subcat'))); // filtro para celulares
 
-    this.activatedRoute.queryParams.subscribe(params => {
-      if ( params['id'] ) {
-        this.idcategoria_selected = params['id'];
-        localStorage.setItem('sys::cat', this.idcategoria_selected.toString());
+    // preparr filtro
+    this.listSubCatFiltros.map(x => x.selected = false);
+    this.listSubCatFiltros.unshift({ id: 0, descripcion: 'Todos', selected: true });
+
+    console.log('this.listSubCatFiltros :>> ', this.listSubCatFiltros);
+
+    // this.activatedRoute.queryParams.subscribe(params => {
+    //   if ( params['id'] ) {
+    //     this.idcategoria_selected = params['id'];
+    //     localStorage.setItem('sys::cat', this.idcategoria_selected.toString());
         console.log('this.idcategoria_selected', this.idcategoria_selected);
-      }
-    });
+    //   }
+    // });
 
     // this.loadEstablecimientos();
     this.infoClient = this.verifyClientService.getDataClient();
@@ -95,11 +110,14 @@ export class CategoriasComponent implements OnInit {
         // setTimeout(() => {
           this.listEstablecimientos = res.data;
           this.listEstablecimientos.map((dirEstablecimiento: DeliveryEstablecimiento) => {
+            dirEstablecimiento.visible = true;
             // this.calcDistancia(x);
             this.calcDistanceService.calculateRoute(this.direccionCliente, dirEstablecimiento);
             // dirEstablecimiento.c_servicio = _c_servicio;
 
           });
+
+          console.log('this.listEstablecimientos', this.listEstablecimientos);
         // }, 500);
         // console.log(this.listEstablecimientos);
       });
@@ -147,6 +165,22 @@ export class CategoriasComponent implements OnInit {
         // this.setDireccion(data);
       }
     );
+  }
+
+  aplicarFitroSubCategoria(itemFiltro: any) {
+    this.listSubCatFiltros.map(x => x.selected = false);
+    itemFiltro.selected = true;
+
+    if ( itemFiltro.id === 0 ) { // todos
+      this.listEstablecimientos
+      .map((e: DeliveryEstablecimiento) => {e.visible = true ; });
+      return;
+    }
+
+    this.listEstablecimientos
+      .map((e: DeliveryEstablecimiento) => {e.visible = false; return e; })
+      .filter((e: DeliveryEstablecimiento) => e.idsede_subcategoria.indexOf(itemFiltro.id) > -1  )
+      .map((e: DeliveryEstablecimiento) => e.visible = true);
   }
 
 }

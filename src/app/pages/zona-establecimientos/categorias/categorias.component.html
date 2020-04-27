@@ -9,9 +9,20 @@
         <p class="pt-2">El servicio aún no esta disponible en este lugar.</p>
     </div>
     
-    <div class="content-all-comercio p-3" *ngIf="listEstablecimientos">
-        <div *ngFor="let item of listEstablecimientos">
-            <app-item-comercio [itemEstablecimiento] = "item"  (itemSelected) = "itemSelected($event)"></app-item-comercio>
+    <div class="p-2 content-master-establecimiento" *ngIf="listEstablecimientos">
+
+        <!-- filtro celulares -->
+        <div class="scrolling-wrapper p-2 mb-2 border-bottom" *ngIf="listSubCatFiltros.length > 1">            
+            <!-- <i class="fa fa-arrow-left"></i> -->
+            <div class="btn-link-cat-filtro" *ngFor="let item of listSubCatFiltros" [ngClass]="{'active': item.selected}" (click)="aplicarFitroSubCategoria(item)">
+                <span class="text-secondary">{{item.descripcion}}</span>                
+            </div>
+        </div>        
+
+        <div class="content-all-comercio">
+            <div *ngFor="let item of listEstablecimientos">
+                <app-item-comercio *ngIf="item.visible" [itemEstablecimiento] = "item"  (itemSelected) = "itemSelected($event)"></app-item-comercio>
+            </div>
         </div>
         <br><br>
         

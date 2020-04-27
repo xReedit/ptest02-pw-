@@ -2,9 +2,12 @@
     CUENTA DE LA MESA {{numMesaCuenta | number: '2.'}}
 </div>
 
-<div class="d-flex w-100 xanimated xfadeIn div-content-all" *ngIf="hayItems">
+<div class="d-flex w-100 xanimated xfadeIn div-content-all" 
+    [ngClass]="{'xh-100': isVisibleConfirmarAnimated}"
+    *ngIf="hayItems" id="cardcontentall">
     <!-- <div class="w-100"> -->
-        <div class="w-100 div-resumen-pedido">
+        <div class="w-100 div-resumen-pedido transicion"
+        [ngClass]="[!isVisibleConfirmarAnimated ? 'd-inline' : 'd-none']">
             <div *ngFor="let tpc of _miPedido.tipoconsumo" class="xCursor">
                 <ng-container *ngIf="tpc.count_items_seccion > 0">
                     <div class="div-plr titulo-tpc">
@@ -83,7 +86,7 @@
     <!-- </div> -->
 
     <!-- confirma pedido -->
-    <div [hidden]="!isVisibleConfirmar" class="w-100">
+    <div class="div-resumen-pre-pago w-100" [hidden]="!isVisibleConfirmar">
         <div class="xcontent div-confirma-pedido w-100 p-3 transicion animated fadeInRight"
           [ngClass]="[isVisibleConfirmarAnimated ? 'show' : 'hide', isVisibleConfirmarAnimated ? 'fadeInRight' : 'fadeInLeft', !isDeliveryCliente ? 'bg-1': 'bg-2']">
             <div class="text-center">
@@ -264,15 +267,15 @@
 <!-- footer -->
 <ng-container *ngIf="hayItems && !isHayCuentaBusqueda">
     <div class="xfooter">
-      <div class="row m-0 w-100">
-        <div class="col-5 btn-footer-cancel" matRipple (click)="nuevoPedido()">
+      <div class="m-0 w-100 d-flex justify-content-between">
+        <div class="btn-footer-cancel" matRipple (click)="nuevoPedido()">
             <span [hidden]="isVisibleConfirmarAnimated" class="animated fadeInRight">Nuevo Pedido</span>
             <span [hidden]="!isVisibleConfirmarAnimated" class="animated fadeInLeft"><i class="fa fa-arrow-left"></i> Atras </span>
         </div>
-        <div class="col-2"></div>
+        
         <ng-container *ngIf="!isVisibleConfirmarAnimated; then divBtnListo; else divBtnEnviar"></ng-container>
         <ng-template #divBtnListo>
-            <div class="col-5 btn-footer-next transicion" matRipple (click)="confirmarPeiddo()">
+            <div class="btn-footer-next transicion" matRipple (click)="confirmarPeiddo()">
               <div>
                 <span class="animated fadeInRight">Listo <i class="fa fa-arrow-right"></i></span>
               </div>
@@ -280,7 +283,7 @@
         </ng-template>
         <ng-template #divBtnEnviar>
             <ng-container *ngIf="!isDelivery; else elseTemplate">
-              <div *ngIf="!isCliente" class="col-5 btn-footer-next transicion" matRipple (click)="prepararEnvio()"
+              <div *ngIf="!isCliente" class="btn-footer-next transicion" matRipple (click)="prepararEnvio()"
                 [ngClass]="{'xdisabled': isRequiereMesa}">
                 <div>
                   <span class="animated fadeInLeft">Enviar Pedido</span>
@@ -288,7 +291,7 @@
               </div>
             </ng-container>
             <ng-template #elseTemplate>
-              <div class="col-5 btn-footer-next transicion" matRipple (click)="prepararEnvio()"
+              <div class="btn-footer-next transicion" matRipple (click)="prepararEnvio()"
                 [ngClass]="{'xdisabled': isDelivery && !isDeliveryValid}">
                 <div>
                   <span class="animated fadeInLeft">Enviar delivery</span>
@@ -299,7 +302,7 @@
 
             <!-- cliente delivery -->
             <ng-container *ngIf="isDeliveryCliente">
-                <div class="col-5 btn-footer-next transicion" matRipple (click)="prepararEnvio()"
+                <div class="btn-footer-next transicion" matRipple (click)="prepararEnvio()"
                 [ngClass]="{'xdisabled': !isReadyClienteDelivery}">
                 <div>
                     <span class="animated fadeInLeft">Confirmar</span>

@@ -34,7 +34,7 @@
             <br>
           </div>     
         </mat-tab>
-        <mat-tab label="MiPedido">
+        <mat-tab label="MiPedido" [disabled]="!isScreenIsMobile">
           <ng-template matTabLabel>
               <span>Mi Orden</span>              
               
@@ -45,7 +45,7 @@
               </div>              
           </ng-template>
           <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
-            <app-resumen-pedido></app-resumen-pedido>
+            <app-resumen-pedido *ngIf="isScreenIsMobile"></app-resumen-pedido>
             <br>
           </div>
         </mat-tab>

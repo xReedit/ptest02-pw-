@@ -76,6 +76,9 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
         console.log(res);
         this.listMisPedidos = res.data;
         this.listMisPedidos.map( x => {
+          x.arrDatosDelivery = JSON.parse(x.arrDatosDelivery);
+          x.direccionEnvioSelected = JSON.parse(x.direccionEnvioSelected);
+
           switch (x.pwa_delivery_status) {
             case '0':
                 x.estado = 'Preparando';

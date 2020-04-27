@@ -52,3 +52,11 @@
     margin: 10px;
     max-width: 64px;
 }
+
+.div-categorias {
+    padding: 10px;
+    background: white;
+    border-radius: 5px;
+    border: solid 1px #e0e0e0;
+    max-width: 450px;
+}

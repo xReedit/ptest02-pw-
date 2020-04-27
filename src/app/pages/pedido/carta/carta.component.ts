@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, HostListener, Input } from '@angular/core';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
@@ -18,6 +18,7 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { URL_IMG_CARTA } from 'src/app/shared/config/config.const';
+
 
 
 @Component({
@@ -67,6 +68,17 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private isFirstLoadListen = false; // si es la primera vez que se carga, para no volver a cargar los observables
 
+
+  // tamaño de la pamtalla
+  isScreenIsMobile = true;
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.detectScreenSize();
+  }
+
+
+
   constructor(
       private socketService: SocketService,
       public miPedidoService: MipedidoService,
@@ -80,7 +92,14 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   }
 
+  private detectScreenSize() {
+    this.isScreenIsMobile = window.innerWidth > 599 ? false : true;
+    // console.log(' window.innerWidth',  window.innerWidth);
+    // console.log(' this.isScreenIsMobile',  this.isScreenIsMobile);
+  }
+
   ngOnInit() {
+    this.detectScreenSize();
     this.initCarta();
   }
 
@@ -208,6 +227,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
         // this.tiposConsumo.secciones = [];
 
         // this.loadItemsBusqueda();
+
+        this.initFirtsCategoria();
       });
     // }
 
@@ -218,6 +239,24 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // datos de la sede, impresoras
     // this.jsonPrintService.getDataSede();
+  }
+
+  // si la carta solo tiene un categoria ( cena almuerzo entra de frente)
+  private initFirtsCategoria() {
+    if ( this.isScreenIsMobile ) {return; }
+    if ( this.miPedidoService.objCarta.carta.length === 1 ) {
+      this.objSecciones = this.miPedidoService.objCarta.carta[0].secciones;
+      this.tituloToolBar = this.miPedidoService.objCarta.carta[0].des;
+      this.showSecciones = true;
+      this.showCategoria = false;
+      this.showToolBar = true;
+
+      this.getItems(this.objSecciones[0]);
+
+      // seleciona la primera seccion
+      this.objItems = this.objSecciones[0].items;
+    }
+    // console.log('this.miPedidoService.objCarta.carta;', this.miPedidoService.objCarta.carta);
   }
 
 
@@ -264,7 +303,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.objItems = seccion.items;
       this.showSecciones = false;
       this.showItems = true;
-      this.tituloToolBar += ' / ' + seccion.des;
+      if ( this.isScreenIsMobile ) {
+        this.tituloToolBar += ' / ' + seccion.des;
+      }
 
       // console.log('this.objItems', this.objItems);
 
@@ -318,6 +359,11 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   goBack() {
+
+    try {
+      if ( this.miPedidoService.objCarta.carta.length === 1 && !this.isScreenIsMobile ) {return; } // si no es celular no regresa
+    } catch (error) {}
+
     this.objItems.map(x => x.selected = false);
     if (this.showItems) {
       this.showItems = false;

@@ -1,1 +1,59 @@
 /* @import '../pedido.style.css'; */
+
+@media only screen and (min-width: 600px) {
+    .content-master {
+        display: flex;
+    }
+
+    .content-secciones {
+        width: 100%;
+        max-width: 410px;
+        min-width: 310px;
+        border-right: 1px solid #dee2e6!important;
+        height: calc(100vh - 110px);
+        overflow: auto;
+    }
+
+    .content-items {
+        width: 100%;
+        /* max-width: 500px; */
+        min-width: 320px;
+        border-right: 1px solid #dee2e6!important;
+        height: calc(100vh - 110px);
+        overflow: auto;
+    }
+
+    .content-resumen {
+        min-width: 360px;
+        max-width: 480px;
+        width: 100%;
+        padding: 50px 30px 0px 30px;;
+        border: 2px solid #bdbdbd;
+        height: calc(100vh - 110px);
+        overflow: auto;
+    }
+
+  }
+
+  
+@media only screen and (max-width: 1050px) {
+    .content-resumen{
+        display: none;
+    }
+}
+
+/* cuando es mayot o igual a 1500 */
+@media only screen and (min-width: 1500px) {
+    .ul-items {
+        display: flex;
+        flex-wrap: wrap;
+        flex-flow: row wrap;
+    }
+    .li-item {
+        flex-basis: 50%;
+    }
+
+    .child-item {
+        height: 100%;
+    }
+}

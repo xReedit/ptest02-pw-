@@ -21,7 +21,9 @@
       </mat-form-field>
 
       <mat-form-field class="w-100">
-        <input matInput placeholder="Direccion" formControlName="direccion" required>
+        <input matInput placeholder="Direccion" formControlName="direccion" 
+        (keydown.enter)="$event.preventDefault()" (keyup)="checkDireccion(search.value)" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" #search id="search"
+        required>
       </mat-form-field>
 
       <mat-form-field class="w-100">

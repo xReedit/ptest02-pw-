@@ -28,6 +28,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
   metodoPagoSelected: MetodoPagoModel;
   tipoComprobanteSelected: TipoComprobanteModel;
   propinaSelected: PropinaModel;
+  isRecojoLocalCheked = false;
+  isAceptaRecojoLocal = true;
   isValidForm = false;
   rippleColor = 'rgb(255,238,88, 0.3)';
 
@@ -50,9 +52,11 @@ export class ConfirmarDeliveryComponent implements OnInit {
     propina: {},
     direccionEnvioSelected: {},
     establecimiento: {},
-    subTotales: {}
+    subTotales: {},
+    pasoRecoger: false
   };
 
+  _listSubtotalesTmp: any;
   _listSubtotales: any;
 
   @Input()
@@ -93,11 +97,13 @@ export class ConfirmarDeliveryComponent implements OnInit {
     // establecimiento seleccionado
     this.infoEstablecimiento = this.establecimientoService.get();
 
+    this.isAceptaRecojoLocal = this.infoEstablecimiento.pwa_delivery_habilitar_recojo_local === 1;
+
+    console.log('this.infoEstablecimiento', this.infoEstablecimiento);
+
     this.isValidForm = this.infoToken.telefono ? this.infoToken.telefono.length >= 5 ? true : false : false;
     if ( this.isValidForm ) {
       setTimeout(() => {
-        // this.isReady.emit(this.isValidForm);
-        // this.dataDelivery.emit(this.resData);
         this.verificarNum(this.infoToken.telefono);
       }, 500);
     }
@@ -128,6 +134,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this.resData.propina = this.propinaSelected;
       this.infoToken.telefono = telefono;
       this.infoTokenService.setTelefono(telefono);
+      this.resData.pasoRecoger = this.isRecojoLocalCheked;
 
       // this.infoTokenService.set();
 
@@ -159,6 +166,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this.resData.propina = this.propinaSelected;
       this.resData.importeTotal = importeTotal;
       this.resData.subTotales = this._listSubtotales;
+      this.resData.pasoRecoger = this.isRecojoLocalCheked;
       // this.infoToken.telefono = telefono;
       // this.infoTokenService.setTelefono(telefono);
 
@@ -221,5 +229,34 @@ export class ConfirmarDeliveryComponent implements OnInit {
     });
 
   }
+
+  // cuando el recojo es en el local
+  recalcularTotales(): void {
+    if ( this.isRecojoLocalCheked ) {
+      // propina se vielve 0
+      this.propinaSelected = {'idpropina': 1, 'value': 0 , 'descripcion': 'S/. 0', 'checked': true};
+      this.infoTokenService.setPropina(this.propinaSelected);
+
+      // recalcular subtotales
+      // lista temporal para back
+      this._listSubtotalesTmp = JSON.parse(JSON.stringify(this._listSubtotales));
+
+      const rowTotal = this._listSubtotales[this._listSubtotales.length - 1];
+      this._listSubtotales = this._listSubtotales.filter(x => x.id >= 0 && x.descripcion !== 'TOTAL');
+      const _subtotal = this._listSubtotales.map((x: any) => parseFloat(x.importe)).reduce((a, b) => a + b, 0);
+      rowTotal.importe = _subtotal;
+      this._listSubtotales.push(rowTotal);
+
+    } else {
+      this._listSubtotales = this._listSubtotalesTmp;
+    }
+
+    console.log('this._listSubtotales', this._listSubtotales);
+    localStorage.setItem('sys::st', btoa(JSON.stringify(this._listSubtotales)));
+    this.infoTokenService.setPasoRecoger(this.isRecojoLocalCheked);
+
+    this.verificarMontoMinimo();
+  }
+
 }
 

@@ -33,6 +33,9 @@ export class MainComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    window.history.forward();
+    // history.pushState(null, null, document.title);
+
     this.infoTokenService.converToJSON();
     this.infoClient = this.verifyClientService.getDataClient();
 

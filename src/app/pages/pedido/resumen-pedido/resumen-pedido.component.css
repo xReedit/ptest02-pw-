@@ -76,6 +76,7 @@
     background: #f44336;
     color: white;
     text-align: center;
+    /* width: 30%; */
 }
 
 .btn-footer-next {
@@ -83,11 +84,14 @@
     background: #00c853;
     color: white;
     text-align: center;
+    white-space: nowrap;
+    /* width: 30%; */
 }
 
 .btn-footer-next.xdisabled {
     pointer-events: none;
     opacity: 0.5;
+    white-space: nowrap;
     background: #CCC;
 }
 
@@ -100,10 +104,12 @@
 
 .div-resumen-pedido.hide {
   margin-left: -100%;
+  /* visibility: hidden; */
 }
 
 .div-resumen-pedido.show {
   margin-left: 0;
+  /* visibility: visible; */
 }
 
 /* RESUMEN pedido */
@@ -193,4 +199,57 @@
     margin-left: 3px;
     border-radius: 3px;
     color: white;
+}
+
+
+@media only screen and (min-width: 600px) {
+    
+
+    .div-resumen-pedido {
+        position: relative;
+        height: auto;
+        overflow: hidden;
+    }
+
+    .div-resumen-pre-pago {
+        position: absolute;
+        /* height: calc(100vh - 212px); */
+    }
+
+    .xfooter {
+        bottom: 0px;
+        position: fixed;
+        background: #e0e0e0;
+        /* height: 48px; */
+        box-sizing: border-box;
+        /* position: sticky; */
+        min-width: 230px;
+        max-width: 415px;
+        width: calc(100% / 9.8 * 3);
+    }
+
+    .btn-footer-cancel {
+        width: auto;
+    }
+
+    .btn-footer-next {
+        width: auto;
+    }
+
+    .div-content-all {
+        font-size: 14px !important;
+    }
+    
+}
+
+@media only screen and (max-width: 1050px) {
+    .content-resumen{
+        display: none;
+    }
+
+    .xfooter{
+        width: 100%;
+        max-width: 100%;
+    }
+    
 }

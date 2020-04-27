@@ -1,3 +1,7 @@
+.content-comercio {
+    max-width: 335px;
+    margin: 5px;
+}
 
 .content-img-comercio {
     border: 1px solid lightgray;
@@ -8,7 +12,7 @@
 .img-comercio {
     max-width: 100%;
     /* max-width: 330px; */
-    max-height: 115px;
+    height: 115px;
 }
 
 .div-info-comercio {
@@ -18,7 +22,7 @@
 }
 
 .div-sub-info-comercio{
-    background: #eeeeee;
+    /* background: #eeeeee; */
     margin-top: -15px;
 }
 

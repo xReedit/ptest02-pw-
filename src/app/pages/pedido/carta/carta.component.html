@@ -1,6 +1,6 @@
 <div class="fondo">
 
-  <div [hidden]="isBusqueda">
+  <div [hidden]="isBusqueda" class="content-master">
     <!-- toolbar -->
     <ng-container *ngIf="showToolBar isBusqueda">
       <div matRipple class="text-white bg-primary p-2 m-toolbar-seccion xanimated xfadeInDown" (click)="goBack()">
@@ -10,7 +10,7 @@
     </ng-container>
 
     <!-- categorias -->
-    <div [hidden]="!showCategoria" class="xanimated xfadeIn">
+    <div [hidden]="!showCategoria" class="content-secciones xanimated xfadeIn">
         <ng-container *ngIf="miPedidoService.objCarta">
             <ul>
                 <li *ngFor="let item of miPedidoService.objCarta.carta" class="xCursor"
@@ -35,10 +35,10 @@
     </div>    
 
     <!-- Secciones -->
-    <div [hidden]="!showSecciones" class="xanimated xfadeIn m-main-pt-40">
+    <div [hidden]="!showSecciones && isScreenIsMobile" class="content-secciones xanimated xfadeIn m-main-pt-40">
       <ng-container>
         <ul>
-          <li *ngFor="let item of objSecciones; let i = index" class="xCursor"
+          <li *ngFor="let item of objSecciones; let i = index" class="li-seccion xCursor"
               matRipple [matRippleColor]="rippleColor"
               (click)="getItems(item)">
             <div class="m1">
@@ -64,12 +64,13 @@
     </div>
 
     <!-- items -->
-    <div [hidden]="!showItems" class="xtransicion m-main-pt-40 color-fondo-ul">
+    <!-- color-fondo-ul -->
+    <div [hidden]="!showItems && isScreenIsMobile" class="content-items xtransicion m-main-pt-40">
       <ng-container>
-        <ul>
+        <ul class="ul-items">
             <!-- [ngClass]="{'li-padding-selected': item.selected}" -->
-          <li *ngFor="let item of objItems">
-            <div class="xcontent border-left-item-{{getEstadoStockItem(item.cantidad)}}"> 
+          <li *ngFor="let item of objItems" class="li-item">
+            <div class="xcontent child-item border-left-item-{{getEstadoStockItem(item.cantidad)}}"> 
               <!-- titulo item -->
               <div class="m1 d-flex xtitulo" matRipple [matRippleColor]="rippleColor" [ngClass]="{'li-tachado': item.cantidad < 1, 'p-titulo-item-sin-detalle': item.detalles.length === 0}" (click)="selectedItem(item)">
                 <div class="content-titulo-item w-100 d-flex align-items-center justify-content-between w-100">
@@ -108,6 +109,16 @@
         </ul>        
       </ng-container>
     </div>
+
+
+    <!-- mi orden siempre que la pantalla no sea mobile -->
+    <ng-container>
+      <div class="content-resumen">
+          <app-resumen-pedido></app-resumen-pedido>
+      </div>
+    </ng-container>
+    
+
     <br>
 
   </div>
