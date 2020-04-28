@@ -14,3 +14,36 @@ border-radius: 0px;
 .rating {
   outline: none;
 }
+
+
+.my-dialog-scrool{
+  height: auto;
+  overflow: auto;
+}
+
+
+/* cuando es en celular el dialog detalle orden abre en pantalla completa */
+@media (max-width: 676px) { 
+  .my-dialog-orden-detalle {
+    max-width: none !important;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+  }
+
+
+  .ini-content-options {   
+    border: none !important;
+    border-top: 1px solid #bdbdbd !important;
+    border-radius: 0 !important;
+    /* background: forestgreen; */
+    max-width: 100% !important;
+    /* width: 100% !important; */
+  }
+
+  .ini-content-other {
+    max-width: 100% !important;
+    border: none !important;
+    /* border-top: 1px solid #bdbdbd !important; */
+  }
+}

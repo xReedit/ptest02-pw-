@@ -13,10 +13,18 @@ export class DialogSelectDireccionComponent implements OnInit {
   isShowAddDireccion = false;
   direccionSelected: DeliveryDireccionCliente;
 
+  isGuardarDireccion = true;
+
+  _idClienteBuscar: number; // cuando el pedido delivery lo toma el comercio
+
   constructor(
     private dialogRef: MatDialogRef<DialogSelectDireccionComponent>,
-    private listenService: ListenStatusService
-  ) { }
+    private listenService: ListenStatusService,
+    @Inject(MAT_DIALOG_DATA) data: any
+  ) {
+    this.isGuardarDireccion = data ? data.isGuardar : true;
+    this._idClienteBuscar = data ? data.idClienteBuscar : null;
+  }
 
   ngOnInit() {
   }

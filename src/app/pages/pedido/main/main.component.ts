@@ -5,6 +5,7 @@ import { ListenStatusService } from 'src/app/shared/services/listen-status.servi
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 
 @Component({
   selector: 'app-main',
@@ -43,7 +44,9 @@ export class MainComponent implements OnInit {
     }
 
   private detectScreenSize() {
-    this.isScreenIsMobile = window.innerWidth > 599 ? false : true;
+    this.isScreenIsMobile = window.innerWidth > 1049 ? false : true;
+    console.log('window.innerWidth', window.innerWidth);
+    console.log('this.isScreenIsMobile', this.isScreenIsMobile);
   }
 
   ngOnInit() {
@@ -54,7 +57,7 @@ export class MainComponent implements OnInit {
 
     this.verifyClientService.verifyClient().subscribe((res: SocketClientModel) => {
       // console.log('desde incio', res);
-      this.isUsuarioCliente = res.isCliente;
+      this.isUsuarioCliente = res.isCliente || false;
       this.listenStatusService.setIsUsuarioCliente(this.isUsuarioCliente);
       this.isClienteDelivery = res.isDelivery;
     });

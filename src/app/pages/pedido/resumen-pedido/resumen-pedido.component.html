@@ -214,7 +214,7 @@
 
                     <!-- datos del delivery -->
                     <div [hidden]="!isDelivery">
-                        <app-datos-delivery (changeStatus)="checkDataDelivery($event)"></app-datos-delivery>
+                        <app-datos-delivery (changeStatus)="checkDataDelivery($event)" [listSubtotales] = "_arrSubtotales" ></app-datos-delivery>
                         
                         <p class="fw-100 fs-14 text-secondary">
                         <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>

@@ -45,7 +45,10 @@
               </div>              
           </ng-template>
           <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
-            <app-resumen-pedido *ngIf="isScreenIsMobile"></app-resumen-pedido>
+            <ng-container *ngIf="isScreenIsMobile">              
+              <app-resumen-pedido></app-resumen-pedido>
+            </ng-container>
+            
             <br>
           </div>
         </mat-tab>

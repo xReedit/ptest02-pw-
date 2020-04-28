@@ -64,8 +64,8 @@ export class CalcDistanciaService {
       }
     });
 
-    // si tiene repartidores propios
-    if ( dirEstablecimiento.pwa_delivery_servicio_propio === 1 ) {
+    // si tiene repartidores propios y no esta suscrito al servicio de calcular distancia
+    if ( dirEstablecimiento.pwa_delivery_servicio_propio === 1 && dirEstablecimiento.pwa_delivery_hablitar_calc_costo_servicio === 0) {
       c_servicio = 0;
     }
 

@@ -6,7 +6,7 @@ import { ZonaEstablecimientosRoutingModule } from './zona-establecimientos.routi
 import { CategoriasComponent } from './categorias/categorias.component';
 import { MaterialModule } from 'src/app/core/material/material.module';
 import { ComponentesModule } from 'src/app/componentes/componentes.module';
-import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-select-direccion/dialog-select-direccion.component';
+// import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-select-direccion/dialog-select-direccion.component';
 import { MisOrdenesComponent } from './mis-ordenes/mis-ordenes.component';
 import { MiOrdenDetalleComponent } from './mi-orden-detalle/mi-orden-detalle.component';
 
@@ -18,7 +18,7 @@ import { MiOrdenDetalleComponent } from './mi-orden-detalle/mi-orden-detalle.com
     EstablecimientosComponent,
     CategoriasComponent,
     MisOrdenesComponent,
-    DialogSelectDireccionComponent,
+    // DialogSelectDireccionComponent,
     MiOrdenDetalleComponent,
   ],
   imports: [
@@ -28,10 +28,10 @@ import { MiOrdenDetalleComponent } from './mi-orden-detalle/mi-orden-detalle.com
     ComponentesModule
   ],
   exports: [
-    DialogSelectDireccionComponent
+    // DialogSelectDireccionComponent
   ],
   entryComponents: [
-    DialogSelectDireccionComponent
+    // DialogSelectDireccionComponent
   ]
 })
 export class ZonaEstablecimientosModule { }

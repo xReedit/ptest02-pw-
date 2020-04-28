@@ -1,9 +1,12 @@
-import { Component, OnInit, NgZone, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, NgZone, ViewChild, ElementRef, Output, EventEmitter, Input } from '@angular/core';
 import { MapsAPILoader } from '@agm/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { MipedidoService } from 'src/app/shared/services/mipedido.service';
+import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 
 @Component({
   selector: 'app-agregar-direccion',
@@ -37,12 +40,17 @@ export class AgregarDireccionComponent implements OnInit {
   //   codigo: ''
   // };
 
+  private dataInfoSede: any;
+
   @ViewChild('search', {static: false}) public searchElementRef: ElementRef;
   @ViewChild('registerForm', {static: false}) myForm;
+
+  @Input() isGuardarDireccion = true;
 
   @Output() dataMaps = new EventEmitter<any>();
   @Output() saveDireccionOk = new EventEmitter<DeliveryDireccionCliente>();
 
+  private isDireccionValid = true; // si esta dentro de la zona de atencion
 
   constructor(
     private formBuilder: FormBuilder,
@@ -50,6 +58,8 @@ export class AgregarDireccionComponent implements OnInit {
     private ngZone: NgZone,
     private verifyClientService: VerifyAuthClientService,
     private crudService: CrudHttpService,
+    private miPedidoService: MipedidoService,
+    private inforTokenService: InfoTockenService,
   ) { }
 
   ngOnInit() {
@@ -81,6 +91,8 @@ export class AgregarDireccionComponent implements OnInit {
           this.latitude = place.geometry.location.lat();
           this.longitude = place.geometry.location.lng();
           this.zoom = 15;
+
+          this.getAddress(this.latitude , this.longitude);
         });
       });
 
@@ -89,6 +101,18 @@ export class AgregarDireccionComponent implements OnInit {
   }
 
   private setCurrentLocation() {
+
+    // se pide la direccion desde el comercio // registrar pedido
+    if (this.inforTokenService.getInfoUs().isCliente === false ) {
+      this.dataInfoSede = this.miPedidoService.objDatosSede.datossede[0];
+      this.latitude = this.dataInfoSede.latitude;
+      this.longitude = this.dataInfoSede.longitude;
+
+
+      return;
+    }
+
+
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
         this.latitude = position.coords.latitude;
@@ -107,6 +131,7 @@ export class AgregarDireccionComponent implements OnInit {
   }
 
   getAddress(latitude, longitude) {
+    // this.isDireccionValid = true;
     this.geoCoder.geocode({ 'location': { lat: latitude, lng: longitude } }, (results, status) => {
       // console.log(results);
       // console.log(status);
@@ -116,6 +141,17 @@ export class AgregarDireccionComponent implements OnInit {
           this.address = results[0].formatted_address;
           this.dataCliente.direccion = this.address;
           this.dataMapa = results[0];
+
+          // si es usuario comercio valida la direccion del cliente
+          if ( !this.inforTokenService.getInfoUs().isCliente ) {
+            const codigo_postal = this.searchTypeMap('postal_code');
+            if ( codigo_postal !== this.dataInfoSede.codigo_postal ) {
+              this.isDireccionValid = false;
+              // window.alert('El servicio no esta disponible en esta ubicacion');
+            } else {
+              this.isDireccionValid = true;
+            }
+          }
         } else {
           window.alert('No results found');
         }
@@ -123,6 +159,8 @@ export class AgregarDireccionComponent implements OnInit {
         window.alert('Geocoder failed due to: ' + status);
       }
 
+      // console.log('this.dataCliente', this.dataCliente);
+      // console.log('this.dataMapa', this.dataMapa);
     });
   }
 
@@ -152,6 +190,11 @@ export class AgregarDireccionComponent implements OnInit {
   }
 
   guardarDireccion() {
+
+    if (!this.isDireccionValid) {
+      // window.alert('El servicio no esta disponible en esta ubicacion');
+      return ;
+    }
     // this.loader = 1;
     this.dataCliente.idcliente = this.verifyClientService.getDataClient().idcliente;
     this.dataCliente.longitude = this.longitude;
@@ -184,6 +227,12 @@ export class AgregarDireccionComponent implements OnInit {
 
   saveDireccion() {
     this.loader = 1;
+    if ( !this.isGuardarDireccion ) { // si no guarda retorna solo la direccion //
+      this.loader = 2;
+      this.dataCliente.idcliente_pwa_direccion = null;
+      this.saveDireccionOk.emit(this.dataCliente);
+      return;
+    }
 
     this.crudService.postFree(this.dataCliente, 'cliente', 'new-direccion', false)
       .subscribe((res: any) => {

@@ -1176,6 +1176,9 @@ export class MipedidoService {
 
   getArrSubTotales(rulesSubTotales: any[]): any {
     const subTotal = this.getSubTotalMiPedido();
+    const isCalcCostoServicioDelivery = this.establecimientoService.establecimiento.pwa_delivery_hablitar_calc_costo_servicio === 1;
+    this.pwa_delivery_servicio_propio = this.establecimientoService.establecimiento.pwa_delivery_servicio_propio === 1;
+
     let sumaTotal = subTotal;
 
     const arrSubtotales: any = [];
@@ -1238,16 +1241,25 @@ export class MipedidoService {
 
     // si existe estableciiento en localstorage entonces es un clienteDelivery
     const isClienteDelivery = this.establecimientoService.get().idsede ? true : false;
-    let isTieneDelivery = false; // si tiene la opcion de delivery configurado
+    let isTieneDelivery =  false; // si tiene la opcion de delivery configurado
     arrOtros.map(p => {
       const rpt: any = {};
 
       // si es servicio delivery y si es clienteDelivery
-      if ( (p.descripcion.toUpperCase().indexOf('DELIVERY') > -1  || p.descripcion.toUpperCase().indexOf('ENTREGA') > -1) && isClienteDelivery && !this.pwa_delivery_servicio_propio) {
+      if ( (p.descripcion.toUpperCase().indexOf('DELIVERY') > -1
+          || p.descripcion.toUpperCase().indexOf('ENTREGA') > -1)
+          && isClienteDelivery ) {
         isTieneDelivery = true;
-        p.descripcion = 'Entrega';
-        importeOtros = this.establecimientoService.get().c_servicio;
 
+        // si tiene propio servicio
+        p.descripcion = 'Entrega';
+        if ( this.pwa_delivery_servicio_propio && !isCalcCostoServicioDelivery) { // si tiene servicio propio y no esta habilitado el calculo automatico
+          importeOtros = parseFloat(p.monto);
+        } else {
+          isTieneDelivery = false; // para que calculo abajo
+          importeOtros = this.establecimientoService.get().c_servicio || this.establecimientoService.get().c_minimo;
+          return;
+        }
       } else {
         importeOtros = parseFloat(p.monto); // aplica a todo el pedido
       }
@@ -1284,10 +1296,10 @@ export class MipedidoService {
 
     });
 
-    // si no tiene la opcion delivery y es un clienteDelivery lo agrega
-    if ( !isTieneDelivery && isClienteDelivery && !this.pwa_delivery_servicio_propio) {
+    // si no tiene la opcion delivery y es un clienteDelivery lo agrega // o requiere el servicio de calcular distancia
+    if ( !isTieneDelivery && isClienteDelivery && (!this.pwa_delivery_servicio_propio || isCalcCostoServicioDelivery )) {
       const _costoXCantItems = this.calcCostoCantItemsDelivery();
-      const costoServicio = _costoXCantItems + this.establecimientoService.get().c_servicio;
+      const costoServicio = _costoXCantItems + (this.establecimientoService.get().c_servicio || this.establecimientoService.get().c_minimo );
       const rpt: any = {};
       rpt.id = -2;
       rpt.descripcion = 'Entrega';
@@ -1510,6 +1522,8 @@ export class MipedidoService {
 
     this.socketService.onGetDatosSede().subscribe((res: any) => {
       this.objDatosSede = res[0];
+      this.objDatosSede.datossede[0].longitude = parseFloat(this.objDatosSede.datossede[0].longitude);
+      this.objDatosSede.datossede[0].latitude = parseFloat(this.objDatosSede.datossede[0].latitude);
       this.listenStatusService.setHayDatosSede(true);
       // nombre sede
       localStorage.setItem('sys::s', this.objDatosSede.datossede[0].nombre + '|' + this.objDatosSede.datossede[0].ciudad);

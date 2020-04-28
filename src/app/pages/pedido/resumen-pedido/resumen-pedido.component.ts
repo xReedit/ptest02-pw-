@@ -91,7 +91,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router,
     private registrarPagoService: RegistrarPagoService,
-    // private establecimientoService: EstablecimientoService
+    private establecimientoService: EstablecimientoService
     ) { }
 
   ngOnInit() {
@@ -107,6 +107,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       .subscribe((res: any) => {
       this.rulesCarta = res[0] ? res[0].reglas ? res[0].reglas : [] : res.reglas ? res.reglas : [];
       this.rulesSubtoTales = res.subtotales || res[0].subtotales;
+
+      this.establecimientoService.setRulesSubtotales(this.rulesSubtoTales);
+
+      // console.log('this.rulesSubtoTales', this.rulesSubtoTales);
 
       this.listenMiPedido();
 
@@ -455,6 +459,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       arrDatosDelivery: this.frmDelivery
     };
 
+    // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
+    const isClienteBuscaRepartidores = this.frmDelivery.buscarRepartidor ? this.frmDelivery.buscarRepartidor : this.isDeliveryCliente;
     const _subTotalesSave = this.frmDelivery.subTotales || this._arrSubtotales;
 
     const dataPedido = {
@@ -483,7 +489,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       dataPedido: dataPedido,
       dataPrint: dataPrint,
       dataUsuario: dataUsuario,
-      isDeliveryAPP: this.isDeliveryCliente,
+      isDeliveryAPP: isClienteBuscaRepartidores, // this.isDeliveryCliente,
       isClienteRecogeLocal: this.infoToken.infoUsToken.pasoRecoger // indica si el cliente pasa a recoger entonces ya no busca repartidor
     };
 

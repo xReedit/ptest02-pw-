@@ -47,29 +47,53 @@
 
       <div class="text-center pl-4 pr-4">
         <img src="assets/images/img-ini.png" style="max-width: 320px; width: 100%;" alt="ini">
-        <p class="fs-14" style="color: #616161;">Software especializado para negocios gastronomicos.</p>
+        <!-- <p class="fs-14" style="color: #616161;">Software especializado para negocios gastronomicos.</p> -->
+        <p class="fs-14" style="color: #616161;">Encuentra, pide y recibe lo que quieras fácilmente en sólo pocos pasos.</p>        
       </div>
 
       <!-- <br> -->
       <!-- <div class="text-center">        
         <img src="assets/images/en.png" alt="en">
       </div> -->
-
-      <div *ngIf="isLogin" class="border-bottom" style="background: blanchedalmond;">
-        <hr>
-        <p class="fs-13">Hola <strong>{{nombreClientSocket}}</strong>, que quieres pedir hoy?</p>        
+      
+      <div class="ini-content-options">
+        <div *ngIf="isLogin" class="border-bottom p-3" style="background: blanchedalmond; border-radius: 5px 5px 0px 0px;">
+          <!-- <hr> -->
+          <span class="fs-13">Hola <strong>{{nombreClientSocket}}</strong>, que quieres pedir hoy?</span>        
+        </div>
+  
+        <div>
+          <div matRipple class="p-3 border-bottom border-top" [routerLink]="['/lector-qr']">
+            <img src="assets/images/btn_scan.png" alt="btn-scan">
+            <span class="pl-2 fw-600">Scanear Código QR</span>
+          </div>        
+  
+          <div matRipple class="p-3 border-bottom border-top" (click)="showDelivery()">
+            <img src="assets/images/btn_delivery.png" alt="btn-scan">
+            <span class="pl-2 fw-600">Pedir un Delivery</span>
+          </div>        
+        </div>
       </div>
 
-      <div>
-        <div matRipple class="p-3 border-bottom border-top" [routerLink]="['/lector-qr']">
-          <img src="assets/images/btn_scan.png" alt="btn-scan">
-          <span class="pl-2">Scanear Código QR</span>
-        </div>        
+      <br><br>
+      <div class="ini-content-other d-flex fs-13 text-secondary p-3">
+        <div matRipple class="ini-ico p-2 xCursor">
+            <img src="assets/images/marker-4.png" alt="">
+            <p class="fw-600">Llega a más personas</p>
+            <span class="fw-100">Registra tu negocio.</span>
+        </div>
+        <div matRipple class="ini-ico p-2 xCursor">
+          <img src="assets/images/food-delivery.png" alt="">
+          <p class="fw-600">Se parte de nuestro equipo</p>
+          <p class="fw-100">Registrate para realizar entregas.</p>
+        </div>
+      </div>
 
-        <div matRipple class="p-3 border-bottom border-top" (click)="showDelivery()">
-          <img src="assets/images/btn_delivery.png" alt="btn-scan">
-          <span class="pl-2">Pedir un Delivery</span>
-        </div>        
+      <hr>
+
+      <div class="w-100 text-center">
+        <img src="assets/icons/icon-72x72.png">
+        <p class="pt-1 fw-100 fs-12 text-secondary m-0">papaya.com.pe</p>
       </div>
 
       <br>
@@ -78,7 +102,7 @@
 
 
     <div class="xfooter bg-white">
-      <button mat-button color="primary" [routerLink]="['/login-personal-autorizado']">Personal Autorizado</button>
+      <button mat-button color="primary" [routerLink]="['/login-personal-autorizado']">Personal Autorizado</button>      
     </div>    
     <!-- <hr> -->
     <!-- <h4>Hola bienvenidos al sistema de toma de pedidos</h4>

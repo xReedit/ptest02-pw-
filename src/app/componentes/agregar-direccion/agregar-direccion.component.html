@@ -75,7 +75,7 @@
 
             <button mat-flat-button 
                 color="primary" 
-                [disabled]="!registerForm.valid || loader > 0"
+                [disabled]="!registerForm.valid || loader > 0 || !isDireccionValid"
                 (click)="saveDireccion()"
                 >        
                 <ng-container *ngIf="loader === 0; then thenTemplate; else elseTemplate"></ng-container>
@@ -93,7 +93,9 @@
                     </ng-template>                    
                 </ng-template>
                 
-            </button>                 
+            </button> 
+            
+            <p *ngIf="!isDireccionValid" class="fw-600 text-danger fs-15">El servicio no esta disponible en esta ubicación.</p>                
             
             
         </div>  

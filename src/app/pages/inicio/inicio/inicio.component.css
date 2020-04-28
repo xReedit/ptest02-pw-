@@ -17,3 +17,26 @@
     /* height: 2.5rem; */
 }
 
+.ini-content-options {
+    text-align: center;
+    margin: 0 auto;
+    max-width: 500px;
+    border: 1px solid #bdbdbd;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.ini-content-other{
+    text-align: center;
+    margin: 0 auto;
+    max-width: 500px;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.ini-content-other p { margin: 0; }
+
+.ini-ico {
+    min-width: 100px;
+    max-width: 250px;
+}

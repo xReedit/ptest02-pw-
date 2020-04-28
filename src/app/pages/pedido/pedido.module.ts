@@ -21,6 +21,7 @@ import { DialogResetComponent } from './resumen-pedido/dialog-reset/dialog-reset
 import { DialogLoadingComponent } from './resumen-pedido/dialog-loading/dialog-loading.component';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
 import { DialogVerificarTelefonoComponent } from 'src/app/componentes/dialog-verificar-telefono/dialog-verificar-telefono.component';
+// import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-select-direccion/dialog-select-direccion.component';
 // import { DialogMetodoPagoComponent } from 'src/app/componentes/dialog-metodo-pago/dialog-metodo-pago.component';
 // import { PagarCuentaComponent } from './pagar-cuenta/pagar-cuenta.component';
 
@@ -40,6 +41,7 @@ import { DialogVerificarTelefonoComponent } from 'src/app/componentes/dialog-ver
     // DialogSubitemRemoveComponent,
     DialogItemEditComponent,
     BusquedaComponent,
+    // DialogSelectDireccionComponent
     // PagarCuentaComponent
   ],
   imports: [
@@ -59,7 +61,9 @@ import { DialogVerificarTelefonoComponent } from 'src/app/componentes/dialog-ver
     DialogResetComponent,
     DialogLoadingComponent,
     DialogItemEditComponent,
-    DialogVerificarTelefonoComponent
+    DialogVerificarTelefonoComponent,
+    // DialogSelectDireccionComponent
+
     // DialogMetodoPagoComponent
   ]
 })

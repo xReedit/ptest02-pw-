@@ -67,7 +67,7 @@ export class SocketService {
       idsede: infToken.idsede,
       idusuario: infToken.idusuario,
       idcliente: infToken.idcliente,
-      iscliente: infToken.isCliente,
+      iscliente: infToken.isCliente || false,
       isOutCarta: _isOutCarta,
       isFromApp: opFrom,
       firts_socketid: infToken.socketId

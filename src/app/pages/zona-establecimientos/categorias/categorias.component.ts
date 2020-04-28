@@ -13,6 +13,7 @@ import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-selec
 import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
+import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
@@ -47,15 +48,16 @@ export class CategoriasComponent implements OnInit {
     private calcDistanceService: CalcDistanciaService,
     private establecimientoService: EstablecimientoService,
     private socketService: SocketService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private navigatorService: NavigatorLinkService,
   ) { }
 
   ngOnInit() {
-    window.history.forward();
-    history.pushState(null, null, location.href);
-    window.onpopstate = function () {
-        history.go(1);
-    };
+    // window.history.forward();
+    // history.pushState(null, null, location.href);
+    // window.onpopstate = function () {
+    //     history.go(1);
+    // };
     // history.pushState(null, null, document.title);
 
     this.idcategoria_selected = localStorage.getItem('sys::cat');
@@ -153,7 +155,8 @@ export class CategoriasComponent implements OnInit {
     // const dialogConfig = new MatDialogConfig();
 
     const dialogRef = this.dialogDireccion.open(DialogSelectDireccionComponent, {
-      panelClass: 'my-full-screen-dialog',
+      // panelClass: 'my-full-screen-dialog',
+      panelClass: ['my-dialog-orden-detalle', 'my-dialog-scrool'],
     });
 
     dialogRef.afterClosed().subscribe(

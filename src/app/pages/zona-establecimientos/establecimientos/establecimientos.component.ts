@@ -20,12 +20,12 @@ export class EstablecimientosComponent implements OnInit {
 
   ngOnInit() {
     this.xLoadCategoria();
-    this.navigatorService.disableGoBack();
+    // this.navigatorService.disableGoBack();
     // window.onpopstate = function () {
     //   // history.go(0);
     //   window.history.forward();
     // };
-    window.history.forward();
+    // window.history.forward();
   }
 
   private xLoadCategoria() {

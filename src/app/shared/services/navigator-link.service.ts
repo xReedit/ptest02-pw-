@@ -20,7 +20,8 @@ export class NavigatorLinkService {
 
   private resNavigator: any = [];
   private historyNavigator: any[] = [];
-  private lastUrlHistory = '';
+  public lastUrlHistory = '';
+  public nowUrl = '';
 
 
   constructor(
@@ -66,10 +67,10 @@ export class NavigatorLinkService {
       filter(e => e instanceof NavigationStart)
       , bufferCount(2, 1)).subscribe((e: any) => {
         if (e !== null && e !== undefined) {
-          // this.managerGoZonaEstablecimiento(e[1]['url']); // a la pagina que va
-          if ( this.disabledBack ) {return false; }
-
+          this.nowUrl = e[0]['url'];
+          // if ( this.disabledBack ) {return false; }
           if (e[1].navigationTrigger === 'popstate') {
+            this.managerGoZonaEstablecimiento(e[0]['url'], e); // a la pagina que va
             // desahabilitar boton back
             if ( this.disabledBack ) {return false; }
 
@@ -197,28 +198,46 @@ export class NavigatorLinkService {
   }
 
   // control alos backs de zona establecimiento
-  private managerGoZonaEstablecimiento(previusUrl: string): void {
-    previusUrl = previusUrl.split('?')[0];
-    // switch (previusUrl) {
-    //   case '/zona-delivery/establecimientos':
-    //     console.log('desde navigatot service establecimientos');
-    //     this.disabledBack = true;
-    //     this.disableGoBack();
-    //     break;
-    //   case '/zona-delivery/pedidos':
-    //     console.log('desde navigatot service establecimientos');
-    //     this.disabledBack = false;
-    //     break;
-    //   case '/zona-delivery/categorias':
-    //     console.log('desde navigatot service establecimientos');
-    //     this.disabledBack = false;
-    //     break;
-    // }
+  private managerGoZonaEstablecimiento(arrUrl: any, e): void {
+    console.log('arrUrl', arrUrl);
+    // previusUrl = previusUrl.split('?')[0];
+    const urlFrom = arrUrl.split('?')[0];
+    // const urlTo = arrUrl[1].split('?')[0];
+    let _pageActive = '';
+
+    switch (urlFrom) {
+      case '/zona-delivery/establecimientos':
+        _pageActive = '../inicio';
+        // console.log('desde navigatot service establecimientos');
+        // this.disabledBack = true;
+        // this.disableGoBack();
+        break;
+      case '/zona-delivery/pedidos':
+        console.log('desde navigatot service establecimientos');
+        _pageActive = '/zona-delivery/establecimientos';
+        // this.disabledBack = false;
+        break;
+      case '/zona-delivery/categorias':
+        console.log('desde navigatot service establecimientos');
+        _pageActive = '/zona-delivery/establecimientos';
+        break;
+      case '/zona-delivery':
+        console.log('desde zona-delivery');
+        _pageActive = '../';
+        e = null;
+        this.disableGoBack();
+        break;
+    }
+
+    if (_pageActive !== '' ) {
+      this._router(_pageActive);
+    }
   }
 
   // usar router de servicio
   _router(link: string) {
     this.router.navigate([link]);
+    return false;
   }
 
   disableGoBack(): void {

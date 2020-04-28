@@ -110,10 +110,10 @@ export class InfoTockenService {
     this.set();
   }
 
-  setIniMetodoPago() {
+  setIniMetodoPago(descripcion = 'Tarjeta') {
     const metodoPagoInit: MetodoPagoModel = new MetodoPagoModel;
-    metodoPagoInit.idtipo_pago = 2;
-    metodoPagoInit.descripcion = 'Tarjeta';
+    metodoPagoInit.idtipo_pago = descripcion === 'Tarjeta' ? 2 : 1;
+    metodoPagoInit.descripcion = descripcion;
     metodoPagoInit.importe = '0';
     metodoPagoInit.checked = true;
 
@@ -187,7 +187,13 @@ export class InfoTockenService {
         // agregar el metodo pago prederteminado tarjeta // valores iniciales
         if (!this.infoUsToken.metodoPago)  { this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); this.setPasoRecoger(false); }
       } else {
-        this.infoUsToken = <UsuarioTokenModel>_token.usuario;
+
+        this.infoUsToken = typeof _token.usuario === 'object' ? <UsuarioTokenModel>_token.usuario : <UsuarioTokenModel>_token;
+        // this.infoUsToken = <UsuarioTokenModel>_token;
+
+        // inicializa valores
+        this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); this.setPasoRecoger(false);
+
         this.infoUsToken.isCliente = false;
       }
     } else {

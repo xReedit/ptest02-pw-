@@ -9,6 +9,7 @@ import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-selec
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 
 
 @Component({
@@ -30,6 +31,7 @@ export class MainComponent implements OnInit {
     private listenService: ListenStatusService,
     private router: Router,
     private socketService: SocketService,
+    private navigartoService: NavigatorLinkService
   ) { }
 
   ngOnInit() {
@@ -83,7 +85,8 @@ export class MainComponent implements OnInit {
     // const dialogConfig = new MatDialogConfig();
 
     const dialogRef = this.dialogDireccion.open(DialogSelectDireccionComponent, {
-      panelClass: 'my-full-screen-dialog',
+      // panelClass: 'my-full-screen-dialog',
+      panelClass: ['my-dialog-orden-detalle', 'my-dialog-scrool'],
     });
 
     dialogRef.afterClosed().subscribe(
@@ -123,6 +126,12 @@ export class MainComponent implements OnInit {
   }
 
   goBack() {
+    // console.log('this.navigartoService.nowUrl', this.navigartoService.nowUrl);
+
+    if ( window.location.href.indexOf('/zona-delivery/establecimientos') > -1 ) {
+      this.navigartoService._router('../');
+      return;
+    }
     window.history.back();
   }
 

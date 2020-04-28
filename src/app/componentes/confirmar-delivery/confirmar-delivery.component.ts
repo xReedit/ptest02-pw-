@@ -124,7 +124,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this.resData.referencia = this.infoToken.direccionEnvioSelected.referencia;
       this.resData.direccionEnvioSelected = this.infoToken.direccionEnvioSelected;
       this.resData.idcliente = this.infoToken.idcliente.toString();
-      this.resData.paga_con = this.metodoPagoSelected.descripcion + '  ' + this.metodoPagoSelected.importe ;
+      this.resData.paga_con = this.metodoPagoSelected.descripcion + '  ' + this.metodoPagoSelected.importe || '' ;
       this.resData.telefono = telefono;
       this.resData.metodoPago = this.metodoPagoSelected;
       this.resData.tipoComprobante = this.tipoComprobanteSelected;
@@ -209,7 +209,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
     const _dialogConfig = new MatDialogConfig();
     _dialogConfig.disableClose = true;
     _dialogConfig.hasBackdrop = true;
-    _dialogConfig.panelClass = 'my-full-screen-dialog';
+    // _dialogConfig.panelClass = 'my-full-screen-dialog';
+    _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
     _dialogConfig.data = {
       idcliente: this.infoTokenService.infoUsToken.idcliente,
       numberphone: '+51934746830'

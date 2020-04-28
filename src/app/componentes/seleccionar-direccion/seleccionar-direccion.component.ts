@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
@@ -13,6 +13,9 @@ export class SeleccionarDireccionComponent implements OnInit {
   listDirecciones: DeliveryDireccionCliente[];
 
   @Output() direccionSelected = new EventEmitter<DeliveryDireccionCliente>();
+  @Input() idClienteBuscar: number; // cuando el pedido lo toma el mismo comercio
+
+  idClienteDirecciones: number;
 
   constructor(
     private crudService: CrudHttpService,
@@ -21,6 +24,7 @@ export class SeleccionarDireccionComponent implements OnInit {
 
   ngOnInit() {
     this.infoClienteLogueado = this.verifyClientService.getDataClient();
+    this.idClienteDirecciones = this.idClienteBuscar ? this.idClienteBuscar : this.infoClienteLogueado.idcliente;
     // console.log(this.infoClienteLogueado);
 
     this.loadDireccion();
@@ -28,7 +32,7 @@ export class SeleccionarDireccionComponent implements OnInit {
 
   loadDireccion() {
     const _dataClientDir = {
-      idcliente : this.infoClienteLogueado.idcliente
+      idcliente : this.idClienteDirecciones
     };
 
     // console.log(_dataClientDir);
@@ -38,6 +42,7 @@ export class SeleccionarDireccionComponent implements OnInit {
         // console.log('direcciones', res);
         this.listDirecciones = res.data;
 
+        if ( this.idClienteBuscar ) {return; }
         // si solo hay una direccion selecciona
         if (this.listDirecciones.length === 1 && this.infoClienteLogueado.direccionEnvioSelected === null ) {
           this.direccionSelected.emit(this.listDirecciones[0]);

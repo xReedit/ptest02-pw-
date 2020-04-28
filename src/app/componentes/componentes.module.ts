@@ -26,6 +26,7 @@ import { CompCalificacionComponent } from './comp-calificacion/comp-calificacion
 
 import { StarRatingModule } from 'angular-star-rating';
 import { DialogCalificacionComponent } from './dialog-calificacion/dialog-calificacion.component';
+import { DialogSelectDireccionComponent } from './dialog-select-direccion/dialog-select-direccion.component';
 
 @NgModule({
   declarations: [
@@ -46,8 +47,8 @@ import { DialogCalificacionComponent } from './dialog-calificacion/dialog-califi
     CompPedidoDetalleComponent,
     CompCalificacionComponent,
     DialogCalificacionComponent,
+    DialogSelectDireccionComponent,
     // DialogDesicionComponent,
-    // DialogSelectDireccionComponent,
     // DialogUbicacionComponent
   ],
   imports: [
@@ -77,7 +78,8 @@ import { DialogCalificacionComponent } from './dialog-calificacion/dialog-califi
     MapaSoloComponent,
     CompPedidoDetalleComponent,
     CompCalificacionComponent,
-    DialogCalificacionComponent
+    DialogCalificacionComponent,
+    DialogSelectDireccionComponent
     // DialogDesicionComponent
   ],
 
@@ -85,7 +87,8 @@ import { DialogCalificacionComponent } from './dialog-calificacion/dialog-califi
     DialogMetodoPagoComponent,
     DialogVerificarTelefonoComponent,
     DialogTipoComprobanteComponent,
-    DialogCalificacionComponent
+    DialogCalificacionComponent,
+    DialogSelectDireccionComponent
     // DialogDesicionComponent
   ]
 })
