@@ -20,7 +20,7 @@ export class CompCalificacionComponent implements OnInit {
   }
 
   onRatingChange($event: any) {
-    console.log('calificacion', $event);
+    // console.log('calificacion', $event);
     this.dataCalificado.calificacion =  $event.rating;
     if ( this.dataCalificado.showMsjTankyou ) {
       this.countFin = 2;

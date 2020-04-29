@@ -48,6 +48,15 @@
         <!-- <i class="fa fa-question-circle" aria-hidden="true"></i> -->
     </div>
     <!-- propina -->
+
+    <!-- dato importante o nombre de contacto si es solidaridad -->
+    <div class="p-3">
+        <span *ngIf="isComercioSolidaridad" class="text-info">Importante: especifique persona o datos de contacto.</span>
+        <mat-form-field class="w-100">
+            <input matInput [placeholder]="titleInputDatoAdicional" [required]="isComercioSolidaridad" [(ngModel)]="valInputDatoAdicianal">
+        </mat-form-field>
+    </div>
+    <!-- dato importante o nombre de contacto si es solidaridad -->
     
 
     <div class="m-0 p-3">        

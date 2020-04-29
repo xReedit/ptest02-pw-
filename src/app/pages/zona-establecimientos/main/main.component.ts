@@ -24,6 +24,9 @@ export class MainComponent implements OnInit {
 
   infoUser: UsuarioTokenModel;
 
+  isClienteLogueado = false;
+  showPanelRigth = false;
+
   constructor(
     private infoTokenService: InfoTockenService,
     private verifyClientService: VerifyAuthClientService,
@@ -35,15 +38,28 @@ export class MainComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    window.history.forward();
+    // window.history.forward();
     // history.pushState(null, null, document.title);
 
     this.infoTokenService.converToJSON();
     this.infoClient = this.verifyClientService.getDataClient();
+    this.isClienteLogueado = this.infoClient.isCliente;
 
-    this.setDireccion(this.infoClient.direccionEnvioSelected);
-    // console.log('this.infoToken', this.infoClient);
-    this.socketService.connect(this.infoClient, 0, true);
+    // si cliente esta logueado
+    if ( this.isClienteLogueado ) {
+      this.setDireccion(this.infoClient.direccionEnvioSelected);
+      // console.log('this.infoToken', this.infoClient);
+      this.socketService.connect(this.infoClient, 0, true);
+
+      this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
+        if ( res ) {
+          // this.codigo_postal_actual = res.codigo;
+          this.setDireccion(res);
+        }
+      });
+
+    }
+
 
     // if ( this.infoTokenService.infoUsToken ) {
     //   this.infoUser = this.infoTokenService.infoUsToken;
@@ -67,13 +83,6 @@ export class MainComponent implements OnInit {
     //   }
     // }, 800);
 
-
-    this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
-      if ( res ) {
-        // this.codigo_postal_actual = res.codigo;
-        this.setDireccion(res);
-      }
-    });
   }
 
   // ngOnDestroy(): void {
@@ -82,6 +91,8 @@ export class MainComponent implements OnInit {
   // }
 
   openDialogDireccion() {
+
+    if ( !this.isClienteLogueado ) {this.registarDirCliente(); return; }
     // const dialogConfig = new MatDialogConfig();
 
     const dialogRef = this.dialogDireccion.open(DialogSelectDireccionComponent, {
@@ -109,9 +120,10 @@ export class MainComponent implements OnInit {
   }
 
   clickTab($event) {
-    console.log($event);
+    // console.log($event);
     let goToPage = '/categorias';
-    switch ($event.index) {
+    const index = $event.index ? $event.index : $event;
+    switch (index) {
       case 0:
         goToPage = '/establecimientos';
         break;
@@ -120,8 +132,8 @@ export class MainComponent implements OnInit {
         // this.router.navigate(['/mis-pedidos']);
         break;
       }
-
-    this.router.navigate([`zona-delivery${goToPage}`]);
+      this.router.navigate([`zona-delivery${goToPage}`]);
+      this.showPanelRigth = false;
     // this.router.navigate([goToPage]);
   }
 
@@ -133,6 +145,11 @@ export class MainComponent implements OnInit {
       return;
     }
     window.history.back();
+  }
+
+  registarDirCliente() {
+    this.verifyClientService.setIsDelivery(true);
+    this.router.navigate(['/login-client']);
   }
 
 }

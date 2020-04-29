@@ -11,14 +11,14 @@
           <div class="text-right text-white" style="position: absolute; right: 0px;">
               <!-- <button *ngIf="isLogin" mat-button color="accent" (click)="cerrarSession()">Cerrar sesion</button> -->
               <!-- <button mat-flat-button color="warn" [routerLink]="['/login-personal-autorizado']">Personal Autorizado</button> -->
-            <i *ngIf="isLogin" class="fa fa-user-circle-o p-2" (click)="showClienteProfile()" aria-hidden="true"></i>
+            <!-- <i *ngIf="isLogin" class="fa fa-user-circle-o p-2" (click)="showClienteProfile()" aria-hidden="true"></i> -->
           </div>      
         </div>      
         <div class="inner-header flex">
           <br>
           <div>      
             <img src="assets/images/papaya_text-white.png" width="190px">
-            <p>Express <span class="fs-12">v.1S</span></p>
+            <p>Express <span class="fs-12">v.1z</span></p>
           </div>
         </div>
 
@@ -46,9 +46,9 @@
       <!-- body -->
 
       <div class="text-center pl-4 pr-4">
-        <img src="assets/images/img-ini.png" style="max-width: 320px; width: 100%;" alt="ini">
+        <img src="assets/images/img-ini.png" style="max-width: 320px; width: 100%;" alt="ini" (click)="goDev(1);">
         <!-- <p class="fs-14" style="color: #616161;">Software especializado para negocios gastronomicos.</p> -->
-        <p class="fs-14" style="color: #616161;">Encuentra, pide y recibe lo que quieras fácilmente en sólo pocos pasos.</p>        
+        <p class="fs-14" style="color: #616161;">Encuentra, pide y recibe lo que quieras fácilmente. Te lo llevamos en minutos.</p>        
       </div>
 
       <!-- <br> -->
@@ -62,7 +62,7 @@
           <span class="fs-13">Hola <strong>{{nombreClientSocket}}</strong>, que quieres pedir hoy?</span>        
         </div>
   
-        <div>
+        <div class="fs-14">
           <div matRipple class="p-3 border-bottom border-top" [routerLink]="['/lector-qr']">
             <img src="assets/images/btn_scan.png" alt="btn-scan">
             <span class="pl-2 fw-600">Scanear Código QR</span>
@@ -70,13 +70,14 @@
   
           <div matRipple class="p-3 border-bottom border-top" (click)="showDelivery()">
             <img src="assets/images/btn_delivery.png" alt="btn-scan">
-            <span class="pl-2 fw-600">Pedir un Delivery</span>
+            <span class="pl-2 fw-600">Pedir un Delivery</span><br>
+            <span class="badge badge-info fw-100">Servicio disponible desde el lunes 04 de mamyo 2020</span>
           </div>        
         </div>
       </div>
 
       <br><br>
-      <div class="ini-content-other d-flex fs-13 text-secondary p-3">
+      <div class="ini-content-other div-no-visible-mobile fs-13 text-secondary p-3 border-bottom">
         <div matRipple class="ini-ico p-2 xCursor">
             <img src="assets/images/marker-4.png" alt="">
             <p class="fw-600">Llega a más personas</p>
@@ -86,12 +87,12 @@
           <img src="assets/images/food-delivery.png" alt="">
           <p class="fw-600">Se parte de nuestro equipo</p>
           <p class="fw-100">Registrate para realizar entregas.</p>
-        </div>
+        </div>        
       </div>
 
-      <hr>
+      <!-- <hr> -->
 
-      <div class="w-100 text-center">
+      <div class="w-100 text-center" (click)="goDev(2);">
         <img src="assets/icons/icon-72x72.png">
         <p class="pt-1 fw-100 fs-12 text-secondary m-0">papaya.com.pe</p>
       </div>

@@ -42,7 +42,7 @@ export class CrudHttpService {
 
 
         const url = this.setUrlFiltros(controller, evento, conOrg, conSede, filter);
-        console.log('url', url);
+        // console.log('url', url);
         const params = new HttpParams({
             fromObject: {
                 pagenumber: pagenumber.toString(),

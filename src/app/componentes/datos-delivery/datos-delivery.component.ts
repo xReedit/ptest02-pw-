@@ -98,11 +98,12 @@ export class DatosDeliveryComponent implements OnInit {
 
     this.infoTokenService.setIniMetodoPago('Efectivo');
     this.metodoPagoSelected = this.infoTokenService.infoUsToken.metodoPago;
-    this.dateInfoSede = this.miPedidoService.objDatosSede.datossede[0];
+    // this.dateInfoSede = this.miPedidoService.objDatosSede.datossede[0];
 
     this.dirEstablecimiento = this.establecimientoService.get();
 
-    this.isAceptaRecojoLocal = this.dateInfoSede.pwa_delivery_habilitar_recojo_local === 1;
+    //  this.dateInfoSede.pwa_delivery_habilitar_recojo_local
+    this.isAceptaRecojoLocal = this.establecimientoService.establecimiento.pwa_delivery_habilitar_recojo_local === 1;
 
     this.myForm = this.fb.group({
       idcliente: new FormControl('', [Validators.required]),
@@ -285,7 +286,7 @@ export class DatosDeliveryComponent implements OnInit {
       this._listSubtotales = this._listSubtotalesTmp;
     }
 
-    console.log('this._listSubtotales', this._listSubtotales);
+    // console.log('this._listSubtotales', this._listSubtotales);
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._listSubtotales)));
     this.infoTokenService.setPasoRecoger(this.isRecojoLocalCheked);
 
@@ -300,7 +301,8 @@ export class DatosDeliveryComponent implements OnInit {
     _dialogConfig.hasBackdrop = true;
 
     _dialogConfig.data = {
-      importeTotalPagar: this._listSubtotales[this._listSubtotales.length - 1].importe
+      importeTotalPagar: this._listSubtotales[this._listSubtotales.length - 1].importe,
+      excluirId: 2 // id exlcluir
     };
 
     const dialogLoading = this.dialog.open(DialogMetodoPagoComponent, _dialogConfig);

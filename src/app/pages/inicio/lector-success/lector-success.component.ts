@@ -36,7 +36,7 @@ export class LectorSuccessComponent implements OnInit {
     };
 
     this.numMesa = this.usLog.numMesaLector;
-    console.log(this.usLog);
+    // console.log(this.usLog);
 
     this.crudService.postFree(_data, 'ini', 'info-sede', false)
       .subscribe((res: any) => {

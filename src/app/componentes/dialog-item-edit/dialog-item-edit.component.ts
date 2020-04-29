@@ -190,7 +190,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   }
 
   addItemToDialogItem(tpcSelect: ItemTipoConsumoModel, suma: number): void {
-    console.log('restar desde dialogitem');
+    // console.log('restar desde dialogitem');
     let paseCantSuItem = true;
     this.item.subitems_selected = this._subitems_selected;
 
@@ -220,7 +220,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   }
 
   setIndicaciones(val: string): void {
-    console.log('indicaciones', val);
+    // console.log('indicaciones', val);
     this.item.indicaciones = val;
 
     // agrega las indicaciones si existe en mipedido y si no tienen subitems

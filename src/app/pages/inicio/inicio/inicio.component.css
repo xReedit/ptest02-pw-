@@ -34,7 +34,7 @@
     justify-content: space-around;
 }
 
-.ini-content-other p { margin: 0; }
+.ini-content-other p { margin: 0; display: flex;}
 
 .ini-ico {
     min-width: 100px;

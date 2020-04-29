@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MetodoPagoModel } from 'src/app/modelos/metodo.pago.model';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 
 @Component({
   selector: 'app-dialog-metodo-pago',
@@ -15,6 +16,10 @@ export class DialogMetodoPagoComponent implements OnInit {
   isMontoVisible = false;
   formValid = false;
   importeIndicado: string;
+  private idExluir: null; // id escluir // cuando el comercio toma el pedido no puede pagar con tarjeta
+  private isHabilitadoYape = true;
+  private isComercioSolidaridad = false;
+
   private itemSelected: MetodoPagoModel;
   private importeTotal: number;
   private importeValid = false;
@@ -23,11 +28,17 @@ export class DialogMetodoPagoComponent implements OnInit {
     private dialogRef: MatDialogRef<DialogMetodoPagoComponent>,
     @Inject(MAT_DIALOG_DATA) data: any,
     private infoTokenService: InfoTockenService,
+    private establecimientoService: EstablecimientoService
   ) {
     this.importeTotal = parseFloat(data.importeTotalPagar);
+    this.idExluir = data.excluirId;
   }
 
   ngOnInit() {
+
+    this.isHabilitadoYape  = this.establecimientoService.get().pwa_delivery_acepta_yape === 1;
+    this.isComercioSolidaridad  = this.establecimientoService.get().pwa_delivery_comercio_solidaridad === 1;
+
 
     this.loadMetodoPago();
     this.itemSelected = this.infoTokenService.infoUsToken.metodoPago;
@@ -40,7 +51,25 @@ export class DialogMetodoPagoComponent implements OnInit {
     this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 2, 'descripcion': 'Tarjeta', 'checked': true});
     this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 3, 'descripcion': 'Yape', 'checked': false});
     this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 1, 'descripcion': 'Efectivo', 'checked': false});
-    console.log(this.listMetodoPago);
+
+    this.validaCociones();
+    // console.log(this.listMetodoPago);
+  }
+
+  private validaCociones(): void {
+    // exlucion -- mayormente tarjeta cuando el comercio hace pedido delivery
+    if ( this.idExluir ) {
+      this.listMetodoPago = this.listMetodoPago.filter(m => m.idtipo_pago !== this.idExluir ).map(m => m);
+    }
+
+    if ( !this.isHabilitadoYape ) {
+      this.listMetodoPago = this.listMetodoPago.filter(m => m.idtipo_pago !== 3 ).map(m => m);
+    }
+
+    // si es comercio solidario solo tarjeta
+    if ( this.isComercioSolidaridad ) {
+      this.listMetodoPago = this.listMetodoPago.filter(m => m.idtipo_pago === 2 ).map(m => m);
+    }
   }
 
   private verificarMetodoInit() {

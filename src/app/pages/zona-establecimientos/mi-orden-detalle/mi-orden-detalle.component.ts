@@ -34,7 +34,7 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.dataPedido = this.infoTokenService.infoUsToken.otro;
 
-    console.log('this.dataPedido otro', this.dataPedido);
+    // console.log('this.dataPedido otro', this.dataPedido);
     this.direccionCliente = this.infoTokenService.infoUsToken.otro.direccionEnvioSelected || this.infoTokenService.infoUsToken.direccionEnvioSelected;
     this.direccionCliente = typeof this.direccionCliente !== 'object' ? JSON.parse(this.direccionCliente) : this.direccionCliente;
 
@@ -71,10 +71,10 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
         if ( this.dataPedido.pwa_delivery_status === 4 ) {return; }
 
         const _geoPosition = <ILatLng>res;
-        console.log('ubicacion repartidor', res);
+        // console.log('ubicacion repartidor', res);
         // calcular la distancia con el repartidor si esta cerca activa "recibi conforme" y "llamar a repartidor"
         const isLLego = this.calcDistanciaService.calcDistancia(<GeoPositionModel>_geoPosition, <GeoPositionModel>this.destination);
-        console.log('distancia listen llego ?', isLLego);
+        // console.log('distancia listen llego ?', isLLego);
 
         if ( isLLego ) {
           // this.dataPedido.pwa_delivery_status = 3;
@@ -159,7 +159,7 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
         this.infoTokenService.set();
         this.showTelefonoRepartidor = false;
         this.estadoPedido = 'Entregado';
-        console.log('data dialog', data);
+        // console.log('data dialog', data);
       }
     );
   }

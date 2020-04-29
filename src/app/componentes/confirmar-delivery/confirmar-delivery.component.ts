@@ -59,6 +59,11 @@ export class ConfirmarDeliveryComponent implements OnInit {
   _listSubtotalesTmp: any;
   _listSubtotales: any;
 
+  isComercioSolidaridad = false;
+  titleInputDatoAdicional = 'Dato importante';
+
+  valInputDatoAdicianal = '';
+
   @Input()
   set listSubtotales(val: any) {
     this._listSubtotales = val;
@@ -83,9 +88,14 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.loadData();
     const _datosEstablecieminto = this.establecimientoService.get();
     this.montoMinimoPedido = _datosEstablecieminto.pwa_delivery_importe_min;
-    this.metodoPagoSelected = this.infoTokenService.infoUsToken.metodoPago;
     this.tipoComprobanteSelected = this.infoTokenService.infoUsToken.tipoComprobante;
     this.propinaSelected = this.infoTokenService.infoUsToken.propina;
+
+    this.isComercioSolidaridad = _datosEstablecieminto.pwa_delivery_comercio_solidaridad === 1;
+    this.metodoPagoSelected = this.infoTokenService.infoUsToken.metodoPago;
+    this.titleInputDatoAdicional = this.isComercioSolidaridad ? 'Contacto' : 'Algún dato importante?';
+
+
   }
 
   private loadData(): void {
@@ -99,7 +109,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     this.isAceptaRecojoLocal = this.infoEstablecimiento.pwa_delivery_habilitar_recojo_local === 1;
 
-    console.log('this.infoEstablecimiento', this.infoEstablecimiento);
+    // console.log('this.infoEstablecimiento', this.infoEstablecimiento);
 
     this.isValidForm = this.infoToken.telefono ? this.infoToken.telefono.length >= 5 ? true : false : false;
     if ( this.isValidForm ) {
@@ -135,6 +145,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this.infoToken.telefono = telefono;
       this.infoTokenService.setTelefono(telefono);
       this.resData.pasoRecoger = this.isRecojoLocalCheked;
+      this.resData.dato_adicional = this.valInputDatoAdicianal;
 
       // this.infoTokenService.set();
 
@@ -167,6 +178,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this.resData.importeTotal = importeTotal;
       this.resData.subTotales = this._listSubtotales;
       this.resData.pasoRecoger = this.isRecojoLocalCheked;
+      this.resData.dato_adicional = this.valInputDatoAdicianal;
       // this.infoToken.telefono = telefono;
       // this.infoTokenService.setTelefono(telefono);
 

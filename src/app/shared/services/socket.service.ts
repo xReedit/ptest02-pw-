@@ -365,7 +365,7 @@ export class SocketService {
       if ( res === true ) { console.log('VERIFY CONECTION => OK'); this.verificandoConexion = false; return; }
 
       // no hay conexion -- en pruebas ver comportamiento
-      console.log('VERIFY CONECTION => FALSE');
+      // console.log('VERIFY CONECTION => FALSE');
       this.closeConnection();
       this.statusConexSocket(false, 'disconnect');
       this.connect();

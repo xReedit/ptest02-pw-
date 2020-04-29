@@ -85,7 +85,7 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.destroyEstado$))
     .subscribe(async (res: any) => {
       if (res.pageActive === 'estado') {
-        console.log('desde pago cuenta');
+        // console.log('desde pago cuenta');
         const _importe = await this.estadoPedidoClienteService.getImporteCuenta();
         this.estadoPedido.importe = <number>_importe || 0;
         // this.estadoPedidoClienteService.getCuentaTotales();
@@ -102,7 +102,7 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.destroyEstado$))
     .subscribe(res => {
       this.estadoPedido = res;
-      console.log('desde estado pedido', this.estadoPedido);
+      // console.log('desde estado pedido', this.estadoPedido);
 
       // if ( _importe === 0 ) {
       if ( this.estadoPedido.importe === 0 && this.estadoPedido.isRegisterOnePago ) {
@@ -120,7 +120,7 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     // tiempo de espera
     this.estadoPedidoClienteService.timeRestanteAprox$.subscribe((res: any) => {
       this.tiempoEspera = res;
-      console.log('this.tiempoEspera', this.tiempoEspera);
+      // console.log('this.tiempoEspera', this.tiempoEspera);
     });
 
     this.socketService.onPedidoPagado()
@@ -138,7 +138,7 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
   }
 
   verCuenta() {
-    console.log('ver al cuenta desde estado');
+    // console.log('ver al cuenta desde estado');
     this.estadoPedidoClienteService.getCuenta();
     this.navigatorService.setPageActive('mipedido');
   }

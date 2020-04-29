@@ -969,7 +969,7 @@ export class MipedidoService {
         // });
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
 
     this.resetCantidadesTpcItemCarta();
@@ -1240,7 +1240,7 @@ export class MipedidoService {
     const arrOtros = rulesSubTotales.filter(x => x.tipo === 'a');
 
     // si existe estableciiento en localstorage entonces es un clienteDelivery
-    const isClienteDelivery = this.establecimientoService.get().idsede ? true : false;
+    let isClienteDelivery = this.establecimientoService.get().idsede ? true : false;
     let isTieneDelivery =  false; // si tiene la opcion de delivery configurado
     arrOtros.map(p => {
       const rpt: any = {};
@@ -1258,6 +1258,10 @@ export class MipedidoService {
         } else {
           isTieneDelivery = false; // para que calculo abajo
           importeOtros = this.establecimientoService.get().c_servicio || this.establecimientoService.get().c_minimo;
+
+          // verifica si en elpedido hay delivery
+          const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion);
+          isClienteDelivery = cantidad > 0;
           return;
         }
       } else {
@@ -1478,7 +1482,7 @@ export class MipedidoService {
 
 
       // this.itemStockChangeSource.next(_itemInCarta);
-      console.log('socket list', this.listItemsPedido);
+      // console.log('socket list', this.listItemsPedido);
     });
 
     this.socketService.onItemResetCant().subscribe((res: any) => {
@@ -1527,7 +1531,7 @@ export class MipedidoService {
       this.listenStatusService.setHayDatosSede(true);
       // nombre sede
       localStorage.setItem('sys::s', this.objDatosSede.datossede[0].nombre + '|' + this.objDatosSede.datossede[0].ciudad);
-      console.log('datos de la sede ps', this.objDatosSede);
+      // console.log('datos de la sede ps', this.objDatosSede);
 
 
       this.max_minute_order = res[0].datossede[0].pwa_time_limit;

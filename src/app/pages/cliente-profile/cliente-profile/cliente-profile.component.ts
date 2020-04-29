@@ -51,7 +51,7 @@ export class ClienteProfileComponent implements OnInit {
         // this.registerForm.controls['f_nac'].patchValue(new Date(this.dataCliente.f_nac));
       }
 
-      console.log(res);
+      // console.log(res);
     });
   }
 
@@ -66,12 +66,12 @@ export class ClienteProfileComponent implements OnInit {
       f_nac: _fnac,
     };
 
-    console.log(_dataUs);
+    // console.log(_dataUs);
 
 
     this.crudService.postFree(_dataUs, 'cliente', 'perfil-save', false)
       .subscribe(res => {
-        console.log(res);
+        // console.log(res);
       });
 
   }

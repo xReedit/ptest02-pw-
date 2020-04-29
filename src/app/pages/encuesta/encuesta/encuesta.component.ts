@@ -42,7 +42,7 @@ export class EncuestaComponent implements OnInit   {
 
   ngOnInit() {
     this.infoToken = this.infoTokenService.getInfoUs();
-    console.log(this.infoToken);
+    // console.log(this.infoToken);
     this.nomSede = localStorage.getItem('sys::s').split('|');
 
     this.dataPost = {
@@ -82,7 +82,7 @@ export class EncuestaComponent implements OnInit   {
 
   private loadOpciones(): void {
     this.crudService.postFree(this.dataPost, 'encuesta', 'las-opciones', false).subscribe( (res: any) => {
-      console.log('las opciones', res);
+      // console.log('las opciones', res);
       if ( res.success ) {
         this.listOption = res.data;
       }
@@ -117,11 +117,11 @@ export class EncuestaComponent implements OnInit   {
       this.guardarEncuesta();
     }
 
-    console.log('countOption', this.countOption);
-    console.log('selectedTabEncuesta', this.selectedTabEncuesta);
+    // console.log('countOption', this.countOption);
+    // console.log('selectedTabEncuesta', this.selectedTabEncuesta);
 
     if ( this.countOption === this.selectedTabEncuesta ) {
-      console.log('terminar encuesta');
+      // console.log('terminar encuesta');
       this.cuentaRegresiva();
     }
   }
@@ -129,7 +129,7 @@ export class EncuestaComponent implements OnInit   {
   private guardarEncuesta(): void {
     const _dataSend = {item: this.ListRespuestas, i: this.xIdEncuesta };
     this.crudService.postFree(_dataSend, 'encuesta', 'guardar', false).subscribe( (res: any) => {
-      console.log('guardado', res);
+      // console.log('guardado', res);
     });
   }
 

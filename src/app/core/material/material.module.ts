@@ -17,6 +17,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCardModule } from '@angular/material/card';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatSidenavModule} from '@angular/material/sidenav';
 // import {MatSidenavModule} from '@angular/material/sidenav';
 // import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -39,8 +40,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     MatExpansionModule,
     MatCardModule,
     MatRadioModule,
-    MatTooltipModule
-    // MatSidenavModule
+    MatTooltipModule,
+    MatSidenavModule
     // MatTooltipModule
   ],
   exports: [
@@ -58,8 +59,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     MatExpansionModule,
     MatCardModule,
     MatRadioModule,
-    MatTooltipModule
-    // MatSidenavModule
+    MatTooltipModule,
+    MatSidenavModule
     // MatTooltipModule
   ]
 })

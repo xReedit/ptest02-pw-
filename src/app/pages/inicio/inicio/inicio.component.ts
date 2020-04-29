@@ -19,6 +19,8 @@ export class InicioComponent implements OnInit, OnDestroy {
   isLogin = false;
   nombreClientSocket = '';
 
+  private countnDev = 0;
+  private countLogo = 0;
   constructor(
     private verifyClientService: VerifyAuthClientService,
     private router: Router,
@@ -69,19 +71,23 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.verifyClientService.loginOut();
   }
 
-  showClienteProfile() {
-    if ( this.isLogin ) {
-       this.router.navigate(['/cliente-profile']);
-    }
-  }
+  // showClienteProfile() {
+  //   if ( this.isLogin ) {
+  //      this.router.navigate(['/cliente-profile']);
+  //   }
+  // }
 
   showDelivery() {
-    if (this.isLogin)  {
-      this.router.navigate(['./zona-delivery']);
-    } else {
-      this.verifyClientService.setIsDelivery(true);
-      this.router.navigate(['/login-client']);
-    }
+    return false;
+    // this.router.navigate(['./zona-delivery']);
+  }
+
+  // solo dev
+  goDev(op: number) {
+    this.countLogo += op === 1 ? 1 : 0;
+    this.countnDev += op === 2 ? 1 : 0;
+
+    if ( this.countLogo === 4 && this.countnDev === 2 ) { this.router.navigate(['./zona-delivery']); }
   }
 
 }

@@ -6,6 +6,7 @@ import { SocketService } from 'src/app/shared/services/socket.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 
 @Component({
   selector: 'app-main',
@@ -40,24 +41,29 @@ export class MainComponent implements OnInit {
     private listenStatusService: ListenStatusService,
     public socketService: SocketService,
     private verifyClientService: VerifyAuthClientService,
+    private infoTokenService: InfoTockenService
     ) {
     }
 
   private detectScreenSize() {
     this.isScreenIsMobile = window.innerWidth > 1049 ? false : true;
-    console.log('window.innerWidth', window.innerWidth);
-    console.log('this.isScreenIsMobile', this.isScreenIsMobile);
+    // console.log('window.innerWidth', window.innerWidth);
+    // console.log('this.isScreenIsMobile', this.isScreenIsMobile);
   }
 
   ngOnInit() {
     this.detectScreenSize();
     this.socketService.isSocketOpenReconect = false;
     this.navigatorService.setPageActive('carta');
+
+    this.infoTokenService.getInfoUs();
     // this.navigatorService.addLink('carta');
 
     this.verifyClientService.verifyClient().subscribe((res: SocketClientModel) => {
       // console.log('desde incio', res);
-      this.isUsuarioCliente = res.isCliente || false;
+      if ( !res ) { this.isUsuarioCliente = this.infoTokenService.infoUsToken.isCliente; } else {
+        this.isUsuarioCliente = res.isCliente || false;
+      }
       this.listenStatusService.setIsUsuarioCliente(this.isUsuarioCliente);
       this.isClienteDelivery = res.isDelivery;
     });
@@ -111,7 +117,7 @@ export class MainComponent implements OnInit {
 
   onScroll($event: any): void {
     const val = $event.srcElement.scrollTop;
-    this.isVisibleToolBar = val >= this.lastValScrollTop && val > 54 ? false : true;
+    this.isVisibleToolBar = val >= this.lastValScrollTop && val > 0 ? false : true;
 
     setTimeout(() => {
       this.lastValScrollTop = val;

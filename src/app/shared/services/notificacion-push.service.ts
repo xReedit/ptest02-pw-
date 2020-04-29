@@ -36,7 +36,7 @@ export class NotificacionPushService {
 
   // se suscribe a la notificacion
   suscribirse(): void {
-    console.log('llego a suscribirse estado this.swPush.isEnabled: ', this.swPush.isEnabled);
+    // console.log('llego a suscribirse estado this.swPush.isEnabled: ', this.swPush.isEnabled);
     // if ( this.swPush.isEnabled ) {
       // this.swPush.subscription.subscribe(res => {
         // if (!res) {return; }
@@ -48,14 +48,14 @@ export class NotificacionPushService {
 
   //  suscriberse
   private keySuscribtion() {
-    console.log('keySuscribtion');
+    // console.log('keySuscribtion');
     this.swPush
     .requestSubscription({
       serverPublicKey: this.VAPID_PUBLIC,
     })
     .then(subscription => {
       // send subscription to the server
-      console.log('suscrito a notificaciones push', subscription);
+      // console.log('suscrito a notificaciones push', subscription);
       this.saveSuscripcion(subscription);
     })
     .catch(console.error);

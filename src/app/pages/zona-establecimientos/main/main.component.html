@@ -1,3 +1,35 @@
+<mat-drawer-container class="example-container">
+  <mat-drawer #drawer class="example-sidenav" mode="over" position="end" [opened]="showPanelRigth" (closedStart)="showPanelRigth=false">
+      <div style="min-width: 250px;">
+          <div class="p-3 border-bottom">
+            <div class="w-100 text-center">
+              <img src="assets/icons/icon-72x72.png">
+              <p class="pt-1 fw-600 fs-12 text-secondary m-0">Papaya Express</p>
+              <p class="pt-1 fw-100 fs-11 text-secondary m-0">papaya.com.pe</p>
+            </div>            
+          </div>                
+          <div class="p-3 border-bottom w-100" (click)="drawer.toggle()">
+            <span class="fw-600 fs-13"><i class="fa fa-arrow-left pr-2"></i>Opciones</span>
+          </div>
+          <div class="fs-13">
+              <div matRipple class="border-bottom p-3 xCursor" (click)="clickTab(0); drawer.toggle();">
+                Ir al Inicio
+              </div>
+              <div matRipple class="border-bottom p-3 xCursor" (click)="clickTab(1); drawer.toggle();">
+                Mis pedidos
+              </div>
+              <div matRipple class="border-bottom p-3 xCursor">
+                Descuentos y promociones
+              </div>
+              <div matRipple class="border-bottom p-3 xCursor" [routerLink]="['../']">
+                Cerrar
+              </div>
+          </div>
+      </div>
+
+  </mat-drawer>
+
+
 <div class="animated fadeIn overflow-hidden">
     <div class="header-app-1 p-3 d-flex justify-content-between">            
     <!-- <div> -->
@@ -5,19 +37,33 @@
         <div matRipple class="text-center" (click)="openDialogDireccion()">
             <span class="pl-2 fs-13 fw-100">{{ nomDireccionCliente }}</span>
         </div>
-        <i class="fa fa-caret-down pl-2" aria-hidden="true"></i>
+        <i class="fa fa-user-circle-o pl-2" aria-hidden="true" (click)="drawer.toggle()"></i>
     </div>
 
+    
     <!-- body -->
     <div class="content-body">        
+      
+      <!-- primer paso loguearse -->
+      <div *ngIf="!isClienteLogueado" matRipple class="content-paso-ini text-center xCursor border" (click)="registarDirCliente()">
+        <span class="text-secondary fs-12">Bienvenido, para ver los comercios en tu zona:</span>
+        <div class="bg-warnig">
+          <img src="../assets/images/placeholder.png" alt="">
+          <span class="text-secondary fw-600 fs-13">
+            Indica dirección de entrega
+          </span>
+        </div>
+      </div>
+
+
         <router-outlet></router-outlet>
         <br><br>
     </div>
     <!-- body -->
     
     <!-- <footer></footer> -->
-    <div class="xfooter">
-        <div>
+    <div class="xfooter-zona-delivery">
+        <div class="tabs-group">
             <mat-tab-group class="fondo-tab-group" 
             color="accent"                     
             (selectedTabChange)="clickTab($event)"
@@ -53,3 +99,5 @@
         </div>
     </div>
 </div>
+
+</mat-drawer-container>

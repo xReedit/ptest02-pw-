@@ -39,11 +39,11 @@ function installApp() {
     deferredPrompt.userChoice
         .then((choiceResult) => {
             if (choiceResult.outcome === 'accepted') {
-                console.log('PWA setup accepted');
+                // console.log('PWA setup accepted');
                 // hide our user interface that shows our A2HS button
                 setupButton.style.display = 'none';
             } else {
-                console.log('PWA setup rejected');
+                // console.log('PWA setup rejected');
             }
             deferredPrompt = null;
         });

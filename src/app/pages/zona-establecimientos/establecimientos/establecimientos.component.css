@@ -60,3 +60,11 @@
     border: solid 1px #e0e0e0;
     max-width: 450px;
 }
+
+.bg-aviso {
+    background-color: lightgoldenrodyellow;
+}
+
+.bg-info-2 {
+    background: #bbdefb;
+}

@@ -28,5 +28,6 @@ export class DeliveryEstablecimiento {
     pwa_delivery_habilitar_recojo_local: number;
     pwa_delivery_acepta_yape: number;
     pwa_delivery_hablitar_calc_costo_servicio: number; // si el sistema calcula el servicio delivery segun distancia de los pedidos tomados por el comercio
+    pwa_delivery_comercio_solidaridad: number; // si es comercio solidario, solo pago con tarjeta y parece campo de contacto
     rulesSubTotales: any;
 }

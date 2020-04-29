@@ -22,7 +22,7 @@ export class CompPedidoDetalleComponent implements OnInit {
   }
 
   private loadPedido() {
-    console.log('infoPedido componente', this.infoPedido);
+    // console.log('infoPedido componente', this.infoPedido);
     const _data = {
       mesa: 0,
       idsede: this.infoPedido.idsede,
@@ -32,7 +32,7 @@ export class CompPedidoDetalleComponent implements OnInit {
 
     this.crudService.postFree(_data, 'pedido', 'lacuenta-zona-delivery', false)
       .subscribe(res => {
-        console.log('lacuenta-zona-delivery', res);
+        // console.log('lacuenta-zona-delivery', res);
         this._miPedido = this.miPedidoService.darFormatoPedido(res);
 
         // obtener subtotales bd
@@ -41,8 +41,8 @@ export class CompPedidoDetalleComponent implements OnInit {
             this._arrSubtotales = arrTotal.data;
           });
 
-        console.log('this._arrSubtotales', this._arrSubtotales);
-        console.log('this.elPedido', this._miPedido);
+        // console.log('this._arrSubtotales', this._arrSubtotales);
+        // console.log('this.elPedido', this._miPedido);
       });
   }
 

@@ -21,9 +21,50 @@ border-radius: 0px;
   overflow: auto;
 }
 
+.div-no-visible-mobile {
+  display: flex;  
+}
+
+.max-w {
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto;
+}
+
+/* main zona delivery */
+/* .xfooter-zona-delivery {
+  padding: 10px;
+}
+
+.xfooter-zona-delivery.tabs-group {
+  display: none;  
+} */
+
+.xfooter-zona-delivery .tabs-group {
+  display: none;  
+}
+.xfooter-zona-delivery {
+  padding: 10px;
+}
+
+/* main zona delivery */
 
 /* cuando es en celular el dialog detalle orden abre en pantalla completa */
-@media (max-width: 676px) { 
+@media (max-width: 676px) {   
+
+  .xfooter-zona-delivery .tabs-group {
+    display: inline-block;  
+  }
+  .xfooter-zona-delivery {
+    padding: 0px;
+  }
+  
+  
+
+  .div-no-visible-mobile {
+    display: none !important;  
+  }
+
   .my-dialog-orden-detalle {
     max-width: none !important;
     width: 100vw;

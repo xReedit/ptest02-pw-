@@ -67,13 +67,13 @@ export class CategoriasComponent implements OnInit {
     this.listSubCatFiltros.map(x => x.selected = false);
     this.listSubCatFiltros.unshift({ id: 0, descripcion: 'Todos', selected: true });
 
-    console.log('this.listSubCatFiltros :>> ', this.listSubCatFiltros);
+    // console.log('this.listSubCatFiltros :>> ', this.listSubCatFiltros);
 
     // this.activatedRoute.queryParams.subscribe(params => {
     //   if ( params['id'] ) {
     //     this.idcategoria_selected = params['id'];
     //     localStorage.setItem('sys::cat', this.idcategoria_selected.toString());
-        console.log('this.idcategoria_selected', this.idcategoria_selected);
+        // console.log('this.idcategoria_selected', this.idcategoria_selected);
     //   }
     // });
 
@@ -119,7 +119,7 @@ export class CategoriasComponent implements OnInit {
 
           });
 
-          console.log('this.listEstablecimientos', this.listEstablecimientos);
+          // console.log('this.listEstablecimientos', this.listEstablecimientos);
         // }, 500);
         // console.log(this.listEstablecimientos);
       });
@@ -131,7 +131,7 @@ export class CategoriasComponent implements OnInit {
   // }
 
   itemSelected($event: DeliveryEstablecimiento) {
-    console.log('establecimiento seleccionada', $event);
+    // console.log('establecimiento seleccionada', $event);
 
     this.socketService.closeConnection();
 

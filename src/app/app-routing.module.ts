@@ -42,7 +42,7 @@ const routes: Routes = [
     {
       path: 'zona-delivery',
       loadChildren: () => import('./pages/zona-establecimientos/zona-establecimientos.module').then(m => m.ZonaEstablecimientosModule),
-      canActivate: [ClienteProfileGuard],
+      // canActivate: [ClienteProfileGuard],
       data: { 'tituloModulo': 'Cliente Zona Delivery' }
     }
 ];

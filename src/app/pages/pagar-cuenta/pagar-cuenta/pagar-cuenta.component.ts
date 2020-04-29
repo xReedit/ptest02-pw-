@@ -112,13 +112,13 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     if ( this.infoToken.isDelivery  ) {
       // el importe lo toma del localstorage
       arrTotales = JSON.parse(atob(localStorage.getItem('sys::st')));
-      console.log('total st ', arrTotales);
+      // console.log('total st ', arrTotales);
       this.estadoPedido.importe = parseFloat(arrTotales[arrTotales.length - 1].importe);
     } else {
       this.estadoPedido.importe = await this.estadoPedidoClienteService.getImporteCuenta();
     }
 
-    console.log('arrTotales', arrTotales);
+    // console.log('arrTotales', arrTotales);
 
     // para proteger de los que actualizan luego de pagar
     if ( this.estadoPedido.importe === 0 || this.estadoPedido.importe === null) {
@@ -245,7 +245,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
       const _purchasenumber = res.data[0].purchasenumber;
       this.el_purchasenumber = _purchasenumber;
 
-      console.log('_purchasenumber', _purchasenumber);
+      // ('_purchasenumber', _purchasenumber);
 
       pagar(this.estadoPedido.importe, _purchasenumber, this.dataClientePago);
       this.listenResponse();
@@ -269,7 +269,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
       if ( dataResponse !== 'null' ) {
         this.isLoadBtnPago = false;
-        console.log('dataResponse', dataResponse);
+        // console.log('dataResponse', dataResponse);
         this.dataResTransaction = JSON.parse(dataResponse);
 
         this.isTrasctionSuccess = !this.dataResTransaction.error;
@@ -411,11 +411,11 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     _dialogConfig.hasBackdrop = true;
     _dialogConfig.data = {idMjs: option};
 
-    console.log('show dialog DialogDesicionComponent');
+    // console.log('show dialog DialogDesicionComponent');
     const dialogReset = this.dialog.open(DialogDesicionComponent, _dialogConfig);
     dialogReset.afterClosed().subscribe(result => {
       if (result ) {
-        console.log('result dialog DialogDesicionComponent', result);
+        // console.log('result dialog DialogDesicionComponent', result);
         // this.suscribirse();
         this.pushNotificationSerice.suscribirse();
       }

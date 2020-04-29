@@ -61,7 +61,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
     this.socketSerrvice.onDeliveryPedidoChangeStatus()
     .pipe(takeUntil(this.destroy$))
     .subscribe(res => {
-      console.log('socket listen onDeliveryPedidoChangeStatus', res);
+      // console.log('socket listen onDeliveryPedidoChangeStatus', res);
       this.loadMisPedidos();
     });
   }
@@ -73,7 +73,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
 
     this.crudService.postFree(_data, 'delivery', 'get-mis-pedidos', false)
       .subscribe( res => {
-        console.log(res);
+        // console.log(res);
         this.listMisPedidos = res.data;
         this.listMisPedidos.map( x => {
           x.arrDatosDelivery = JSON.parse(x.arrDatosDelivery);

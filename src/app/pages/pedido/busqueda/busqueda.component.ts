@@ -49,7 +49,7 @@ export class BusquedaComponent implements OnInit {
 
     // tipo consumo
     this.objNewItemTiposConsumo = this.socketService.getDataTipoConsumo();
-    console.log('_objFind', this.objCartaBus);
+    // console.log('_objFind', this.objCartaBus);
   }
 
   selectedItemBusq(selectedItem: ItemModel) {
@@ -87,7 +87,7 @@ export class BusquedaComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
         data => {
           if ( !data ) { return; }
-          console.log('data dialog', data);
+          // console.log('data dialog', data);
         }
     );
 

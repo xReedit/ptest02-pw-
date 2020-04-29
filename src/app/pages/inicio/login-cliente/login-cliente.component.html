@@ -1,10 +1,14 @@
 <div class="animated fadeIn">
     <div *ngIf="!isViewLoginDNI" class="text-center">
         <div class="p-3 pt-5">
-            <p class="fs-18 fw-600">Registrate para comenzar hacer tu pedido.</p>
+            <div class="w-100 text-center">
+                <img src="assets/icons/icon-72x72.png">
+                <!-- <p class="pt-1 fw-100 fs-12 text-secondary m-0">papaya.com.pe</p> -->
+            </div>
+            <p class="fs-18 fw-600">Registrate y comienza hacer tu pedido.</p>
         </div>
         <hr>
-        <div class="p-3">
+        <div class="p-3  max-w">
             <div class="btn-social fb" matRipple (click)="goFb()">                
                 <i class="fa fa-facebook" aria-hidden="true"></i>
                 <span class="pl-2">Con Facebook</span> 
@@ -26,12 +30,12 @@
     <div *ngIf="isViewLoginDNI" class="animated fadeInUp">
 
         <!-- encabezado -->
-        <div class="pr-5 pt-5 pl-5 pb-2" (click)="viewLoginDni()">
+        <div class="pr-5 pt-5 pl-5 pb-2 max-w" (click)="viewLoginDni()">
             <p class="fs-18 fw-600"><i class="fa fa-arrow-left pr-2"></i> Escriba su DNI.</p>
         </div>
         <hr>
 
-        <div class="pr-5 pt-2 pl-5 pb-0">
+        <div class="pr-5 pt-2 pl-5 pb-0 max-w">
             <div *ngIf="!isPaseOk">
                 <mat-form-field class="w-100">
                     <input matInput placeholder="DNI" maxlength="8" type="number" (keyup.enter)="buscarDNI(dni.value)" #dni>
