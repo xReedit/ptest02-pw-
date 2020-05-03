@@ -48,8 +48,8 @@ export class CategoriasComponent implements OnInit {
     private calcDistanceService: CalcDistanciaService,
     private establecimientoService: EstablecimientoService,
     private socketService: SocketService,
-    private activatedRoute: ActivatedRoute,
-    private navigatorService: NavigatorLinkService,
+    // private activatedRoute: ActivatedRoute,
+    // private navigatorService: NavigatorLinkService,
   ) { }
 
   ngOnInit() {

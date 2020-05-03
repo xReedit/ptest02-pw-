@@ -1168,6 +1168,23 @@ export class MipedidoService {
     return sum;
   }
 
+  // devuelve cantidad tipoconsumo en el pedido, es decir cuanto delivery o cuantos para llevar hay // se usa calculo total delivery app cliente
+  private countCantItemsFromTpc(tipoconsumo: number): number {
+    let sum = 0;
+    this.miPedido.tipoconsumo
+    .filter((tpc: TipoConsumoModel) => tpc.idtipo_consumo.toString() === tipoconsumo.toString())
+    .map((tpc: TipoConsumoModel) => {
+      tpc.secciones
+      .map((z: SeccionModel) => {
+        sum += z.items
+          .map((x: ItemModel) => x.cantidad_seleccionada)
+          .reduce((a, b) => a + b, 0);
+      });
+    });
+
+    return sum;
+  }
+
   // <------ reglas de la carta ---->//
 
   // <------ sub totales ---->//
@@ -1242,6 +1259,7 @@ export class MipedidoService {
     // si existe estableciiento en localstorage entonces es un clienteDelivery
     let isClienteDelivery = this.establecimientoService.get().idsede ? true : false;
     let isTieneDelivery =  false; // si tiene la opcion de delivery configurado
+    let isAddDelivery = isClienteDelivery; // si agrega delivery
     arrOtros.map(p => {
       const rpt: any = {};
 
@@ -1249,6 +1267,7 @@ export class MipedidoService {
       if ( (p.descripcion.toUpperCase().indexOf('DELIVERY') > -1
           || p.descripcion.toUpperCase().indexOf('ENTREGA') > -1)
           && isClienteDelivery ) {
+        isAddDelivery = true;
         isTieneDelivery = true;
 
         // si tiene propio servicio
@@ -1260,8 +1279,9 @@ export class MipedidoService {
           importeOtros = this.establecimientoService.get().c_servicio || this.establecimientoService.get().c_minimo;
 
           // verifica si en elpedido hay delivery
-          const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion);
+          const cantidad = this.countCantItemsFromTpc(p.idtipo_consumo);
           isClienteDelivery = cantidad > 0;
+          isAddDelivery = cantidad > 0;
           return;
         }
       } else {
@@ -1301,23 +1321,26 @@ export class MipedidoService {
     });
 
     // si no tiene la opcion delivery y es un clienteDelivery lo agrega // o requiere el servicio de calcular distancia
-    if ( !isTieneDelivery && isClienteDelivery && (!this.pwa_delivery_servicio_propio || isCalcCostoServicioDelivery )) {
-      const _costoXCantItems = this.calcCostoCantItemsDelivery();
-      const costoServicio = _costoXCantItems + (this.establecimientoService.get().c_servicio || this.establecimientoService.get().c_minimo );
-      const rpt: any = {};
-      rpt.id = -2;
-      rpt.descripcion = 'Entrega';
-      rpt.esImpuesto = 0;
-      rpt.visible = true;
-      rpt.quitar = false;
-      rpt.tachado = false;
-      rpt.visible_cpe = false;
-      rpt.importe = parseFloat(costoServicio.toString()).toFixed(2);
-      // rpt.importe = parseFloat(importeOtros.toString()).toFixed(2);
+    if ( isAddDelivery && !isTieneDelivery && isClienteDelivery && (!this.pwa_delivery_servicio_propio || isCalcCostoServicioDelivery )) {
+      // const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion);
+      // if ( cantidad > 0 ) {
+        const _costoXCantItems = this.calcCostoCantItemsDelivery();
+        const costoServicio = _costoXCantItems + (this.establecimientoService.get().c_servicio || this.establecimientoService.get().c_minimo );
+        const rpt: any = {};
+        rpt.id = -2;
+        rpt.descripcion = 'Entrega';
+        rpt.esImpuesto = 0;
+        rpt.visible = true;
+        rpt.quitar = false;
+        rpt.tachado = false;
+        rpt.visible_cpe = false;
+        rpt.importe = parseFloat(costoServicio.toString()).toFixed(2);
+        // rpt.importe = parseFloat(importeOtros.toString()).toFixed(2);
 
-      sumaTotal += parseFloat(rpt.importe);
+        sumaTotal += parseFloat(rpt.importe);
 
-      rptOtros.push(rpt);
+        rptOtros.push(rpt);
+      // }
     }
 
     // juntamos

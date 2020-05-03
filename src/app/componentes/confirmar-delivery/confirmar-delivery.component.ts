@@ -255,7 +255,12 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this._listSubtotalesTmp = JSON.parse(JSON.stringify(this._listSubtotales));
 
       const rowTotal = this._listSubtotales[this._listSubtotales.length - 1];
-      this._listSubtotales = this._listSubtotales.filter(x => x.id >= 0 && x.descripcion !== 'TOTAL');
+      this._listSubtotales = this._listSubtotales.filter(x => {
+        const _idTp = isNaN(parseInt(x.id, 0)) ? 1 : x.id;
+        if ( _idTp >= 0  && x.descripcion !== 'TOTAL' ) {
+          return x;
+        }
+      });
       const _subtotal = this._listSubtotales.map((x: any) => parseFloat(x.importe)).reduce((a, b) => a + b, 0);
       rowTotal.importe = _subtotal;
       this._listSubtotales.push(rowTotal);

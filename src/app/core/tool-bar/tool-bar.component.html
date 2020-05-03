@@ -3,7 +3,7 @@
    <ng-container *ngIf="!isBusqueda"> 
         
      <i *ngIf="isClienteDelivery" class="fa fa-arrow-left pr-2" (click)="goBackOutEstablecimiento()"></i>  
-    <span>{{ nomSede | titlecase }}</span>
+    <span class="nom-comercio">{{ nomSede | titlecase }}</span>
     <span class="example-spacer"></span>
     <div style="display: contents;">       
        <div class="example-ripple-container fs-15" matRipple 

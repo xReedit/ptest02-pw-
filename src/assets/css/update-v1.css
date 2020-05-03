@@ -9,6 +9,7 @@
 .my-full-screen-dialog .mat-dialog-container {
 padding: 0px !important;
 border-radius: 0px;
+overflow: auto;
 }
 
 .rating {

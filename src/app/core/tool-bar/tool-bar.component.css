@@ -36,3 +36,10 @@
 .toolbar-busqueda {
   background: white;
 }
+
+.nom-comercio {
+  max-width: 70%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

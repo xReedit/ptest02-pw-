@@ -144,6 +144,10 @@ export class MainComponent implements OnInit {
       this.navigartoService._router('../');
       return;
     }
+    if ( window.location.href.indexOf('/zona-delivery/categorias') > -1 ) {
+      this.navigartoService._router('/zona-delivery/establecimientos');
+      return;
+    }
     window.history.back();
   }
 

@@ -460,7 +460,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     };
 
     // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
-    const isClienteBuscaRepartidores = this.frmDelivery.buscarRepartidor ? this.frmDelivery.buscarRepartidor : this.isDeliveryCliente;
+    const isClienteBuscaRepartidores = this.frmDelivery.buscarRepartidor ? this.frmDelivery.buscarRepartidor : this.isDeliveryCliente || false;
     const _subTotalesSave = this.frmDelivery.subTotales || this._arrSubtotales;
 
     const dataPedido = {

@@ -18,7 +18,7 @@ export class EstablecimientosComponent implements OnInit {
   private isClienteLogueado = false;
   constructor(
     private crudService: CrudHttpService,
-    private navigatorService: NavigatorLinkService,
+    // private navigatorService: NavigatorLinkService,
     private router: Router,
     private verifyClientService: VerifyAuthClientService
   ) { }

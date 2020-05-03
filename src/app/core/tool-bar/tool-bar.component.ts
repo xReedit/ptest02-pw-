@@ -51,7 +51,7 @@ export class ToolBarComponent implements OnInit {
   }
 
   private getNomSede(): void {
-    this.nomSede =  this.miPedidoService.objDatosSede.datossede[0].nombre;
+    this.nomSede =  this.miPedidoService.objDatosSede.datossede[0].sedenombre;
   }
 
   activaBusqueda(): void {

@@ -6,7 +6,7 @@
   
 
       <!-- recojo en el local -->
-      <div [hidden]="!isAceptaRecojoLocal" matRipple class="border-bottom m-0 text-left" [matRippleColor]="rippleColor">
+      <div [hidden]="!isAceptaRecojoLocal" matRipple class="border-bottom m-0 text-left">
         <mat-checkbox labelPosition="before" [(ngModel)]="isRecojoLocalCheked" (change)="recalcularTotales()">
             <i class="fa fa-home pr-2" aria-hidden="true"></i> 
             <span class="mr-1" [ngClass]="{'fw-600': isRecojoLocalCheked}">Cliente pasa a recoger en el Local</span>            

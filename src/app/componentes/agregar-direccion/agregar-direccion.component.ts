@@ -50,7 +50,7 @@ export class AgregarDireccionComponent implements OnInit {
   @Output() dataMaps = new EventEmitter<any>();
   @Output() saveDireccionOk = new EventEmitter<DeliveryDireccionCliente>();
 
-  private isDireccionValid = true; // si esta dentro de la zona de atencion
+  isDireccionValid = true; // si esta dentro de la zona de atencion
 
   constructor(
     private formBuilder: FormBuilder,
