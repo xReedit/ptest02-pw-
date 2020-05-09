@@ -259,6 +259,14 @@ export class SocketService {
     });
   }
 
+  // onDeliveryGetLastIdPedido() {
+  //   return new Observable(observer => {
+  //     this.socket.on('get-lastid-pedido', (res: any) => {
+  //       observer.next(res);
+  //     });
+  //   });
+  // }
+
 
   // zona delivery establecimiento
 

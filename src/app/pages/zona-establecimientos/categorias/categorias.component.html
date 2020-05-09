@@ -12,7 +12,7 @@
     <div class="p-2 content-master-establecimiento" *ngIf="listEstablecimientos">
 
         <!-- filtro de categorias -->
-        <div class="scrolling-wrapper p-2 mb-2 border-bottom" *ngIf="listSubCatFiltros.length > 1">            
+        <div class="scrolling-wrapper p-2 mb-2 border-bottom content-categoria-filtro" *ngIf="listSubCatFiltros.length > 1">            
             <!-- <i class="fa fa-arrow-left"></i> -->
             <div class="btn-link-cat-filtro" *ngFor="let item of listSubCatFiltros" [ngClass]="{'active': item.selected}" (click)="aplicarFitroSubCategoria(item)">
                 <span class="text-secondary">{{item.descripcion}}</span>                

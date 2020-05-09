@@ -18,6 +18,7 @@ export class DialogMetodoPagoComponent implements OnInit {
   importeIndicado: string;
   private idExluir: null; // id escluir // cuando el comercio toma el pedido no puede pagar con tarjeta
   private isHabilitadoYape = true;
+  private isHabilitadoTarjeta = true; // comercios no afiliado no se acepta tarjeta por la comision que cobran, algunos comercios tambien pueden especificar que no desean pagos con tarjeta
   private isComercioSolidaridad = false;
 
   private itemSelected: MetodoPagoModel;
@@ -37,6 +38,7 @@ export class DialogMetodoPagoComponent implements OnInit {
   ngOnInit() {
 
     this.isHabilitadoYape  = this.establecimientoService.get().pwa_delivery_acepta_yape === 1;
+    this.isHabilitadoTarjeta  = this.establecimientoService.get().pwa_delivery_acepta_tarjeta === 1;
     this.isComercioSolidaridad  = this.establecimientoService.get().pwa_delivery_comercio_solidaridad === 1;
 
 
@@ -48,9 +50,9 @@ export class DialogMetodoPagoComponent implements OnInit {
   private loadMetodoPago() {
     this.listMetodoPago = [];
 
-    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 2, 'descripcion': 'Tarjeta', 'checked': true});
-    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 3, 'descripcion': 'Yape', 'checked': false});
-    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 1, 'descripcion': 'Efectivo', 'checked': false});
+    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 2, 'descripcion': 'Tarjeta', 'checked': true, visible: this.isHabilitadoTarjeta});
+    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 3, 'descripcion': 'Yape', 'checked': false, visible: this.isHabilitadoYape});
+    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 1, 'descripcion': 'Efectivo', 'checked': false, visible: true});
 
     this.validaCociones();
     // console.log(this.listMetodoPago);
@@ -62,9 +64,12 @@ export class DialogMetodoPagoComponent implements OnInit {
       this.listMetodoPago = this.listMetodoPago.filter(m => m.idtipo_pago !== this.idExluir ).map(m => m);
     }
 
-    if ( !this.isHabilitadoYape ) {
-      this.listMetodoPago = this.listMetodoPago.filter(m => m.idtipo_pago !== 3 ).map(m => m);
-    }
+    // if ( !this.isHabilitadoYape ) {
+    //   this.listMetodoPago = this.listMetodoPago.filter(m => m.idtipo_pago !== 3 ).map(m => m);
+    // }
+
+    // exclui metodos de pago no habilitados
+    this.listMetodoPago = this.listMetodoPago.filter(m => m.visible ).map(m => m);
 
     // si es comercio solidario solo tarjeta
     if ( this.isComercioSolidaridad ) {

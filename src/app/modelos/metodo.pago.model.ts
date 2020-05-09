@@ -3,4 +3,5 @@ export class MetodoPagoModel {
     descripcion: string;
     importe: string;
     checked: boolean;
+    visible: boolean;
 }

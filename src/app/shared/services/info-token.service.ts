@@ -120,6 +120,40 @@ export class InfoTockenService {
     this.setMetodoPago( metodoPagoInit );
   }
 
+  setIniMetodoPagoSegunFiltro(isAceptaTarjeta): MetodoPagoModel {
+    const metodoPagoInit: MetodoPagoModel = new MetodoPagoModel;
+
+    if ( isAceptaTarjeta ) {
+      metodoPagoInit.idtipo_pago = 2;
+      metodoPagoInit.descripcion = 'Tarjeta';
+      metodoPagoInit.importe = '0';
+      metodoPagoInit.checked = true;
+    }
+
+    this.setMetodoPago( metodoPagoInit );
+    return metodoPagoInit;
+
+    // if ( isAceptaYape ) {
+    //   metodoPagoInit.idtipo_pago = 3;
+    //   metodoPagoInit.descripcion = 'Yape';
+    //   metodoPagoInit.importe = '0';
+    //   metodoPagoInit.checked = true;
+    //   this.setMetodoPago( metodoPagoInit );
+    //   return metodoPagoInit;
+    // }
+
+    // metodoPagoInit.idtipo_pago = 1;
+    // metodoPagoInit.descripcion = 'Efectivo';
+    // metodoPagoInit.importe = '0';
+    // metodoPagoInit.checked = true;
+    // this.setMetodoPago( metodoPagoInit );
+    // return metodoPagoInit;
+
+    // this.setMetodoPago( metodoPagoInit );
+    // return metodoPagoInit;
+
+  }
+
   setIniTipoComprobante() {
     const tipoComprobanteInit: TipoComprobanteModel = new TipoComprobanteModel;
     tipoComprobanteInit.idtipo_comprobante = 1;

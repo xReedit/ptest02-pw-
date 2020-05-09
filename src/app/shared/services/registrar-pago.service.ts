@@ -26,7 +26,7 @@ export class RegistrarPagoService {
     this.objTotales = JSON.parse(atob(localStorage.getItem('sys::st')));
   }
 
-  registrarPago(_importe: string, _dataTransactionRegister: any, dataClientePago: ClientePagoModel): void {
+  registrarPago(_importe: string, _dataTransactionRegister: any, dataClientePago: ClientePagoModel, isDelivery: boolean = false): void {
     this.getSubtotales();
 
     const _objOperacion = {
@@ -43,6 +43,7 @@ export class RegistrarPagoService {
       idsede: _objOperacion.idsede,
       mesa: _objOperacion.mesa,
       importe: _objOperacion.importe,
+      isdelivery: isDelivery,
       objSubTotal: this.objTotales,
       objTransaction: _dataTransactionRegister,
       objCliente: dataClientePago,

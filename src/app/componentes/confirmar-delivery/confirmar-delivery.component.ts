@@ -64,6 +64,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   valInputDatoAdicianal = '';
 
+  private isHabilitadoTarjeta = true; // comercios no afiliado no se acepta tarjeta por la comision que cobran, algunos comercios tambien pueden especificar que no desean pagos con tarjeta
+
   @Input()
   set listSubtotales(val: any) {
     this._listSubtotales = val;
@@ -92,13 +94,17 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.propinaSelected = this.infoTokenService.infoUsToken.propina;
 
     this.isComercioSolidaridad = _datosEstablecieminto.pwa_delivery_comercio_solidaridad === 1;
-    this.metodoPagoSelected = this.infoTokenService.infoUsToken.metodoPago;
     this.titleInputDatoAdicional = this.isComercioSolidaridad ? 'Contacto' : 'Algún dato importante?';
 
 
   }
 
   private loadData(): void {
+
+    // metodo de pago
+    this.isHabilitadoTarjeta  = this.establecimientoService.get().pwa_delivery_acepta_tarjeta === 1;
+    this.metodoPagoSelected = this.infoTokenService.setIniMetodoPagoSegunFiltro(this.isHabilitadoTarjeta);
+
     // direccion de entrega
     this.infoToken = this.infoTokenService.getInfoUs();
     this.direccionCliente = this.infoToken.direccionEnvioSelected;
@@ -111,7 +117,9 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     // console.log('this.infoEstablecimiento', this.infoEstablecimiento);
 
+    this.resData.telefono = this.infoToken.telefono;
     this.isValidForm = this.infoToken.telefono ? this.infoToken.telefono.length >= 5 ? true : false : false;
+    this.isValidForm = !this.metodoPagoSelected.idtipo_pago ? false : this.isValidForm;
     if ( this.isValidForm ) {
       setTimeout(() => {
         this.verificarNum(this.infoToken.telefono);
@@ -120,8 +128,11 @@ export class ConfirmarDeliveryComponent implements OnInit {
   }
 
   verificarNum(telefono: string): void {
-    this.isValidForm = telefono.trim().length >= 5 ? true : false;
-    this.isReady.emit(this.isValidForm);
+    // this.isValidForm = telefono.trim().length >= 5 ? true : false;
+    // this.isValidForm = !this.metodoPagoSelected.idtipo_pago ? false : this.isValidForm;
+    // this.isReady.emit(this.isValidForm);
+    this.resData.telefono = telefono;
+    this.verificarFormValid();
 
     this.propinaSelected = this.infoTokenService.infoUsToken.propina;
 
@@ -158,8 +169,11 @@ export class ConfirmarDeliveryComponent implements OnInit {
   private verificarMontoMinimo() {
     // const importeTotal = parseInt(this._listSubtotales[0].importe, 0);
     const importeTotal = this._listSubtotales[this._listSubtotales.length - 1].importe;
-    this.isValidForm = importeTotal >= this.montoMinimoPedido && this.isValidForm ? true : false;
-    this.isReady.emit(this.isValidForm);
+    this.resData.importeTotal = importeTotal;
+    // this.isValidForm = importeTotal >= this.montoMinimoPedido && this.isValidForm ? true : false;
+    // this.isReady.emit(this.isValidForm);
+
+    this.verificarFormValid();
 
     this.propinaSelected = this.infoTokenService.infoUsToken.propina;
 
@@ -169,7 +183,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this.resData.referencia = this.infoToken.direccionEnvioSelected.referencia;
       this.resData.direccionEnvioSelected = this.infoToken.direccionEnvioSelected;
       this.resData.idcliente = this.infoToken.idcliente.toString();
-      this.resData.paga_con = this.metodoPagoSelected.descripcion + '  ' + this.metodoPagoSelected.importe ;
+      this.resData.paga_con = this.metodoPagoSelected.descripcion + '  ' + this.metodoPagoSelected.importe || '';
       this.resData.telefono = this.infoToken.telefono;
       this.resData.metodoPago = this.metodoPagoSelected;
       this.resData.tipoComprobante = this.tipoComprobanteSelected;
@@ -187,6 +201,13 @@ export class ConfirmarDeliveryComponent implements OnInit {
     }
   }
 
+  private verificarFormValid(): void {
+    this.isValidForm = this.resData.telefono.trim().length >= 5 ? true : false;
+    this.isValidForm = this.resData.importeTotal >= this.montoMinimoPedido && this.isValidForm ? true : false;
+    this.isValidForm = !this.metodoPagoSelected.idtipo_pago ? false : this.isValidForm;
+    this.isReady.emit(this.isValidForm);
+  }
+
   openDialogMetodoPago(): void {
     const _dialogConfig = new MatDialogConfig();
     _dialogConfig.width = '380px';
@@ -200,6 +221,10 @@ export class ConfirmarDeliveryComponent implements OnInit {
     const dialogLoading = this.dialog.open(DialogMetodoPagoComponent, _dialogConfig);
       dialogLoading.afterClosed().subscribe((result: MetodoPagoModel) => {
         this.metodoPagoSelected = result;
+
+        this.verificarFormValid();
+
+        // this.isValidForm = !this.metodoPagoSelected.idtipo_pago ? false : this.isValidForm;
         // console.log(result);
         this.verificarMontoMinimo();
       });
@@ -257,7 +282,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
       const rowTotal = this._listSubtotales[this._listSubtotales.length - 1];
       this._listSubtotales = this._listSubtotales.filter(x => {
         const _idTp = isNaN(parseInt(x.id, 0)) ? 1 : x.id;
-        if ( _idTp >= 0  && x.descripcion !== 'TOTAL' ) {
+        if ( _idTp >= 0  && x.descripcion !== 'TOTAL' && x.descripcion.toUpperCase() !== 'ENTREGA' ) {
           return x;
         }
       });

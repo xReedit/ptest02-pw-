@@ -1194,6 +1194,7 @@ export class MipedidoService {
   getArrSubTotales(rulesSubTotales: any[]): any {
     const subTotal = this.getSubTotalMiPedido();
     const isCalcCostoServicioDelivery = this.establecimientoService.establecimiento.pwa_delivery_hablitar_calc_costo_servicio === 1;
+    const comisionFijaComercioNoAfiliado = this.establecimientoService.establecimiento.pwa_delivery_comision_fija_no_afiliado; // comision fija comercio no afiliado (plaza vea cualquier pedido la comision es 2 para la platafoma)
     this.pwa_delivery_servicio_propio = this.establecimientoService.establecimiento.pwa_delivery_servicio_propio === 1;
 
     let sumaTotal = subTotal;
@@ -1327,6 +1328,10 @@ export class MipedidoService {
         const _costoXCantItems = this.calcCostoCantItemsDelivery();
         const costoServicio = _costoXCantItems + (this.establecimientoService.get().c_servicio || this.establecimientoService.get().c_minimo );
         const rpt: any = {};
+
+        // costo del servicio mas comision fija comercio no afiliado
+        const _costoServicio = costoServicio + comisionFijaComercioNoAfiliado;
+
         rpt.id = -2;
         rpt.descripcion = 'Entrega';
         rpt.esImpuesto = 0;
@@ -1334,7 +1339,7 @@ export class MipedidoService {
         rpt.quitar = false;
         rpt.tachado = false;
         rpt.visible_cpe = false;
-        rpt.importe = parseFloat(costoServicio.toString()).toFixed(2);
+        rpt.importe = parseFloat(_costoServicio.toString()).toFixed(2);
         // rpt.importe = parseFloat(importeOtros.toString()).toFixed(2);
 
         sumaTotal += parseFloat(rpt.importe);

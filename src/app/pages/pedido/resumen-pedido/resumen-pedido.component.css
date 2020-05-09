@@ -76,7 +76,7 @@
     background: #f44336;
     color: white;
     text-align: center;
-    /* width: 30%; */
+    width: 40%;
 }
 
 .btn-footer-next {
@@ -85,7 +85,7 @@
     color: white;
     text-align: center;
     white-space: nowrap;
-    /* width: 30%; */
+    width: 40%;
 }
 
 .btn-footer-next.xdisabled {
@@ -228,13 +228,13 @@
         width: calc(100% / 9.8 * 3);
     }
 
-    .btn-footer-cancel {
+    /* .btn-footer-cancel {
         width: auto;
     }
 
     .btn-footer-next {
         width: auto;
-    }
+    } */
 
     .div-content-all {
         font-size: 14px !important;

@@ -7,6 +7,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    height: fit-content;
 }
 
 
@@ -23,6 +24,12 @@
 
 .btn-link-cat-filtro {
     padding: 5px;
+}
+
+.content-categoria-filtro {
+    top: 0;
+    bottom: 0;    
+    position: sticky;
 }
 
 /* .scrolling-wrapper {

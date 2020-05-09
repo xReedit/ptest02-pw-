@@ -21,9 +21,9 @@
 
     <!-- telefono -->
     <div class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor" (click)="openDialogsendSMS()">                
-        <span class="text-danger fs-12 fw-100" [hidden]="isValidForm">Es necesario el numero de su telefono</span>        
+        <span class="text-danger fs-12 fw-100" [hidden]="this.infoToken.telefono.length >= 5">Es necesario el numero de su telefono</span>        
         <p class="m-0 fs-14">Telefono: <strong>{{ infoToken.telefono }}</strong></p>
-        <span class="fw-100 fs-12 text-secondary" [hidden]="isValidForm">Añade un número de teléfono para que podamos contactarte e informarte de tu pedido.</span>        
+        <span class="fw-100 fs-12 text-secondary" [hidden]="this.infoToken.telefono.length >= 5">Añade un número de teléfono para que podamos contactarte e informarte de tu pedido.</span>        
     </div>
     <!-- telefono -->
 
@@ -35,9 +35,12 @@
     <!-- facturacion -->
 
     <!-- metodo de pago -->
-    <div class="border-bottom m-0 p-3 d-flex justify-content-between" matRipple [matRippleColor]="rippleColor" (click)="openDialogMetodoPago()">
-        <p class="m-0 fs-14">Metodo de pago: <strong>{{metodoPagoSelected.descripcion}}</strong></p>
-        <i class="fa fa-caret-down" aria-hidden="true"></i>
+    <div class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor" (click)="openDialogMetodoPago()">
+        <div class="d-flex justify-content-between">
+            <p class="m-0 fs-14">Metodo de pago: <strong>{{metodoPagoSelected.descripcion}}</strong></p>
+            <i class="fa fa-caret-down" aria-hidden="true"></i>
+        </div>
+        <span class="fw-100 fs-12 text-danger" [hidden]="this.metodoPagoSelected.idtipo_pago">Especifique un metodo de pago.</span>    
     </div>
     <!-- metodo de pago -->
 
