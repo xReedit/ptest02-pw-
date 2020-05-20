@@ -186,6 +186,7 @@ export class InfoTockenService {
   //
 
   getToken(): any { return localStorage.getItem('::token'); }
+  getTokenAuth(): any { return localStorage.getItem('::token:auth'); }
 
   converToJSON(): void {
     if (localStorage.getItem('::token')) {

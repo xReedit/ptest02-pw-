@@ -29,6 +29,9 @@ export class CalcDistanciaService {
       lat: dirCliente.latitude, lng: dirCliente.longitude
     };
 
+    dirEstablecimiento.latitude = typeof dirEstablecimiento.latitude === 'string' ? parseFloat(dirEstablecimiento.latitude) : dirEstablecimiento.latitude;
+    dirEstablecimiento.longitude = typeof dirEstablecimiento.longitude === 'string' ? parseFloat(dirEstablecimiento.longitude) : dirEstablecimiento.longitude;
+
     this.destination = {
       lat: dirEstablecimiento.latitude, lng: dirEstablecimiento.longitude
     };

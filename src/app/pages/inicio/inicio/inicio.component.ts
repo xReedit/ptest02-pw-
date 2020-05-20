@@ -13,7 +13,7 @@ import { NotificacionPushService } from 'src/app/shared/services/notificacion-pu
   styleUrls: ['./inicio.component.css']
 })
 export class InicioComponent implements OnInit, OnDestroy {
-
+  loadAll = false;
   private veryfyClient: Subscription = null;
 
   isLogin = false;
@@ -34,6 +34,10 @@ export class InicioComponent implements OnInit, OnDestroy {
     // setTimeout(() => {
       this.loadInit();
     // }, 800);
+
+    setTimeout(() => {
+      this.loadAll = true;
+    }, 2000);
   }
 
   private loadInit(): void {
@@ -78,8 +82,8 @@ export class InicioComponent implements OnInit, OnDestroy {
   // }
 
   showDelivery() {
-    return false;
-    // this.router.navigate(['./zona-delivery']);
+    // return false;
+    this.router.navigate(['./zona-delivery']);
   }
 
   // solo dev

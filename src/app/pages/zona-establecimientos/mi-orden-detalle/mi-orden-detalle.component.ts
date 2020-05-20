@@ -9,6 +9,7 @@ import { DatosCalificadoModel } from 'src/app/modelos/datos.calificado.model';
 import { DialogCalificacionComponent } from 'src/app/componentes/dialog-calificacion/dialog-calificacion.component';
 import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
 import { GeoPositionModel } from 'src/app/modelos/geoposition.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mi-orden-detalle',
@@ -29,6 +30,7 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
     private socketService: SocketService,
     private dialog: MatDialog,
     private calcDistanciaService: CalcDistanciaService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -159,6 +161,8 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
         this.infoTokenService.set();
         this.showTelefonoRepartidor = false;
         this.estadoPedido = 'Entregado';
+
+        this.router.navigate(['/zona-delivery/establecimientos']);
         // console.log('data dialog', data);
       }
     );

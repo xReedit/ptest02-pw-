@@ -9,7 +9,8 @@ import { ComponentesModule } from 'src/app/componentes/componentes.module';
 // import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-select-direccion/dialog-select-direccion.component';
 import { MisOrdenesComponent } from './mis-ordenes/mis-ordenes.component';
 import { MiOrdenDetalleComponent } from './mi-orden-detalle/mi-orden-detalle.component';
-
+import { SharedModule } from 'src/app/shared/shared.module';
+// import { NgxUiLoaderModule } from 'ngx-ui-loader';
 
 
 @NgModule({
@@ -25,8 +26,11 @@ import { MiOrdenDetalleComponent } from './mi-orden-detalle/mi-orden-detalle.com
     CommonModule,
     ZonaEstablecimientosRoutingModule,
     MaterialModule,
-    ComponentesModule
+    ComponentesModule,
+    SharedModule
+    // NgxUiLoaderModule
   ],
+  // providers: [NgxUiLoaderModule],
   exports: [
     // DialogSelectDireccionComponent
   ],

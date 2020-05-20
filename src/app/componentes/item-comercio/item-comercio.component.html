@@ -1,4 +1,4 @@
-<div class="content-comercio pb-2 text-left" matRipple (click)="_itemSelected()">
+<div class="animated fadeIn content-comercio pb-2 text-left" matRipple (click)="_itemSelected()">
     <mat-card>
     <div class="content-img-comercio">
         <img class="img-comercio" src="{{imgComercio}}" alt="">
@@ -15,7 +15,7 @@
                             
                     <div>
                         <i class="fa fa-clock-o"></i>
-                        10 - 15 min
+                        {{ itemEstablecimiento.tiempo_aprox_entrega | lowercase }}
                     </div>
                     <div>
                         <i class="fa fa-bicycle"></i>
@@ -27,8 +27,8 @@
             <ng-template #elseTemplate>
                 
                 <div class="div-cerrado">
-                    <p>Cerrado</p>
-                    <p class="fs-15 fw-600">Abre: {{itemEstablecimiento.hora_ini}} {{amPm}}</p>
+                    <p>Cerrado Ahora</p>
+                    <!-- <p class="fs-15 fw-600">Abre: {{itemEstablecimiento.hora_ini}} {{amPm}}</p> -->
                 </div>
 
             </ng-template>

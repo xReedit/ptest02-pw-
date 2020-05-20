@@ -5,6 +5,9 @@
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; } */
 /* @import '~css-star-rating/scss/star-rating'; */
 
+
+/* @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400&display=swap'); */
+
 .xboder-abajo {
     border-bottom: 1px solid #c7c7c7;
 }

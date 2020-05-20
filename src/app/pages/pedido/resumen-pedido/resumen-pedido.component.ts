@@ -337,6 +337,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
         // enviamos this._miPedido esta visa no se modifica
         this.miPedidoService.resetAllNewPedido();
         this.navigatorService.setPageActive('carta');
+        this.isDeliveryValid = false; // formulario no valido para delivery
       }
     });
 
@@ -546,6 +547,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       this.navigatorService.setPageActive('carta');
     }
 
+    this.isDeliveryValid = false; // formulario no valido para delivery
+
   }
 
   private checkTiposDeConsumo(): void {
@@ -728,6 +731,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
           if (result ) {
             this.miPedidoService.resetAllNewPedido();
             this.miPedidoService.cerrarSession();
+
+            this.isDeliveryValid = false; // formulario no valido para delivery
             // this.socketService.closeConnection();
             // this.navigatorService.cerrarSession();
             this.infoToken.cerrarSession();

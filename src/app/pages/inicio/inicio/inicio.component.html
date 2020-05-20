@@ -1,4 +1,15 @@
-<div>
+<div class="app-loading animated fadeIn" *ngIf="!loadAll">
+  <div class="logo-loading">     
+  </div>      
+  <p class="t-p-0">Papaya Express</p>
+  <p class="t-p-1">papaya.com.pe</p>
+  <svg class="spinner" viewBox="25 25 50 50">
+    <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
+  </svg>
+</div>
+
+
+<div *ngIf="loadAll" class="animated fadeIn">
   <div class="text-center container-ini">
     <div class="container-body">
       
@@ -18,13 +29,13 @@
           <br>
           <div>      
             <img src="assets/images/papaya_text-white.png" width="190px">
-            <p>Express <span class="fs-12">v.1z</span></p>
+            <p>Express <span class="fs-12">v.2b</span></p>
           </div>
         </div>
 
         <!--Waves Container-->
         <div>
-          <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+          <svg class="waves"
           viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
           <defs>
           <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
@@ -71,13 +82,13 @@
           <div matRipple class="p-3 border-bottom border-top" (click)="showDelivery()">
             <img src="assets/images/btn_delivery.png" alt="btn-scan">
             <span class="pl-2 fw-600">Pedir un Delivery</span><br>
-            <span class="badge badge-info fw-100">Servicio disponible apenas sea posible segun normativa.</span>
+            <!-- <span class="badge badge-info fw-100">Servicio disponible apenas sea posible segun normativa.</span> -->
           </div>        
         </div>
       </div>
 
       <br><br>
-      <div class="ini-content-other div-no-visible-mobile fs-13 text-secondary p-3 border-bottom">
+      <div class="ini-content-other-a div-no-visible-mobile fs-13 text-secondary p-3 border-bottom">
         <div matRipple class="ini-ico p-2 xCursor">
             <img src="assets/images/marker-4.png" alt="">
             <p class="fw-600">Llega a más personas</p>

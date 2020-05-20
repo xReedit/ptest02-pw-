@@ -250,7 +250,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
     _dialogConfig.data = {
       idcliente: this.infoTokenService.infoUsToken.idcliente,
-      numberphone: '+51934746830'
+      numberphone: this.infoTokenService.infoUsToken.telefono ? this.infoTokenService.infoUsToken.telefono : '' // '+51934746830'
     };
 
     const dialogRefTelefono = this.dialogTelefono.open(DialogVerificarTelefonoComponent, _dialogConfig);
@@ -261,6 +261,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
         this.infoToken.telefono = result.numberphone;
         this.infoTokenService.setTelefono(result.numberphone);
         this.verifyClientService.setTelefono(result.numberphone);
+        this.resData.telefono = this.infoToken.telefono;
       }
       this.verificarMontoMinimo();
       // console.log(result);

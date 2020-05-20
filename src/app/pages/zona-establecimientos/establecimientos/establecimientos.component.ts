@@ -3,7 +3,8 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { RouterEvent, Router } from '@angular/router';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
-import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+// import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+
 
 @Component({
   selector: 'app-establecimientos',
@@ -11,7 +12,7 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
   styleUrls: ['./establecimientos.component.css']
 })
 export class EstablecimientosComponent implements OnInit {
-
+  loaderPage = true;
   imgIcoCategoria = 'assets/images/icon-app/';
   listIcoCategoria: any;
 
@@ -20,7 +21,7 @@ export class EstablecimientosComponent implements OnInit {
     private crudService: CrudHttpService,
     // private navigatorService: NavigatorLinkService,
     private router: Router,
-    private verifyClientService: VerifyAuthClientService
+    private verifyClientService: VerifyAuthClientService,
   ) { }
 
   ngOnInit() {
@@ -37,12 +38,18 @@ export class EstablecimientosComponent implements OnInit {
   }
 
   private xLoadCategoria() {
+    this.loaderPage = true;
     this.crudService.getAll('delivery', 'get-categorias', false, false, false)
       .subscribe((res: any) => {
         this.listIcoCategoria = res.data.map(x => {x.visible = x.img !== ''; return x; });
         const _allCategorias = JSON.stringify(this.listIcoCategoria);
         localStorage.setItem('sys:allcat', btoa(_allCategorias));
         // console.log('this.listIcoCategoria', this.listIcoCategoria);
+
+        // setTimeout(() => {
+        //   this.loaderPage = false;
+        // }, 500);
+        this.loaderPage = false;
       });
   }
 

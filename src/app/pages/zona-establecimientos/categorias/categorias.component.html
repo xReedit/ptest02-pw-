@@ -1,4 +1,12 @@
+<div class="animated fadeIn div-loader-2" *ngIf="loaderPage">
+    <div class="loader">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <span class="pt-2">Obteniendo datos...</span>
+    </div>    
+</div>
 <div class="animated fadeInUp">
+
+    
     <div *ngIf="isNullselectedDireccion" class="div-img-gps p-3" (click)="openDialogDireccion()">
         <img src="assets/images/_establesca_direccion.png" alt="direccione">
         <p class="pt-2">Para comenzar, establesca una dirección de entrega.</p>

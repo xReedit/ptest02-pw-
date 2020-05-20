@@ -41,7 +41,7 @@
           <li *ngFor="let item of objSecciones; let i = index" class="li-seccion xCursor"
               matRipple [matRippleColor]="rippleColor"
               (click)="getItems(item)">
-            <div class="m1">
+            <div class="m1 seccion">
               <div class="img">
                 <ng-container *ngIf="item.img === ''; else elseTemplateImg">
                   <img src="assets/images/{{i}}.png" alt="img-icon">                  
@@ -51,7 +51,7 @@
                 </ng-template>
                 
               </div>
-              <div>
+              <div class="w-100">
                 <span class="fw-100 fs-19">{{item.des}}</span><br>
                 <div class="titulo-detalle-seccion text-secondary">
                   <span class="fw-100 mt-2 fs-13">{{getObjDetalleSeccion(item)}}</span>

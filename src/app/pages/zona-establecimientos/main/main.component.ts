@@ -12,6 +12,7 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 
 
+
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
@@ -34,7 +35,8 @@ export class MainComponent implements OnInit {
     private listenService: ListenStatusService,
     private router: Router,
     private socketService: SocketService,
-    private navigartoService: NavigatorLinkService
+    private navigartoService: NavigatorLinkService,
+    // public ngxService: NgxUiLoaderService
   ) { }
 
   ngOnInit() {
@@ -119,11 +121,12 @@ export class MainComponent implements OnInit {
     }
   }
 
-  clickTab($event) {
+  clickTab(op: any) {
+    // op.index = typeof op === 'number' ? op : op.index;
     // console.log($event);
-    let goToPage = '/categorias';
-    const index = $event.index ? $event.index : $event;
-    switch (index) {
+    let goToPage = '/establecimientos';
+    // const index = $event.index ? $event.index : $event;
+    switch (op) {
       case 0:
         goToPage = '/establecimientos';
         break;
@@ -144,10 +147,17 @@ export class MainComponent implements OnInit {
       this.navigartoService._router('../');
       return;
     }
+
     if ( window.location.href.indexOf('/zona-delivery/categorias') > -1 ) {
       this.navigartoService._router('/zona-delivery/establecimientos');
       return;
     }
+
+    if ( window.location.href.indexOf('/zona-delivery/pedido-detalle') > -1 ) {
+      this.navigartoService._router('/zona-delivery/pedidos');
+      return;
+    }
+
     window.history.back();
   }
 

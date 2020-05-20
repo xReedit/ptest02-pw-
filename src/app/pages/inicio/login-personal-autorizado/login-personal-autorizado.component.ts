@@ -31,6 +31,7 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
       setTimeout(() => {
         if (res.success) {
           this.authService.setLocalToken(res.token);
+          this.authService.setLocalTokenAuth(res.token);
           this.authService.setLoggedStatus(true);
           this.authService.setLocalUsuario(this.usuario);
           this.infoToken.converToJSON();

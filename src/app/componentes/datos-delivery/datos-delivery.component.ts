@@ -43,6 +43,8 @@ export class DatosDeliveryComponent implements OnInit {
   isRecojoLocalCheked = false;
   isAceptaRecojoLocal = true;
 
+  infoEstablecimiento: DeliveryEstablecimiento;
+
   // latitude: number;
   // longitude: number;
   // address = '';
@@ -131,6 +133,9 @@ export class DatosDeliveryComponent implements OnInit {
       // this.changeStatus.emit(dataEmit);
     });
 
+
+    this.infoEstablecimiento = this.establecimientoService.get();
+
   }
 
   setearData() {
@@ -149,6 +154,7 @@ export class DatosDeliveryComponent implements OnInit {
       this.resData.metodoPago = this.metodoPagoSelected;
       this.resData.tipoComprobante = this.infoTokenService.getInfoUs().tipoComprobante;
       this.resData.direccionEnvioSelected = this.direccionCliente;
+      this.resData.establecimiento = this.infoEstablecimiento;
       this.resData.referencia = this.direccionCliente.referencia;
       this.resData.direccion = this.direccionCliente.direccion;
       this.resData.subTotales = this._listSubtotales;
@@ -180,7 +186,7 @@ export class DatosDeliveryComponent implements OnInit {
     this.limpiarForm(datos.documento);
 
     // primero consultamos en la bd
-    this.crudService.postFree(datos, 'service', 'consulta-dni-ruc')
+    this.crudService.postFree(datos, 'service', 'consulta-dni-ruc', true)
     .subscribe((res: any) => {
       // console.log(res);
       const _datosBd = res.data;
@@ -207,6 +213,7 @@ export class DatosDeliveryComponent implements OnInit {
             this.limpiarForm(datos.documento);
           }
           this.loadConsulta = false;
+          this.resData.idcliente = '0';
         });
 
       }

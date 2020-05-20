@@ -31,6 +31,10 @@ export class SeleccionarDireccionComponent implements OnInit {
   }
 
   loadDireccion() {
+    // si es 0 no cliente nuevo
+    if ( this.idClienteDirecciones.toString() === '0' ) {return; }
+
+
     const _dataClientDir = {
       idcliente : this.idClienteDirecciones
     };

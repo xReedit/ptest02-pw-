@@ -13,7 +13,9 @@ import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-selec
 import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
-import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
+import { EstadoPedidoModel } from 'src/app/modelos/estado.pedido.model';
+// import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
+
 // import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
@@ -23,7 +25,7 @@ import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.ser
 })
 export class CategoriasComponent implements OnInit {
   // rippleColor = 'rgb(255,238,88, 0.2)';
-
+  loaderPage = true;
   listEstablecimientos: DeliveryEstablecimiento[];
 
   codigo_postal_actual: string;
@@ -101,12 +103,14 @@ export class CategoriasComponent implements OnInit {
   }
 
   loadEstablecimientos() {
+    this.loaderPage = true;
     const _data = {
       idsede_categoria: this.idcategoria_selected,
       codigo_postal: this.codigo_postal_actual
     };
 
     this.listEstablecimientos = [];
+
     this.crudService.postFree(_data, 'delivery', 'get-establecimientos', false)
       .subscribe( (res: any) => {
         // setTimeout(() => {
@@ -114,15 +118,76 @@ export class CategoriasComponent implements OnInit {
           this.listEstablecimientos.map((dirEstablecimiento: DeliveryEstablecimiento) => {
             dirEstablecimiento.visible = true;
             // this.calcDistancia(x);
-            this.calcDistanceService.calculateRoute(this.direccionCliente, dirEstablecimiento);
+            // this.calcDistanceService.calculateRoute(this.direccionCliente, dirEstablecimiento);
             // dirEstablecimiento.c_servicio = _c_servicio;
 
           });
 
+          this.setCalcDistanciaComercio();
+
+          // calcular la distancia respetando la cantidad de consultas limites "OVER_QUERY_LIMIT" google maps
+          // const lentArray = this.listEstablecimientos.length;
+          // let countItem = 0;
+          // // while (lentArray > countItem) {
+          //   setTimeout(() => {
+          //     console.log(countItem);
+          //     // countItem++;
+          //     if (countItem < lentArray) { this.setCalcDistanciaComercio(countItem); countItem++; }
+          //   }, 200);
+
+          // for (let index = 0; index < lentArray; index++) {
+          //   await setTimeout(() => {
+          //     this.setCalcDistanciaComercio(index);
+          //   }, 200);
+          // }
+          // }
+
           // console.log('this.listEstablecimientos', this.listEstablecimientos);
         // }, 500);
         // console.log(this.listEstablecimientos);
+
+        // setTimeout(() => {
+        //   this.ngxService.stop(); // stop foreground spinner of the master loader with 'default' taskId
+        // }, 500);
+
+        setTimeout(() => {
+          this.loaderPage = false;
+        }, 500);
       });
+  }
+
+  private async setCalcDistanciaComercio() {
+    const lentArray = this.listEstablecimientos.length;
+    // let index = 0;
+    // this.sleep(500).then(() => {
+    //   console.log(index);
+    //     const _dirEstablecimiento = <DeliveryEstablecimiento>this.listEstablecimientos[index];
+    //     // if ( _dirEstablecimiento.cerrado === 0 ) {
+    //       this.calcDistanceService.calculateRoute(this.direccionCliente, _dirEstablecimiento);
+    //       index++;
+    //       return true;
+    //     // }
+    // }
+
+    let _sleep = 600;
+    for (let index = 0; index < lentArray; index++) {
+      // await setTimeout(() => {
+      _sleep = 0;
+        const _dirEstablecimiento = <DeliveryEstablecimiento>this.listEstablecimientos[index];
+        // _dirEstablecimiento.visible = true;
+        if ( _dirEstablecimiento.cerrado === 0 ) {
+          // console.log(index);
+          _sleep = 600;
+          this.calcDistanceService.calculateRoute(this.direccionCliente, _dirEstablecimiento);
+          // return true;
+        }
+      // }, 1000);
+      await this.sleep(600);
+    }
+  }
+
+  sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
 
@@ -181,8 +246,15 @@ export class CategoriasComponent implements OnInit {
     }
 
     this.listEstablecimientos
-      .map((e: DeliveryEstablecimiento) => {e.visible = false; return e; })
-      .filter((e: DeliveryEstablecimiento) => e.idsede_subcategoria.indexOf(itemFiltro.id) > -1  )
+      .map((e: DeliveryEstablecimiento) => {
+        e.visible = false;
+        e.idsede_subcategoria_filtro = '';
+        e.idsede_subcategoria.split(',').map(i => {
+          e.idsede_subcategoria_filtro += `.${i}.`;
+        });
+        return e;
+      })
+      .filter((e: DeliveryEstablecimiento) => e.idsede_subcategoria_filtro.indexOf('.' + itemFiltro.id + '.') > -1  )
       .map((e: DeliveryEstablecimiento) => e.visible = true);
   }
 

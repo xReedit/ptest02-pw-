@@ -127,9 +127,35 @@ export class MipedidoService {
       this.objCarta.bodega = <SeccionModel[]>res[0].bodega;
 
       // colocamos la bodega en todas las cartas
-      const _carta = this.objCarta.carta;
+      let _carta = this.objCarta.carta;
       const _bodega = this.objCarta.bodega;
       if ( _bodega ) {
+
+        // si no hay carta solo productos
+        if ( !this.objCarta.carta ) {
+          // const newCarta = new CartaModel;
+          const newCategoria = new CategoriaModel;
+          newCategoria.des = 'Productos';
+          newCategoria.detalle = '';
+          newCategoria.hora_fin = '';
+          newCategoria.hora_ini = '';
+          newCategoria.idcarta = 0;
+          newCategoria.idcategoria = 0;
+          newCategoria.secciones = [];
+
+          _carta = [];
+          _carta.push(newCategoria);
+
+          _carta.map((c: CategoriaModel) => {
+            _bodega.map((bs: SeccionModel) => {
+              c.secciones.push(bs);
+            });
+          });
+
+          this.objCarta.carta = _carta;
+          return;
+        }
+
         _carta.map((c: CategoriaModel) => {
           _bodega.map((bs: SeccionModel) => {
             c.secciones.push(bs);
@@ -1231,14 +1257,15 @@ export class MipedidoService {
       rpt.quitar = false;
       rpt.tachado = false;
       rpt.visible_cpe = isImpuesto;
-
       // rpt.importe = isImpuesto ? isActivo ? importe : 0 : importe;
+
       // rpt.importe = parseFloat(rpt.importe.toString()).toFixed(2);
       // sumaTotal += parseFloat(rpt.importe);
 
       // implement igv 030220
       if ( rpt.descripcion === 'I.G.V') {
         rpt.importe = isActivo ? porcentaje : 0;
+        rptPorcentajes.push(rpt); // solo agrega importe 0 si es IGV
       } else {
         rpt.importe = isImpuesto ? isActivo ? importe : 0 : importe;
         rpt.importe = parseFloat(rpt.importe.toString()).toFixed(2);
@@ -1260,7 +1287,7 @@ export class MipedidoService {
     // si existe estableciiento en localstorage entonces es un clienteDelivery
     let isClienteDelivery = this.establecimientoService.get().idsede ? true : false;
     let isTieneDelivery =  false; // si tiene la opcion de delivery configurado
-    let isAddDelivery = isClienteDelivery; // si agrega delivery
+    let isAddDelivery = true; // si agrega delivery // puede que tenga otros servicio que no sea delivery
     arrOtros.map(p => {
       const rpt: any = {};
 
@@ -1280,20 +1307,22 @@ export class MipedidoService {
           importeOtros = this.establecimientoService.get().c_servicio || this.establecimientoService.get().c_minimo;
 
           // verifica si en elpedido hay delivery
-          const cantidad = this.countCantItemsFromTpc(p.idtipo_consumo);
-          isClienteDelivery = cantidad > 0;
-          isAddDelivery = cantidad > 0;
+          const _cantidad = this.countCantItemsFromTpc(p.idtipo_consumo);
+          isClienteDelivery = _cantidad > 0;
+          isAddDelivery = _cantidad > 0;
           return;
         }
       } else {
+        // isAddDelivery = false;
         importeOtros = parseFloat(p.monto); // aplica a todo el pedido
       }
 
-      // const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion);
-      // if ( cantidad === 0 ) { return; } // si no encontro items con esos criterios
+      // verifica si este tipo existe en el pedido
+      const cantidadTipoConsumo = this.countCantItemsFromTpc(p.idtipo_consumo); // cantidad en todo el pedido
+      if ( cantidadTipoConsumo === 0 ) { return; } // si no encontro items con esos criterios
 
       if (p.nivel === 0) { // aplica por item
-        const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion);
+        const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion); // cantidad por seccion
         if ( cantidad === 0 ) { return; } // si no encontro items con esos criterios
         const _costoXCantItems = this.calcCostoCantItemsDelivery();
         importeOtros = (cantidad * parseFloat(p.monto)) + _costoXCantItems;

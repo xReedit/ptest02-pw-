@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./mis-ordenes.component.css']
 })
 export class MisOrdenesComponent implements OnInit, OnDestroy {
-
+  loaderPage = true;
   private destroy$: Subject<boolean> = new Subject<boolean>();
   infoUser: UsuarioTokenModel;
   listMisPedidos: any;
@@ -24,7 +24,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
     private verifyClientService: VerifyAuthClientService,
     private crudService: CrudHttpService,
     private socketSerrvice: SocketService,
-    private router: Router
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -67,6 +67,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
   }
 
   loadMisPedidos(): void {
+    this.loaderPage = false;
     const _data = {
       idcliente: this.infoUser.idcliente
     };
@@ -96,6 +97,12 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
 
           return x;
         });
+
+
+
+        setTimeout(() => {
+          this.loaderPage = false;
+        }, 500);
       });
   }
 

@@ -1,9 +1,11 @@
 <div class="item-content">
     <div class="i-header">
         <div class="d-flex">
-            <div class="w-80 fs-13 fw-600">
-                <span class="fs-12 i-stock estado-color-{{getEstadoStockItem(item.cantidad)}}"> {{item.cantidad | number : '2.'}}</span>
-                <span>{{item.des}}</span>
+            <div class="fs-13 fw-600" style="width: 85%;">
+                <div class="d-flex align-items-start">
+                    <span class="fs-12 i-stock estado-color-{{getEstadoStockItem(item.cantidad)}}"> {{item.cantidad | number : '2.'}}</span>
+                    <span>{{item.des}}</span>
+                </div>
             </div>
             <div class="i-btn-exit" matRipple (click)="cerrarDlg()">
                 <i class="fa fa-times" aria-hidden="true"></i>
@@ -48,9 +50,11 @@
                                 [ngClass]="{'li-tachado': subitem.cantidad < 1}"
                                 [disabled]="subitem.cantidad < 1"
                             >
-                                <div class="w-100 d-flex">
-                                    <span>{{subitem.des | lowercase}} </span>
-                                    <span class="xprecio pl-1" [hidden]="!subitem.cantidad_visible"> | {{subitem.cantidad}}</span>
+                                <div class="w-100 d-flex justify-content-between">
+                                    <div>
+                                        <span>{{subitem.des | lowercase}} </span>
+                                        <span class="xprecio pl-1" [hidden]="!subitem.cantidad_visible"> | {{subitem.cantidad}}</span>
+                                    </div>
                                     <div *ngIf="subitem.precio != 0" class="xprecio aling-derecha"> 
                                         + {{subitem.precio | number:'0.2'}}
                                     </div>

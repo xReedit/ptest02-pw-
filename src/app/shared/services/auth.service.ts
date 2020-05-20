@@ -35,6 +35,10 @@ export class AuthService {
         localStorage.setItem('sys::numtis', ms_tieme_init_session.toString());
     }
 
+    setLocalTokenAuth(token: string) {
+        localStorage.setItem('::token:auth', token);
+    }
+
     getLocalToken() {
         return localStorage.getItem('::token');
     }

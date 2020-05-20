@@ -48,6 +48,12 @@ overflow: auto;
   padding: 10px;
 }
 
+.text-puntos {
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
 /* main zona delivery */
 
 /* cuando es en celular el dialog detalle orden abre en pantalla completa */

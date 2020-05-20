@@ -73,6 +73,7 @@
             </button>
 
 
+
             <button mat-flat-button 
                 color="primary" 
                 [disabled]="!registerForm.valid || loader > 0 || !isDireccionValid"
@@ -95,7 +96,8 @@
                 
             </button> 
             
-            <p *ngIf="!isDireccionValid" class="fw-600 text-danger fs-15">El servicio no esta disponible en esta ubicación.</p>                
+            <p *ngIf="!registerForm.valid" class="fw-600 text-danger fs-14">Indique direccion y una referencia.</p>                
+            <p *ngIf="!isDireccionValid" class="fw-600 text-danger fs-16">El servicio no esta disponible en esta ubicación.</p>                
             
             
         </div>  

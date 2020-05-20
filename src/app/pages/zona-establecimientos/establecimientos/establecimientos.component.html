@@ -1,17 +1,23 @@
+<div class="animated fadeIn div-loader-2" *ngIf="loaderPage">
+    <div class="loader">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <span class="pt-2">Obteniendo datos...</span>
+    </div>    
+</div>
 <div class="animated fadeInUp">    
     <div class="d-flex text-center p-3 text-white justify-content-center">
         <!-- items principales -->
         <div matRipple class="div-ico" (click)="goComercioCategoria(4)">
             <img class="img-ico" src="assets/images/icon-app/icon-p-4.jpg" alt="">
             <div class="titulo">
-                <span class="pl-1 fw-100 fs-13">Supermercados</span>
+                <span class="pl-1 fw-100 fs-13">Mercados</span>
             </div>
         </div>
 
         <div matRipple class="div-ico" (click)="goComercioCategoria(1)">
             <img class="img-ico" src="assets/images/icon-app/icon-p-2.PNG" alt="">
             <div class="titulo">
-                <span class="pl-1 fw-100 fs-13">Restaurantes</span>
+                <span class="pl-1 fw-100 fs-13">Comida</span>
             </div>
         </div>
     </div>

@@ -174,7 +174,7 @@ export class CrudHttpService {
     private getHeaderHttpClientForm(): HttpHeaders {
         const headers = new HttpHeaders()
             .set('Content-Type', 'application/json')
-            .set('Authorization', this.infoTockenService.getToken());
+            .set('Authorization', this.infoTockenService.getTokenAuth());
         return headers;
     }
 

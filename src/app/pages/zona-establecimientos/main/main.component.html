@@ -1,3 +1,4 @@
+
 <mat-drawer-container class="example-container">
   <mat-drawer #drawer class="example-sidenav" mode="over" position="end" [opened]="showPanelRigth" (closedStart)="showPanelRigth=false">
       <div style="min-width: 250px;">
@@ -35,7 +36,7 @@
     <!-- <div> -->
         <i class="fa fa-arrow-left" (click)="goBack()"></i>
         <div matRipple class="text-center" (click)="openDialogDireccion()">
-            <span class="pl-2 fs-13 fw-100">{{ nomDireccionCliente }}</span>
+            <span class="pl-2 fs-13 fw-100 text-puntos">{{ nomDireccionCliente }}</span>
         </div>
         <i class="fa fa-user-circle-o pl-2" aria-hidden="true" (click)="drawer.toggle()"></i>
     </div>
@@ -43,7 +44,9 @@
     
     <!-- body -->
     <div class="content-body">        
-      
+      <!-- <div style="position: relative">
+        <ngx-ui-loader></ngx-ui-loader>
+      </div> -->
       <!-- primer paso loguearse -->
       <div *ngIf="!isClienteLogueado" matRipple class="content-paso-ini text-center xCursor border" (click)="registarDirCliente()">
         <span class="text-secondary fs-12">Bienvenido, para ver los comercios en tu zona:</span>
@@ -66,7 +69,7 @@
         <div class="tabs-group">
             <mat-tab-group class="fondo-tab-group" 
             color="accent"                     
-            (selectedTabChange)="clickTab($event)"
+            (selectedTabChange)="clickTab($event.index)"
             headerPosition="below" 
             mat-stretch-tabs>
                 <mat-tab>
