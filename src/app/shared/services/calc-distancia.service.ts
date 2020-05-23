@@ -21,56 +21,63 @@ export class CalcDistanciaService {
 
 
   calculateRoute(dirCliente: DeliveryDireccionCliente, dirEstablecimiento: DeliveryEstablecimiento): any {
-    let c_servicio = dirEstablecimiento.c_minimo;
-    const c_km = dirEstablecimiento.c_km; // costo x km adicional
-
-    // cordenadas
-    this.origin = {
-      lat: dirCliente.latitude, lng: dirCliente.longitude
-    };
-
-    dirEstablecimiento.latitude = typeof dirEstablecimiento.latitude === 'string' ? parseFloat(dirEstablecimiento.latitude) : dirEstablecimiento.latitude;
-    dirEstablecimiento.longitude = typeof dirEstablecimiento.longitude === 'string' ? parseFloat(dirEstablecimiento.longitude) : dirEstablecimiento.longitude;
-
-    this.destination = {
-      lat: dirEstablecimiento.latitude, lng: dirEstablecimiento.longitude
-    };
-
-    const request = {
-      origin: this.origin,
-      destination: this.destination,
-      travelMode: google.maps.TravelMode.DRIVING
-    };
-
-    let km = 0;
-    this.directionsService.route(request, (result: any, status) => {
-      if (status === 'OK') {
-        // this.directionsRenderer.setDirections(result);
-        km = result.routes[0].legs[0].distance.value;
-        dirEstablecimiento.distancia_km = (km / 1000).toFixed(2);
-
-        km = parseInt((km / 1000).toFixed(), 0);
-
-
-        if ( km > 1 ) {
-          c_servicio = (( km - 1 ) * c_km) + c_servicio;
-          dirEstablecimiento.c_servicio = c_servicio;
-          // return c_servicio;
-        }
-
-        // console.log('km calc', km);
-        // console.log(result.routes[0].legs[0]);
-        // console.log('c_servicio', c_servicio);
-        // console.log('dirEstablecimiento', dirEstablecimiento);
-        // return c_servicio;
-        // callback(c_servicio);
-      }
-    });
+    let c_servicio = 0;
 
     // si tiene repartidores propios y no esta suscrito al servicio de calcular distancia
     if ( dirEstablecimiento.pwa_delivery_servicio_propio === 1 && dirEstablecimiento.pwa_delivery_hablitar_calc_costo_servicio === 0) {
       c_servicio = 0;
+    } else {
+
+      c_servicio = dirEstablecimiento.c_minimo;
+
+      const c_km = dirEstablecimiento.c_km; // costo x km adicional
+
+      // cordenadas
+      this.origin = {
+        lat: dirCliente.latitude, lng: dirCliente.longitude
+      };
+
+      dirEstablecimiento.latitude = typeof dirEstablecimiento.latitude === 'string' ? parseFloat(dirEstablecimiento.latitude) : dirEstablecimiento.latitude;
+      dirEstablecimiento.longitude = typeof dirEstablecimiento.longitude === 'string' ? parseFloat(dirEstablecimiento.longitude) : dirEstablecimiento.longitude;
+
+      this.destination = {
+        lat: dirEstablecimiento.latitude, lng: dirEstablecimiento.longitude
+      };
+
+      const request = {
+        origin: this.origin,
+        destination: this.destination,
+        travelMode: google.maps.TravelMode.DRIVING
+      };
+
+      let km = 0;
+      this.directionsService.route(request, (result: any, status) => {
+        if (status === 'OK') {
+          // this.directionsRenderer.setDirections(result);
+          km = result.routes[0].legs[0].distance.value;
+          dirEstablecimiento.distancia_km = (km / 1000).toFixed(2);
+
+          km = parseInt((km / 1000).toFixed(), 0);
+
+
+          if ( km > 1 ) {
+            c_servicio = (( km - 1 ) * c_km) + c_servicio;
+            dirEstablecimiento.c_servicio = c_servicio;
+            // return c_servicio;
+          }
+
+          // console.log('km calc', km);
+          // console.log(result.routes[0].legs[0]);
+          // console.log('c_servicio', c_servicio);
+          // console.log('dirEstablecimiento', dirEstablecimiento);
+          // return c_servicio;
+          // callback(c_servicio);
+        }
+      });
+
     }
+
+
 
     setTimeout(() => {
       dirEstablecimiento.c_servicio = c_servicio;

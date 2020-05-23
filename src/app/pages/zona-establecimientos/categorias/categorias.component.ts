@@ -180,9 +180,9 @@ export class CategoriasComponent implements OnInit {
           _sleep = 600;
           this.calcDistanceService.calculateRoute(this.direccionCliente, _dirEstablecimiento);
           // return true;
+          await this.sleep(600);
         }
       // }, 1000);
-      await this.sleep(600);
     }
   }
 

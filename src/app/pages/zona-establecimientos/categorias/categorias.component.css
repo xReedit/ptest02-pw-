@@ -29,7 +29,7 @@
 .content-categoria-filtro {
     top: 0;
     bottom: 0;    
-    position: sticky;
+    /* position: sticky; */
 }
 
 /* .scrolling-wrapper {
@@ -81,6 +81,11 @@
     .content-master-establecimiento {
         display: flex;
     }
+
+    .content-categoria-filtro { 
+        position: sticky;
+    }
+
   }
 /* .card-comercio {
     max-width: 335px;

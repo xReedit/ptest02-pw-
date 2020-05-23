@@ -32,7 +32,7 @@
 .div-content-ico {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;;
+    justify-content: center;
 }
 
 .div-ico-circle{

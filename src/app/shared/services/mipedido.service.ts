@@ -28,6 +28,7 @@ import { CartaModel } from 'src/app/modelos/carta.model';
 import { EstablecimientoService } from './establecimiento.service';
 import { CrudHttpService } from './crud-http.service';
 import { match } from 'minimatch';
+import { InfoTockenService } from './info-token.service';
 
 // import { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChanged';
 // import { takeUntil } from 'rxjs/internal/operators/takeUntil';
@@ -89,6 +90,7 @@ export class MipedidoService {
     private listenStatusService: ListenStatusService,
     private establecimientoService: EstablecimientoService, // datos del estableciento // clienteSelivery
     private crudService: CrudHttpService,
+    private infoTokenService: InfoTockenService
     ) {
 
     }
@@ -1211,6 +1213,23 @@ export class MipedidoService {
     return sum;
   }
 
+    // devuelve cantidad tipoconsumo en el pedido buscado por descripcion, es decir cuanto delivery o cuantos para llevar hay // se usa calculo total delivery app cliente
+    private countCantItemsFromTpcDes(tpc_descripcion: string): number {
+      let sum = 0;
+      this.miPedido.tipoconsumo
+      .filter((tpc: TipoConsumoModel) => tpc.descripcion.toLowerCase() === tpc_descripcion.toLowerCase())
+      .map((tpc: TipoConsumoModel) => {
+        tpc.secciones
+        .map((z: SeccionModel) => {
+          sum += z.items
+            .map((x: ItemModel) => x.cantidad_seleccionada)
+            .reduce((a, b) => a + b, 0);
+        });
+      });
+
+      return sum;
+    }
+
   // <------ reglas de la carta ---->//
 
   // <------ sub totales ---->//
@@ -1284,10 +1303,18 @@ export class MipedidoService {
     const rptOtros: any = [];
     const arrOtros = rulesSubTotales.filter(x => x.tipo === 'a');
 
-    // si existe estableciiento en localstorage entonces es un clienteDelivery
-    let isClienteDelivery = this.establecimientoService.get().idsede ? true : false;
+    // si es tiene idusuario es usuario autorizado no es cliente delivery  // si existe estableciiento en localstorage entonces es un clienteDelivery
+    let isClienteDelivery = this.infoTokenService.infoUsToken.idusuario ? false : true; // this.establecimientoService.get().idsede ? true : false;
     let isTieneDelivery =  false; // si tiene la opcion de delivery configurado
     let isAddDelivery = true; // si agrega delivery // puede que tenga otros servicio que no sea delivery
+    let addServicioDeliveryExpress = false;
+
+    // verificar si el pedido tiene delivery
+    const _countItemDelivery = this.countCantItemsFromTpcDes('delivery') + this.countCantItemsFromTpcDes('entrega') + this.countCantItemsFromTpcDes('cantidad');
+    addServicioDeliveryExpress = _countItemDelivery > 0 && isCalcCostoServicioDelivery;
+    importeOtros = this.establecimientoService.get().c_servicio || this.establecimientoService.get().c_minimo;
+
+
     arrOtros.map(p => {
       const rpt: any = {};
 
@@ -1303,6 +1330,7 @@ export class MipedidoService {
         if ( this.pwa_delivery_servicio_propio && !isCalcCostoServicioDelivery) { // si tiene servicio propio y no esta habilitado el calculo automatico
           importeOtros = parseFloat(p.monto);
         } else {
+          addServicioDeliveryExpress = true; // agrega delivery
           isTieneDelivery = false; // para que calculo abajo
           importeOtros = this.establecimientoService.get().c_servicio || this.establecimientoService.get().c_minimo;
 
@@ -1314,6 +1342,7 @@ export class MipedidoService {
         }
       } else {
         // isAddDelivery = false;
+        // addServicioDeliveryExpress = false;
         importeOtros = parseFloat(p.monto); // aplica a todo el pedido
       }
 
@@ -1351,7 +1380,8 @@ export class MipedidoService {
     });
 
     // si no tiene la opcion delivery y es un clienteDelivery lo agrega // o requiere el servicio de calcular distancia
-    if ( isAddDelivery && !isTieneDelivery && isClienteDelivery && (!this.pwa_delivery_servicio_propio || isCalcCostoServicioDelivery )) {
+    // if ( isAddDelivery && !isTieneDelivery && isClienteDelivery && (!this.pwa_delivery_servicio_propio || isCalcCostoServicioDelivery )) {
+    if ( addServicioDeliveryExpress ) {
       // const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion);
       // if ( cantidad > 0 ) {
         const _costoXCantItems = this.calcCostoCantItemsDelivery();
