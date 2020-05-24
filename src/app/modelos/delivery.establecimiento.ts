@@ -33,4 +33,6 @@ export class DeliveryEstablecimiento {
     pwa_delivery_comercio_solidaridad: number; // si es comercio solidario, solo pago con tarjeta y parece campo de contacto
     pwa_delivery_comision_fija_no_afiliado: number; // comision fija comercio no afiliado (plaza vea cualquier pedido la comision es 2 para la platafoma)
     rulesSubTotales: any;
+    pwa_delivery_comercio_paga_entrega: number; // si el comercio paga el costo del delivery al repartidor
+    costo_total_servicio_delivery: number; // costo del servicio de entrega si pwa_delivery_comercio_paga_entrega
 }

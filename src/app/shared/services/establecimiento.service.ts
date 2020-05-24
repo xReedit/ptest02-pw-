@@ -30,6 +30,12 @@ export class EstablecimientoService {
     this.set(this.establecimiento);
   }
 
+  setCostoSercioDelivery(val: number) {
+    this.establecimiento = this.get();
+    this.establecimiento.costo_total_servicio_delivery = val;
+    this.set(this.establecimiento);
+  }
+
 
   // al iniciar el usuario
   loadEstablecimientoById(id: number) {

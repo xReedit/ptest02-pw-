@@ -53,7 +53,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
     direccionEnvioSelected: {},
     establecimiento: {},
     subTotales: {},
-    pasoRecoger: false
+    pasoRecoger: false,
+    costoTotalDelivery: 0
   };
 
   _listSubtotalesTmp: any;
@@ -157,6 +158,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this.infoTokenService.setTelefono(telefono);
       this.resData.pasoRecoger = this.isRecojoLocalCheked;
       this.resData.dato_adicional = this.valInputDatoAdicianal;
+      this.resData.costoTotalDelivery = this.infoEstablecimiento.costo_total_servicio_delivery;
 
       // this.infoTokenService.set();
 
@@ -193,6 +195,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this.resData.subTotales = this._listSubtotales;
       this.resData.pasoRecoger = this.isRecojoLocalCheked;
       this.resData.dato_adicional = this.valInputDatoAdicianal;
+      this.resData.costoTotalDelivery = this.infoEstablecimiento.costo_total_servicio_delivery;
       // this.infoToken.telefono = telefono;
       // this.infoTokenService.setTelefono(telefono);
 

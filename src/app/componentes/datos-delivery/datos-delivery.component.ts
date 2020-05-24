@@ -71,7 +71,8 @@ export class DatosDeliveryComponent implements OnInit {
     subTotales: {},
     pasoRecoger: false,
     buscarRepartidor: true,
-    isFromComercio: 1 // el pedido esta yendo desde el comercio
+    isFromComercio: 1, // el pedido esta yendo desde el comercio,
+    costoTotalDelivery: 0
   };
 
   dirEstablecimiento: DeliveryEstablecimiento;
@@ -161,6 +162,7 @@ export class DatosDeliveryComponent implements OnInit {
       this.resData.propina = this.infoTokenService.getInfoUs().propina;
       this.resData.pasoRecoger = this.isRecojoLocalCheked;
       this.resData.buscarRepartidor = this.establecimientoService.establecimiento.pwa_delivery_servicio_propio === 0;
+      this.resData.costoTotalDelivery = this.infoEstablecimiento.costo_total_servicio_delivery;
       // this.resData.establecimiento = this.infoEstablecimiento;
 
       // console.log('this.resData emit', this.resData);

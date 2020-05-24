@@ -1240,6 +1240,7 @@ export class MipedidoService {
     const subTotal = this.getSubTotalMiPedido();
     const isCalcCostoServicioDelivery = this.establecimientoService.establecimiento.pwa_delivery_hablitar_calc_costo_servicio === 1;
     const comisionFijaComercioNoAfiliado = this.establecimientoService.establecimiento.pwa_delivery_comision_fija_no_afiliado; // comision fija comercio no afiliado (plaza vea cualquier pedido la comision es 2 para la platafoma)
+    const is_comercio_paga_entrega = this.establecimientoService.establecimiento.pwa_delivery_comercio_paga_entrega === 1; // si el comercio paga el costo del delivery al repartidor
     this.pwa_delivery_servicio_propio = this.establecimientoService.establecimiento.pwa_delivery_servicio_propio === 1;
 
     let sumaTotal = subTotal;
@@ -1311,7 +1312,7 @@ export class MipedidoService {
 
     // verificar si el pedido tiene delivery
     const _countItemDelivery = this.countCantItemsFromTpcDes('delivery') + this.countCantItemsFromTpcDes('entrega') + this.countCantItemsFromTpcDes('cantidad');
-    addServicioDeliveryExpress = _countItemDelivery > 0 && isCalcCostoServicioDelivery;
+    addServicioDeliveryExpress = _countItemDelivery > 0;
     importeOtros = this.establecimientoService.get().c_servicio || this.establecimientoService.get().c_minimo;
 
 
@@ -1382,6 +1383,7 @@ export class MipedidoService {
     // si no tiene la opcion delivery y es un clienteDelivery lo agrega // o requiere el servicio de calcular distancia
     // if ( isAddDelivery && !isTieneDelivery && isClienteDelivery && (!this.pwa_delivery_servicio_propio || isCalcCostoServicioDelivery )) {
     if ( addServicioDeliveryExpress ) {
+
       // const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion);
       // if ( cantidad > 0 ) {
         const _costoXCantItems = this.calcCostoCantItemsDelivery();
@@ -1391,19 +1393,27 @@ export class MipedidoService {
         // costo del servicio mas comision fija comercio no afiliado
         const _costoServicio = costoServicio + comisionFijaComercioNoAfiliado;
 
-        rpt.id = -2;
-        rpt.descripcion = 'Entrega';
-        rpt.esImpuesto = 0;
-        rpt.visible = true;
-        rpt.quitar = false;
-        rpt.tachado = false;
-        rpt.visible_cpe = false;
-        rpt.importe = parseFloat(_costoServicio.toString()).toFixed(2);
-        // rpt.importe = parseFloat(importeOtros.toString()).toFixed(2);
+        // si el comercio paga el servicio, guardamos este costo para no mostrarlo al cliente
+        this.establecimientoService.setCostoSercioDelivery(_costoServicio);
 
-        sumaTotal += parseFloat(rpt.importe);
+        // si esta habilitado calcular el servicio de delviry y que el comercio no pague la entrega
+        // entonces este item vera si el cliente
+        if ( !is_comercio_paga_entrega && isCalcCostoServicioDelivery ) {
 
-        rptOtros.push(rpt);
+          rpt.id = -2;
+          rpt.descripcion = 'Entrega';
+          rpt.esImpuesto = 0;
+          rpt.visible = true;
+          rpt.quitar = false;
+          rpt.tachado = false;
+          rpt.visible_cpe = false;
+          rpt.importe = parseFloat(_costoServicio.toString()).toFixed(2);
+          // rpt.importe = parseFloat(importeOtros.toString()).toFixed(2);
+
+          sumaTotal += parseFloat(rpt.importe);
+
+          rptOtros.push(rpt);
+        }
       // }
     }
 
