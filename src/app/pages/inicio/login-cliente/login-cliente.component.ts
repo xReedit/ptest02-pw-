@@ -89,7 +89,7 @@ export class LoginClienteComponent implements OnInit {
           if ( !response.success ) {
             this.loadConsulta = false;
             this.isValidDNI = false;
-            this.msj_error = 'Numero de documento no valido.';
+            this.msj_error = 'Numero de documento no valido. Ó intente registrarse con Gmail o Facebook';
             return;
           }
 
@@ -97,13 +97,13 @@ export class LoginClienteComponent implements OnInit {
           this.isValidDNI = true;
           this.dataCliente =  response.data;
           // console.log(response);
-          this.getListDates();
+          this.getListDatesCode();
         },
       (error) => {
           this.loadConsulta = false;
           this.isValidDNI = false;
-          this.msj_error = 'No se encontro, intentelo nuevamente.';
-          alert(error.message);
+          this.msj_error = 'No se encontro, intentelo nuevamente. Ó intente registrarse con Gmail o Facebook';
+          // alert(error.message);
           // console.log(error.message);
         }
     );
@@ -117,6 +117,21 @@ export class LoginClienteComponent implements OnInit {
     this.isValidDNI = false;
     this.numDocumento = '';
     this.msj_error = '';
+  }
+
+  private getListDatesCode(): void {
+    this.listViewDate = [];
+    let lista = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    lista = lista.sort(function() {return Math.random() - 0.5; });
+    lista = lista.slice(0, 4);
+    const isOk = lista.filter(x => x === this.dataCliente.verification_code)[0];
+    if ( !isOk ) {
+      const _i = this.getRandomArbitrary(0, 3);
+      lista[_i] = this.dataCliente.verification_code;
+     }
+
+    this.listViewDate = lista;
+    // console.log(lista);
   }
 
   private getListDates(): void {
@@ -195,19 +210,22 @@ export class LoginClienteComponent implements OnInit {
   }
 
   verificarDNI(item: any): void {
-    this.listViewDate.map( (x: any) => x.selected = false);
-    item.selected = true;
+    // this.listViewDate.map( (x: any) => x.selected = false);
+    // item.selected = true;
 
     this.isListDateSelect = true;
-    this.isDateBirthdayValid = item.fecha === this.dataCliente.date_of_birthday;
+    // this.isDateBirthdayValid = item.fecha === this.dataCliente.date_of_birthday;
+    this.isDateBirthdayValid = item === this.dataCliente.verification_code;
 
     this.isPaseOk = this.isDateBirthdayValid;
 
     if (this.isPaseOk) {
+      // const _name = this.dataCliente.names.indexOf(this.dataCliente.first_name) > -1 ? this.dataCliente.names + ' ' + this.dataCliente.first_name + ' ' + this.dataCliente.last_name : this.dataCliente.names;
+      const _name = this.dataCliente.name + ' ' + this.dataCliente.first_name + ' ' + this.dataCliente.last_name;
       this.verifyClientService.clientSocket.datalogin = this.dataCliente;
       this.verifyClientService.clientSocket.datalogin.sub = 'dni|' + this.dataCliente.number;
-      this.verifyClientService.clientSocket.datalogin.name = this.dataCliente.names + ' ' + this.dataCliente.first_name + ' ' + this.dataCliente.last_name;
-      this.verifyClientService.clientSocket.datalogin.given_name = this.dataCliente.names ? this.dataCliente.names.indexOf(' ') > 0 ? this.dataCliente.names.split(' ')[0] : this.dataCliente.names : this.dataCliente.names;
+      this.verifyClientService.clientSocket.datalogin.name = _name;
+      this.verifyClientService.clientSocket.datalogin.given_name = this.dataCliente.name ? this.dataCliente.name.indexOf(' ') > 0 ? this.dataCliente.name.split(' ')[0] : this.dataCliente.name : this.dataCliente.name;
       this.verifyClientService.setDataClient();
       this.verifyClientService.setIsLoginByDNI(true);
       this.auth.loggedIn = true;

@@ -1,9 +1,11 @@
 <div class="text-left h-100">
-    <div *ngIf="!isRecojoLocalCheked" class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor">
+    <div *ngIf="!isRecojoLocalCheked" class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor" (click)="openDialogDireccion()">
         <span class="fw-100 fs-12 text-secondary">Direccion de entrega:</span>
         <p class="m-0 fs-14">
-            <strong>{{direccionCliente.titulo}}</strong> <br> {{direccionCliente.direccion}}
+            <!-- <strong>{{direccionCliente.titulo}}</strong> <br> {{direccionCliente.direccion}} -->
+            <strong [ngClass]="{'text-danger': direccionCliente.direccion === ''}">{{direccionCliente.titulo}}</strong> <br> {{direccionCliente.direccion}}            
         </p>   
+        <p *ngIf="msjErrorDir.length > 0" class="text-danger fs-12 fw-100 m-0">  {{ msjErrorDir }} </p>
     </div>
 
     <!-- recojo en el local -->
@@ -14,10 +16,21 @@
         </mat-checkbox>
     </div>
 
-    <div class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor">
+    <!-- tiempo de entrega -->
+    <div class="border-bottom m-0 p-3 d-flex justify-content-between align-items-center" matRipple [matRippleColor]="rippleColor" (click)="openDialogTiempoEntrega()">
         <!-- <span class="fw-100 fs-12 text-secondary">Hora de entrega:</span> -->            
-        <p class="m-0"><i class="fa fa-clock-o pr-2"></i><span class="fs-14"> Tiempo de entrega: {{infoEstablecimiento.tiempo_aprox_entrega}}</span></p>
+        <div>
+            <i class="fa fa-clock-o pr-2"></i>
+            <span class="fw-100 fs-12 text-secondary"> Entgrega:</span>
+            <p class="m-0"><span class="fs-14" [ngClass]="{'text-danger': !isTiempoEntregaValid}"> {{ tiempoEntregaSelected.descripcion }}: <strong>{{tiempoEntregaSelected.value | titlecase}} </strong> </span></p>
+        </div>
+
+        <div>
+            <i class="fa fa-caret-down" aria-hidden="true"></i>
+        </div>
+
     </div>
+    <!-- tiempo de entrega -->
 
     <!-- telefono -->
     <div class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor" (click)="openDialogsendSMS()">                
@@ -47,18 +60,19 @@
     <!-- propina -->
     <div *ngIf="!isRecojoLocalCheked" class="m-0 p-3 d-flex justify-content-between">
         <span class="m-0 fs-14">Propina: <i class="fa fa-question-circle" matTooltip="El 100% va para el repartidor"></i> </span> 
-        <app-comp-propina-delivery [listSubtotales]="_listSubtotales"></app-comp-propina-delivery>
+        <app-comp-propina-delivery [listSubtotales]="_listSubtotales" (selectedPropina)="selectedPropinaRepartidor($event)"></app-comp-propina-delivery>
         <!-- <i class="fa fa-question-circle" aria-hidden="true"></i> -->
     </div>
     <!-- propina -->
 
     <!-- dato importante o nombre de contacto si es solidaridad -->
-    <div class="p-3">
-        <span *ngIf="isComercioSolidaridad" class="text-info">Importante: especifique persona o datos de contacto.</span>
+    <div class="p-3" *ngIf="isComercioSolidaridad">
+        <span class="text-info">Importante: especifique persona o datos de contacto.</span>
         <mat-form-field class="w-100">
             <input matInput [placeholder]="titleInputDatoAdicional" [required]="isComercioSolidaridad" [(ngModel)]="valInputDatoAdicianal">
         </mat-form-field>
     </div>
+    <br>
     <!-- dato importante o nombre de contacto si es solidaridad -->
     
 

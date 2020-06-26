@@ -1,0 +1,23 @@
+<div class="w-100">
+    <mat-form-field class="w-100">
+        <mat-label>Día:</mat-label>
+        <mat-select  (selectionChange)="selectedDay($event)" [(value)]="selectedIni">
+          <mat-option *ngFor="let day of listDia" [value]="day">
+              <span class="text-center w-100">
+                  {{day.descripcion}}
+              </span>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+</div>
+<div class="w-100 h-100">
+    <mat-selection-list>
+        <mat-list-option *ngFor="let item of listHora" class="list-option-time"
+            [value]="item"
+            (click)="selectHour(item)" [selected]="item.selected">
+            <span class="text-center w-100 tfs-11">
+                {{item.descripcion}}
+            </span>
+        </mat-list-option>
+      </mat-selection-list>
+</div>

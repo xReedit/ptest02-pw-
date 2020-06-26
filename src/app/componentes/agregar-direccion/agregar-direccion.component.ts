@@ -1,5 +1,5 @@
-import { Component, OnInit, NgZone, ViewChild, ElementRef, Output, EventEmitter, Input } from '@angular/core';
-import { MapsAPILoader } from '@agm/core';
+import { Component, OnInit, NgZone, ViewChild, ElementRef, Output, EventEmitter, Input, AfterViewInit } from '@angular/core';
+import { AgmMap, MapsAPILoader } from '@agm/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
@@ -13,7 +13,7 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
   templateUrl: './agregar-direccion.component.html',
   styleUrls: ['./agregar-direccion.component.css']
 })
-export class AgregarDireccionComponent implements OnInit {
+export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   // title = 'AGM project';
   latitude: number;
   longitude: number;
@@ -21,6 +21,7 @@ export class AgregarDireccionComponent implements OnInit {
   zoom: number;
   address: string;
   loader = 0;
+  private isChangeDireccion = true;
   private geoCoder;
 
   registerForm: FormGroup;
@@ -52,6 +53,13 @@ export class AgregarDireccionComponent implements OnInit {
 
   isDireccionValid = true; // si esta dentro de la zona de atencion
 
+
+  @ViewChild ('search', {static: false}) agmMap;
+
+
+  mapCenter: any = {};
+  map: any;
+
   constructor(
     private formBuilder: FormBuilder,
     private mapsAPILoader: MapsAPILoader,
@@ -66,6 +74,13 @@ export class AgregarDireccionComponent implements OnInit {
 
     this.dataCliente = new DeliveryDireccionCliente();
     this.loadForm();
+  }
+
+  ngAfterViewInit(): void {
+    this.loadInitComponent();
+  }
+
+  private  loadInitComponent() {
     // this.setCurrentLocation();
 
     // load Places Autocomplete
@@ -82,6 +97,8 @@ export class AgregarDireccionComponent implements OnInit {
           // get the place result
           const place: google.maps.places.PlaceResult = autocomplete.getPlace();
 
+          console.log('place', place);
+
           // verify result
           if (place.geometry === undefined || place.geometry === null) {
             return;
@@ -90,9 +107,14 @@ export class AgregarDireccionComponent implements OnInit {
           // set latitude, longitude and zoom
           this.latitude = place.geometry.location.lat();
           this.longitude = place.geometry.location.lng();
-          this.zoom = 15;
+          this.zoom = 17;
+          this.isChangeDireccion = false;
 
-          this.getAddress(this.latitude , this.longitude);
+          setTimeout(() => {
+            this.isChangeDireccion = true;
+          }, 500);
+
+          // this.getAddress(this.latitude , this.longitude);
         });
       });
 
@@ -107,8 +129,6 @@ export class AgregarDireccionComponent implements OnInit {
       this.dataInfoSede = this.miPedidoService.objDatosSede.datossede[0];
       this.latitude = this.dataInfoSede.latitude;
       this.longitude = this.dataInfoSede.longitude;
-
-
       return;
     }
 
@@ -117,7 +137,7 @@ export class AgregarDireccionComponent implements OnInit {
       navigator.geolocation.getCurrentPosition((position) => {
         this.latitude = position.coords.latitude;
         this.longitude = position.coords.longitude;
-        this.zoom = 16;
+        this.zoom = 17;
         this.getAddress(this.latitude, this.longitude);
       });
     }
@@ -127,24 +147,32 @@ export class AgregarDireccionComponent implements OnInit {
     // console.log($event);
     this.latitude = $event.coords.lat;
     this.longitude = $event.coords.lng;
+    // console.log('this.latitude markter',  this.latitude);
+    // console.log('this.longitude markter',  this.longitude);
     this.getAddress(this.latitude, this.longitude);
   }
 
   getAddress(latitude, longitude) {
     // this.isDireccionValid = true;
+    // const palce_id = placeId ? {'placeId': placeId} : { 'location': { lat: latitude, lng: longitude } };
     this.geoCoder.geocode({ 'location': { lat: latitude, lng: longitude } }, (results, status) => {
+    // this.geoCoder.geocode(palce_id, (results, status) => {
       // console.log(results);
       // console.log(status);
       if (status === 'OK') {
         if (results[0]) {
-          this.zoom = 15;
+          this.zoom = 17;
           this.address = results[0].formatted_address;
-          this.dataCliente.direccion = this.address;
           this.dataMapa = results[0];
+          if ( this.isChangeDireccion ) {
+            this.dataCliente.direccion = this.address;
+          }
 
           // si es usuario comercio valida la direccion del cliente
           if ( !this.inforTokenService.getInfoUs().isCliente ) {
             const codigo_postal = this.searchTypeMap('postal_code');
+            // console.log('codigo_postal', codigo_postal);
+            // console.log('this.dataInfoSede', this.dataInfoSede);
             if ( codigo_postal !== this.dataInfoSede.codigo_postal ) {
               this.isDireccionValid = false;
               // window.alert('El servicio no esta disponible en esta ubicacion');
@@ -153,10 +181,10 @@ export class AgregarDireccionComponent implements OnInit {
             }
           }
         } else {
-          window.alert('No results found');
+          // window.alert('No results found');
         }
       } else {
-        window.alert('Geocoder failed due to: ' + status);
+        // window.alert('Geocoder failed due to: ' + status);
       }
 
       // console.log('this.dataCliente', this.dataCliente);
@@ -195,10 +223,14 @@ export class AgregarDireccionComponent implements OnInit {
       // window.alert('El servicio no esta disponible en esta ubicacion');
       return ;
     }
+
+    // this.latitude = this.mapCenter.lat;
+    // this.longitude = this.mapCenter.lng;
+
     // this.loader = 1;
     this.dataCliente.idcliente = this.verifyClientService.getDataClient().idcliente;
-    this.dataCliente.longitude = this.longitude;
-    this.dataCliente.latitude = this.latitude;
+    this.dataCliente.longitude = this.mapCenter.lng;
+    this.dataCliente.latitude = this.mapCenter.lat;
     // this.dataCliente.referencia =
     this.dataCliente.ciudad = this.searchTypeMap('locality');
     this.dataCliente.provincia = this.searchTypeMap('administrative_area_level_2');
@@ -258,6 +290,40 @@ export class AgregarDireccionComponent implements OnInit {
       });
     });
     return rpt;
+  }
+
+
+
+  protected mapReady(map) {
+    this.map = map;
+  }
+
+  public markerClicked = (markerObj) => {
+    if (this.map) {
+      this.map.setCenter({ lat: markerObj.latitude, lng: markerObj.longitude });
+      // console.log('clicked', markerObj, { lat: markerObj.latitude, lng: markerObj.longitude });
+    }
+  }
+
+  idleMap() {
+    // console.log('this.mapCenter', this.mapCenter);
+    this.getAddress(this.mapCenter.lat, this.mapCenter.lng);
+  }
+
+  centerChange(event: any) {
+    if (event) {
+      this.mapCenter.lat = event.lat;
+      this.mapCenter.lng = event.lng;
+
+      // const latLong = new google.maps.LatLng(event.lat, event.lng);
+      // this.mapCenter = latLong;
+      // console.log(this.mapCenter);
+    }
+  }
+
+  clickmap() {
+    // console.log('click map');
+    this.isChangeDireccion = true;
   }
 
 }

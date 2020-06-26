@@ -1,10 +1,17 @@
 .div-list-date {
+    /* padding: 10px; */
     padding: 10px;
+    display: flex;
+    text-align: center;
+    justify-content: space-between;
 }
 
 .item-list-date {
-    padding-top: 10px;
-    padding-bottom: 10px;    
+    /* padding-top: 10px;
+    padding-bottom: 10px;     */
+    padding: 5px 10px 5px 10px;    
+    border: 1px solid #9e9e9e;
+    border-radius: 5px;
 }
 
 .item-list-date.selected {
@@ -30,3 +37,6 @@
     background: #5e35b1;
 }
 
+.dni-b {
+    margin-left: 25px;
+}

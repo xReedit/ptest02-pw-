@@ -1,0 +1,48 @@
+<div class="p-4 h-100">
+    <div>
+        <div>
+            <p class="fs-14 fw-600"><i class="fa fa-arrow-left pr-2" (click)="cerrarDlg()"></i> Programar entrega:</p>
+        </div>
+    </div>
+    <div class="div-content-dialog">
+        <ng-container *ngIf="isPersonalAutorizado; else elseTemplate">
+            <div class="p-4">
+                <mat-form-field class="w-50 text-center">
+                    <mat-label>Hora</mat-label>
+                    <input matInput type="number" step="1" max="23" min="0" placeholder="Hora" [(ngModel)]="hourNow" name="hourNow" (change)="timePersonalAutorizado()">
+                  </mat-form-field>
+
+                  <mat-form-field class="w-50 text-center">
+                    <mat-label>Minutos</mat-label>
+                    <input matInput type="number" step="10" max="50" min="0" placeholder="minutos" [(ngModel)]="minNow" name="minNow" (change)="timePersonalAutorizado()">
+                  </mat-form-field>
+            </div>
+        </ng-container>
+        <ng-template #elseTemplate>
+            <ng-container *ngIf="isComercioAceptaPedidoProgramado; else elseTemplate">
+                <div class="w-100 text-center p-2">
+                    <app-tiempo-programado (tiempoProgramado)="selectedTime($event)"></app-tiempo-programado>
+                </div>            
+            </ng-container>
+            <ng-template #elseTemplate>            
+                <div class="d-flex align-items-center h-100">
+                    <div class="text-center">
+                        <img src="./assets/images/solicitar-atencion.png" alt="icon-programado">
+                        <p>El comercio no permite pedidos programados.</p>
+                    </div>    
+                </div>
+            </ng-template>
+            
+        </ng-template>
+        
+        
+    
+    
+        
+    
+    </div>
+    <hr>
+    <div class="xfooter-dialog text-center w-100">
+        <button mat-flat-button color="primary" [disabled]="!isHoraValid" (click)="cerrarDlg()">Listo.</button>
+    </div>
+</div>

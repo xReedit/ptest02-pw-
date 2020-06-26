@@ -50,20 +50,36 @@
         
                 <ng-container *ngIf="isValidDNI" class="animated fadeInUp">
                     <p class="fs-13 fw-600">
-                        {{dataCliente.name}}
+                        {{dataCliente.names}}
                     </p>
             
-                    <span class="fs-13 text-info">Para confirmar su identidad, indique la fecha en que nacio.</span>
-                    
+                    <span class="fs-13 text-info">Para confirmar su identidad, indique el número verificador ubicado en la parte superior derecha de su DNI.</span>
+
                     <div class="div-list-date text-center">
                         <div matRipple 
-                            class="item-list-date border-bottom" 
+                            class="item-list-date" 
                             [ngClass]="{'selected': item.selected}" 
                             (click)="verificarDNI(item)"
                             *ngFor="let item of listViewDate">
-                            <div>{{item.fecha}}</div>                            
+                            <div>{{item}}</div>                            
                         </div>
                     </div>                        
+
+                    <div class="text-center">
+                        <div >
+                            <div>
+                                <img src="/assets/images/dni-code-verification-blue.jpg" class="dni-b" width="150" alt="dni-b">
+                            </div>
+                        </div>
+                        <br>
+                        <div >
+                            <div>
+                                <img src="/assets/images/dni-code-verification-e.jpg" width="150" alt="dni-e">
+                            </div>
+                        </div>
+                        
+                    </div>
+                                        
                                 
                 </ng-container>
             </div>

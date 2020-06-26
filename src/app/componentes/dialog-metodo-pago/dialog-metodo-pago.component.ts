@@ -115,7 +115,7 @@ export class DialogMetodoPagoComponent implements OnInit {
 
   private verificarValidForm() {
     this.formValid = this.itemSelected.idtipo_pago !== 1 ? true : this.importeValid;
-    console.log('verificado pago', this.formValid);
+    // console.log('verificado pago', this.formValid);
   }
 
   cerrarDlg(): void {

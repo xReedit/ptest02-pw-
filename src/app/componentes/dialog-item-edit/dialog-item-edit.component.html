@@ -8,7 +8,8 @@
                 </div>
             </div>
             <div class="i-btn-exit" matRipple (click)="cerrarDlg()">
-                <i class="fa fa-times" aria-hidden="true"></i>
+                <!-- <i class="fa fa-times" aria-hidden="true"></i> -->
+                <i class="fa fa-check" aria-hidden="true"></i>
             </div>
         </div>
     </div>    
@@ -16,7 +17,7 @@
     <div class="i-body fw-100 fs-13">
         <!-- imagen -->
         <ng-container *ngIf="item.img.length > 0">
-            <div class="text-center border-bottom">
+            <div class="text-center border-bottom pb-1">
                 <img class="img-carta" src="{{url_img}}{{item.img}}" alt="{{item.img}}">
             </div>
         </ng-container>
@@ -31,7 +32,7 @@
         <!-- subitems -->
         <ng-container *ngIf="item.subitems">
             <div *ngFor="let contentSub of item.subitems; let i = index">
-                <div class="pb-3 mb-3">
+                <div class="pb-3 pt-2 mb-3">
                     <div>
                         <span class="txt-obligatorio" [hidden]="!contentSub.isObligatorio">Obligatorio</span>
                         <div class="sub-i-titulo">
@@ -67,7 +68,7 @@
         </ng-container>
 
         <!-- especificaciones -->
-        <div class="borde-bajo mb-2">
+        <div class="mb-2">
             <!-- <span class="text-bold">Instrucciones adicionales</span> -->
             <mat-form-field class="w-100">
                 <input matInput placeholder="Agregue una indicacion" [(ngModel)]="item.indicaciones" (keyup)="setIndicaciones(txtIdicaciones.value)" name="indicaciones" #txtIdicaciones>
@@ -75,27 +76,58 @@
         </div>
 
         <!-- tipos de consumo -->
-        <span class="fs-12 text-danger" [hidden]="isOptionRequeridosComplet">Hay opciones obligatorias por marcar</span>
-        <div class="mb-2" id="tpc_content" [attr.disabled]="!isOptionRequeridosComplet ? true : null">
-            <table width="100%" class="tb-tpc">
-                <tr *ngFor="let tp of objItemTipoConsumoSelected">
-                <td>{{tp.descripcion}}</td>
-                <td>
-                    <div class="d-flex float-right">
-                        <div [hidden]="tp.cantidad_seleccionada === 0" [ngClass]="{'bounceIn': tp.animar_cantidad}" class="fs-19 pr-2 animated">{{tp.cantidad_seleccionada}}</div>
-                        <div appDebounceClick (debounceClick)="addItemToDialogItem(tp, 1)" (debounceWait)="isWaitBtnMenos" class="btn-tbl bg-danger xCursor" matRipple><i class="fa fa-arrow-right" *ngIf="isWaitBtnMenos"></i>  -</div>
-                        <div appDebounceClick (debounceClick)="addItemToDialogItem(tp, 0)" class="btn-tbl bg-success xCursor" matRipple>+</div>
-                    </div>
-                </td>
-                </tr>
-            </table>            
-        </div>    
+        <div *ngIf="!isOneTipoConsumo">            
+            <span class="fs-12 text-danger" [hidden]="isOptionRequeridosComplet">Hay opciones obligatorias por marcar</span>
+            <div class="mb-2" id="tpc_content" [attr.disabled]="!isOptionRequeridosComplet ? true : null">
+                <table width="100%" class="tb-tpc">
+                    <tr *ngFor="let tp of objItemTipoConsumoSelected">
+                    <td>{{tp.descripcion}}</td>
+                    <td>
+                        <div class="d-flex float-right">
+                            <div [hidden]="tp.cantidad_seleccionada === 0" [ngClass]="{'bounceIn': tp.animar_cantidad}" class="fs-19 pr-2 animated">{{tp.cantidad_seleccionada}}</div>
+                            <div appDebounceClick (debounceClick)="addItemToDialogItem(tp, 1)" (debounceWait)="isWaitBtnMenos" class="btn-tbl bg-danger xCursor" matRipple><i class="fa fa-arrow-right" *ngIf="isWaitBtnMenos"></i>  -</div>
+                            <div appDebounceClick (debounceClick)="addItemToDialogItem(tp, 0)" class="btn-tbl bg-success xCursor" matRipple>+</div>
+                        </div>
+                    </td>
+                    </tr>
+                </table>            
+            </div>    
+        </div>
 
 
     </div>
 
-    <div class="i-footer">
-        <button mat-flat-button color="primary" (click)="cerrarDlg()">Listo, continuar</button>
+    <div class="i-footer d-flex justify-content-between">
+        <ng-container *ngIf="isOneTipoConsumo; else elseTemplate">
+            <div>
+                <span class="fs-12 text-danger" [hidden]="isOptionRequeridosComplet">Hay opciones obligatorias por marcar</span>
+                <div id="tpc_content" [attr.disabled]="!isOptionRequeridosComplet ? true : null">
+                    <table width="100%" class="tb-tpc-one">
+                        <tr *ngFor="let tp of objItemTipoConsumoSelected">                    
+                        <td>
+                            <div class="d-flex">
+                                <div appDebounceClick (debounceClick)="addItemToDialogItem(tp, 1)" (debounceWait)="isWaitBtnMenos" class="btn-tbl bg-danger xCursor" matRipple><i class="fa fa-arrow-right" *ngIf="isWaitBtnMenos"></i>  -</div>
+                                <div appDebounceClick (debounceClick)="addItemToDialogItem(tp, 0)" class="btn-tbl bg-success xCursor" matRipple>+</div>
+                                <div [ngClass]="{'bounceIn': tp.animar_cantidad}" class="fs-23 pl-2 animated">
+                                    <ng-container *ngIf="tp.cantidad_seleccionada === 0; else elseCantidad">
+                                        <span class="fs-12 fw-100">Cantidad</span>
+                                    </ng-container>
+                                    <ng-template #elseCantidad>                                        
+                                        {{tp.cantidad_seleccionada}}
+                                    </ng-template>                                    
+                                </div>
+                                <!-- <div [hidden]="tp.cantidad_seleccionada === 0" [ngClass]="{'bounceIn': tp.animar_cantidad}" class="fs-19 pr-2 animated">{{tp.cantidad_seleccionada}}</div> -->
+                            </div>
+                        </td>
+                        </tr>
+                    </table>            
+                </div>
+            </div>
+        </ng-container>
+        <ng-template #elseTemplate>                    
+            <button mat-flat-button color="primary" (click)="cerrarDlg()">Listo, continuar</button>
+        </ng-template>
+        
         <div class="i-precio">S/. {{precioProducto | number:'0.2'}}</div>
     </div>
 </div>

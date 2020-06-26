@@ -11,6 +11,11 @@ import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimient
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
+import { Observable } from 'rxjs/internal/Observable';
+import { startWith } from 'rxjs/internal/operators/startWith';
+import { map } from 'rxjs/internal/operators/map';
+import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
+import { DialogTiempoEntregaComponent } from '../dialog-tiempo-entrega/dialog-tiempo-entrega.component';
 // import { MapsAPILoader } from '@agm/core';
 
 @Component({
@@ -25,6 +30,7 @@ export class DatosDeliveryComponent implements OnInit {
 
   _listSubtotalesTmp: any;
   _listSubtotales: any;
+  isDataFromDNI = false; // si utilizo el dni para registrar
 
   private isValid = false;
 
@@ -43,7 +49,14 @@ export class DatosDeliveryComponent implements OnInit {
   isRecojoLocalCheked = false;
   isAceptaRecojoLocal = true;
 
+  dataListClientes: any = [];
+  filteredOptions: Observable<string[]>;
+  myControl = new FormControl();
+  clienteSelectBusqueda: any;
+
   infoEstablecimiento: DeliveryEstablecimiento;
+  tiempoEntregaSelected: TiempoEntregaModel;
+  rippleColor = 'rgb(255,238,88, 0.3)';
 
   // latitude: number;
   // longitude: number;
@@ -72,7 +85,8 @@ export class DatosDeliveryComponent implements OnInit {
     pasoRecoger: false,
     buscarRepartidor: true,
     isFromComercio: 1, // el pedido esta yendo desde el comercio,
-    costoTotalDelivery: 0
+    costoTotalDelivery: 0,
+    tiempoEntregaProgamado: {}
   };
 
   dirEstablecimiento: DeliveryEstablecimiento;
@@ -86,7 +100,8 @@ export class DatosDeliveryComponent implements OnInit {
     private miPedidoService: MipedidoService,
     private dialog: MatDialog,
     private establecimientoService: EstablecimientoService,
-    private calcDistanceService: CalcDistanciaService
+    private calcDistanceService: CalcDistanciaService,
+    private dialogTipoComprobante: MatDialog,
     // private mapsAPILoader: MapsAPILoader,
     // private ngZone: NgZone,
     ) { }
@@ -94,10 +109,21 @@ export class DatosDeliveryComponent implements OnInit {
   ngOnInit() {
 
     this.direccionCliente = {
-      titulo: 'Seleccione una direccion',
+      titulo: 'Seleccione una direccion *',
       direccion: '',
       referencia: ''
     };
+
+    this.tiempoEntregaSelected = new TiempoEntregaModel();
+    // if ( this.infoTokenService.infoUsToken.tiempoEntrega ) {
+    //   this.tiempoEntregaSelected = this.infoTokenService.infoUsToken.tiempoEntrega;
+    //   // return;
+    // } else {
+    //   // this.isTiempoEntregaValid = false;
+    // }
+    this.tiempoEntregaSelected.descripcion = 'Programa la entrega';
+    this.tiempoEntregaSelected.value = '';
+    this.tiempoEntregaSelected.modificado = false;
 
     this.infoTokenService.setIniMetodoPago('Efectivo');
     this.metodoPagoSelected = this.infoTokenService.infoUsToken.metodoPago;
@@ -109,12 +135,12 @@ export class DatosDeliveryComponent implements OnInit {
     this.isAceptaRecojoLocal = this.establecimientoService.establecimiento.pwa_delivery_habilitar_recojo_local === 1;
 
     this.myForm = this.fb.group({
-      idcliente: new FormControl('', [Validators.required]),
-      dni: new FormControl('', [Validators.required]),
+      idcliente: new FormControl(''),
+      dni: new FormControl(''),
       nombre: new FormControl('', [Validators.required]),
       f_nac: new FormControl(''),
       // direccion: new FormControl('', [Validators.required]),
-      telefono: new FormControl('', [Validators.required]),
+      telefono: new FormControl(''),
       // paga_con: new FormControl('', [Validators.required]),
       dato_adicional: new FormControl('')
     });
@@ -137,6 +163,16 @@ export class DatosDeliveryComponent implements OnInit {
 
     this.infoEstablecimiento = this.establecimientoService.get();
 
+    // traer todos los clientes
+    this.getAllClientes();
+
+
+    this.filteredOptions = this.myControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filter(value))
+      );
+
   }
 
   setearData() {
@@ -155,6 +191,7 @@ export class DatosDeliveryComponent implements OnInit {
       this.resData.metodoPago = this.metodoPagoSelected;
       this.resData.tipoComprobante = this.infoTokenService.getInfoUs().tipoComprobante;
       this.resData.direccionEnvioSelected = this.direccionCliente;
+      this.resData.tiempoEntregaProgamado = this.tiempoEntregaSelected;
       this.resData.establecimiento = this.infoEstablecimiento;
       this.resData.referencia = this.direccionCliente.referencia;
       this.resData.direccion = this.direccionCliente.direccion;
@@ -162,7 +199,7 @@ export class DatosDeliveryComponent implements OnInit {
       this.resData.propina = this.infoTokenService.getInfoUs().propina;
       this.resData.pasoRecoger = this.isRecojoLocalCheked;
       this.resData.buscarRepartidor = this.establecimientoService.establecimiento.pwa_delivery_servicio_propio === 0;
-      this.resData.costoTotalDelivery = this.infoEstablecimiento.costo_total_servicio_delivery;
+      this.resData.costoTotalDelivery = this.infoEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
       // this.resData.establecimiento = this.infoEstablecimiento;
 
       // console.log('this.resData emit', this.resData);
@@ -186,6 +223,7 @@ export class DatosDeliveryComponent implements OnInit {
     this.loadConsulta = true;
     this.isNuevoCliente = false;
     this.limpiarForm(datos.documento);
+    this.isDataFromDNI = true;
 
     // primero consultamos en la bd
     this.crudService.postFree(datos, 'service', 'consulta-dni-ruc', true)
@@ -196,6 +234,9 @@ export class DatosDeliveryComponent implements OnInit {
         this.myForm.controls.idcliente.patchValue(_datosBd[0].idcliente);
         this.myForm.controls.nombre.patchValue(_datosBd[0].nombres);
         this.myForm.controls.f_nac.patchValue(_datosBd[0].f_nac);
+
+        this.myControl.patchValue(_datosBd[0].nombres);
+
         // this.myForm.controls.direccion.patchValue(_datosBd[0].direccion);
         this.myForm.controls.telefono.patchValue(_datosBd[0].telefono);
         this.loadConsulta = false;
@@ -206,19 +247,22 @@ export class DatosDeliveryComponent implements OnInit {
         .subscribe((_res: any) => {
           if (_res.success) {
             const _datos = _res.data;
-            const _nombre = `${_datos.names} ${_datos.first_name} ${_datos.last_name}`;
+            const _nombre = `${_datos.name} ${_datos.first_name} ${_datos.last_name}`;
             this.myForm.controls.idcliente.patchValue(0);
             this.myForm.controls.nombre.patchValue(_nombre);
             this.myForm.controls.f_nac.patchValue(_datos.date_of_birthday);
             this.isNuevoCliente = true;
           } else {
             this.limpiarForm(datos.documento);
+            this.isDataFromDNI = false;
           }
           this.loadConsulta = false;
           this.resData.idcliente = '0';
         });
 
       }
+
+      // this.isDataFromDNI = true;
     });
 
   }
@@ -231,7 +275,7 @@ export class DatosDeliveryComponent implements OnInit {
 
   openDialogDireccion() {
     // const dialogConfig = new MatDialogConfig();
-
+    this.resData.idcliente =  this.resData.idcliente !== '' ? this.resData.idcliente : this.clienteSelectBusqueda ? this.clienteSelectBusqueda.idcliente : '';
     const dialogRef = this.dialogDireccion.open(DialogSelectDireccionComponent, {
       // panelClass: 'my-full-screen-dialog',
       panelClass: ['my-dialog-orden-detalle', 'my-dialog-scrool'],
@@ -254,11 +298,14 @@ export class DatosDeliveryComponent implements OnInit {
 
         this.calcDistanceService.calculateRoute(<DeliveryDireccionCliente>data, this.dirEstablecimiento);
 
+
         // recalcular
         setTimeout(() => {
           // console.log('this.dirEstablecimiento', this.dirEstablecimiento);
 
           this.establecimientoService.set(this.dirEstablecimiento);
+          this.infoEstablecimiento.c_servicio = this.dirEstablecimiento.c_servicio;
+          this.resData.costoTotalDelivery = this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
 
           const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
           localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
@@ -291,7 +338,14 @@ export class DatosDeliveryComponent implements OnInit {
       rowTotal.importe = _subtotal;
       this._listSubtotales.push(rowTotal);
 
+
+      // quita los requerimientos y no graba al cliente cuando viene a llevar
+      // this.myForm.controls.idcliente.setValidators(null);
+      this.myForm.controls.telefono.setValidators(null);
+
     } else {
+      // this.myForm.controls.idcliente.setValidators([Validators.required]);
+      this.myForm.controls.telefono.setValidators([Validators.required]);
       this._listSubtotales = this._listSubtotalesTmp;
     }
 
@@ -325,6 +379,65 @@ export class DatosDeliveryComponent implements OnInit {
 
   private getTotalPedido(): number {
     return this._listSubtotales[this._listSubtotales.length - 1].importe;
+  }
+
+
+  // data all clientes
+  getAllClientes() {
+    this.crudService.getAll('pedido', 'get-all-clientes', false, false, true)
+    .subscribe((res: any) => {
+      this.dataListClientes = res.data;
+      console.log(res);
+    });
+  }
+
+  private _filter(value: string): any {
+    if ( this.isDataFromDNI ) { return; }
+    if ( typeof value === 'object' ) { this.selectedClienteBusqueda(value); return; }
+    const filterValue = value.toLowerCase();
+    this.limpiarForm('');
+    return this.dataListClientes.filter(option => option.nombres.toLowerCase().includes(filterValue));
+  }
+
+  changeCliente($event: any) {
+    console.log($event);
+  }
+
+  displayFn(option?: any): string  {
+    return option ? option.nombres : '';
+    }
+
+  private selectedClienteBusqueda(cliente: any) {
+    this.clienteSelectBusqueda = cliente;
+
+    this.myForm.controls.idcliente.patchValue(cliente.idcliente);
+    this.myForm.controls.nombre.patchValue(cliente.nombres);
+    this.myForm.controls.dni.patchValue(cliente.ruc);
+    // this.myForm.controls.f_nac.patchValue(cliente.f_nac);
+    // this.myForm.controls.direccion.patchValue(_datosBd[0].direccion);
+    this.myForm.controls.telefono.patchValue(cliente.telefono);
+  }
+
+  setNombreControl(nom: string) { this.myForm.controls.nombre.patchValue(nom); }
+
+
+  openDialogTiempoEntrega(): void {
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.width = '380px';
+    _dialogConfig.disableClose = false;
+    _dialogConfig.hasBackdrop = true;
+    _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
+
+    const dialogTpC = this.dialogTipoComprobante.open(DialogTiempoEntregaComponent, _dialogConfig);
+    dialogTpC.afterClosed().subscribe((result: TiempoEntregaModel) => {
+        console.log('TiempoEntregaModel ==== ', result);
+        if ( result ) {
+          // this.infoTokenService.setTiempoEntrega(result);
+          this.tiempoEntregaSelected = result;
+          this.setearData();
+          // this.verificarMontoMinimo();
+        }
+      });
   }
 
 }

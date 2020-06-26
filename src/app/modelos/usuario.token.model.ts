@@ -2,6 +2,7 @@ import { DeliveryDireccionCliente } from './delivery.direccion.cliente.model';
 import { MetodoPagoModel } from './metodo.pago.model';
 import { TipoComprobanteModel } from './tipo.comprobante.model';
 import { PropinaModel } from './propina.model';
+import { TiempoEntregaModel } from './tiempo.entrega.model';
 
 export class UsuarioTokenModel {
     acc: string;
@@ -27,6 +28,7 @@ export class UsuarioTokenModel {
     isSoloLLevar: boolean; // si escanea qr solo para llevar
     isDelivery: boolean; // si es delivery
     direccionEnvioSelected: DeliveryDireccionCliente;
+    tiempoEntrega: TiempoEntregaModel;
     telefono: string;
     orderDelivery: string; // pedido pendiente de confirmacion
     importeDelivery: string; // importe pendiente de confirmacion

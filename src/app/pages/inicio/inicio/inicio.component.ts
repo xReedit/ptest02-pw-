@@ -3,7 +3,8 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { Router } from '@angular/router';
-import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
+// import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
+import { finalize } from 'rxjs/internal/operators/finalize';
 // import { take } from 'rxjs/internal/operators/take';
 // import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 
@@ -28,6 +29,7 @@ export class InicioComponent implements OnInit, OnDestroy {
     ) { }
 
   ngOnInit() {
+    console.log('aaa');
     this.nombreClientSocket = '';
     screen.orientation.unlock();
 
@@ -53,10 +55,17 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.verifyClientService.setIdOrg(null);
     this.verifyClientService.setIdSede(null);
     this.veryfyClient = this.verifyClientService.verifyClient()
+      // .pipe(finalize(() => localStorage.clear())) // si esta mal elimina todo
       .subscribe((res: SocketClientModel) => {
-        this.nombreClientSocket = res.usuario;
-        this.isLogin = this.verifyClientService.getIsLoginByDNI() ? true : this.verifyClientService.isLogin();
-        this.verifyClientService.setQrSuccess(false);
+        // success => {
+          // console.log('aaaaa');
+          this.nombreClientSocket = res.usuario;
+          this.isLogin = this.verifyClientService.getIsLoginByDNI() ? true : this.verifyClientService.isLogin() ? this.verifyClientService.isLogin() : res.datalogin ? true : this.verifyClientService.isLogin();
+          this.verifyClientService.setLoginOn(this.isLogin);
+          this.verifyClientService.setQrSuccess(false);
+        // },
+        // error => {
+        //   // this.router.navigate(['../']);
         // console.log('res idcliente', res);
       });
   }

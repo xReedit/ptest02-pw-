@@ -3,6 +3,7 @@
 ::ng-deep .mat-dialog-container {
     padding: 0px;
     min-width: 300px;
+    max-width: 450px !important;
     /* overflow: hidden; */
 }
 
@@ -133,6 +134,11 @@
     border-bottom: 1px dashed #e0e0e0;
   }
 
+.tb-tpc-one tr>td {
+    font-size: 12px;
+    border: none;
+  }  
+
 .btn-tbl {
   text-align: center;
   color: white;
@@ -164,7 +170,8 @@
 }
 
 .img-carta {
-    width: auto;
+    max-width: 100%;
+    /* width: auto; */
     border-radius: 3px;
     /* border: solid 1px #e0e0e0; */
     margin-bottom: 5px;

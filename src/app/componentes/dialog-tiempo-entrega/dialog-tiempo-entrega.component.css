@@ -1,0 +1,16 @@
+.div-content-dialog {
+    /* display: flex; */
+
+    align-items: center;
+    
+    height: calc(100% - 95px);
+    overflow: auto;
+
+
+}
+
+/* .xfooter-dialog {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+} */

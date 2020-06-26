@@ -19,7 +19,7 @@ export class MapaSoloComponent implements OnInit {
 
   ngOnInit() {
     this.zoom = 20;
-    console.log('origin from solo mapa', this.origin);
+    // console.log('origin from solo mapa', this.origin);
   }
 
 

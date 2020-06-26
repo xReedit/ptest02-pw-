@@ -26,6 +26,8 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   _precioProductoIni: number; // precio incio
   isObjSubItems = false; // si el item tiene subitems
 
+  isOneTipoConsumo = false; // s si solo hay un tipo de consumo sale enves del boton continuar
+
   url_img = URL_IMG_CARTA;
 
   isWaitBtnMenos = false;
@@ -47,6 +49,10 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     this.miPedidoService.setObjSeccionSeleced(data.seccion);
     this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
 
+
+    // console.log('objItemTipoConsumoSelected', this.objItemTipoConsumoSelected);
+
+    this.isOneTipoConsumo = this.objItemTipoConsumoSelected.length === 1;
     // this.miPedidoService.listenChangeCantItem();
 
   }

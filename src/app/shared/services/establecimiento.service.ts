@@ -50,4 +50,13 @@ export class EstablecimientoService {
       // console.log(res);
     });
   }
+
+  getEstableciminetosCache(): any {
+    const listEsblecimientosCache = localStorage.getItem('sys:ech');
+    return listEsblecimientosCache ? JSON.parse(atob(listEsblecimientosCache)) : [];
+  }
+
+  setEstableciminetosCache(list: any) {
+    localStorage.setItem('sys:ech', btoa(JSON.stringify(list)));
+  }
 }

@@ -34,11 +34,21 @@
 }
 
 .div-cerrado {
-    width: 100%;
+    /* width: 100%;
     background: lavenderblush;
     margin-top: -200px;
     opacity: 0.6;
-    text-align: center;    
+    text-align: center;     */
+
+    background: #fff0f5;
+    opacity: .6;
+    text-align: center;
+    top: 15px;
+    position: absolute;
+    width: 90%;
+    display: flex;
+    align-items: center;
+    height: 120px;
 
     
 }
@@ -51,9 +61,10 @@
     position: relative; */
 
     font-size: 18px;
+    font-weight: 600;
     /* font-weight: 800; */
     width: 100%;
-    top: 30%;
+    /* top: 30%; */
     position: relative;
     margin: 0;
 }

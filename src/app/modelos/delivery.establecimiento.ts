@@ -19,7 +19,9 @@ export class DeliveryEstablecimiento {
     tiempo_aprox_entrega: string;
     abre_en: string; // tiempo que falta para abrir
     hora_ini: string; // hora que abre
+    hora_fin: string;
     cerrado: number; // 0 abierto 1 cerrado,
+    dias_atienden: string;
     pwa_delivery_servicio_propio: number; // delivery / el importe minimo por pedido
     pwa_delivery_importe_min: number; // cantidad de productos en el pedido // solo para delivery
     idsede_categoria: number;
@@ -35,4 +37,5 @@ export class DeliveryEstablecimiento {
     rulesSubTotales: any;
     pwa_delivery_comercio_paga_entrega: number; // si el comercio paga el costo del delivery al repartidor
     costo_total_servicio_delivery: number; // costo del servicio de entrega si pwa_delivery_comercio_paga_entrega
+    pwa_delivery_habilitar_pedido_programado: number; // 1 acepta pedidos programados
 }

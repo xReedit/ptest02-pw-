@@ -30,6 +30,11 @@ export class VerifyAuthClientService {
     return this.auth.loggedIn;
   }
 
+// en el caso de que es trunco
+  setLoginOn(val: boolean) {
+    this.auth.loggedIn = val;
+  }
+
   setIdOrg(val: number): void {
     this.clientSocket.idorg = val;
     this.setDataClient();
@@ -119,7 +124,21 @@ export class VerifyAuthClientService {
         // this.setDataClient();
         // // console.log(this.clientSocket);
 
-        this.subjectClient.next(null);
+        if (!this.clientSocket.datalogin) {
+          this.subjectClient.next(null);
+          // this.subjectClient.complete();
+          // this.subjectClient.hasError = true;
+          // return this.subjectClient.asObservable();
+          // this.returnClientNull();
+        } else {
+          // this.clientSocket.datalogin = res;
+          // console.log(this.clientSocket);
+          this.setDataClient();
+
+          // verifica y registra el cliente en la bd
+          this.registerCliente();
+        }
+
       } else {
 
         this.clientSocket.datalogin = res;
@@ -138,8 +157,13 @@ export class VerifyAuthClientService {
       console.log(error);
     }, () => { console.log('complete'); });
 
+    // this.subjectClient.next(this.clientSocket);
     return this.subjectClient.asObservable();
 
+  }
+
+  private returnClientNull() {
+    this.subjectClient.next(null);
   }
 
   private registerCliente(): void {

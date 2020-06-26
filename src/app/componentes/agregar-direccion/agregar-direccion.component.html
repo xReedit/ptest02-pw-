@@ -17,7 +17,7 @@
                     <input matInput class="input-headline" placeholder="Direccion" formControlName="direccion" [(ngModel)]="dataCliente.direccion" (keydown.enter)="$event.preventDefault()" (keyup)="checkDireccion(search.value)" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" #search id="search">
                 </mat-form-field>            
                 <mat-form-field class="w-100">
-                    <input matInput class="input-headline" placeholder="Referencia / piso / oficina" formControlName="referencia" [(ngModel)]="dataCliente.referencia">
+                    <input matInput class="input-headline" maxlength="150" placeholder="Referencia / piso / oficina" formControlName="referencia" [(ngModel)]="dataCliente.referencia">
                 </mat-form-field>
 
                 <div hidden="true">
@@ -31,19 +31,26 @@
             
 
             <!-- mapa -->
-                <div class="border">
+                <div class="border" id="map_canvas">
                     <agm-map 
                         [latitude]="latitude" 
                         [longitude]="longitude"
-                        [zoom]="zoom" >
-                        <agm-marker 
+                        [zoom]="zoom"                        
+                        (centerChange)="centerChange($event)"
+                        (mapClick)="clickmap()"
+                        (idle)="idleMap()"
+                        >
+                        <!-- <agm-marker                             
                             [latitude]="latitude" 
-                            [longitude]="longitude"
+                            [longitude]="longitude"                            
                             [markerDraggable]="true"
                             (dragEnd)="markerDragEnd($event)"
                             >
-                        </agm-marker>
-                    </agm-map>                
+                        </agm-marker> -->
+                        <!-- [markerDraggable]="true"
+                            (dragEnd)="markerDragEnd($event)" -->
+                    </agm-map>           
+                    <div class="centerMarker"></div>     
                 </div>
 
             </div>

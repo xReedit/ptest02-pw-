@@ -1,6 +1,6 @@
 <div>
   <div class="text-center">
-    <p class="fw-100 fs-20">Datos del Delivery</p>
+    <p class="fw-100 fs-20">Datos del Delivery</p>    
   </div>
 
   
@@ -9,7 +9,7 @@
       <div [hidden]="!isAceptaRecojoLocal" matRipple class="border-bottom m-0 text-left">
         <mat-checkbox labelPosition="before" [(ngModel)]="isRecojoLocalCheked" (change)="recalcularTotales()">
             <i class="fa fa-home pr-2" aria-hidden="true"></i> 
-            <span class="mr-1" [ngClass]="{'fw-600': isRecojoLocalCheked}">Cliente pasa a recoger en el Local</span>            
+            <span class="mr-1" [ngClass]="{'fw-600': isRecojoLocalCheked}">Cliente pasa a recoger en el Local</span>      
         </mat-checkbox>
     </div>
 
@@ -18,9 +18,13 @@
     <div class="w-100 pt-2">      
 
       <!-- <i title="Cerrar Sesion" class="fa fa-search" aria-hidden="true"></i> -->
+      <!-- dni para la facturacion -->    
+      <div class="text-left">
+        <span class="text-info fs-11">(Opcional) Ingrese DNI del cliente para llevar un registro. Ó busque por el nombre.</span>
+      </div>
       <mat-form-field class="w-100">
-        <input matInput placeholder="DNI" type="number" formControlName="dni" (keyup.enter)="buscarDNI()" required>
-        <button mat-icon-button matSuffix (click)="buscarDNI()">            
+        <input matInput placeholder="DNI" type="text" formControlName="dni" (keyup.enter)="buscarDNI()">
+        <button mat-icon-button matSuffix (click)="buscarDNI()">
             <i class="fa fa-search" aria-hidden="true"></i>
         </button>
       </mat-form-field>
@@ -28,11 +32,39 @@
         <mat-progress-bar style="bottom: 20px;" [hidden]="!loadConsulta" mode="indeterminate"></mat-progress-bar>
       </div>
 
-      <mat-form-field class="w-100">
-        <input matInput placeholder="Nombre y apellidos" formControlName="nombre" required>
+      <mat-form-field class="w-100" *ngIf="isDataFromDNI">
+        <input matInput placeholder="Nombre y apellidos" formControlName="nombre" readonly>
       </mat-form-field>
 
+
+
+      <mat-form-field class="w-100" *ngIf="!isDataFromDNI">
+        <!-- <mat-form-field class="example-full-width"> -->
+          <input type="text"
+                 placeholder="Nombre y apellidos del cliente"
+                 aria-label="Cliene"
+                 matInput
+                 [formControl]="myControl"
+                 [matAutocomplete]="auto" (keyup)="setNombreControl(valNom.value)" #valNom>
+          <mat-autocomplete #auto="matAutocomplete" (optionSelected) = "changeCliente($event)" [displayWith]="displayFn">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+              <span class="fs-12"> {{ option.nombres }} </span>
+            </mat-option>
+          </mat-autocomplete>
+        <!-- </mat-form-field> -->
+
+    </mat-form-field>
+
+
+    <!-- telefono -->
+    <mat-form-field class="w-100" *ngIf="!isRecojoLocalCheked" >
+      <input matInput placeholder="Telefono" formControlName="telefono" [required]="!isRecojoLocalCheked">
+    </mat-form-field>
+    <!-- telefono -->
+   
+
       <!-- <span class="text-info fs-13 fw-600">Es necesario seleccionar una opcion de la lista</span>
+
       <button (click)="openDialogDireccion()">seleccionar direccion</button>
       <mat-form-field class="w-100">
         <input matInput placeholder="Direccion" formControlName="direccion"         
@@ -41,33 +73,49 @@
 
 
       <!-- direccion -->
-      <div *ngIf="!isRecojoLocalCheked" class="border-bottom m-0 pl-0 pr-3 pt-3 pb-3 text-left" matRipple [matRippleColor]="rippleColor" (click)="openDialogDireccion()">
-        <span class="fw-100 fs-12 text-secondary">Direccion de entrega:</span>
-        <p class="m-0 fs-14">
-            <strong>{{direccionCliente.titulo}}</strong> <br> {{direccionCliente.direccion}}
-        </p>   
+      <div *ngIf="!isRecojoLocalCheked" class="border-bottom m-0 pl-0 pr-2 pt-3 pb-3 text-left d-flex justify-content-between align-items-center" matRipple [matRippleColor]="rippleColor" (click)="openDialogDireccion()">
+        <div>
+          <span class="fw-100 fs-12 text-secondary">Direccion de entrega:</span>
+          <p class="m-0 fs-14">
+              <strong [ngClass]="{'text-danger': direccionCliente.direccion === ''}">{{direccionCliente.titulo}}</strong> <br> {{direccionCliente.direccion}}
+          </p>   
+        </div>
+
+        <div>
+          <i class="fa fa-caret-down" aria-hidden="true"></i>
+        </div>
       </div>
+
+       <!-- tiempo de entrega -->
+    <div class="border-bottom m-0 pl-0 pr-2 pt-3 pb-3 d-flex justify-content-between align-items-center" matRipple [matRippleColor]="rippleColor" (click)="openDialogTiempoEntrega()">
+        <!-- <span class="fw-100 fs-12 text-secondary">Hora de entrega:</span> -->            
+        <div>            
+            <p class="m-0"><span class="fs-14"> {{ tiempoEntregaSelected.descripcion }}: <strong>{{tiempoEntregaSelected.value | titlecase}} </strong> </span></p>
+        </div>
+
+        <div>
+            <i class="fa fa-caret-down" aria-hidden="true"></i>
+        </div>
+
+    </div>
+    <!-- tiempo de entrega -->
 
 
 
       <!-- metodo de pago -->
-      <div *ngIf="!isRecojoLocalCheked" class="border-bottom m-0 pl-0 pr-3 pt-3 pb-3 d-flex justify-content-between" matRipple [matRippleColor]="rippleColor" (click)="openDialogMetodoPago()">
+      <div *ngIf="!isRecojoLocalCheked" class="border-bottom m-0 pl-0 pr-2 pt-3 pb-4 d-flex justify-content-between" matRipple [matRippleColor]="rippleColor" (click)="openDialogMetodoPago()">
         <p class="m-0 fs-14">Metodo de pago: <strong>{{metodoPagoSelected.descripcion}}</strong></p>
         <i class="fa fa-caret-down" aria-hidden="true"></i>
       </div>
-    <!-- metodo de pago -->
-
-      <mat-form-field class="w-100">
-        <input matInput placeholder="Telefono" formControlName="telefono" required>
-      </mat-form-field>
+    <!-- metodo de pago -->      
 
       <!-- <mat-form-field class="w-100">
         <input type="number" matInput placeholder="Paga con" formControlName="paga_con" required>
       </mat-form-field> -->
 
-      <mat-form-field class="w-100">
+      <!-- <mat-form-field class="w-100">
         <input matInput placeholder="Dato Adicional" formControlName="dato_adicional">
-      </mat-form-field>
+      </mat-form-field> -->
     </div>
   </form>
 
@@ -79,8 +127,8 @@
             <ul class="w-100 ul-total">
                 <li class="d-flex div-plr li-item" *ngFor="let item of _listSubtotales" matRipple
                 [matRippleColor]="rippleColor">
-                <div class="w-100">{{item.descripcion | titlecase}}</div>
-                <div>{{item.importe | number:'0.2' }}</div>
+                <div class="w-100 text-left">{{item.descripcion | titlecase}}</div>
+                <div class="text-right">{{item.importe | number:'0.2' }}</div>
                 </li>
             </ul>
         </div>        

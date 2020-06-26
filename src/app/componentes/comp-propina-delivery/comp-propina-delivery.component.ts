@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { PropinaModel } from 'src/app/modelos/propina.model';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 
@@ -14,6 +14,8 @@ export class CompPropinaDeliveryComponent implements OnInit {
   arrTotales: any;
 
   _listSubtotales: any;
+
+  @Output() selectedPropina = new EventEmitter<PropinaModel>();
 
   @Input()
   set listSubtotales(val: any) {
@@ -37,11 +39,16 @@ export class CompPropinaDeliveryComponent implements OnInit {
     this.listPropina.push(<PropinaModel>{'idpropina': 4, 'value': 3 , 'descripcion': 'S/. 3', 'checked': false});
     this.listPropina.push(<PropinaModel>{'idpropina': 5, 'value': 5 , 'descripcion': 'S/. 5', 'checked': false});
 
+
+    this.selectedPropina.emit(this.propinaSelected);
   }
 
   itemCheck(item: PropinaModel) {
     this.listPropina.map(x => x.checked = false);
     item.checked = true;
+
+    this.propinaSelected = item;
+    this.infoTokenService.setPropina(item);
 
     // agregar a subtotales
 
@@ -73,6 +80,7 @@ export class CompPropinaDeliveryComponent implements OnInit {
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._listSubtotales)));
 
     this.infoTokenService.setPropina(item);
+    this.selectedPropina.emit(item);
   }
 
   // optienen el importe total despues de agregrar la propina

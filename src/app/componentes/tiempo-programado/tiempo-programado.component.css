@@ -1,0 +1,12 @@
+.div-list {
+    max-height: 80vh !important;
+    overflow: auto;
+}
+
+.tfs-11 {
+    font-size: 12px !important;
+}
+
+.mat-list-option {
+    height: 20px;
+  }

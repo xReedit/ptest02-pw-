@@ -48,6 +48,11 @@ overflow: auto;
   padding: 10px;
 }
 
+.list-option-time.mat-list-option {
+  height: 25px !important;
+  border-bottom: 1ps solid lightgray;
+}
+
 .text-puntos {
   max-width: 100%;
   white-space: nowrap;

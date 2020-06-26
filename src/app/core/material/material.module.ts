@@ -18,6 +18,10 @@ import { MatCardModule } from '@angular/material/card';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatSelectModule} from '@angular/material/select';
+import {MatListModule} from '@angular/material/list';
+
 // import {MatSidenavModule} from '@angular/material/sidenav';
 // import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -41,7 +45,10 @@ import {MatSidenavModule} from '@angular/material/sidenav';
     MatCardModule,
     MatRadioModule,
     MatTooltipModule,
-    MatSidenavModule
+    MatSidenavModule,
+    MatAutocompleteModule,
+    MatSelectModule,
+    MatListModule
     // MatTooltipModule
   ],
   exports: [
@@ -60,7 +67,10 @@ import {MatSidenavModule} from '@angular/material/sidenav';
     MatCardModule,
     MatRadioModule,
     MatTooltipModule,
-    MatSidenavModule
+    MatSidenavModule,
+    MatAutocompleteModule,
+    MatSelectModule,
+    MatListModule
     // MatTooltipModule
   ]
 })

@@ -154,7 +154,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     this.crudService.postFree(dataClient, 'transaction', 'get-email-client', false).subscribe((res: any) => {
       this.dataClientePago.email = res.data[0].correo ? res.data[0].correo : '';
 
-      // this.dataClientePago.email = 'integraciones.visanet@necomplus.com'; // desarrollo
+      this.dataClientePago.email = 'integraciones.visanet@necomplus.com'; // desarrollo
       // // this.dataClientePago.email = 'review@cybersource.com';
       // this.dataClientePago.isSaveEmail = false;
 
@@ -304,11 +304,10 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
             const _dataSendPedido = JSON.parse(atob(this.infoToken.orderDelivery));
             // _dataSendPedido.sokcetId = this.infoToken.socketId; // para que me notificque el idpedido
             this.socketService.emit('nuevoPedido', _dataSendPedido);
+            this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago, true);
 
             setTimeout(() => {
               this.isLoaderTransaction = false;
-              this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago, true);
-
               // marcador si actualiza la pagina cuando ya pago
               this.infoTokenService.setIsPagoSuccess(true);
               return;

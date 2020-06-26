@@ -36,7 +36,8 @@
         </mat-tab>
         <mat-tab label="MiPedido" [disabled]="!isScreenIsMobile">
           <ng-template matTabLabel>
-              <span>Mi Orden</span>              
+              <span class="fs-11">Mi Pedido </span>
+              <i class="fa fa-shopping-basket pl-2" aria-hidden="true"></i>
               
               <div *ngIf="countTotalItems > 0" class="countItem countTotal animated fadeInUp d-flex">
                 {{countTotalItems | number: '2.'}}

@@ -166,7 +166,7 @@ export class MipedidoService {
       }
 
       // this.laCartaObjSource.next(this.objCarta);
-      // console.log('objCartaCarta', this.objCarta);
+      console.log('objCartaCarta', this.objCarta);
     // }, 1000);
   }
 

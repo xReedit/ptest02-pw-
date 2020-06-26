@@ -2,6 +2,9 @@
     <mat-card>
     <div class="content-img-comercio">
         <img class="img-comercio" src="{{imgComercio}}" alt="">
+        <div class="div-cerrado" *ngIf="isCerrado && !isComercioAceptaPedidoProgramado">
+            <p>Cerrado Ahora</p>                    
+        </div>
     </div>
     <div >
         <div class="div-info-comercio">
@@ -24,13 +27,13 @@
                     <!-- <div>5.0</div>             -->
 
             </ng-container>
-            <ng-template #elseTemplate>
-                
-                <div class="div-cerrado">
-                    <p>Cerrado Ahora</p>
-                    <!-- <p class="fs-15 fw-600">Abre: {{itemEstablecimiento.hora_ini}} {{amPm}}</p> -->
+            <ng-template #elseTemplate>                            
+                <div *ngIf="isComercioAceptaPedidoProgramado">
+                    <span class="">
+                        <i class="fa fa-calendar"></i>
+                        Pídelo para mañana desde <strong>las {{ itemEstablecimiento.hora_ini }} </strong>
+                    </span>
                 </div>
-
             </ng-template>
             
             

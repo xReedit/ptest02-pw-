@@ -22,7 +22,6 @@ export class CalcDistanciaService {
 
   calculateRoute(dirCliente: DeliveryDireccionCliente, dirEstablecimiento: DeliveryEstablecimiento): any {
     let c_servicio = 0;
-
     // si tiene repartidores propios y no esta suscrito al servicio de calcular distancia
     if ( dirEstablecimiento.pwa_delivery_servicio_propio === 1 && dirEstablecimiento.pwa_delivery_hablitar_calc_costo_servicio === 0) {
       c_servicio = 0;
@@ -36,6 +35,8 @@ export class CalcDistanciaService {
       this.origin = {
         lat: dirCliente.latitude, lng: dirCliente.longitude
       };
+
+      // console.log('this.origin', this.origin);
 
       dirEstablecimiento.latitude = typeof dirEstablecimiento.latitude === 'string' ? parseFloat(dirEstablecimiento.latitude) : dirEstablecimiento.latitude;
       dirEstablecimiento.longitude = typeof dirEstablecimiento.longitude === 'string' ? parseFloat(dirEstablecimiento.longitude) : dirEstablecimiento.longitude;
@@ -59,8 +60,7 @@ export class CalcDistanciaService {
 
           km = parseInt((km / 1000).toFixed(), 0);
 
-
-          if ( km > 1 ) {
+          if ( km > 2 ) {
             c_servicio = (( km - 1 ) * c_km) + c_servicio;
             dirEstablecimiento.c_servicio = c_servicio;
             // return c_servicio;

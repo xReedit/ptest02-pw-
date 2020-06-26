@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLinkActive, ActivatedRoute } from '@angular/router';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 // import { Auth0Service } from 'src/app/shared/services/auth0.service';
 // import { Subscription } from 'rxjs/internal/Subscription';
@@ -11,6 +11,9 @@ import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-cli
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogUbicacionComponent } from 'src/app/componentes/dialog-ubicacion/dialog-ubicacion.component';
+import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { IfStmt } from '@angular/compiler';
 
 // import {QrScannerComponent} from 'angular2-qrscanner';
 
@@ -36,22 +39,37 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   isCameraReady = false;
   isSedeRequiereGPS = false; // si sede ruquiere gps
   isSoloLLevar = false; // si escanea qr solo para llevar
+  isDelivery = false; // si escanea qr solo para llevar
+
 
   // hasPermissionPosition = false;
 
   private isDemo = false;
   private divicePos: any;
+  private _comercioUrl = '';
 
 
   // private veryfyClient: Subscription = null;
 
   constructor(
     private verifyClientService: VerifyAuthClientService,
+    // private infoTokenService: InfoTockenService,
     private crudService: CrudHttpService,
     private dialog: MatDialog,
-    private router: Router ) { }
+    private establecimientoService: EstablecimientoService,
+    private router: Router,
+    private routerActive: ActivatedRoute
+    ) { }
 
   ngOnInit() {
+
+    this._comercioUrl = this.routerActive.snapshot.queryParamMap.get('co');
+
+    // lee el url si es directo
+    if (this._comercioUrl) {
+      this.codQR = this._comercioUrl;
+      this.leerDatosQR();
+    }
 
     // const qrScanner = new QrScanner(this.videoplayer, (result: any) => // console.log('decoded qr code:', result));
 
@@ -177,9 +195,11 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     const dataQr = _codQr[1].split('|');
     const m = dataQr[0];
     const s = dataQr[2];
+    const o = dataQr[3];
 
     // -1 = solo llevar // activa ubicacion
     this.isSoloLLevar =  m === '-1' ? true : false;
+    this.isDelivery =  m === '-2' ? true : false;
 
     const dataSend = {
       m: m,
@@ -195,14 +215,25 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
       .subscribe((res: any) => {
         this.isSedeRequiereGPS = res.data[0].pwa_requiere_gps === '0' ? false : true;
         this.isSedeRequiereGPS = this.isSoloLLevar ? true : this.isSedeRequiereGPS;
+        this.isSedeRequiereGPS = this.isDelivery ? false : this.isSedeRequiereGPS;
 
 
         // setear idsede en clienteSOcket
-        if ( !this.isSoloLLevar ) { this.verifyClientService.setMesa(m); }
         this.verifyClientService.getDataClient();
+        if ( !this.isSoloLLevar ) { this.verifyClientService.setMesa(m); }
         this.verifyClientService.setIdSede(s);
         this.verifyClientService.setQrSuccess(true);
         this.verifyClientService.setIsSoloLLevar(this.isSoloLLevar);
+        this.verifyClientService.setIsDelivery(this.isDelivery);
+
+        if ( this.isDelivery ) {
+          // this.infoTokenService.converToJSON();
+          // this.infoTokenService.infoUsToken.isDelivery = true;
+          // this.infoTokenService.set();
+          this.verifyClientService.setIdOrg(o);
+          this.getInfoEstablecimiento(s);
+
+        }
         // this.verifyClientService.setDataClient();
 
         const position = dataQr[1].split(':');
@@ -217,6 +248,18 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
           this.resValidQR(isPositionCorrect);
         }
 
+    });
+  }
+
+  // al scanear codigo qr DELIVERY para ir directo al establecimiento
+  private getInfoEstablecimiento(_id) {
+    const _dataEstablecimiento = {
+      idsede: _id
+    };
+    this.crudService.postFree(_dataEstablecimiento, 'delivery', 'get-establecimientos', false)
+    .subscribe( (res: any) => {
+      const _e = res.data[0];
+      this.establecimientoService.set(_e);
     });
   }
 

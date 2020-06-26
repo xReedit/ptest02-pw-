@@ -37,6 +37,7 @@ export class CategoriasComponent implements OnInit {
   listSubCatFiltros: any = []; // sub categoria para filtrar
 
   private idcategoria_selected: any;
+  private isMismaDireccionSelectd = false; // si es la misma direccion el calculo de distancia y costo de servicio lo trae de cache
   // private veryfyClient: Subscription = null;
 
   constructor(
@@ -87,6 +88,10 @@ export class CategoriasComponent implements OnInit {
         this.codigo_postal_actual = res.codigo || '0';
         this.isNullselectedDireccion = false;
         this.direccionCliente = res;
+
+        // para el calculo distancia
+        this.isMismaDireccionSelectd = this.infoClient.direccionEnvioSelected ? this.infoClient.direccionEnvioSelected.idcliente_pwa_direccion === this.direccionCliente.idcliente_pwa_direccion : false;
+
         this.infoClient.direccionEnvioSelected = this.direccionCliente;
         this.loadEstablecimientos();
       } else {
@@ -125,31 +130,6 @@ export class CategoriasComponent implements OnInit {
 
           this.setCalcDistanciaComercio();
 
-          // calcular la distancia respetando la cantidad de consultas limites "OVER_QUERY_LIMIT" google maps
-          // const lentArray = this.listEstablecimientos.length;
-          // let countItem = 0;
-          // // while (lentArray > countItem) {
-          //   setTimeout(() => {
-          //     console.log(countItem);
-          //     // countItem++;
-          //     if (countItem < lentArray) { this.setCalcDistanciaComercio(countItem); countItem++; }
-          //   }, 200);
-
-          // for (let index = 0; index < lentArray; index++) {
-          //   await setTimeout(() => {
-          //     this.setCalcDistanciaComercio(index);
-          //   }, 200);
-          // }
-          // }
-
-          // console.log('this.listEstablecimientos', this.listEstablecimientos);
-        // }, 500);
-        // console.log(this.listEstablecimientos);
-
-        // setTimeout(() => {
-        //   this.ngxService.stop(); // stop foreground spinner of the master loader with 'default' taskId
-        // }, 500);
-
         setTimeout(() => {
           this.loaderPage = false;
         }, 500);
@@ -157,33 +137,41 @@ export class CategoriasComponent implements OnInit {
   }
 
   private async setCalcDistanciaComercio() {
+    const listEsblecimientosCache = this.isMismaDireccionSelectd ? this.establecimientoService.getEstableciminetosCache() : [];
+    const lentEstCache = listEsblecimientosCache.length;
     const lentArray = this.listEstablecimientos.length;
-    // let index = 0;
-    // this.sleep(500).then(() => {
-    //   console.log(index);
-    //     const _dirEstablecimiento = <DeliveryEstablecimiento>this.listEstablecimientos[index];
-    //     // if ( _dirEstablecimiento.cerrado === 0 ) {
-    //       this.calcDistanceService.calculateRoute(this.direccionCliente, _dirEstablecimiento);
-    //       index++;
-    //       return true;
-    //     // }
-    // }
+    let _dirEstablecimiento: any;
+    let yaCalculado = false;
 
-    let _sleep = 600;
+    let _sleep = 0;
     for (let index = 0; index < lentArray; index++) {
-      // await setTimeout(() => {
-      _sleep = 0;
-        const _dirEstablecimiento = <DeliveryEstablecimiento>this.listEstablecimientos[index];
-        // _dirEstablecimiento.visible = true;
-        if ( _dirEstablecimiento.cerrado === 0 ) {
-          // console.log(index);
+        _dirEstablecimiento = <DeliveryEstablecimiento>this.listEstablecimientos[index];
+
+        // si la direccion es la misma
+        if ( this.isMismaDireccionSelectd ) {
+          // buscamos en cache
+          if ( lentEstCache > 0 ) {
+            const _estCache = <DeliveryEstablecimiento>listEsblecimientosCache.filter(e => e.idsede === _dirEstablecimiento.idsede)[0];
+            if ( _estCache ) {
+              _dirEstablecimiento.c_servicio = _estCache.c_servicio;
+              _dirEstablecimiento.distancia_km = _estCache.distancia_km;
+              yaCalculado  = true;
+            }
+          }
+
+        }
+
+        if ( _dirEstablecimiento.cerrado === 0 && !yaCalculado) {
+          // console.log('calc distance');
           _sleep = 600;
           this.calcDistanceService.calculateRoute(this.direccionCliente, _dirEstablecimiento);
-          // return true;
+          listEsblecimientosCache.push(_dirEstablecimiento);
           await this.sleep(600);
         }
-      // }, 1000);
     }
+
+    // guardar lista en cache
+    this.establecimientoService.setEstableciminetosCache(listEsblecimientosCache);
   }
 
   sleep(ms: number) {

@@ -1,8 +1,22 @@
 <div class="container-scan animated fadeIn text-center">
-    <div>
-        <div class="text-center">            
-            <p>Obteniendo datos ...</p>
-            <mat-progress-bar mode="indeterminate"></mat-progress-bar>            
+    <ng-container *ngIf="showErrornweVersion; else elseTemplate">
+
+        <!-- error en el logueo - manda loginOut -->
+        <div>
+            <div class="text-center">            
+                <p class="fw-600">Agregamos nuevas caracteristicas, para poder verlas por favor vuelva a ingresar.</p>
+                <button mat-stroked-button (click)="loginOut()">Listo.</button>        
+            </div>
         </div>
-    </div>
+        
+    </ng-container>
+    <ng-template #elseTemplate>        
+        <div>
+            <div class="text-center">            
+                <p>Obteniendo datos ...</p>
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>            
+            </div>
+        </div>
+    </ng-template>
+    
 </div>

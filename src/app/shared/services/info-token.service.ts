@@ -3,6 +3,7 @@ import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
 import { MetodoPagoModel } from 'src/app/modelos/metodo.pago.model';
 import { TipoComprobanteModel } from 'src/app/modelos/tipo.comprobante.model';
 import { PropinaModel } from 'src/app/modelos/propina.model';
+import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
 
 
 
@@ -110,6 +111,11 @@ export class InfoTockenService {
     this.set();
   }
 
+  setTiempoEntrega( val: TiempoEntregaModel) {
+    this.infoUsToken.tiempoEntrega = val;
+    this.set();
+  }
+
   setIniMetodoPago(descripcion = 'Tarjeta') {
     const metodoPagoInit: MetodoPagoModel = new MetodoPagoModel;
     metodoPagoInit.idtipo_pago = descripcion === 'Tarjeta' ? 2 : 1;
@@ -173,6 +179,15 @@ export class InfoTockenService {
     this.setPropina( prpinaInt );
   }
 
+  setIniTiempoEntrega() {
+    const tiempoEntregaSelected = new TiempoEntregaModel();
+    tiempoEntregaSelected.descripcion = 'Programa la entrega';
+    tiempoEntregaSelected.value = '';
+    tiempoEntregaSelected.modificado = false;
+
+    this.setTiempoEntrega(tiempoEntregaSelected);
+  }
+
   setOtro( val: any) {
     this.infoUsToken.otro = val;
     this.set();
@@ -207,6 +222,7 @@ export class InfoTockenService {
         _newUs.isSoloLLevar = _token.isSoloLLevar;
         _newUs.isDelivery = _token.isDelivery;
         _newUs.direccionEnvioSelected = _token.direccionEnvioSelected;
+        _newUs.tiempoEntrega = _token.tiempoEntrega;
         _newUs.telefono = _token.telefono;
         _newUs.orderDelivery = _token.orderDelivery;
         _newUs.importeDelivery = _token.importeDelivery;
@@ -220,14 +236,14 @@ export class InfoTockenService {
         this.infoUsToken = _newUs;
 
         // agregar el metodo pago prederteminado tarjeta // valores iniciales
-        if (!this.infoUsToken.metodoPago)  { this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); this.setPasoRecoger(false); }
+        if (!this.infoUsToken.metodoPago)  { this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); this.setPasoRecoger(false); this.setIniTiempoEntrega(); }
       } else {
 
         this.infoUsToken = typeof _token.usuario === 'object' ? <UsuarioTokenModel>_token.usuario : <UsuarioTokenModel>_token;
         // this.infoUsToken = <UsuarioTokenModel>_token;
 
         // inicializa valores
-        this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); this.setPasoRecoger(false);
+        this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); this.setPasoRecoger(false); this.setIniTiempoEntrega();
 
         this.infoUsToken.isCliente = false;
       }

@@ -125,7 +125,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     .subscribe((res: any) => {
           if (res.pageActive === 'mipedido') {
             if (res.url.indexOf('confirma') > 0) {
-              this.confirmarPeiddo();
+              // this.confirmarPeiddo();
             } else {
               this.backConfirmacion();
             }
@@ -367,7 +367,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       if (this.isRequiereMesa || !this.isDeliveryValid ) {
 
         // si el pago del delivery es en efectivo procesa pago
-        if ( this.infoToken.infoUsToken.metodoPago.idtipo_pago === 1 ) {
+        if ( this.infoToken.infoUsToken.metodoPago.idtipo_pago === 1 && this.isDeliveryValid) {
           this.prepararEnvio();
         }
         return;
@@ -390,7 +390,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private prepararEnvio(): void {
-    if ( !this.isDeliveryCliente ) {
+    if ( !this.isDeliveryCliente) {
       this.showLoaderPedido();
       // const _dialogConfig = new MatDialogConfig();
       // _dialogConfig.disableClose = true;
@@ -443,6 +443,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // header //
 
+    // const _subTotalesSave = _p_header.delivery === 1 ? this.frmDelivery.subTotales : this._arrSubtotales;
+
     const _p_header = {
       m: dataFrmConfirma.m, // this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00',
       r: dataFrmConfirma.r, // this.frmConfirma.referencia || '',
@@ -462,7 +464,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
     const isClienteBuscaRepartidores = this.frmDelivery.buscarRepartidor ? this.frmDelivery.buscarRepartidor : this.isDeliveryCliente || false;
-    const _subTotalesSave = this.frmDelivery.subTotales || this._arrSubtotales;
+    const _subTotalesSave = _p_header.delivery === 1 ? this.frmDelivery.subTotales : this._arrSubtotales;
 
     const dataPedido = {
       p_header: _p_header,
@@ -486,11 +488,12 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       });
     });
 
+
     const dataSend = {
       dataPedido: dataPedido,
       dataPrint: dataPrint,
       dataUsuario: dataUsuario,
-      isDeliveryAPP: isClienteBuscaRepartidores, // this.isDeliveryCliente,
+      isDeliveryAPP: _p_header.delivery === 1 ? true : false, // isClienteBuscaRepartidores, // this.isDeliveryCliente,
       isClienteRecogeLocal: this.infoToken.infoUsToken.pasoRecoger // indica si el cliente pasa a recoger entonces ya no busca repartidor
     };
 
@@ -577,6 +580,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private checkIsDelivery() {
     this.isDelivery = this.miPedidoService.findMiPedidoIsTPCDelivery();
+    // this.isDeliveryCliente = this.isDelivery;
     // this.frmConfirma.delivery = this.isDelivery;
   }
 

@@ -53,7 +53,7 @@ export class RegistrarPagoService {
     this.crudService.postFree(_data, 'transaction', 'registrar-pago', false).subscribe((res: any) => {
       // console.log('registro-pago', res);
       // if ( res.success ) {
-        this.setIdRegistroPagoTransaction(res.data[0].idregistro_pago);
+        // this.setIdRegistroPagoTransaction(res.data[0].idregistro_pago);
         this.socketService.emit('notificar-pago-pwa', _data);
       // }
     });
