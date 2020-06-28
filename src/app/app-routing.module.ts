@@ -5,7 +5,7 @@ import { AuthGuard } from './shared/guards/auth.guard';
 import { ClienteProfileGuard } from './shared/guards/cliente-profile-guards';
 
 const routes: Routes = [
-  { path: '', redirectTo: '', pathMatch: 'full' },
+  // { path: '', redirectTo: '', pathMatch: 'full' },
   // {
   // path: '',
   // component: LayoutMainComponent,
@@ -51,9 +51,9 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(
     routes, {
       useHash: true,
-      // scrollPositionRestoration: 'enabled',
+      scrollPositionRestoration: 'enabled',
       // anchorScrolling: 'enabled',
-      // paramsInheritanceStrategy: 'always'
+      paramsInheritanceStrategy: 'always'
     }
     )],
   exports: [RouterModule]

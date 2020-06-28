@@ -6,7 +6,7 @@ import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedid
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
 // import { EstadoPedidoModel } from 'src/app/modelos/estado.pedido.model';
 import { SocketService } from 'src/app/shared/services/socket.service';
-import { Subscription } from 'rxjs/internal/Subscription';
+// import { Subscription } from 'rxjs/internal/Subscription';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 // import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { ClientePagoModel } from 'src/app/modelos/cliente.pago.model';
@@ -16,6 +16,7 @@ import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
+import { Subscription } from 'rxjs';
 
 // import * as botonPago from 'src/assets/js/boton-pago.js';
 

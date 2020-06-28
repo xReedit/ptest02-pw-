@@ -9,7 +9,8 @@ import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.ser
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { Subject } from 'rxjs/internal/Subject';
-import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { takeUntil } from 'rxjs/operators';
+// import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 
 @Component({
   selector: 'app-estado-pedido',

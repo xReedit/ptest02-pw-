@@ -23,7 +23,7 @@ export class ToolBarComponent implements OnInit {
 
   nomSede = '';
 
-  @ViewChild('txtBuscar', {static: false}) txtBuscar: ElementRef;
+  @ViewChild('txtBuscar') txtBuscar: ElementRef;
 
   // isBuqueda=
 

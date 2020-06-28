@@ -34,8 +34,8 @@ import { SharedModule } from 'src/app/shared/shared.module';
   exports: [
     // DialogSelectDireccionComponent
   ],
-  entryComponents: [
-    // DialogSelectDireccionComponent
-  ]
+  // entryComponents: [
+  //   // DialogSelectDireccionComponent
+  // ]
 })
 export class ZonaEstablecimientosModule { }

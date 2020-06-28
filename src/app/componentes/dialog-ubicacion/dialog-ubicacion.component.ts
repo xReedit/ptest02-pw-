@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
-  toLatLon, toLatitudeLongitude, headingDistanceTo, moveTo, insidePolygon, insideCircle
+  insideCircle
 } from 'geolocation-utils';
 
 @Component({

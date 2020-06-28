@@ -18,8 +18,8 @@ import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dia
     PagarCuentaRoutingModule,
     MaterialModule
   ],
-  entryComponents: [
-    DialogDesicionComponent
-  ]
+  // entryComponents: [
+  //   DialogDesicionComponent
+  // ]
 })
 export class PagarCuentaModule { }

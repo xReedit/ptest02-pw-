@@ -13,11 +13,12 @@ import { ListenStatusService } from 'src/app/shared/services/listen-status.servi
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
 
-import { Subscription } from 'rxjs/internal/Subscription';
+// import { Subscription } from 'rxjs/internal/Subscription';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { URL_IMG_CARTA } from 'src/app/shared/config/config.const';
+import { Subscription } from 'rxjs';
 
 
 

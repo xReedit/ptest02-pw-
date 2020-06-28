@@ -45,6 +45,6 @@ import { SharedModule } from 'src/app/shared/shared.module';
   exports : [
     DialogUbicacionComponent
   ],
-  entryComponents: [DialogUbicacionComponent]
+  // entryComponents: [DialogUbicacionComponent]
 })
 export class InicioModule { }

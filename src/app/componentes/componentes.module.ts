@@ -89,14 +89,14 @@ import { TiempoProgramadoComponent } from './tiempo-programado/tiempo-programado
     // DialogDesicionComponent
   ],
 
-  entryComponents: [
-    DialogMetodoPagoComponent,
-    DialogVerificarTelefonoComponent,
-    DialogTipoComprobanteComponent,
-    DialogCalificacionComponent,
-    DialogSelectDireccionComponent,
-    DialogTiempoEntregaComponent
-    // DialogDesicionComponent
-  ]
+  // entryComponents: [
+  //   DialogMetodoPagoComponent,
+  //   DialogVerificarTelefonoComponent,
+  //   DialogTipoComprobanteComponent,
+  //   DialogCalificacionComponent,
+  //   DialogSelectDireccionComponent,
+  //   DialogTiempoEntregaComponent
+  //   // DialogDesicionComponent
+  // ]
 })
 export class ComponentesModule { }

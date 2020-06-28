@@ -43,8 +43,8 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
 
   private dataInfoSede: any;
 
-  @ViewChild('search', {static: false}) public searchElementRef: ElementRef;
-  @ViewChild('registerForm', {static: false}) myForm;
+  @ViewChild('search') public searchElementRef: ElementRef;
+  @ViewChild('registerForm') myForm;
 
   @Input() isGuardarDireccion = true;
 
@@ -54,7 +54,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   isDireccionValid = true; // si esta dentro de la zona de atencion
 
 
-  @ViewChild ('search', {static: false}) agmMap;
+  @ViewChild('search') agmMap;
 
 
   mapCenter: any = {};

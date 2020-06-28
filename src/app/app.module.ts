@@ -22,7 +22,7 @@ import { environment } from '../environments/environment';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    SharedModule,
+    // SharedModule,
     // ReactiveFormsModule,
     FormsModule,
     AppRoutingModule,

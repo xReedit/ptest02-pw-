@@ -57,14 +57,14 @@ import { DialogVerificarTelefonoComponent } from 'src/app/componentes/dialog-ver
     DialogLoadingComponent,
     DialogItemEditComponent
   ],
-  entryComponents: [
-    DialogResetComponent,
-    DialogLoadingComponent,
-    DialogItemEditComponent,
-    DialogVerificarTelefonoComponent,
-    // DialogSelectDireccionComponent
+  // entryComponents: [
+  //   DialogResetComponent,
+  //   DialogLoadingComponent,
+  //   DialogItemEditComponent,
+  //   DialogVerificarTelefonoComponent,
+  //   // DialogSelectDireccionComponent
 
-    // DialogMetodoPagoComponent
-  ]
+  //   // DialogMetodoPagoComponent
+  // ]
 })
 export class PedidoModule { }

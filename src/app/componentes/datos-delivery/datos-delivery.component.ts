@@ -24,7 +24,7 @@ import { DialogTiempoEntregaComponent } from '../dialog-tiempo-entrega/dialog-ti
   styleUrls: ['./datos-delivery.component.css']
 })
 export class DatosDeliveryComponent implements OnInit {
-  @ViewChild('search', {static: false}) public searchElementRef: ElementRef;
+  @ViewChild('search') public searchElementRef: ElementRef;
 
   @Output() public changeStatus = new EventEmitter<any>();
 
