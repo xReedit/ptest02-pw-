@@ -13,7 +13,7 @@ export class GlobalErrorHandler implements ErrorHandler {
       window.location.reload();
     }
 
-
+    // alert(error);
     console.error(error);
   }
 }

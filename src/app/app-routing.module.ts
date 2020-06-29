@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { LayoutMainComponent } from './core/layout-main/layout-main.component';
+// import { LayoutMainComponent } from './core/layout-main/layout-main.component';
 import { AuthGuard } from './shared/guards/auth.guard';
 import { ClienteProfileGuard } from './shared/guards/cliente-profile-guards';
 

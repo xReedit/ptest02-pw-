@@ -4,7 +4,7 @@ import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-cli
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { Router } from '@angular/router';
 // import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
-import { finalize } from 'rxjs/internal/operators/finalize';
+// import { finalize } from 'rxjs/internal/operators/finalize';
 // import { take } from 'rxjs/internal/operators/take';
 // import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 
@@ -31,7 +31,7 @@ export class InicioComponent implements OnInit, OnDestroy {
   ngOnInit() {
     console.log('aaa');
     this.nombreClientSocket = '';
-    screen.orientation.unlock();
+    // screen.orientation.unlock();
 
     // setTimeout(() => {
       this.loadInit();
