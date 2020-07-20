@@ -236,14 +236,14 @@ export class InfoTockenService {
         this.infoUsToken = _newUs;
 
         // agregar el metodo pago prederteminado tarjeta // valores iniciales
-        if (!this.infoUsToken.metodoPago)  { this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); this.setPasoRecoger(false); this.setIniTiempoEntrega(); }
+        if (!this.infoUsToken.metodoPago)  { this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); this.setPasoRecoger(false);  } // this.setIniTiempoEntrega();
       } else {
 
         this.infoUsToken = typeof _token.usuario === 'object' ? <UsuarioTokenModel>_token.usuario : <UsuarioTokenModel>_token;
         // this.infoUsToken = <UsuarioTokenModel>_token;
 
         // inicializa valores
-        this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); this.setPasoRecoger(false); this.setIniTiempoEntrega();
+        this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); this.setPasoRecoger(false); // this.setIniTiempoEntrega();
 
         this.infoUsToken.isCliente = false;
       }

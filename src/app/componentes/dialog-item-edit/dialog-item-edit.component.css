@@ -22,10 +22,10 @@
 }
 
 .titlo-detalle {
-    font-size: 13px;
+    font-size: 14px;
     font-family: Ubuntu-Light;
     color: #616161;
-    text-transform: lowercase;
+    /* text-transform: lowercase; */
   }
 
 .i-stock {
@@ -63,10 +63,11 @@
 }
 
 .i-body {    
-    max-height: 60vh;    
+    /* max-height: 100vh;     */
+    height: calc(100vh - 110px);
     overflow-x: hidden;
     overflow-y: auto;
-    padding: 15px;
+    /* padding: 15px; */
 }
 
 .txt-obligatorio {
@@ -112,7 +113,8 @@
 
 .i-footer {
     display: flex;
-    position: sticky;    
+    position: fixed;    
+    bottom: 0;
     z-index: 1;
     border-top: 1px solid lightgray;    
     background: white;    
@@ -131,7 +133,7 @@
 
 .tb-tpc tr>td {
     font-size: 12px;
-    border-bottom: 1px dashed #e0e0e0;
+    /* border-bottom: 1px dashed #e0e0e0; */
   }
 
 .tb-tpc-one tr>td {
@@ -172,10 +174,10 @@
 .img-carta {
     max-width: 100%;
     /* width: auto; */
-    border-radius: 3px;
+    /* border-radius: 3px; */
     /* border: solid 1px #e0e0e0; */
-    margin-bottom: 5px;
-    height: 160px;
+    /* margin-bottom: 5px; */
+    max-height: 250px;
     object-fit: cover;
     transition: all 0.1s;
 }
@@ -183,4 +185,30 @@
 .img-carta:hover {
     transform:scale(1.5);
     z-index: 10;
+}
+
+.div-tpc {
+    bottom: 0;
+    /* position: sticky;     */
+    position: absolute;
+    background: white;
+    border-top: 1px solid #bdbdbd;
+}
+
+@media only screen and (min-width: 600px) {
+    .img-carta {
+        padding: 10px;
+    }
+
+    .i-footer {        
+        position: sticky;    
+    }
+    
+    .i-body {
+        height: auto;
+    }
+
+    .div-tpc {
+        position: relative;
+    }
 }

@@ -3,6 +3,8 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { RouterEvent, Router } from '@angular/router';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
+import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
+import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 // import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 
 
@@ -15,6 +17,7 @@ export class EstablecimientosComponent implements OnInit {
   loaderPage = true;
   imgIcoCategoria = 'assets/images/icon-app/';
   listIcoCategoria: any;
+  vistaInicio = 0;
 
   private isClienteLogueado = false;
   constructor(
@@ -22,11 +25,16 @@ export class EstablecimientosComponent implements OnInit {
     // private navigatorService: NavigatorLinkService,
     private router: Router,
     private verifyClientService: VerifyAuthClientService,
+    private listenService: ListenStatusService
   ) { }
 
   ngOnInit() {
 
-    this.isClienteLogueado = this.verifyClientService.getDataClient().isCliente;
+    console.log('this.verifyClientService.getDataClient()', this.verifyClientService.getDataClient());
+    const _dataDir = this.verifyClientService.getDataClient();
+    this.isClienteLogueado = _dataDir.isCliente;
+    this.vistaInicio = !_dataDir.direccionEnvioSelected ? 0 : _dataDir.direccionEnvioSelected.options.vista;
+    // this.goComercios();
     // console.log('establecimiento');
     this.xLoadCategoria();
     // this.navigatorService.disableGoBack();
@@ -35,6 +43,14 @@ export class EstablecimientosComponent implements OnInit {
     //   window.history.forward();
     // };
     // window.history.forward();
+
+    this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
+      if ( res ) {
+        this.vistaInicio = res.options.vista;
+
+        // this.goComercios();
+      }
+    });
   }
 
   private xLoadCategoria() {
@@ -68,6 +84,15 @@ export class EstablecimientosComponent implements OnInit {
   registarDirCliente() {
     this.verifyClientService.setIsDelivery(true);
     this.router.navigate(['/login-client']);
+  }
+
+  goComercios() {
+    if (this.vistaInicio === 0 ) {return; }
+    localStorage.setItem('sys:subcat', '0');
+    localStorage.setItem('sys::cat', '-1');
+    setTimeout(() => {
+      this.router.navigate(['/zona-delivery/categorias']);
+    }, 300);
   }
 
 }

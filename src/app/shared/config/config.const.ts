@@ -1,4 +1,4 @@
-// // pruebas
+// pruebas
 export const URL_SERVER = 'http://localhost:5819/v3/'; // desarrollo
 export const URL_SERVER_SOCKET = 'http://localhost:5819'; // desarrollo
 export const URL_IMG_CARTA = 'http://192.168.1.64/restobar/file/'; // imagenes de la carta

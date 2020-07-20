@@ -295,7 +295,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     const dialogConfig = new MatDialogConfig();
     const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
 
-    dialogConfig.panelClass = 'dialog-item-edit';
+    // dialogConfig.panelClass = 'dialog-item-edit';
     dialogConfig.autoFocus = false;
     dialogConfig.data = {
       idTpcItemResumenSelect: null,
@@ -303,6 +303,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       item: _itemFromCarta,
       objItemTipoConsumoSelected: _itemFromCarta.itemtiposconsumo
     };
+    dialogConfig.panelClass =  ['my-dialog-orden-detalle'];
 
     const dialogRef = this.dialog.open(DialogItemEditComponent, dialogConfig);
 
@@ -494,7 +495,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       dataPrint: dataPrint,
       dataUsuario: dataUsuario,
       isDeliveryAPP: _p_header.delivery === 1 ? true : false, // isClienteBuscaRepartidores, // this.isDeliveryCliente,
-      isClienteRecogeLocal: this.infoToken.infoUsToken.pasoRecoger // indica si el cliente pasa a recoger entonces ya no busca repartidor
+      isClienteRecogeLocal: this.infoToken.infoUsToken.pasoRecoger, // indica si el cliente pasa a recoger entonces ya no busca repartidor
+      dataDescuento: [] // lista de ids de descuento para restar cantidad num_pedidos
     };
 
     // console.log('printerComanda', dataSend);
@@ -513,9 +515,15 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     }
 
 
-
+    // descuentos
+    if ( this.infoToken.infoUsToken.isHayDescuento ) {
+      const _listDsc = this.miPedidoService.getIdsDescuentos();
+      dataSend.dataDescuento = _listDsc;
+      console.log('_listDsc', _listDsc);
+    }
 
     // enviar a guardar // guarda pedido e imprime comanda
+    console.log('dataSend', dataSend);
     this.socketService.emit('nuevoPedido', dataSend);
 
 

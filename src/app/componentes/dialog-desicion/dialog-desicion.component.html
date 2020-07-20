@@ -1,9 +1,9 @@
 <div class="p-3">
     <span class="fw-100 fs-15">{{msj}}</span>
     <hr>
-    <mat-dialog-actions>
-        <button mat-flat-button class="mr-2" color="primary" [mat-dialog-close]="true">{{titleBtnSuccess}}</button>
-        <button mat-stroked-button mat-dialog-close>{{titleBtnCancel}}</button>
-    </mat-dialog-actions>
+    <div class="d-flex">
+        <button mat-flat-button color="primary" [mat-dialog-close]="true">{{titleBtnSuccess}}</button>
+        <button class="mr-2" mat-stroked-button mat-dialog-close>{{titleBtnCancel}}</button>
+    </div>
     <br>
 </div>

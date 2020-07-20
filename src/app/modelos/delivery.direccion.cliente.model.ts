@@ -12,4 +12,5 @@ export class DeliveryDireccionCliente {
     longitude: number;
     codigo: string;
     estado: number;
+    options: any;
 }

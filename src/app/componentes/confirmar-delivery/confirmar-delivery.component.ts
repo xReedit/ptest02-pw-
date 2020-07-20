@@ -132,7 +132,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.tiempoEntregaSelected = new TiempoEntregaModel();
     if ( this.infoTokenService.infoUsToken.tiempoEntrega ) {
       this.tiempoEntregaSelected = this.infoTokenService.infoUsToken.tiempoEntrega;
-      this.isTiempoEntregaValid = true;
+      this.isTiempoEntregaValid = this.tiempoEntregaSelected.valid;
       return;
     }
 
@@ -140,13 +140,17 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this.tiempoEntregaSelected.descripcion = 'Programa tu entrega';
       this.tiempoEntregaSelected.value = '';
       this.tiempoEntregaSelected.modificado = false;
+      this.tiempoEntregaSelected.valid = false;
       this.isTiempoEntregaValid = false;
+      this.tiempoEntregaSelected.iddia = new Date().getDay();
+      this.infoTokenService.infoUsToken.tiempoEntrega = this.tiempoEntregaSelected;
       return;
     }
 
     this.tiempoEntregaSelected.descripcion = 'Lo antes posible';
     this.tiempoEntregaSelected.value = this.infoEstablecimiento.tiempo_aprox_entrega;
     this.tiempoEntregaSelected.modificado = false;
+    this.tiempoEntregaSelected.valid = true;
     this.isTiempoEntregaValid = true;
 
 
@@ -284,6 +288,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.isValidForm = !this.direccionCliente.codigo && !this.isRecojoLocalCheked ? false : this.isValidForm;
     this.isValidForm = this.resData.telefono.trim().length >= 5 ? this.isValidForm : false;
     // if ( !this.direccionCliente.codigo && !this.isRecojoLocalCheked ) { this.isValidForm = false; }
+    // console.log('this.isValidForm', this.isValidForm);
     this.isReady.emit(this.isValidForm);
   }
 
@@ -458,10 +463,11 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   openDialogTiempoEntrega(): void {
     const _dialogConfig = new MatDialogConfig();
-    _dialogConfig.width = '380px';
-    _dialogConfig.disableClose = false;
-    _dialogConfig.hasBackdrop = true;
-    _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
+    // _dialogConfig.width = '480px';
+    // _dialogConfig.disableClose = false;
+    // _dialogConfig.hasBackdrop = true;
+    // _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
+    _dialogConfig.panelClass =  ['my-dialog-orden-detalle', 'my-dialog-scrool'];
 
     const dialogTpC = this.dialogTipoComprobante.open(DialogTiempoEntregaComponent, _dialogConfig);
     dialogTpC.afterClosed().subscribe((result: TiempoEntregaModel) => {

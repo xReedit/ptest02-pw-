@@ -1,11 +1,12 @@
 <div class="border">
-    <agm-map appDirectionsMapDirective [showDirection]="displayDirections"
+    <!-- <agm-map appDirectionsMapDirective [showDirection]="displayDirections"
             [origin]="origin"
             [destination]="destination"
 
             [zoom]="zoom"
             [disableDefaultUI]="false"
-            [zoomControl]="false">
+            [zoomControl]="false"> -->
+    <agm-map  [zoom]="zoom" [latitude]="destination.latitude" [longitude]="destination.longitude">
 
         <agm-marker
                 [latitude]="destination.latitude"

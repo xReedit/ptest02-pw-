@@ -231,6 +231,15 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.initFirtsCategoria();
       });
+
+
+      // descuentos
+      this.unsubscribeCarta = this.socketService.onGetDataSedeDescuentos().subscribe((res: any) => {
+        console.log('onGetDataSedeDescuentos', res);
+        console.log('infoToken', this.infoToken.infoUsToken);
+        this.miPedidoService.setObjCartaDescuentos(res);
+      });
+
     // }
 
     // reglas de la carta y subtotales
@@ -419,6 +428,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       item: _itemFromCarta,
       objItemTipoConsumoSelected: this.itemSelected.itemtiposconsumo
     };
+    dialogConfig.panelClass =  ['my-dialog-orden-detalle'];
 
     const dialogRef = this.dialog.open(DialogItemEditComponent, dialogConfig);
 

@@ -41,6 +41,7 @@ export class TiempoProgramadoComponent implements OnInit {
   }
 
   private findTimeList() {
+    console.log('time');
     if ( this.tiempoEntregaSelected.iddia !== undefined ) {
       this.selectedIni = this.listDia.filter(d => d.numDay === this.tiempoEntregaSelected.iddia)[0];
 
@@ -63,7 +64,7 @@ export class TiempoProgramadoComponent implements OnInit {
     const numDay  = this.dateHoy.getDay();
     const hourNow = this.dateHoy.getHours();
     const minNow = this.dateHoy.getMinutes();
-    console.log('numDay', numDay);
+    // console.log('numDay', numDay);
 
     const horaDisponibleHoy = hourNow <= horaFni;
 
@@ -98,12 +99,14 @@ export class TiempoProgramadoComponent implements OnInit {
 
   private hourSow(horaNow: number, horaIni: number, horaFin: number, isHoy = false): any {
     const listHoursShow = [];
+    let loAntesPosible = false;
     let _itemHour = {};
     let hours  = horaNow >= horaIni ? horaNow : horaIni;
     // for (hours; horaIni <= horaFin; hours++) {
     while (hours < horaFin) {
-      if ( horaNow >= horaIni && isHoy) {
+      if ( horaNow >= horaIni && isHoy && !loAntesPosible) {
         _itemHour = {hora: 8, descripcion: 'Lo mas antes posible: ' + this.infoEstablecimiento.tiempo_aprox_entrega, selected: true};
+        loAntesPosible = true;
       } else {
         _itemHour = {hora: hours, descripcion: hours + ':00 - ' +  hours + ':30', selected: false};
       }

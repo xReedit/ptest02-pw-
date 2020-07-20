@@ -43,7 +43,7 @@ export class SeleccionarDireccionComponent implements OnInit {
 
     this.crudService.postFree(_dataClientDir, 'delivery', 'get-direccion-cliente', false)
       .subscribe((res: any) => {
-        // console.log('direcciones', res);
+        console.log('direcciones', res);
         this.listDirecciones = res.data;
 
         if ( this.idClienteBuscar ) {return; }

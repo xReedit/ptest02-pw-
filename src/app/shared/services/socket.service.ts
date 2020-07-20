@@ -119,21 +119,20 @@ export class SocketService {
   }
 
   onGetCarta() {
-    // if ( this.isSocketOpen ) { return new Observable(observer => {observer.next(null); }); }
     return new Observable(observer => {
         this.socket.on('getLaCarta', (res: any) => {
-        // this.objLaCartaSocket = {
-        //   'carta': <CartaModel[]>res[0].carta,
-        //   'bodega': <SeccionModel[]>res[0].bodega
-        // };
         observer.next(res);
       });
     });
   }
 
-  // onGetCarta() {
-  //   return this.listen('getLaCarta');
-  // }
+  onGetDataSedeDescuentos() {
+    return new Observable(observer => {
+        this.socket.on('getDataSedeDescuentos', (res: any) => {
+        observer.next(res);
+      });
+    });
+  }
 
   onGetTipoConsumo() {
     // if ( this.isSocketOpen ) { return new Observable(observer => {observer.next(null); }); }

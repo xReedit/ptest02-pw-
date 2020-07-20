@@ -14,6 +14,7 @@ import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.ser
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { EstadoPedidoModel } from 'src/app/modelos/estado.pedido.model';
+import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 // import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 
 // import { Subscription } from 'rxjs/internal/Subscription';
@@ -51,6 +52,7 @@ export class CategoriasComponent implements OnInit {
     private calcDistanceService: CalcDistanciaService,
     private establecimientoService: EstablecimientoService,
     private socketService: SocketService,
+    private infoTokenService: InfoTockenService
     // private activatedRoute: ActivatedRoute,
     // private navigatorService: NavigatorLinkService,
   ) { }
@@ -63,12 +65,21 @@ export class CategoriasComponent implements OnInit {
     // };
     // history.pushState(null, null, document.title);
 
-    this.idcategoria_selected = localStorage.getItem('sys::cat');
-    this.listSubCatFiltros = JSON.parse(atob(localStorage.getItem('sys:subcat'))); // filtro para celulares
+    // reseteamos
+    this.infoTokenService.infoUsToken.tiempoEntrega = null;
+    this.infoTokenService.set();
 
-    // preparr filtro
-    this.listSubCatFiltros.map(x => x.selected = false);
-    this.listSubCatFiltros.unshift({ id: 0, descripcion: 'Todos', selected: true });
+
+    this.idcategoria_selected = localStorage.getItem('sys::cat');
+    if ( this.idcategoria_selected !== '-1' ) {
+      this.listSubCatFiltros = JSON.parse(atob(localStorage.getItem('sys:subcat'))); // filtro para celulares
+
+      // preparr filtro
+      this.listSubCatFiltros.map(x => x.selected = false);
+      this.listSubCatFiltros.unshift({ id: 0, descripcion: 'Todos', selected: true });
+    } else {
+      this.listSubCatFiltros = [];
+    }
 
     // console.log('this.listSubCatFiltros :>> ', this.listSubCatFiltros);
 
@@ -143,7 +154,7 @@ export class CategoriasComponent implements OnInit {
     let _dirEstablecimiento: any;
     let yaCalculado = false;
 
-    let _sleep = 0;
+    // let _sleep = 0;
     for (let index = 0; index < lentArray; index++) {
         _dirEstablecimiento = <DeliveryEstablecimiento>this.listEstablecimientos[index];
 
@@ -163,10 +174,10 @@ export class CategoriasComponent implements OnInit {
 
         if ( _dirEstablecimiento.cerrado === 0 && !yaCalculado) {
           // console.log('calc distance');
-          _sleep = 600;
+          // _sleep = 600;
           this.calcDistanceService.calculateRoute(this.direccionCliente, _dirEstablecimiento);
           listEsblecimientosCache.push(_dirEstablecimiento);
-          await this.sleep(600);
+          // await this.sleep(600);
         }
     }
 

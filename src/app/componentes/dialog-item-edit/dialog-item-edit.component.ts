@@ -9,6 +9,7 @@ import { SubItemsView } from 'src/app/modelos/subitems.view.model';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { URL_IMG_CARTA } from 'src/app/shared/config/config.const';
+import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 
 @Component({
   selector: 'app-dialog-item-edit',
@@ -37,6 +38,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
 
   constructor(
     public miPedidoService: MipedidoService,
+    private uttilService: UtilitariosService,
     private dialogRef: MatDialogRef<DialogItemEditComponent>,
     @Inject(MAT_DIALOG_DATA) data: any
   ) {
@@ -53,6 +55,8 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     // console.log('objItemTipoConsumoSelected', this.objItemTipoConsumoSelected);
 
     this.isOneTipoConsumo = this.objItemTipoConsumoSelected.length === 1;
+    this.item.detalles = this.primerMayuscula(this.item.detalles);
+    console.log('this.item.detalles', this.item.detalles);
     // this.miPedidoService.listenChangeCantItem();
 
   }
@@ -248,6 +252,10 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
 
   cerrarDlg(): void {
     this.dialogRef.close();
+  }
+
+  primerMayuscula(val: string): string {
+    return this.uttilService.primeraConMayusculas(val);
   }
 
 }

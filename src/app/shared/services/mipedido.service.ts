@@ -170,6 +170,113 @@ export class MipedidoService {
     // }, 1000);
   }
 
+  // aplicar descuentos a la carta
+  setObjCartaDescuentos(objDescuento: any) {
+    this.infoTokenService.infoUsToken.isHayDescuento = false;
+    if ( objDescuento.length === 0 ) {return; }
+    if ( objDescuento[0].solo_app === 1 && !this.infoTokenService.infoUsToken.isCliente ) { return; }
+    this.infoTokenService.infoUsToken.isHayDescuento = true;
+    let _dsc = 0;
+    // let precio_ahora = 0;
+
+    objDescuento.map((d: any) => {
+
+      switch (d.tipo) {
+        case 0: // items
+          this.objCarta.carta.map((c: CategoriaModel) => {
+            c.secciones.map((s: SeccionModel) => {
+                const _i = s.items.filter((i: ItemModel) => i.iditem.toString() === d.id)[0];
+                if ( _i ) {
+                  _dsc = d.porcentaje;
+                  _i.iddescuento = d.idsede_descuento;
+                  this.aplicarDescuentoImte(_i, _dsc);
+                  return false;
+                }
+            });
+          });
+          break;
+        case 1: // secciones
+          _dsc = d.porcentaje;
+          this.objCarta.carta.map((c: CategoriaModel) => {
+            c.secciones.map((s: SeccionModel) => {
+              if (s.idseccion.toString() ===  d.id) {
+                s.descuento = _dsc + '%';
+                s.iddescuento = d.idsede_descuento;
+                s.items.map( (i: ItemModel) => {
+                  this.aplicarDescuentoImte(i, _dsc);
+                } );
+              }
+            });
+          });
+          break;
+        case 2: // producto
+          _dsc = d.porcentaje;
+          this.objCarta.bodega.map((s: SeccionModel) => {
+            const _i = s.items.filter((i: ItemModel) => i.iditem.toString() === d.id)[0];
+            if ( _i ) {
+              _dsc = d.porcentaje;
+              _i.iddescuento = d.idsede_descuento;
+              this.aplicarDescuentoImte(_i, _dsc);
+              return false;
+            }
+          });
+          break;
+        case 3: // producto familia
+          _dsc = d.porcentaje;
+          this.objCarta.bodega.map((s: SeccionModel) => {
+              if (s.idseccion.toString() ===  d.id) {
+                s.descuento = _dsc + '%';
+                s.iddescuento = d.idsede_descuento;
+                s.items.map( (i: ItemModel) => {
+                  this.aplicarDescuentoImte(i, _dsc);
+                } );
+              }
+          });
+          break;
+      }
+
+    });
+
+
+    console.log('this.objCarta descuento', this.objCarta);
+  }
+
+  private aplicarDescuentoImte(i: ItemModel, _dsc: number) {
+    const _pItem = parseFloat(i.precio);
+    const precio_ahora = Math.round(_pItem - ( _pItem * ( _dsc / 100 )));
+    i.precio_antes = i.precio;
+    i.precio = precio_ahora.toString();
+    i.precio_default = precio_ahora;
+    i.precio_unitario = precio_ahora.toString();
+  }
+
+  getIdsDescuentos(): any {
+    let _idDsc;
+    const listIds = [];
+    this.miPedido.tipoconsumo.map((tp: TipoConsumoModel) => {
+      tp.secciones.map((s: SeccionModel) => {
+        _idDsc = s.iddescuento;
+        if ( _idDsc ) {
+          if ( !listIds.filter(a => a.id === _idDsc)[0] ) {
+            listIds.push({id: _idDsc});
+          }
+        }
+
+        // en items
+        s.items.map((i: ItemModel) => {
+          _idDsc = s.iddescuento;
+          if ( _idDsc ) {
+            if ( !listIds.filter(a => a.id === _idDsc)[0] ) {
+              listIds.push({id: _idDsc});
+            }
+          }
+        });
+      });
+    });
+
+    return listIds;
+  }
+
   getMiPedido(): PedidoModel {
     if ( this.miPedido.tipoconsumo.length === 0 ) {
       if (this.storageService.isExistKey('sys::order::all')) {
@@ -194,6 +301,8 @@ export class MipedidoService {
     this.mpObjSeccionSelected.idseccion = seccion.idseccion;
     this.mpObjSeccionSelected.sec_orden = seccion.sec_orden;
     this.mpObjSeccionSelected.ver_stock_cero = seccion.ver_stock_cero;
+    this.mpObjSeccionSelected.iddescuento = seccion.iddescuento;
+    this.mpObjSeccionSelected.descuento = seccion.descuento;
   }
 
   // obtener el DELIVERY_CANTIDAD_ITEMS_ESCALA // solo si es cliente delivery
@@ -317,6 +426,7 @@ export class MipedidoService {
     this.socketService.emit('itemModificado', item);
 
     // console.log('listItemsPedido', this.listItemsPedido);
+    console.log('mipedido', this.miPedido);
     // console.log('itemModificado en add', item);
     // console.log('itemModificado en add', JSON.stringify(item));
 

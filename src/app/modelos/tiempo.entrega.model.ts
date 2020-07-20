@@ -8,4 +8,5 @@ export class TiempoEntregaModel {
     iddia: number;
     modificado: boolean;
     isUsuarioAutorizado: boolean;
+    valid: boolean;
 }

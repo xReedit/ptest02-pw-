@@ -8,6 +8,7 @@ export class SeccionModel {
     count_items: number;
     ver_stock_cero: number;
     des: string;
-
+    descuento = null;
+    iddescuento: number;
     items: ItemModel[] = [];
 }

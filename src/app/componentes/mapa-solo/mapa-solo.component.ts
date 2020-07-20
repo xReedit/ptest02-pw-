@@ -13,12 +13,12 @@ export class MapaSoloComponent implements OnInit {
   @Input() destination: any;
 
   displayDirections = true;
-  zoom = 20;
+  zoom = 13;
 
   constructor() { }
 
   ngOnInit() {
-    this.zoom = 20;
+    this.zoom = 13;
     // console.log('origin from solo mapa', this.origin);
   }
 

@@ -105,7 +105,7 @@ export class MainComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       data => {
         if ( !data ) { return; }
-        // console.log('data dialog', data);
+        console.log('direcion', data);
         this.verifyClientService.setDireccionDeliverySelected(data);
         this.setDireccion(data);
       }

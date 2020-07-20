@@ -5,27 +5,29 @@
     </div>    
 </div>
 <div class="animated fadeInUp">    
-    <div class="d-flex text-center p-3 text-white justify-content-center">
-        <!-- items principales -->
-        <div matRipple class="div-ico" (click)="goComercioCategoria(4)">
-            <img class="img-ico" src="assets/images/icon-app/icon-p-4.jpg" alt="">
-            <div class="titulo">
-                <span class="pl-1 fw-100 fs-13">Mercados</span>
+    <div class="p-3">
+        <div *ngIf="vistaInicio === 0" class="d-flex text-center text-white justify-content-center">
+            <!-- items principales -->
+            <div matRipple class="div-ico" (click)="goComercioCategoria(4)">
+                <img class="img-ico" src="assets/images/icon-app/icon-p-4.jpg" alt="">
+                <div class="titulo">
+                    <span class="pl-1 fw-100 fs-13">Mercados</span>
+                </div>
             </div>
-        </div>
-
-        <div matRipple class="div-ico" (click)="goComercioCategoria(1)">
-            <img class="img-ico" src="assets/images/icon-app/icon-p-2.PNG" alt="">
-            <div class="titulo">
-                <span class="pl-1 fw-100 fs-13">Comida</span>
+    
+            <div matRipple class="div-ico" (click)="goComercioCategoria(1)">
+                <img class="img-ico" src="assets/images/icon-app/icon-p-2.PNG" alt="">
+                <div class="titulo">
+                    <span class="pl-1 fw-100 fs-13">Comida</span>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- otras categorias -->
     <div class="div-otros d-flex justify-content-center">
-        <div class="div-categorias mb-3 fs-13 text-dark text-left bg-white">
-            <div class="div-content-ico">
+        <div class="div-categorias mb-3 fs-13 text-dark text-left bg-white">            
+            <div *ngIf="vistaInicio === 0" class="div-content-ico">
                 <div matRipple (click)="goComercioCategoria(item.idsede_categoria)" class="div-ico-circle" *ngFor="let item of listIcoCategoria">
                     <ng-container *ngIf="item.visible">
                         <div class="img-ico-circle-border">
@@ -35,6 +37,19 @@
                     </ng-container>
                     
                 </div>
+            </div>
+
+            <!-- de frente comercios -->
+            <div *ngIf="vistaInicio === 1" class="div-content-ico">
+                <div class="text-center">
+                    <img src="assets/images/delivery-man-1.jpg" alt="icon-man">
+                    <p class="fw-600 text-secondary">
+                        Pedir en Papaya Express no solo es pedir lo mejor de la ciudad, sino también apoyar a los negocios locales.
+                    </p>
+                    <p class="fw-100">Pide seguro, pide Papaya Express! Te lo llevamos al toque!</p>
+                </div>
+                <hr>
+                <button class="btn btn-success" (click)="goComercios()">Pedir ahora <i class="pl-2 fa fa-arrow-right"></i></button>
             </div>
         </div>
     </div>
