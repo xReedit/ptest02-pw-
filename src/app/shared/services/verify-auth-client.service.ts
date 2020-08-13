@@ -8,6 +8,7 @@ import { Subject } from 'rxjs/internal/Subject';
 import { Observable } from 'rxjs';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
+import { UtilitariosService } from './utilitarios.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,13 +18,13 @@ export class VerifyAuthClientService {
   public clientSocket: SocketClientModel;
   private subjectClient = new Subject<any>();
   private isClientValid = false;
-
   // private subjectClientSource = new BehaviorSubject<any>(null);
   // public subjectClient$ = this.subjectClientSource.asObservable();
 
   constructor(
     private auth: Auth0Service,
-    private crudService: CrudHttpService
+    private crudService: CrudHttpService,
+    private utilService: UtilitariosService
   ) { }
 
   isLogin(): boolean {
@@ -168,6 +169,7 @@ export class VerifyAuthClientService {
 
   private registerCliente(): void {
     let idClient = 0;
+    this.clientSocket.systemOS = this.utilService.getOS();
     this.crudService.postFree(this.clientSocket, 'ini', 'register-cliente-login', false).subscribe((rpt: any) => {
       // console.log('idcliente', rpt);
       // login en backend

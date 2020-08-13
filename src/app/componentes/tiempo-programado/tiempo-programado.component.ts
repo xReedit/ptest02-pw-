@@ -41,7 +41,7 @@ export class TiempoProgramadoComponent implements OnInit {
   }
 
   private findTimeList() {
-    console.log('time');
+    // console.log('time');
     if ( this.tiempoEntregaSelected.iddia !== undefined ) {
       this.selectedIni = this.listDia.filter(d => d.numDay === this.tiempoEntregaSelected.iddia)[0];
 
@@ -53,7 +53,9 @@ export class TiempoProgramadoComponent implements OnInit {
       });
 
       this.listHora.map(h => h.selected = false );
-      this.listHora.filter(h => h.hora === this.tiempoEntregaSelected.idhora)[0].selected = true;
+      const _h = this.listHora.filter(h => h.hora === this.tiempoEntregaSelected.idhora)[0];
+      if ( _h ) { _h.selected = true; }
+      // this.listHora.filter(h => h.hora === this.tiempoEntregaSelected.idhora)[0].selected = true;
     }
   }
 
@@ -120,7 +122,7 @@ export class TiempoProgramadoComponent implements OnInit {
   }
 
   selectedDay(selectedDay: any) {
-    console.log('daySelected', selectedDay);
+    // console.log('daySelected', selectedDay);
     this.seletecDay = selectedDay.value;
     this.listHora = selectedDay.value.hours;
   }
@@ -135,7 +137,7 @@ export class TiempoProgramadoComponent implements OnInit {
     this.tiempoEntregaSelected = new TiempoEntregaModel();
 
     const _valAdd = this.seletecDay.date + ' ' + rowHour.descripcion.split(' - ')[0];
-    console.log('_valAdd', _valAdd);
+    // console.log('_valAdd', _valAdd);
     this.tiempoEntregaSelected.dia = this.seletecDay.descripcion;
     this.tiempoEntregaSelected.descripcion = this.seletecDay.descripcion;
     this.tiempoEntregaSelected.hora = rowHour.descripcion;

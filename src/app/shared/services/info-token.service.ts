@@ -57,8 +57,10 @@ export class InfoTockenService {
   }
 
   getLocalIpCliente(): string {
-    this.infoUsToken.ipCliente = localStorage.getItem('sys::it') || '';
-    return this.infoUsToken.ipCliente;
+    if ( this.infoUsToken ) {
+      this.infoUsToken.ipCliente = localStorage.getItem('sys::it') || '';
+      return this.infoUsToken.ipCliente;
+    }
   }
 
   setLocalIpCliente(val: string): void {
@@ -72,8 +74,10 @@ export class InfoTockenService {
 
   setSocketId( val: string) {
     // this.infoUsToken.socketId = this.infoUsToken.socketId ? this.infoUsToken.socketId : val;
-    this.infoUsToken.socketId = val;
-    this.set();
+    if ( this.infoUsToken ) {
+      this.infoUsToken.socketId = val;
+      this.set();
+    }
   }
 
   // para el confirmar pago si es clienteDelivery

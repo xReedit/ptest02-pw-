@@ -10,6 +10,7 @@ import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { URL_IMG_CARTA } from 'src/app/shared/config/config.const';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
+import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 
 @Component({
   selector: 'app-dialog-item-edit',
@@ -26,6 +27,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   precioProducto: number;
   _precioProductoIni: number; // precio incio
   isObjSubItems = false; // si el item tiene subitems
+  isUsCliente = true; // si el usario es cliente o es personal autorizado
 
   isOneTipoConsumo = false; // s si solo hay un tipo de consumo sale enves del boton continuar
 
@@ -39,6 +41,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   constructor(
     public miPedidoService: MipedidoService,
     private uttilService: UtilitariosService,
+    private infoToken: InfoTockenService,
     private dialogRef: MatDialogRef<DialogItemEditComponent>,
     @Inject(MAT_DIALOG_DATA) data: any
   ) {
@@ -56,12 +59,15 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
 
     this.isOneTipoConsumo = this.objItemTipoConsumoSelected.length === 1;
     this.item.detalles = this.primerMayuscula(this.item.detalles);
-    console.log('this.item.detalles', this.item.detalles);
+    // console.log('this.item.detalles', this.item.detalles);
     // this.miPedidoService.listenChangeCantItem();
 
   }
 
   ngOnInit() {
+
+    this.isUsCliente = this.infoToken.getInfoUs().isCliente;
+    // console.log('this.infoToken.getInfoUs()', this.infoToken.getInfoUs());
 
     // listen cambios en el stock
     this.miPedidoService.itemStockChangeObserve$
@@ -91,10 +97,12 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   }
 
   getCantidadItemCarta(): number {
+    // console.log('dialog item getCantidadItemCarta', this.item);
     return parseInt(this.miPedidoService.findItemCarta(this.item).cantidad.toString(), 0);
   }
 
   private cocinarListSubItemsView(): void {
+
 
 
     if ( this.item.subitems && this.item.subitems.length > 0) {

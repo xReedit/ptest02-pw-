@@ -64,10 +64,21 @@
 
 .i-body {    
     /* max-height: 100vh;     */
-    height: calc(100vh - 110px);
+    height: calc(100vh - 170px);
     overflow-x: hidden;
     overflow-y: auto;
     /* padding: 15px; */
+
+    /* overflow-x: hidden;
+    overflow-y: auto;
+    bottom: 150px !important;
+    position: fixed;
+    top: 50px;
+    width: 100%; */
+}
+
+.i-body.he2 {
+    height: calc(100vh - 110px);
 }
 
 .txt-obligatorio {
@@ -177,23 +188,31 @@
     /* border-radius: 3px; */
     /* border: solid 1px #e0e0e0; */
     /* margin-bottom: 5px; */
-    max-height: 250px;
+    /* max-height: 250px; */
+    height: 40vh;
     object-fit: cover;
     transition: all 0.1s;
 }
 
-.img-carta:hover {
+/* .img-carta:hover {
     transform:scale(1.5);
     z-index: 10;
-}
+} */
 
 .div-tpc {
-    bottom: 0;
+    bottom: 50px;
+    position: fixed;
     /* position: sticky;     */
-    position: absolute;
+    /* position: absolute; */
     background: white;
     border-top: 1px solid #bdbdbd;
 }
+
+/* @media only screen and (max-width: 600px) {
+    .i-body {
+        height: auto;
+    }
+} */
 
 @media only screen and (min-width: 600px) {
     .img-carta {
@@ -206,9 +225,15 @@
     
     .i-body {
         height: auto;
+        max-height: calc(90vh - 110px);
+    }
+
+    .i-body.he2 {
+        height: auto;
     }
 
     .div-tpc {
         position: relative;
+        bottom: 0;
     }
 }

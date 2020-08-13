@@ -28,6 +28,12 @@
             <i class="fa fa-search" aria-hidden="true"></i>
         </button>
       </mat-form-field>
+      <div class="text-left span-input-alert" *ngIf="!loadConsulta && errorDni">
+        <span class="fw-100 text-danger fs-11">
+          Documento no encontrado
+        </span>
+      </div>
+
       <div class="w-100">
         <mat-progress-bar style="bottom: 20px;" [hidden]="!loadConsulta" mode="indeterminate"></mat-progress-bar>
       </div>
@@ -77,7 +83,8 @@
         <div>
           <span class="fw-100 fs-12 text-secondary">Direccion de entrega:</span>
           <p class="m-0 fs-14">
-              <strong [ngClass]="{'text-danger': direccionCliente.direccion === ''}">{{direccionCliente.titulo}}</strong> <br> {{direccionCliente.direccion}}
+              <strong [ngClass]="{'text-danger': direccionCliente.direccion === ''}">{{direccionCliente.titulo}}</strong> <span *ngIf="direccionCliente.direccion != ''" class="fw-100 text-info pl-2"> {{  dirEstablecimiento.distancia_km }} km </span><br> 
+              {{direccionCliente.direccion}}              
           </p>   
         </div>
 

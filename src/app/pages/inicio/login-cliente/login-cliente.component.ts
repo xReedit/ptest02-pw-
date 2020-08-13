@@ -28,7 +28,7 @@ export class LoginClienteComponent implements OnInit {
   private listYear: any = [];
   private numDocumento = '';
 
-  constructor(
+constructor(
     private verifyClientService: VerifyAuthClientService,
     private router: Router,
     private auth: Auth0Service,

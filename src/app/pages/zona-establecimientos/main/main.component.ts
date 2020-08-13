@@ -10,6 +10,9 @@ import { ListenStatusService } from 'src/app/shared/services/listen-status.servi
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
+import { DatosCalificadoModel } from 'src/app/modelos/datos.calificado.model';
+import { DialogCalificacionComponent } from 'src/app/componentes/dialog-calificacion/dialog-calificacion.component';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 
 
 
@@ -28,14 +31,20 @@ export class MainComponent implements OnInit {
   isClienteLogueado = false;
   showPanelRigth = false;
 
+  listPedidoCalificar = [];
+  numComerciosCalificar = 0;
+  isShowCalificar = false;
+
   constructor(
     private infoTokenService: InfoTockenService,
     private verifyClientService: VerifyAuthClientService,
     private dialogDireccion: MatDialog,
+    private dialog: MatDialog,
     private listenService: ListenStatusService,
     private router: Router,
     private socketService: SocketService,
     private navigartoService: NavigatorLinkService,
+    private establecientoService: EstablecimientoService
     // public ngxService: NgxUiLoaderService
   ) { }
 
@@ -61,6 +70,8 @@ export class MainComponent implements OnInit {
       });
 
     }
+
+    this.loadComerciosXCalificar();
 
 
     // if ( this.infoTokenService.infoUsToken ) {
@@ -92,6 +103,16 @@ export class MainComponent implements OnInit {
   //   this.socketService.closeConnection();
   // }
 
+  private loadComerciosXCalificar() {
+    this.establecientoService.getComerciosXCalifcar(this.infoClient.idcliente)
+    .subscribe(res => {
+      // console.log(res);
+      this.listPedidoCalificar = res;
+      this.numComerciosCalificar = this.listPedidoCalificar.length;
+      this.isShowCalificar = this.numComerciosCalificar > 0;
+    });
+  }
+
   openDialogDireccion() {
 
     if ( !this.isClienteLogueado ) {this.registarDirCliente(); return; }
@@ -105,7 +126,7 @@ export class MainComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       data => {
         if ( !data ) { return; }
-        console.log('direcion', data);
+        // console.log('direcion', data);
         this.verifyClientService.setDireccionDeliverySelected(data);
         this.setDireccion(data);
       }
@@ -161,9 +182,49 @@ export class MainComponent implements OnInit {
     window.history.back();
   }
 
+  goCalificarComercio(index: number) {
+    const _pClaificar = this.listPedidoCalificar[index];
+    if ( _pClaificar ) {
+      const dataCalificado: DatosCalificadoModel = new DatosCalificadoModel;
+      dataCalificado.idcliente = this.infoClient.idcliente;
+      dataCalificado.idpedido = _pClaificar.idpedido;
+      dataCalificado.idsede = _pClaificar.idsede;
+      dataCalificado.tipo = 3;
+      dataCalificado.showNombre = true;
+      dataCalificado.showTitulo = true;
+      dataCalificado.showTxtComentario = true;
+      dataCalificado.nombre = _pClaificar.nomestablecimiento;
+      dataCalificado.titulo = 'Como calificas al comercio?';
+      dataCalificado.showMsjTankyou = true;
+
+    const _dialogConfig = new MatDialogConfig();
+      _dialogConfig.disableClose = true;
+      _dialogConfig.hasBackdrop = true;
+
+      _dialogConfig.data = {
+        dataCalificado: dataCalificado
+      };
+
+
+    const dialogRef =  this.dialog.open(DialogCalificacionComponent, _dialogConfig);
+    dialogRef.afterClosed().subscribe(
+      data => {
+        index++;
+        // console.log('index', index);
+        this.isShowCalificar = index < this.numComerciosCalificar;
+        this.goCalificarComercio(index);
+      }
+    );
+    }
+  }
+
   registarDirCliente() {
     this.verifyClientService.setIsDelivery(true);
     this.router.navigate(['/login-client']);
+  }
+
+  cerrarAllSession() {
+    localStorage.clear();
   }
 
 }

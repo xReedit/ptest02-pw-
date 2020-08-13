@@ -14,7 +14,8 @@
         </div>
     </div>    
 
-    <div class="i-body fw-100 fs-13">
+    <!-- [ngClass]="{'he2': !isOneTipoConsumo}" -->
+    <div class="i-body fw-100 fs-13" [ngClass]="{'he2': !isOneTipoConsumo}">
         <!-- imagen -->
         <ng-container *ngIf="item.img.length > 0">
             <div class="text-center border-bottom">
@@ -71,7 +72,7 @@
             </ng-container>
 
             <!-- especificaciones -->
-            <div class="mb-2">
+            <div class="mb-3">
                 <!-- <span class="text-bold">Instrucciones adicionales</span> -->
                 <mat-form-field class="w-100">
                     <input matInput placeholder="Agregue una indicacion" [(ngModel)]="item.indicaciones" (keyup)="setIndicaciones(txtIdicaciones.value)" name="indicaciones" #txtIdicaciones>

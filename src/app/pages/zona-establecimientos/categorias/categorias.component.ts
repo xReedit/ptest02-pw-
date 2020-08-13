@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimiento';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -15,6 +15,9 @@ import { EstablecimientoService } from 'src/app/shared/services/establecimiento.
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { EstadoPedidoModel } from 'src/app/modelos/estado.pedido.model';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
+import { Subject } from 'rxjs/internal/Subject';
+import { takeUntil } from 'rxjs/operators';
 // import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 
 // import { Subscription } from 'rxjs/internal/Subscription';
@@ -24,12 +27,13 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
   templateUrl: './categorias.component.html',
   styleUrls: ['./categorias.component.css']
 })
-export class CategoriasComponent implements OnInit {
+export class CategoriasComponent implements OnInit, OnDestroy {
   // rippleColor = 'rgb(255,238,88, 0.2)';
   loaderPage = true;
   listEstablecimientos: DeliveryEstablecimiento[];
 
-  codigo_postal_actual: string;
+  codigo_postal_actual: string; // codigo postal de direccion seleccionada
+  ciudad_actual: string; // ciudad de direccion seleccionada
   infoClient: SocketClientModel;
   isNullselectedDireccion = true;
   isSelectedDireccion = false;
@@ -40,6 +44,8 @@ export class CategoriasComponent implements OnInit {
   private idcategoria_selected: any;
   private isMismaDireccionSelectd = false; // si es la misma direccion el calculo de distancia y costo de servicio lo trae de cache
   // private veryfyClient: Subscription = null;
+
+  private unsubscribe$: Subject<any> = new Subject<any>();
 
   constructor(
     private crudService: CrudHttpService,
@@ -57,6 +63,11 @@ export class CategoriasComponent implements OnInit {
     // private navigatorService: NavigatorLinkService,
   ) { }
 
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
   ngOnInit() {
     // window.history.forward();
     // history.pushState(null, null, location.href);
@@ -65,9 +76,13 @@ export class CategoriasComponent implements OnInit {
     // };
     // history.pushState(null, null, document.title);
 
+
     // reseteamos
-    this.infoTokenService.infoUsToken.tiempoEntrega = null;
-    this.infoTokenService.set();
+    // this.infoTokenService.getInfoUs();
+    if ( this.infoTokenService?.infoUsToken?.tiempoEntrega ) {
+      this.infoTokenService.infoUsToken.tiempoEntrega = null;
+      this.infoTokenService.set();
+    }
 
 
     this.idcategoria_selected = localStorage.getItem('sys::cat');
@@ -94,9 +109,12 @@ export class CategoriasComponent implements OnInit {
     // this.loadEstablecimientos();
     this.infoClient = this.verifyClientService.getDataClient();
 
-    this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
+    this.listenService.isChangeDireccionDelivery$
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe((res: DeliveryDireccionCliente) => {
       if ( res ) {
         this.codigo_postal_actual = res.codigo || '0';
+        this.ciudad_actual = res.ciudad;
         this.isNullselectedDireccion = false;
         this.direccionCliente = res;
 
@@ -122,7 +140,7 @@ export class CategoriasComponent implements OnInit {
     this.loaderPage = true;
     const _data = {
       idsede_categoria: this.idcategoria_selected,
-      codigo_postal: this.codigo_postal_actual
+      codigo_postal: this.ciudad_actual // this.codigo_postal_actual, cambiamos el 310720
     };
 
     this.listEstablecimientos = [];
@@ -130,6 +148,7 @@ export class CategoriasComponent implements OnInit {
     this.crudService.postFree(_data, 'delivery', 'get-establecimientos', false)
       .subscribe( (res: any) => {
         // setTimeout(() => {
+          // console.log(res);
           this.listEstablecimientos = res.data;
           this.listEstablecimientos.map((dirEstablecimiento: DeliveryEstablecimiento) => {
             dirEstablecimiento.visible = true;
@@ -148,41 +167,67 @@ export class CategoriasComponent implements OnInit {
   }
 
   private async setCalcDistanciaComercio() {
-    const listEsblecimientosCache = this.isMismaDireccionSelectd ? this.establecimientoService.getEstableciminetosCache() : [];
+    // const listEsblecimientosCache = this.isMismaDireccionSelectd ? this.establecimientoService.getEstableciminetosCache() : [];
+    let listEsblecimientosCache = <any>this.establecimientoService.getEstableciminetosCache();
+
+    // buscamos si la direccion del cliente ya fue cacheada
+    listEsblecimientosCache = listEsblecimientosCache.filter(e => e.idcliente_pwa_direccion ===  this.direccionCliente.idcliente_pwa_direccion)[0];
+    listEsblecimientosCache = listEsblecimientosCache ? listEsblecimientosCache.listEstablecimientos : [];
+
     const lentEstCache = listEsblecimientosCache.length;
     const lentArray = this.listEstablecimientos.length;
     let _dirEstablecimiento: any;
+    let _establecimientoEnCache: any;
     let yaCalculado = false;
 
     // let _sleep = 0;
+    // console.log('calc distancia');
     for (let index = 0; index < lentArray; index++) {
+        yaCalculado  = false;
         _dirEstablecimiento = <DeliveryEstablecimiento>this.listEstablecimientos[index];
+        _establecimientoEnCache = listEsblecimientosCache.filter(e => e.idsede === _dirEstablecimiento.idsede)[0];
+
+
 
         // si la direccion es la misma
-        if ( this.isMismaDireccionSelectd ) {
-          // buscamos en cache
-          if ( lentEstCache > 0 ) {
-            const _estCache = <DeliveryEstablecimiento>listEsblecimientosCache.filter(e => e.idsede === _dirEstablecimiento.idsede)[0];
-            if ( _estCache ) {
-              _dirEstablecimiento.c_servicio = _estCache.c_servicio;
-              _dirEstablecimiento.distancia_km = _estCache.distancia_km;
-              yaCalculado  = true;
-            }
-          }
+        // if ( this.isMismaDireccionSelectd ) {
+        //   // buscamos en cache
+        //   if ( lentEstCache > 0 ) {
+        //     const _estCache = <DeliveryEstablecimiento>listEsblecimientosCache.filter(e => e.idsede === _dirEstablecimiento.idsede)[0];
+        //     if ( _estCache ) {
+        //       _dirEstablecimiento.c_servicio = _estCache.c_servicio;
+        //       _dirEstablecimiento.distancia_km = _estCache.distancia_km;
+        //       yaCalculado  = true;
+        //     }
+        //   }
 
+        // }
+
+        if ( _establecimientoEnCache ) {
+          // console.log('establecimiento cacheado', _establecimientoEnCache);
+          _dirEstablecimiento.distancia_km = _establecimientoEnCache.distancia_km;
+          _dirEstablecimiento.c_servicio = this.calcDistanceService.calCostoDistancia(_dirEstablecimiento, _establecimientoEnCache.distancia_km);
+          yaCalculado  = true;
         }
 
         if ( _dirEstablecimiento.cerrado === 0 && !yaCalculado) {
-          // console.log('calc distance');
+          // console.log('calc distance', _dirEstablecimiento);
           // _sleep = 600;
-          this.calcDistanceService.calculateRoute(this.direccionCliente, _dirEstablecimiento);
+          // this.calcDistanceService.calculateRoute(this.direccionCliente, _dirEstablecimiento, false);
+          this.calcDistanceService.calculateRouteNoApi(this.direccionCliente, _dirEstablecimiento, false);
+          _dirEstablecimiento.calcApiGoogle = false;
           listEsblecimientosCache.push(_dirEstablecimiento);
           // await this.sleep(600);
         }
     }
 
     // guardar lista en cache
-    this.establecimientoService.setEstableciminetosCache(listEsblecimientosCache);
+    const establecimientoToCache = {
+      idcliente_pwa_direccion: this.direccionCliente.idcliente_pwa_direccion,
+      listEstablecimientos: listEsblecimientosCache
+    };
+
+    this.establecimientoService.setEstableciminetosCache(establecimientoToCache);
   }
 
   sleep(ms: number) {
@@ -197,12 +242,19 @@ export class CategoriasComponent implements OnInit {
   itemSelected($event: DeliveryEstablecimiento) {
     // console.log('establecimiento seleccionada', $event);
 
+    // busca en el cache si ya calculo la distancia con la api de google
+    // const _establecimientoCache = this.establecimientoService.getFindDirClienteCacheEstableciemto(this.direccionCliente, $event);
+    // if ( _establecimientoCache.calcApiGoogle ) {
+    //    this.calcDistanceService.calculateRoute(this.direccionCliente, $event, false);
+    // }
+
     this.socketService.closeConnection();
 
     this.verifyClientService.setIdSede($event.idsede);
     this.verifyClientService.setIdOrg($event.idorg);
     this.verifyClientService.setIsDelivery(true);
 
+    // console.log('establecimiento selected', $event);
     this.establecimientoService.set($event);
 
     this.router.navigate(['/callback-auth']);

@@ -155,7 +155,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     this.crudService.postFree(dataClient, 'transaction', 'get-email-client', false).subscribe((res: any) => {
       this.dataClientePago.email = res.data[0].correo ? res.data[0].correo : '';
 
-      this.dataClientePago.email = 'integraciones.visanet@necomplus.com'; // desarrollo
+      // this.dataClientePago.email = 'integraciones.visanet@necomplus.com'; // desarrollo
       // // this.dataClientePago.email = 'review@cybersource.com';
       // this.dataClientePago.isSaveEmail = false;
 

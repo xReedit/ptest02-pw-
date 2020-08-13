@@ -11,6 +11,12 @@ const routes: Routes = [
   // component: LayoutMainComponent,
   // children: [
     {
+      path: 'aa',
+      loadChildren: () => import('./pages/cliente-profile/cliente-profile.module').then(m => m.ClienteProfileModule),
+      // canActivate: [ClienteProfileGuard],
+      data: { 'tituloModulo': 'Cliente Profile' }
+    },
+    {
       path: '',
       loadChildren: () => import('./pages/inicio/inicio.module').then(m => m.InicioModule),
       data: { 'tituloModulo': 'Inicio' }

@@ -4,19 +4,21 @@ import { MaterialModule } from 'src/app/core/material/material.module';
 import { PagarCuentaComponent } from './pagar-cuenta/pagar-cuenta.component';
 import { PagarCuentaRoutingModule } from './pagar.cuenta.routing';
 import { PagoRespuestaComponent } from './pago-respuesta/pago-respuesta.component';
-import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
+import { ComponentesModule } from 'src/app/componentes/componentes.module';
+// import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 
 
 @NgModule({
   declarations: [
     PagarCuentaComponent,
     PagoRespuestaComponent,
-    DialogDesicionComponent
+    // DialogDesicionComponent
   ],
   imports: [
     CommonModule,
     PagarCuentaRoutingModule,
-    MaterialModule
+    MaterialModule,
+    ComponentesModule
   ],
   // entryComponents: [
   //   DialogDesicionComponent

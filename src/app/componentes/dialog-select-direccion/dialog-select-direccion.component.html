@@ -21,5 +21,5 @@
 </div>
 
 <div [hidden]="!isShowAddDireccion">
-    <app-agregar-direccion (saveDireccionOk)="setDireccion($event)" [isGuardarDireccion]="isGuardarDireccion" ></app-agregar-direccion>
+    <app-agregar-direccion *ngIf="isShowAddDireccion" (saveDireccionOk)="setDireccion($event)" [isGuardarDireccion]="isGuardarDireccion" [idClienteBuscar]="_idClienteBuscar"></app-agregar-direccion>
 </div>

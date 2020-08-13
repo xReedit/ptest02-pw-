@@ -17,4 +17,5 @@ export class SocketClientModel {
     isDelivery: boolean;
     direccionEnvioSelected: DeliveryDireccionCliente;
     telefono: string;
+    systemOS: string;
 }

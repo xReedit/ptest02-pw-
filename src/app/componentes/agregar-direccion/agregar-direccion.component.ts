@@ -21,11 +21,18 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   zoom: number;
   address: string;
   loader = 0;
+
+  isUsCliente = true; // si el usuario es cliente o usuario autorizado
+  countMoveMap = 0;
+
+  @Input() idClienteBuscar: number; // cuando el pedido lo toma el mismo comercio
+
   private isChangeDireccion = true;
   private geoCoder;
 
   registerForm: FormGroup;
   dataCliente: DeliveryDireccionCliente;
+  checkekFirstOption = true;
   // dataCliente: any = {
   //   isvalid: false,
   //   idcliente: '',
@@ -73,6 +80,9 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   ngOnInit() {
 
     this.dataCliente = new DeliveryDireccionCliente();
+    this.inforTokenService.getInfoUs();
+    this.isUsCliente = this.inforTokenService.getInfoUs().isCliente;
+    // console.log('this.inforTokenService.getInfoUs()', this.inforTokenService.getInfoUs());
     this.loadForm();
   }
 
@@ -89,7 +99,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
       this.geoCoder = new google.maps.Geocoder;
 
       const autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
-        types: ['address'],
+        // types: ['address'],
         componentRestrictions: { country: 'pe' }
       });
       autocomplete.addListener('place_changed', () => {
@@ -97,7 +107,10 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
           // get the place result
           const place: google.maps.places.PlaceResult = autocomplete.getPlace();
 
-          console.log('place', place);
+          // console.log('place', place);
+          this.countMoveMap = 0;
+          this.dataMapa = place; // para extract data
+          this.address = place.formatted_address;
 
           // verify result
           if (place.geometry === undefined || place.geometry === null) {
@@ -109,6 +122,10 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
           this.longitude = place.geometry.location.lng();
           this.zoom = 17;
           this.isChangeDireccion = false;
+
+          // actualiza marcador pantalla
+          this.mapCenter.lng = this.latitude;
+          this.mapCenter.lat = this.longitude;
 
           setTimeout(() => {
             this.isChangeDireccion = true;
@@ -125,10 +142,11 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   private setCurrentLocation() {
 
     // se pide la direccion desde el comercio // registrar pedido
-    if (this.inforTokenService.getInfoUs().isCliente === false ) {
+    if (this.isUsCliente === false ) {
       this.dataInfoSede = this.miPedidoService.objDatosSede.datossede[0];
       this.latitude = this.dataInfoSede.latitude;
       this.longitude = this.dataInfoSede.longitude;
+      this.zoom = 17;
       return;
     }
 
@@ -149,7 +167,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     this.longitude = $event.coords.lng;
     // console.log('this.latitude markter',  this.latitude);
     // console.log('this.longitude markter',  this.longitude);
-    this.getAddress(this.latitude, this.longitude);
+    // this.getAddress(this.latitude, this.longitude);
   }
 
   getAddress(latitude, longitude) {
@@ -164,16 +182,19 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
           this.zoom = 17;
           this.address = results[0].formatted_address;
           this.dataMapa = results[0];
+
+          // console.log('this.dataMapa', this.dataMapa);
+
           if ( this.isChangeDireccion ) {
             this.dataCliente.direccion = this.address;
           }
 
           // si es usuario comercio valida la direccion del cliente
-          if ( !this.inforTokenService.getInfoUs().isCliente ) {
-            const codigo_postal = this.searchTypeMap('postal_code');
+          if ( !this.isUsCliente ) {
+            const codigo_postal = this.searchTypeMap('locality');
             // console.log('codigo_postal', codigo_postal);
             // console.log('this.dataInfoSede', this.dataInfoSede);
-            if ( codigo_postal !== this.dataInfoSede.codigo_postal ) {
+            if ( codigo_postal.toLowerCase().trim() !== this.dataInfoSede.ciudad.toLowerCase().trim() ) {
               this.isDireccionValid = false;
               // window.alert('El servicio no esta disponible en esta ubicacion');
             } else {
@@ -198,7 +219,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
       referencia: [this.dataCliente.referencia, Validators.required],
       longitude: [this.longitude, Validators.required],
       latitude: [this.latitude, Validators.required],
-      titulo: this.dataCliente.titulo || ''
+      titulo: this.dataCliente.titulo || 'Casa'
     });
 
 
@@ -228,7 +249,8 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     // this.longitude = this.mapCenter.lng;
 
     // this.loader = 1;
-    this.dataCliente.idcliente = this.verifyClientService.getDataClient().idcliente;
+    this.dataCliente.direccion = this.address;
+    this.dataCliente.idcliente = this.isUsCliente ? this.verifyClientService.getDataClient().idcliente : this.idClienteBuscar;
     this.dataCliente.longitude = this.mapCenter.lng;
     this.dataCliente.latitude = this.mapCenter.lat;
     // this.dataCliente.referencia =
@@ -237,6 +259,8 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     this.dataCliente.departamento = this.searchTypeMap('administrative_area_level_1');
     this.dataCliente.pais = this.searchTypeMap('country');
     this.dataCliente.codigo = this.searchTypeMap('postal_code');
+
+
     // this.dataCliente.isvalid = true;
 
     // this.dataMaps.emit(this.dataCliente);
@@ -259,6 +283,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
 
   saveDireccion() {
     this.loader = 1;
+    this.dataCliente.titulo = this.dataCliente.titulo || 'Casa';
     if ( !this.isGuardarDireccion ) { // si no guarda retorna solo la direccion //
       this.loader = 2;
       this.dataCliente.idcliente_pwa_direccion = null;
@@ -266,13 +291,37 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    // this.mapCenter.lat, this.mapCenter.lng
+
+    // console.log('this.mapCenter', this.mapCenter);
+    if ( this.isUsCliente && this.countMoveMap > 1) {
+      this.getAddress(this.mapCenter.lat, this.mapCenter.lng);
+
+      setTimeout(() => {
+        this.guardarDireccion();
+        this.setBdDireccion();
+      }, 1500);
+
+    } else {
+      this.setBdDireccion();
+    }
+
+    // actualiza las coordenadas segun position del marcador
+    // this.dataCliente.latitude = this.mapCenter.lat;
+    // this.dataCliente.longitude = this.mapCenter.lng;
+
+  }
+
+  private setBdDireccion() {
     this.crudService.postFree(this.dataCliente, 'cliente', 'new-direccion', false)
       .subscribe((res: any) => {
         setTimeout(() => {
           this.loader = 2;
           setTimeout(() => {
+            // console.log('new-direccion', res);
             this.dataCliente.idcliente_pwa_direccion = res.data[0].idcliente_pwa_direccion;
             this.saveDireccionOk.emit(this.dataCliente);
+            this.countMoveMap = 1;
           }, 500);
         }, 1000);
         // console.log(res);
@@ -306,8 +355,9 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   }
 
   idleMap() {
+    this.countMoveMap++;
     // console.log('this.mapCenter', this.mapCenter);
-    this.getAddress(this.mapCenter.lat, this.mapCenter.lng);
+    // this.getAddress(this.mapCenter.lat, this.mapCenter.lng);
   }
 
   centerChange(event: any) {
@@ -324,6 +374,11 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   clickmap() {
     // console.log('click map');
     this.isChangeDireccion = true;
+  }
+
+  confirmarDireccion() {
+    this.countMoveMap = 1;
+    this.getAddress(this.mapCenter.lat, this.mapCenter.lng);
   }
 
 }

@@ -166,7 +166,7 @@ export class MipedidoService {
       }
 
       // this.laCartaObjSource.next(this.objCarta);
-      console.log('objCartaCarta', this.objCarta);
+      // console.log('objCartaCarta', this.objCarta);
     // }, 1000);
   }
 
@@ -238,7 +238,7 @@ export class MipedidoService {
     });
 
 
-    console.log('this.objCarta descuento', this.objCarta);
+    // console.log('this.objCarta descuento', this.objCarta);
   }
 
   private aplicarDescuentoImte(i: ItemModel, _dsc: number) {
@@ -380,8 +380,11 @@ export class MipedidoService {
     itemInPedido.cantidad = cantItem;
 
     // actualizar cantidades en item carta
-    item = idTpcItemResumenSelect ? this.findItemCarta(item) : item;
-    item = this.findItemCarta(item);
+    if ( idTpcItemResumenSelect ) {
+      // console.log('idTpcItemResumenSelect addItem2', item);
+      item = this.findItemCarta(item);
+    }
+    // item = idTpcItemResumenSelect ? this.findItemCarta(item) : item;
 
     // emitir item modificado
     item.sumar = sumar;
@@ -426,7 +429,7 @@ export class MipedidoService {
     this.socketService.emit('itemModificado', item);
 
     // console.log('listItemsPedido', this.listItemsPedido);
-    console.log('mipedido', this.miPedido);
+    // console.log('mipedido', this.miPedido);
     // console.log('itemModificado en add', item);
     // console.log('itemModificado en add', JSON.stringify(item));
 
@@ -639,6 +642,7 @@ export class MipedidoService {
 
   // del socket nuevo item from monitoreo stock
   addItemInCarta(newItem: any) {
+    // console.log('addItemInCarta', newItem);
     const newItemFind = this.findItemCarta(newItem);
     if ( newItemFind ) { // update
       // console.log('update');
@@ -707,13 +711,13 @@ export class MipedidoService {
     let rpt: ItemModel;
     this.objCarta.carta.map((cat: CategoriaModel) => {
       cat.secciones.map((sec: SeccionModel) => {
-        const _rpt = sec.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0];
-        if (_rpt) {
-          rpt = _rpt;
-          return rpt;
-        }
+          const _rpt = sec.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0];
+          if (_rpt) {
+            rpt = _rpt;
+            return rpt;
+          }
+        });
       });
-    });
 
     return rpt;
   }
@@ -1097,7 +1101,7 @@ export class MipedidoService {
         // item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
         //   tpc.cantidad_seleccionada = 0;
         // });
-
+        // console.log('resetTpcCarta', item);
         const _item = this.findItemCarta(item);
         _item.indicaciones = '';
         _item.cantidad_seleccionada = 0;
@@ -1512,9 +1516,10 @@ export class MipedidoService {
 
           rpt.id = -2;
           rpt.descripcion = 'Entrega';
+          rpt.isDeliveryApp = true;
           rpt.esImpuesto = 0;
           rpt.visible = true;
-          rpt.quitar = false;
+          rpt.quitar = true;
           rpt.tachado = false;
           rpt.visible_cpe = false;
           rpt.importe = parseFloat(_costoServicio.toString()).toFixed(2);
@@ -1653,7 +1658,9 @@ export class MipedidoService {
           this.setCantidadItemModificadoPwa(res.item, _itemInCarta, parseInt(x.cantidad, 0), true);
         });
       } else {
+        if ( !res.item ) {return; }
         res = res.item;
+        // console.log('listenChangeCantItem onItemModificado', res);
         _itemInCarta = this.findItemCarta(res);
         this.setCantidadItemModificadoPwa(res, _itemInCarta);
       }
@@ -1706,6 +1713,7 @@ export class MipedidoService {
         });
       } else {
         res = res.item;
+        // console.log('listenChangeCantItem onItemResetCant', res);
         _itemInCarta = this.findItemCarta(res);
         _itemInCarta.cantidad = parseInt(res.cantidad.toString(), 0);
         _itemInCarta.subitems = res.subitems;

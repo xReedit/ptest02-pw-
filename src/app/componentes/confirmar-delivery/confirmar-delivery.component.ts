@@ -48,7 +48,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
   montoMinimoPedido = 10; // monto minimo del pedido
 
   // return for printer
-  private resData = {
+  resData = {
     idcliente: '',
     dni: '',
     nombre: '',
@@ -82,6 +82,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   dirEstablecimiento: DeliveryEstablecimiento;
 
+  isRain = false; // si esta lloviendo
+
   @Input()
   set listSubtotales(val: any) {
     this._listSubtotales = val;
@@ -108,6 +110,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   ngOnInit() {
 
+    // console.log('confirmar delivery');
 
     this.loadData();
 
@@ -122,9 +125,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.isComercioSolidaridad = _datosEstablecieminto.pwa_delivery_comercio_solidaridad === 1;
     this.titleInputDatoAdicional = this.isComercioSolidaridad ? 'Contacto' : 'Algún dato importante?';
 
-
-
-
+    // console.log(_datosEstablecieminto);
+    this.isRain = _datosEstablecieminto.is_rain === 1 ? true : false;
   }
 
   private getTiempoEntrega() {
@@ -355,6 +357,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   // cuando el recojo es en el local
   recalcularTotales(): void {
+    // this._listSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
     if ( this.isRecojoLocalCheked ) {
       // propina se vielve 0
       this.propinaSelected = {'idpropina': 1, 'value': 0 , 'descripcion': 'S/. 0', 'checked': true};
@@ -379,7 +382,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this._listSubtotales = this._listSubtotalesTmp;
     }
 
-    console.log('this._listSubtotales', this._listSubtotales);
+    // console.log('this._listSubtotales', this._listSubtotales);
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._listSubtotales)));
     this.infoTokenService.setPasoRecoger(this.isRecojoLocalCheked);
 
@@ -401,17 +404,17 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
 
   openDialogDireccion() {
-    // const dialogConfig = new MatDialogConfig();
+    const _DdialogConfig = new MatDialogConfig();
+    _DdialogConfig.disableClose = true;
+    _DdialogConfig.hasBackdrop = true;
+    _DdialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'],
+    _DdialogConfig.data = {
+      isGuardar: this.infoTokenService.infoUsToken.idcliente ? true : false, // no guarda sole devuelve los datos de la direccion
+      isFromComercio: true, // para empezar en la posicion del comercio
+      idClienteBuscar: this.infoTokenService.infoUsToken.idcliente // this.resData.idcliente
+    };
     // this.resData.idcliente =  this.resData.idcliente !== '' ? this.resData.idcliente : this.clienteSelectBusqueda ? this.clienteSelectBusqueda.idcliente : '';
-    const dialogRef = this.dialogDireccion.open(DialogSelectDireccionComponent, {
-      // panelClass: 'my-full-screen-dialog',
-      panelClass: ['my-dialog-orden-detalle', 'my-dialog-scrool'],
-      data: {
-        isGuardar: false, // no guarda sole devuelve los datos de la direccion
-        isFromComercio: true, // para empezar en la posicion del comercio
-        idClienteBuscar: this.resData.idcliente
-      }
-    });
+    const dialogRef = this.dialogDireccion.open(DialogSelectDireccionComponent, _DdialogConfig);
 
     dialogRef.afterClosed().subscribe(
       data => {
@@ -420,7 +423,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
         this.msjErrorDir = '';
         this.direccionCliente = <DeliveryDireccionCliente>data;
 
-        if ( this.direccionCliente.codigo !== this.infoEstablecimiento.codigo_postal ) {
+        // if ( this.direccionCliente.codigo !== this.infoEstablecimiento.codigo_postal ) {
+        if ( this.direccionCliente.ciudad.toLocaleLowerCase() !== this.infoEstablecimiento.ciudad.toLocaleLowerCase() ) {
           // el servicio no esta disponible en esta ubicacion
           // this.direccionCliente = this.direccionClienteIni;
           // this.infoToken.direccionEnvioSelected = null;
@@ -436,7 +440,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
         this.direccionCliente.idcliente_pwa_direccion = this.direccionCliente.idcliente_pwa_direccion === null ? 0 : this.direccionCliente.idcliente_pwa_direccion;
 
 
-        this.calcDistanceService.calculateRoute(<DeliveryDireccionCliente>data, this.dirEstablecimiento);
+        // console.log('calculateRoute from confirmar-delivery');
+        this.calcDistanceService.calculateRoute(<DeliveryDireccionCliente>data, this.dirEstablecimiento, false);
 
 
         // recalcular
@@ -471,7 +476,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     const dialogTpC = this.dialogTipoComprobante.open(DialogTiempoEntregaComponent, _dialogConfig);
     dialogTpC.afterClosed().subscribe((result: TiempoEntregaModel) => {
-        console.log('TiempoEntregaModel ==== ', result);
+        // console.log('TiempoEntregaModel ==== ', result);
         if ( result ) {
           this.infoTokenService.setTiempoEntrega(result);
           this.tiempoEntregaSelected = result;

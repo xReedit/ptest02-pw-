@@ -30,6 +30,7 @@ import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedid
 // import { throwToolbarMixedModesError } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
@@ -78,6 +79,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private isBtnPagoShow = false; // si el boton de pago ha sido visible entonces recarga la pagina de pago
 
+  private systemOS = ''; // sistema operativo cliente
+
   constructor(
     private miPedidoService: MipedidoService,
     private reglasCartaService: ReglascartaService,
@@ -91,7 +94,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router,
     private registrarPagoService: RegistrarPagoService,
-    private establecimientoService: EstablecimientoService
+    private establecimientoService: EstablecimientoService,
+    private utilService: UtilitariosService
     ) { }
 
   ngOnInit() {
@@ -99,6 +103,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // this.establecimientoService.get();
     // console.log('this.establecimientoService.establecimiento)', this.establecimientoService.establecimiento);
     // console.log('this.infoToken.getInfoUs()', this.infoToken.getInfoUs());
+    this.systemOS = this.utilService.getOS();
 
     this._miPedido = this.miPedidoService.getMiPedido();
 
@@ -176,6 +181,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       solo_llevar: false,
       delivery: false
     };
+
+    // traer los ultimos datos de comisiones
+    this.establecimientoService.getComsionEntrega();
   }
 
   pintarMiPedido() {
@@ -221,6 +229,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this.listenStatusService.isPagoSucces$
     .pipe(takeUntil(this.destroy$))
     .subscribe(res => {
+      if ( !res ) {return; }
       // toma la respuesta de pago
       // const resPago = JSON.parse(localStorage.getItem('sys::transaction-response'));
       // const resPagoIsSucces = resPago ? !resPago.error : false;
@@ -426,6 +435,14 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private enviarPedido(): void {
 
+    // para asegurar que marque delivery si es
+    // console.log('aaa');
+    this.checkTiposDeConsumo();
+
+    // get subtotales // si es delivery porque puede que modifique la distancia y modifica el precio // que se va ver en comanda
+    this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
+    localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
+
     // usuario o cliente
     const dataUsuario = this.infoToken.getInfoUs();
 
@@ -460,12 +477,14 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       isSoloLLevar: this.isSoloLLevar,
       idregistro_pago: 0,
       // idregistro_pago: this.isSoloLLevar ? this.registrarPagoService.getDataTrasaction().idregistro_pago : 0,
-      arrDatosDelivery: this.frmDelivery
+      arrDatosDelivery: this.frmDelivery,
+      systemOS: this.systemOS
     };
 
     // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
     const isClienteBuscaRepartidores = this.frmDelivery.buscarRepartidor ? this.frmDelivery.buscarRepartidor : this.isDeliveryCliente || false;
-    const _subTotalesSave = _p_header.delivery === 1 ? this.frmDelivery.subTotales : this._arrSubtotales;
+    // const _subTotalesSave = _p_header.delivery === 1 ? this.frmDelivery.subTotales : this._arrSubtotales;
+    const _subTotalesSave = this._arrSubtotales;
 
     const dataPedido = {
       p_header: _p_header,
@@ -519,11 +538,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     if ( this.infoToken.infoUsToken.isHayDescuento ) {
       const _listDsc = this.miPedidoService.getIdsDescuentos();
       dataSend.dataDescuento = _listDsc;
-      console.log('_listDsc', _listDsc);
+      // console.log('_listDsc', _listDsc);
     }
 
     // enviar a guardar // guarda pedido e imprime comanda
-    console.log('dataSend', dataSend);
+    // console.log('dataSend', dataSend);
     this.socketService.emit('nuevoPedido', dataSend);
 
 

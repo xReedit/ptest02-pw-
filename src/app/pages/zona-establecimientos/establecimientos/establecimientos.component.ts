@@ -5,6 +5,9 @@ import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.ser
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
+import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
+import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
+import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 // import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 
 
@@ -25,15 +28,17 @@ export class EstablecimientosComponent implements OnInit {
     // private navigatorService: NavigatorLinkService,
     private router: Router,
     private verifyClientService: VerifyAuthClientService,
-    private listenService: ListenStatusService
+    private listenService: ListenStatusService,
+    private pushNotificationSerice: NotificacionPushService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit() {
 
-    console.log('this.verifyClientService.getDataClient()', this.verifyClientService.getDataClient());
+    // console.log('this.verifyClientService.getDataClient()', this.verifyClientService.getDataClient());
     const _dataDir = this.verifyClientService.getDataClient();
     this.isClienteLogueado = _dataDir.isCliente;
-    this.vistaInicio = !_dataDir.direccionEnvioSelected ? 0 : _dataDir.direccionEnvioSelected.options.vista;
+    this.vistaInicio = !_dataDir.direccionEnvioSelected ? 0 : _dataDir.direccionEnvioSelected.options ? _dataDir.direccionEnvioSelected.options.vista : 0;
     // this.goComercios();
     // console.log('establecimiento');
     this.xLoadCategoria();
@@ -46,11 +51,14 @@ export class EstablecimientosComponent implements OnInit {
 
     this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
       if ( res ) {
-        this.vistaInicio = res.options.vista;
+        this.vistaInicio = res.options.vista ? res.options.vista : 0 ;
 
         // this.goComercios();
       }
     });
+
+    // obtener permiso de notificaciones
+    this.lanzarPermisoNotificationPush();
   }
 
   private xLoadCategoria() {
@@ -77,7 +85,8 @@ export class EstablecimientosComponent implements OnInit {
     localStorage.setItem('sys:subcat', btoa(_subCategorias));
     localStorage.setItem('sys::cat', idsede_categoria.toString());
     setTimeout(() => {
-      this.router.navigate(['/zona-delivery/categorias'], { queryParams: { id: idsede_categoria } });
+      // this.router.navigate(['/zona-delivery/categorias'], { queryParams: { id: idsede_categoria } });
+      this.router.navigate(['/zona-delivery/categorias']);
     }, 300);
   }
 
@@ -93,6 +102,31 @@ export class EstablecimientosComponent implements OnInit {
     setTimeout(() => {
       this.router.navigate(['/zona-delivery/categorias']);
     }, 300);
+  }
+
+  private lanzarPermisoNotificationPush() {
+    // this.pushNotificationSerice.suscribirse(option);
+
+    if ( this.pushNotificationSerice.getIsTienePermiso() ) {
+      this.pushNotificationSerice.suscribirse();
+      return;
+    }
+
+    // si no tiene permiso le pregunta
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+    _dialogConfig.data = {idMjs: 1};
+
+    // console.log('show dialog DialogDesicionComponent');
+    const dialogReset = this.dialog.open(DialogDesicionComponent, _dialogConfig);
+    dialogReset.afterClosed().subscribe(result => {
+      if (result ) {
+        // console.log('result dialog DialogDesicionComponent', result);
+        // this.suscribirse();
+        this.pushNotificationSerice.suscribirse();
+      }
+    });
   }
 
 }

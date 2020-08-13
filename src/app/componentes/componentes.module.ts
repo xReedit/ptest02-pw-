@@ -21,7 +21,7 @@ import { MapaSoloComponent } from './mapa-solo/mapa-solo.component';
 import { DirectionsMapDirectiveDirective } from '../shared/directivas/directions-map-directive.directive';
 import { CompPedidoDetalleComponent } from './comp-pedido-detalle/comp-pedido-detalle.component';
 import { CompCalificacionComponent } from './comp-calificacion/comp-calificacion.component';
-// import { DialogDesicionComponent } from './dialog-desicion/dialog-desicion.component';
+import { DialogDesicionComponent } from './dialog-desicion/dialog-desicion.component';
 // import { DialogSelectDireccionComponent } from './dialog-select-direccion/dialog-select-direccion.component';
 
 import { StarRatingModule } from 'angular-star-rating';
@@ -52,7 +52,7 @@ import { TiempoProgramadoComponent } from './tiempo-programado/tiempo-programado
     DialogSelectDireccionComponent,
     DialogTiempoEntregaComponent,
     TiempoProgramadoComponent,
-    // DialogDesicionComponent,
+    DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
   imports: [
@@ -85,8 +85,8 @@ import { TiempoProgramadoComponent } from './tiempo-programado/tiempo-programado
     DialogCalificacionComponent,
     DialogSelectDireccionComponent,
     DialogTiempoEntregaComponent,
-    TiempoProgramadoComponent
-    // DialogDesicionComponent
+    TiempoProgramadoComponent,
+    DialogDesicionComponent
   ],
 
   // entryComponents: [

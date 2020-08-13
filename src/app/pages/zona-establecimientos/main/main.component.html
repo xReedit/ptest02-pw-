@@ -22,6 +22,14 @@
               <div matRipple class="border-bottom p-3 xCursor">
                 Descuentos y promociones
               </div>
+              <div matRipple class="border-bottom p-3 xCursor d-flex justify-content-between" [routerLink]="['../']" (click)="cerrarAllSession()">
+                <div>
+                  Cerrar Session
+                </div>
+                <div>
+                    <i class="fa fa-key"></i>
+                </div>
+              </div>
               <div matRipple class="border-bottom p-3 xCursor" [routerLink]="['../']">
                 Cerrar
               </div>
@@ -38,7 +46,10 @@
         <div matRipple class="text-center" (click)="openDialogDireccion()">
             <span class="pl-2 fs-13 fw-100 text-puntos">{{ nomDireccionCliente }}</span>
         </div>
-        <i class="fa fa-user-circle-o pl-2" aria-hidden="true" (click)="drawer.toggle()"></i>
+        <div class="d-flex">
+          <!-- <i class="fa fa-phone-square"></i> -->
+          <i class="fa fa-user-circle-o pl-2" aria-hidden="true" (click)="drawer.toggle()"></i>
+        </div>
     </div>
 
     
@@ -56,6 +67,11 @@
             Indica dirección de entrega
           </span>
         </div>
+      </div>
+
+      <!-- comercios por calificar -->
+      <div *ngIf="isShowCalificar" matRipple class="content-paso-ini text-center xCursor border animated fadeInDown" [ngClass]="{'fadeOutUp': !isShowCalificar}" (click)="goCalificarComercio(0)">
+        <span class="text-secondary fs-12"> <i class="fa fa-star text-warning"></i> Califique al comercio de su último pedido.</span>
       </div>
 
 

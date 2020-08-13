@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimiento';
 import { CrudHttpService } from './crud-http.service';
+import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -51,12 +53,89 @@ export class EstablecimientoService {
     });
   }
 
-  getEstableciminetosCache(): any {
+  // busca la direccion del cliente en el cache de establecimientos
+  // para devolver el costo de entrega
+  getFindDirClienteCacheEstableciemto(direccionCliente: DeliveryDireccionCliente, dirEstablecimiento: DeliveryEstablecimiento): DeliveryEstablecimiento {
+    let _establecimientoEnCache = null;
+    let listEsblecimientosCache = <any>this.getEstableciminetosCache();
+    listEsblecimientosCache = listEsblecimientosCache.filter(e => e.idcliente_pwa_direccion ===  direccionCliente.idcliente_pwa_direccion)[0];
+
+    if ( listEsblecimientosCache ) {
+      listEsblecimientosCache = listEsblecimientosCache ? listEsblecimientosCache.listEstablecimientos : [];
+      _establecimientoEnCache = listEsblecimientosCache.filter(e => e.idsede === dirEstablecimiento.idsede)[0];
+    }
+
+    // console.log('establecimiento cacheado', _establecimientoEnCache);
+    return _establecimientoEnCache;
+  }
+
+  getEstableciminetosCache(): any[] {
     const listEsblecimientosCache = localStorage.getItem('sys:ech');
     return listEsblecimientosCache ? JSON.parse(atob(listEsblecimientosCache)) : [];
   }
 
   setEstableciminetosCache(list: any) {
-    localStorage.setItem('sys:ech', btoa(JSON.stringify(list)));
+    // const _establecimientoCache = this.getEstableciminetosCache();
+    const establecimientosCache = <any>this.getEstableciminetosCache();
+    const findEstablecimiento = establecimientosCache.filter(e => e.idcliente_pwa_direccion ===  list.idcliente_pwa_direccion)[0];
+
+    if ( findEstablecimiento ) {
+      list.listEstablecimientos.map(e => {
+        let isExistEstablecimiento = findEstablecimiento.listEstablecimientos.filter(x => x.idsede === e.idsede )[0];
+        if ( isExistEstablecimiento ) {
+          isExistEstablecimiento = e;
+        } else {
+          findEstablecimiento.listEstablecimientos.push(e);
+        }
+      });
+      list.listEstablecimientos = findEstablecimiento.listEstablecimientos;
+    } else {
+      establecimientosCache.push(list);
+    }
+
+    localStorage.setItem('sys:ech', btoa(JSON.stringify(establecimientosCache)));
   }
+
+  // trae las ultima comision
+  getComsionEntrega() {
+    const _dirEstablecimineto = this.get();
+    if (_dirEstablecimineto.pwa_delivery_hablitar_calc_costo_servicio === 1) {
+      const _dataSend = {
+        codigo_postal: _dirEstablecimineto.codigo_postal
+      };
+      this.crudService.postFree(_dataSend, 'pedido', 'get-last-comsion-entrega-sede', false)
+      .subscribe(res => {
+        const _data = res.data[0];
+        _dirEstablecimineto.c_minimo = _data.c_minimo;
+        _dirEstablecimineto.c_km = _data.c_km;
+        this.set(_dirEstablecimineto);
+        // console.log(res);
+      });
+    }
+  }
+
+
+  getClienteAutocomplete(search: string): Observable<any[]> {
+    const _dataSend = { buscar: search };
+    return new Observable(observer => {
+      this.crudService.postFree(_dataSend, 'pedido', 'get-find-cliente-by-name', true)
+      .subscribe((res: any) => {
+        observer.next(res.data);
+      });
+
+    });
+  }
+
+  // trae los ultimos pedidos que falta calificar
+  getComerciosXCalifcar(idcliente: number): Observable<any[]> {
+    const _dataSend = { idcliente: idcliente };
+    return new Observable(observer => {
+      this.crudService.postFree(_dataSend, 'delivery', 'get-comercio-x-calificar', false)
+      .subscribe((res: any) => {
+        observer.next(res.data);
+      });
+
+    });
+  }
+
 }

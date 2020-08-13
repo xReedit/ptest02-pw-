@@ -23,7 +23,7 @@ export class ItemComercioComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    console.log('this.itemEstablecimiento', this.itemEstablecimiento);
+    // console.log('this.itemEstablecimiento', this.itemEstablecimiento);
     this.isCerrado = this.itemEstablecimiento.cerrado === 1 ? true : false;
     this.isComercioAceptaPedidoProgramado = this.itemEstablecimiento.pwa_delivery_habilitar_pedido_programado === 1 && this.isCerrado;
     this.amPm = this.itemEstablecimiento.hora_ini ? parseInt(this.itemEstablecimiento.hora_ini.split(':')[0], 0) > 12 ? 'PM' : 'AM' : '';

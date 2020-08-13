@@ -23,10 +23,16 @@ export class NotificacionPushService {
 
     // this.showMessages();
 
+    // this.swPush.notificationClicks.subscribe( event => {
+    //   // console.log('Received notification: ', event);
+    //   const url = event.notification.data.url;
+    //   window.open(url, '_blank');
+    // });
+
     this.swPush.notificationClicks.subscribe( event => {
-      // console.log('Received notification: ', event);
-      const url = event.notification.data.url;
-      window.open(url, '_blank');
+      // const url = event.notification.data.url;
+      // window.location.reload();
+      // window.open('reparto.papaya.com.pe');
     });
   }
 
@@ -67,6 +73,8 @@ export class NotificacionPushService {
       suscripcion: _subscription,
       idcliente: this.infoTokenService.infoUsToken.idcliente
     };
+
+    console.log('push', _data);
 
     this.crudService.postFree(_data, 'push', 'suscripcion', false)
       .subscribe(res => console.log(res));

@@ -1,7 +1,8 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, Inject } from '@angular/core';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-seleccionar-direccion',
@@ -18,6 +19,7 @@ export class SeleccionarDireccionComponent implements OnInit {
   idClienteDirecciones: number;
 
   constructor(
+    @Inject(MAT_DIALOG_DATA) public data: any,
     private crudService: CrudHttpService,
     private verifyClientService: VerifyAuthClientService,
   ) { }
@@ -28,11 +30,13 @@ export class SeleccionarDireccionComponent implements OnInit {
     // console.log(this.infoClienteLogueado);
 
     this.loadDireccion();
+    // console.log('load direcciones');
   }
 
   loadDireccion() {
     // si es 0 no cliente nuevo
-    if ( this.idClienteDirecciones.toString() === '0' ) {return; }
+    this.listDirecciones = [];
+    if ( !this.idClienteDirecciones || this.idClienteDirecciones.toString() === '0' ) {return; }
 
 
     const _dataClientDir = {
@@ -43,14 +47,16 @@ export class SeleccionarDireccionComponent implements OnInit {
 
     this.crudService.postFree(_dataClientDir, 'delivery', 'get-direccion-cliente', false)
       .subscribe((res: any) => {
-        console.log('direcciones', res);
+        // console.log('direcciones', res);
         this.listDirecciones = res.data;
+        // console.log('this.listDirecciones', this.listDirecciones);
 
         if ( this.idClienteBuscar ) {return; }
+
         // si solo hay una direccion selecciona
-        if (this.listDirecciones.length === 1 && this.infoClienteLogueado.direccionEnvioSelected === null ) {
-          this.direccionSelected.emit(this.listDirecciones[0]);
-        }
+        // if (this.listDirecciones.length === 1 && this.infoClienteLogueado.direccionEnvioSelected === null ) {
+          // this.direccionSelected.emit(this.listDirecciones[0]);
+        // }
       });
   }
 

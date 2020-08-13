@@ -20,9 +20,27 @@
       "resources": {
         "files": [
           "/assets/**",
-          "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
+          "/assets/images/**",
+          "/assets/images/icon-app/**",
+          "/*.(eot|svg|cur|jpg|jpeg|png|PNG|webp|gif|otf|ttf|woff|woff2|ani)"
         ]
       }
     }
-  ]
+  ],
+  "dataGroups": [
+    {
+        "name": "dynamicResources",
+        "urls": [
+            "**/file/*.jpg",
+            "**/file/*.jpeg",
+            "**/file/*.png",            
+            "**/print/logo/*.jpg",
+            "**/print/logo/*.png"
+        ],
+        "cacheConfig": {
+            "maxSize": 1500,
+            "maxAge": "7d"
+        }
+    }
+]
 }

@@ -448,6 +448,14 @@ p, span, div {
 	animation-name: xwobble;
   }
 
+.text-puntos-suspensivos {
+	width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
 /* pulse llamada atencion */
 /* numero de items en pedido */
 .div-spinner {

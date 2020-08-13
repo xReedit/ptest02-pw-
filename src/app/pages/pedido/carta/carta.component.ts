@@ -19,6 +19,8 @@ import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { URL_IMG_CARTA } from 'src/app/shared/config/config.const';
 import { Subscription } from 'rxjs';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
 
 
 
@@ -89,6 +91,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       private listenStatusService: ListenStatusService,
       private infoToken: InfoTockenService,
       private dialog: MatDialog,
+      private establecimientoService: EstablecimientoService,
+      private calcDistanciaService: CalcDistanciaService
       ) {
 
   }
@@ -102,6 +106,13 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.detectScreenSize();
     this.initCarta();
+
+    // console.log('this.establecimientoService', this.establecimientoService.get());
+    // console.log('this.infoToken.getInfoUs', this.infoToken.getInfoUs());
+
+    if ( this.infoToken.getInfoUs().isCliente ) {
+      this.calcDistanciaService.calcCostoEntregaApiGoogleRain(this.infoToken.getInfoUs().direccionEnvioSelected, this.establecimientoService.get());
+    }
   }
 
   ngAfterViewInit() {
@@ -129,9 +140,11 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     // console.log('aaa');
+    this.establecimientoService.getComsionEntrega();
     // if (!this.socketService.isSocketOpen) {
       this.unsubscribeCarta = this.socketService.onGetCarta().subscribe((res: any) => {
 
+        // console.log('onGetCarta');
         // this.objCartaCarta = {
         //   'carta': <CartaModel[]>res[0].carta,
         //   'bodega': <SeccionModel[]>res[0].bodega
@@ -235,8 +248,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // descuentos
       this.unsubscribeCarta = this.socketService.onGetDataSedeDescuentos().subscribe((res: any) => {
-        console.log('onGetDataSedeDescuentos', res);
-        console.log('infoToken', this.infoToken.infoUsToken);
+        // console.log('onGetDataSedeDescuentos', res);
+        // console.log('infoToken', this.infoToken.infoUsToken);
         this.miPedidoService.setObjCartaDescuentos(res);
       });
 

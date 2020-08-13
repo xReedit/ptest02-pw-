@@ -17,7 +17,7 @@ export class ClienteProfileGuard implements CanActivate {
   // }
 
   canActivate() {
-    // console.log('canActivate', this.verifyClientService.getIsQrSuccess());
+    // console.log('llega canActivate', this.verifyClientService.getIsQrSuccess());
     return this.verifyClientService.isLogin() || this.verifyClientService.getIsLoginByDNI();
   }
 

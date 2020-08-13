@@ -13,12 +13,19 @@
     <form [formGroup]="registerForm">
         <div class="w-100">
             <div class="p-3">                                
+                <span class="text-secondary fw-100 fs-11">Escriba el nombre de la calle numero y ciudad. No es necesario escribir: Jiron, jr, pasaje, av, etc.</span>
                 <mat-form-field class="w-100">
                     <input matInput class="input-headline" placeholder="Direccion" formControlName="direccion" [(ngModel)]="dataCliente.direccion" (keydown.enter)="$event.preventDefault()" (keyup)="checkDireccion(search.value)" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" #search id="search">
-                </mat-form-field>            
-                <mat-form-field class="w-100">
-                    <input matInput class="input-headline" maxlength="150" placeholder="Referencia / piso / oficina" formControlName="referencia" [(ngModel)]="dataCliente.referencia">
-                </mat-form-field>
+                </mat-form-field>                            
+                <div class="w-100 d-flex justify-content-between">
+                    <mat-form-field class="w-100">
+                        <input matInput class="input-headline" maxlength="150" placeholder="Referencia / piso / oficina" formControlName="referencia" [(ngModel)]="dataCliente.referencia">
+                    </mat-form-field>
+                    <button class="btn-in-input btn btn-sm btn-info"
+                        [disabled]="!registerForm.valid || loader > 0 || !isDireccionValid"
+                        (click)="saveDireccion()"
+                        >Listo</button>
+                </div>
 
                 <div hidden="true">
                     <mat-form-field class="w-100">
@@ -51,6 +58,9 @@
                             (dragEnd)="markerDragEnd($event)" -->
                     </agm-map>           
                     <div class="centerMarker"></div>     
+                    <div class="btn-confirmar-dir" *ngIf="!isUsCliente && countMoveMap > 1">
+                        <button class="btn btn-success" (click)="confirmarDireccion()">Confirmar</button>
+                    </div>
                 </div>
 
             </div>
@@ -62,8 +72,8 @@
         <div class="p-3">
             <p class="fw-600 fs-13">Esta es la dirección de mi:</p>
             <!-- <mat-radio-group aria-label="Select an option" class="fs-13" [(ngModel)]="dataCliente.titulo"> -->
-            <mat-radio-group class="fs-13" [(ngModel)]="dataCliente.titulo" #radioGroup="matRadioGroup">                
-                <mat-radio-button class="pr-3" checked value="Casa">Casa</mat-radio-button>
+            <mat-radio-group class="fs-13" [(ngModel)]="dataCliente.titulo"  #radioGroup="matRadioGroup">                
+                <mat-radio-button class="pr-3" [checked]="checkekFirstOption" value="Casa">Casa</mat-radio-button>
                 <mat-radio-button class="pr-3" value="Trabajo">Trabajo</mat-radio-button>
                 <mat-radio-button class="pr-3" value="Novi@">Novi@</mat-radio-button>
                 <mat-radio-button class="pr-3" value="Otro">Otro</mat-radio-button>

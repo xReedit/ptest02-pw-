@@ -19,6 +19,7 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
   constructor(private router: Router, private authService: AuthService, private infoToken: InfoTockenService, private establecimientoService: EstablecimientoService) { }
 
   ngOnInit() {
+    localStorage.clear();
     this.usuario = new UsuarioAutorizadoModel();
   }
 

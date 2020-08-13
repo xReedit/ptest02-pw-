@@ -1,4 +1,10 @@
 /* @import '../pedido.style.css'; */
+.text-puntos-suspensivos {
+	width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 @media only screen and (min-width: 600px) {
     .content-master {

@@ -29,7 +29,7 @@ export class InicioComponent implements OnInit, OnDestroy {
     ) { }
 
   ngOnInit() {
-    console.log('aaa');
+    // console.log('aaa');
     this.nombreClientSocket = '';
     // screen.orientation.unlock();
 

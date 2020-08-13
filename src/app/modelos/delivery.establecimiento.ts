@@ -16,6 +16,7 @@ export class DeliveryEstablecimiento {
     c_km: number; // costo x km adicional > 1  = costo_minimo + (dif * c_km)
     c_servicio: number; // costo del servicio calculando la distancia
     distancia_km: string; // distancia en kilomentros
+    distancia_mt: string; // distancia en metros
     tiempo_aprox_entrega: string;
     abre_en: string; // tiempo que falta para abrir
     hora_ini: string; // hora que abre
@@ -38,4 +39,6 @@ export class DeliveryEstablecimiento {
     pwa_delivery_comercio_paga_entrega: number; // si el comercio paga el costo del delivery al repartidor
     costo_total_servicio_delivery: number; // costo del servicio de entrega si pwa_delivery_comercio_paga_entrega
     pwa_delivery_habilitar_pedido_programado: number; // 1 acepta pedidos programados
+    isCalcApiGoogle: boolean; // si el calculo de la distacia fue desde api google
+    is_rain: number; // 1 = true
 }

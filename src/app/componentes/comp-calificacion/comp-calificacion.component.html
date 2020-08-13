@@ -18,6 +18,20 @@
         speed="slow"
         (ratingChange)="onRatingChange($event)"
         ></star-rating>
+    
+    <div *ngIf="dataCalificado.showTxtComentario" class="text-center pt-2">
+        
+        <mat-form-field class="text-center">        
+            <textarea matInput placeholder="Escribe un comentario" maxlength="200" [(ngModel)]="comentario"></textarea>
+        </mat-form-field>
+
+        <br>
+
+        <button mat-flat-button color="primary" (click)="goAgradecimiento()" [disabled]="countFin < 3 || dataCalificado.calificacion == 0">
+            <i *ngIf="countFin < 3" class="fa fa-spinner fa-spin fa-fw"></i>
+            Listo
+        </button>
+    </div>
 </ng-container>
 
 <ng-template #msjAgradece>

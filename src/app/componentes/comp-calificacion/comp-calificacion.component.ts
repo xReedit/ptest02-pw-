@@ -8,20 +8,28 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
   styleUrls: ['./comp-calificacion.component.css']
 })
 export class CompCalificacionComponent implements OnInit {
-  countFin = 2;
+  countFin = 3;
   private intervalConteo = null;
   @Input() dataCalificado: DatosCalificadoModel;
+
+  comentario = '';
 
   constructor(
     private crudService: CrudHttpService
   ) { }
 
   ngOnInit() {
+    this.dataCalificado.calificacion = 0;
   }
 
   onRatingChange($event: any) {
     // console.log('calificacion', $event);
     this.dataCalificado.calificacion =  $event.rating;
+    if (this.dataCalificado.showTxtComentario) {return; }
+    this.goAgradecimiento();
+  }
+
+  goAgradecimiento() {
     if ( this.dataCalificado.showMsjTankyou ) {
       this.countFin = 2;
       this.cuentaRegresivaCalificacion();
@@ -46,6 +54,9 @@ export class CompCalificacionComponent implements OnInit {
   }
 
   private guardarCalificacion() {
+    this.dataCalificado.comentario = this.comentario;
+
+    console.log('this.dataCalificado', this.dataCalificado);
     const _data = {
       dataCalificacion : this.dataCalificado
     };

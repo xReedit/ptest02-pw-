@@ -16,3 +16,8 @@
 .mat-option {
     height: 20px !important;
 }
+
+.span-input-alert {
+    bottom: 20px;
+    position: relative;
+}
