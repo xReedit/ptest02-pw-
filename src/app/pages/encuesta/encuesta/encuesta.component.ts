@@ -7,6 +7,8 @@ import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { throwMatDialogContentAlreadyAttachedError } from '@angular/material/dialog';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimiento';
 
 @Component({
   selector: 'app-encuesta',
@@ -14,7 +16,8 @@ import { ListenStatusService } from 'src/app/shared/services/listen-status.servi
   styleUrls: ['./encuesta.component.css']
 })
 export class EncuestaComponent implements OnInit   {
-  nomSede = [];
+  nomSede = '';
+  ciudadSede = '';
   infoToken: UsuarioTokenModel;
   titulo_inicio: '';
   titulo_fin: '';
@@ -32,21 +35,28 @@ export class EncuestaComponent implements OnInit   {
   private xIdEncuesta = 0;
   private countOption = 1; // inicio y fin
 
+  private infoSede: DeliveryEstablecimiento;
+
   constructor(
     private infoTokenService: InfoTockenService,
     private crudService: CrudHttpService,
     private navigatorService: NavigatorLinkService,
     private socketService: SocketService,
     private listenStatusService: ListenStatusService,
+    private establecimientoService: EstablecimientoService
   ) { }
 
   ngOnInit() {
     this.infoToken = this.infoTokenService.getInfoUs();
     // console.log(this.infoToken);
-    this.nomSede = localStorage.getItem('sys::s').split('|');
+    // this.nomSede = localStorage.getItem('sys::s').split('|');
+    this.infoSede = this.establecimientoService.get();
+    this.nomSede = this.infoSede.nombre;
+    this.ciudadSede = this.infoSede.ciudad;
 
     this.dataPost = {
-      idsede: this.infoToken.idsede,
+      idsede: this.infoSede.idsede,
+      // idsede: this.infoToken.idsede,
       // idcliente: this.infoTokenService.getInfoUs().idcliente
     };
 
@@ -66,9 +76,14 @@ export class EncuestaComponent implements OnInit   {
   }
 
   private loadEncuesta(): void {
+
     this.crudService.postFree(this.dataPost, 'encuesta', 'la-encuesta', false).subscribe( (res: any) => {
       // console.log(res);
       if ( res.success ) {
+        if ( res.data.length === 0 ) {
+          this.cerrarSession();
+          return;
+        }
         const _data = res.data[0].preguntas;
         this.xIdEncuesta = _data.idencuesta;
         this.titulo_inicio = _data.inicio;
@@ -76,25 +91,26 @@ export class EncuestaComponent implements OnInit   {
         this.listPreguntas = _data.preguntas;
 
         this.countOption += this.listPreguntas.length;
+      } else {
+        this.cerrarSession();
       }
     });
   }
 
   private loadOpciones(): void {
     this.crudService.postFree(this.dataPost, 'encuesta', 'las-opciones', false).subscribe( (res: any) => {
-      // console.log('las opciones', res);
+
       if ( res.success ) {
         this.listOption = res.data;
       }
 
-      // console.log(this.listOptionItem.toArray());
+
 
     });
   }
 
   pasarTab(event: any = null, pregunta: any = null, txt_comentario: string = null) {
-    // console.log('res op', event);
-    // console.log('pregunta', pregunta);
+
 
     if ( !event ) { this.selectedTabEncuesta ++; return; } // inicio
 
@@ -109,7 +125,7 @@ export class EncuestaComponent implements OnInit   {
 
     this.ListRespuestas.push(rpt);
 
-    // console.log(this.ListRespuestas);
+
 
     this.selectedTabEncuesta ++;
 
@@ -117,11 +133,10 @@ export class EncuestaComponent implements OnInit   {
       this.guardarEncuesta();
     }
 
-    // console.log('countOption', this.countOption);
-    // console.log('selectedTabEncuesta', this.selectedTabEncuesta);
+
 
     if ( this.countOption === this.selectedTabEncuesta ) {
-      // console.log('terminar encuesta');
+
       this.cuentaRegresiva();
     }
   }
@@ -129,7 +144,7 @@ export class EncuestaComponent implements OnInit   {
   private guardarEncuesta(): void {
     const _dataSend = {item: this.ListRespuestas, i: this.xIdEncuesta };
     this.crudService.postFree(_dataSend, 'encuesta', 'guardar', false).subscribe( (res: any) => {
-      // console.log('guardado', res);
+
     });
   }
 

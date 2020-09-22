@@ -115,6 +115,7 @@ export class VerifyAuthClientService {
     // verrifica si esta logueado
     if ( this.clientSocket.isLoginByDNI ) {
       // verifica y registra el cliente en la bd
+
       this.registerCliente();
       return this.subjectClient.asObservable();
     }
@@ -123,7 +124,6 @@ export class VerifyAuthClientService {
       if ( !res ) {
         // this.clientSocket = new SocketClientModel();
         // this.setDataClient();
-        // // console.log(this.clientSocket);
 
         if (!this.clientSocket.datalogin) {
           this.subjectClient.next(null);
@@ -133,7 +133,6 @@ export class VerifyAuthClientService {
           // this.returnClientNull();
         } else {
           // this.clientSocket.datalogin = res;
-          // console.log(this.clientSocket);
           this.setDataClient();
 
           // verifica y registra el cliente en la bd
@@ -143,7 +142,6 @@ export class VerifyAuthClientService {
       } else {
 
         this.clientSocket.datalogin = res;
-        // console.log(this.clientSocket);
         this.setDataClient();
 
         // verifica y registra el cliente en la bd
@@ -171,7 +169,7 @@ export class VerifyAuthClientService {
     let idClient = 0;
     this.clientSocket.systemOS = this.utilService.getOS();
     this.crudService.postFree(this.clientSocket, 'ini', 'register-cliente-login', false).subscribe((rpt: any) => {
-      // console.log('idcliente', rpt);
+
       // login en backend
       idClient = rpt.data[0].idcliente;
       this.clientSocket.idcliente = idClient;
@@ -181,7 +179,7 @@ export class VerifyAuthClientService {
       this.clientSocket.telefono = rpt.data[0].telefono;
 
       // guarda en el usuario temporal
-      // console.log(this.clientSocket);
+
       this.setDataClient();
       // window.localStorage.setItem('sys::tpm', JSON.stringify(this.clientSocket));
 

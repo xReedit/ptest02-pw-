@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { EstadoPedidoModel } from 'src/app/modelos/estado.pedido.model';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
+import { MetodoPagoModel } from 'src/app/modelos/metodo.pago.model';
 
 @Injectable({
   providedIn: 'root'
@@ -55,6 +56,14 @@ export class ListenStatusService {
   // notifica salir del establecimeinto cuando es cliente delivery goback
   private isOutEstablecimientoDeliverySource = new BehaviorSubject<boolean>(false);
   public isOutEstablecimientoDelivery$ = this.isOutEstablecimientoDeliverySource.asObservable();
+
+  // si es visible el footer de zona delivery
+  private isShowFooterZonaDeliverySource = new BehaviorSubject<boolean>(true);
+  public isShowFooterZonaDelivery$ = this.isShowFooterZonaDeliverySource.asObservable();
+
+  private isLoaderSendPedidoSource = new BehaviorSubject<boolean>(false);
+  public isLoaderSendPedido$ = this.isLoaderSendPedidoSource.asObservable();
+
 
   constructor() { }
 
@@ -112,4 +121,11 @@ export class ListenStatusService {
     this.isOutEstablecimientoDeliverySource.next(value);
   }
 
+  setIsShowFooterZonaDelivery(value: boolean) {
+    this.isShowFooterZonaDeliverySource.next(value);
+  }
+
+  setLoaderSendPedido(value: boolean) {
+    this.isLoaderSendPedidoSource.next(value);
+  }
 }

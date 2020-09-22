@@ -39,6 +39,10 @@ export class DeliveryEstablecimiento {
     pwa_delivery_comercio_paga_entrega: number; // si el comercio paga el costo del delivery al repartidor
     costo_total_servicio_delivery: number; // costo del servicio de entrega si pwa_delivery_comercio_paga_entrega
     pwa_delivery_habilitar_pedido_programado: number; // 1 acepta pedidos programados
+    pwa_habilitar_busqueda_mapa: number; // 1 acepta busqueda de direcciones por mapa
     isCalcApiGoogle: boolean; // si el calculo de la distacia fue desde api google
     is_rain: number; // 1 = true
+    options: any;
+    centro: any;
+    icons_entrega: []; // iconos json de entrega a mostrar
 }

@@ -7,16 +7,16 @@
 }
 
 .fondo-beige {
-    background: beige;    
+    background: #3f51b5;    
 }
 .content-num-mesa  {
-    border: solid 1px #616161;
+    border: solid 1px white;
     border-radius: 50%;
     overflow: hidden;
     display: table-cell;
     text-align: center;
     vertical-align: middle;
-    color: #424242;  
+    color: white;  
 }
 
 .num-mesa {
@@ -36,8 +36,8 @@
 }
 
 .content-ready {
-    padding: 25px;
-    background: #00695c;
+    padding: 10px;
+    background: #3f51b5;
     color: white;
 }
 

@@ -14,9 +14,27 @@
         <div class="w-100">
             <div class="p-3">                                
                 <span class="text-secondary fw-100 fs-11">Escriba el nombre de la calle numero y ciudad. No es necesario escribir: Jiron, jr, pasaje, av, etc.</span>
-                <mat-form-field class="w-100">
-                    <input matInput class="input-headline" placeholder="Direccion" formControlName="direccion" [(ngModel)]="dataCliente.direccion" (keydown.enter)="$event.preventDefault()" (keyup)="checkDireccion(search.value)" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" #search id="search">
-                </mat-form-field>                            
+                <div>
+                    <mat-checkbox class="fs-11 mt-2 text-info" (change)="dirInCoordenadas = !dirInCoordenadas">Ingresar direccion en coordenadas: Lat, Lng.</mat-checkbox>
+                </div>
+                <ng-container *ngIf="!dirInCoordenadas; else elseTemplateCoordenadas">
+                    <mat-form-field class="w-100">
+                        <input matInput class="input-headline" placeholder="Direccion" formControlName="direccion" [(ngModel)]="dataCliente.direccion" (keydown.enter)="$event.preventDefault()" (keyup)="checkDireccion(search.value)" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" #search id="search">
+                    </mat-form-field>                                                                    
+                </ng-container>
+                <ng-template #elseTemplateCoordenadas>
+                    <div class="w-100 d-flex justify-content-between">
+                        <mat-form-field class="w-100">
+                            <input matInput class="input-headline" placeholder="Coordenadas" #text_coordenadas>
+                        </mat-form-field>                            
+                        <button class="btn-in-input btn btn-sm btn-info"                        
+                        (click)="getDirCoordenadas(text_coordenadas.value)"
+                        > 
+                        <span class="fa fa-search"></span>
+                        </button>
+                    </div>
+                </ng-template>
+                                
                 <div class="w-100 d-flex justify-content-between">
                     <mat-form-field class="w-100">
                         <input matInput class="input-headline" maxlength="150" placeholder="Referencia / piso / oficina" formControlName="referencia" [(ngModel)]="dataCliente.referencia">

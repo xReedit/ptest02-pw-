@@ -55,11 +55,10 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
 
 
-    // console.log('objItemTipoConsumoSelected', this.objItemTipoConsumoSelected);
 
     this.isOneTipoConsumo = this.objItemTipoConsumoSelected.length === 1;
     this.item.detalles = this.primerMayuscula(this.item.detalles);
-    // console.log('this.item.detalles', this.item.detalles);
+
     // this.miPedidoService.listenChangeCantItem();
 
   }
@@ -67,7 +66,6 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.isUsCliente = this.infoToken.getInfoUs().isCliente;
-    // console.log('this.infoToken.getInfoUs()', this.infoToken.getInfoUs());
 
     // listen cambios en el stock
     this.miPedidoService.itemStockChangeObserve$
@@ -97,7 +95,6 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   }
 
   getCantidadItemCarta(): number {
-    // console.log('dialog item getCantidadItemCarta', this.item);
     return parseInt(this.miPedidoService.findItemCarta(this.item).cantidad.toString(), 0);
   }
 
@@ -137,7 +134,6 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     // chequeamos cuantos subitem estan checkes
     let listSubItemChecked = subitemContent.opciones.filter((x: SubItem) => x.selected);
     let countSelectReq = listSubItemChecked.length;
-    // console.log('listSubItemChecked', listSubItemChecked);
 
     listSubItemChecked.map( (_subItem: SubItem, i: number) =>  {
       if (countSelectReq > subitemContent.subitem_cant_select && _subItem !== subitem) {
@@ -167,7 +163,6 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
 
     this.checkOptionObligario();
     this.compItemSumImporte(true);
-    // console.log(this.item);
 }
 
   // chequea si todas las opciones requeridas ya estan marcadas
@@ -208,7 +203,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   }
 
   addItemToDialogItem(tpcSelect: ItemTipoConsumoModel, suma: number): void {
-    // console.log('restar desde dialogitem');
+
     let paseCantSuItem = true;
     this.item.subitems_selected = this._subitems_selected;
 
@@ -238,7 +233,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   }
 
   setIndicaciones(val: string): void {
-    // console.log('indicaciones', val);
+
     this.item.indicaciones = val;
 
     // agrega las indicaciones si existe en mipedido y si no tienen subitems

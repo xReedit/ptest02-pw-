@@ -4,6 +4,8 @@ import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
 import { CrudHttpService } from './crud-http.service';
 import { SocketService } from './socket.service';
 import { ClientePagoModel } from 'src/app/modelos/cliente.pago.model';
+import { Observable } from 'rxjs';
+import { EstablecimientoService } from './establecimiento.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +20,7 @@ export class RegistrarPagoService {
     private infoTokenService: InfoTockenService,
     private crudService: CrudHttpService,
     private socketService: SocketService,
+    private establecimiento: EstablecimientoService
   ) {
     this.infoToken = this.infoTokenService.getInfoUs();
   }
@@ -26,13 +29,15 @@ export class RegistrarPagoService {
     this.objTotales = JSON.parse(atob(localStorage.getItem('sys::st')));
   }
 
-  registrarPago(_importe: string, _dataTransactionRegister: any, dataClientePago: ClientePagoModel, isDelivery: boolean = false): void {
+  registrarPago(_importe: string, _dataTransactionRegister: any, dataClientePago: ClientePagoModel, isDelivery: boolean = false) {
     this.getSubtotales();
+
+    // console.log('this.establecimiento.get() from pago', this.establecimiento.get());
 
     const _objOperacion = {
       idcliente: this.infoToken.idcliente,
-      idorg: this.infoToken.idorg,
-      idsede: this.infoToken.idsede,
+      idorg: this.establecimiento.get().idorg, // this.infoToken.idorg,
+      idsede: this.establecimiento.get().idsede, // this.infoToken.idsede,
       mesa: this.infoToken.numMesaLector,
       importe: _importe
     };
@@ -50,15 +55,32 @@ export class RegistrarPagoService {
       objOperacion: _objOperacion
     };
 
-    this.crudService.postFree(_data, 'transaction', 'registrar-pago', false).subscribe((res: any) => {
-      // console.log('registro-pago', res);
-      // if ( res.success ) {
-        // this.setIdRegistroPagoTransaction(res.data[0].idregistro_pago);
-        this.socketService.emit('notificar-pago-pwa', _data);
-      // }
+    // console.log('registro pago service', _data);
+
+    return new Observable(observer => {
+      this.crudService.postFree(_data, 'transaction', 'registrar-pago', false).subscribe((res: any) => {
+        // console.log('registro-pago', res);
+        // if ( res.success ) {
+          this.socketService.emit('notificar-pago-pwa', _data);
+          // this.setIdRegistroPagoTransaction(res.data[0].idregistro_pago);
+          this.setIdPwaPago(res.data[0].idregistro_pago);
+          observer.next(res.data[0].idregistro_pago);
+        // }
+      });
     });
 
 
+  }
+
+  setIdPwaPago(id: number) {
+    localStorage.setItem('sys::irp', id.toString());
+  }
+
+  getIdPwaPago(): number {
+    let idPwaPago = parseInt(localStorage.getItem('sys::irp'), 0);
+    idPwaPago = idPwaPago ? 0 : idPwaPago;
+    localStorage.removeItem('sys::irp');
+    return idPwaPago;
   }
 
   getIpClient(): string {

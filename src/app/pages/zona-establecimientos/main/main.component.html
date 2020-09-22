@@ -54,7 +54,7 @@
 
     
     <!-- body -->
-    <div class="content-body">        
+    <div class="content-body" id="contentmaster">        
       <!-- <div style="position: relative">
         <ngx-ui-loader></ngx-ui-loader>
       </div> -->
@@ -71,8 +71,11 @@
 
       <!-- comercios por calificar -->
       <div *ngIf="isShowCalificar" matRipple class="content-paso-ini text-center xCursor border animated fadeInDown" [ngClass]="{'fadeOutUp': !isShowCalificar}" (click)="goCalificarComercio(0)">
-        <span class="text-secondary fs-12"> <i class="fa fa-star text-warning"></i> Califique al comercio de su último pedido.</span>
+        <span class="text-secondary fs-12 d-flex align-items-center"> <i class="fa fa-star text-warning fa-spin fa-2x mr-2"></i> Califique al comercio de su último pedido.</span>
       </div>
+
+      <!-- <app-comp-op-costo-estimado></app-comp-op-costo-estimado>
+      <app-comp-caja-texto></app-comp-caja-texto> -->
 
 
         <router-outlet></router-outlet>
@@ -81,7 +84,7 @@
     <!-- body -->
     
     <!-- <footer></footer> -->
-    <div class="xfooter-zona-delivery">
+    <div class="xfooter-zona-delivery" *ngIf="listenService.isShowFooterZonaDelivery$ | async">
         <div class="tabs-group">
             <mat-tab-group class="fondo-tab-group" 
             color="accent"                     

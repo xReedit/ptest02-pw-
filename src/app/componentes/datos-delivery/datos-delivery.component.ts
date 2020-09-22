@@ -95,6 +95,8 @@ export class DatosDeliveryComponent implements OnInit {
   dirEstablecimiento: DeliveryEstablecimiento;
   importeTota = 0;
 
+  isShowAddDireccionMapa = true; // si esta habilitado busqueda en el mapa
+
   constructor(
     private fb: FormBuilder,
     private crudService: CrudHttpService,
@@ -116,7 +118,7 @@ export class DatosDeliveryComponent implements OnInit {
       direccion: '',
       referencia: ''
     };
-    // console.log('aaaa');
+
 
     this.tiempoEntregaSelected = new TiempoEntregaModel();
     // if ( this.infoTokenService.infoUsToken.tiempoEntrega ) {
@@ -159,7 +161,7 @@ export class DatosDeliveryComponent implements OnInit {
       // };
 
       // setear respuest
-      // console.log('form delivery', dataEmit);
+
       this.setearData();
       // this.changeStatus.emit(dataEmit);
     });
@@ -167,14 +169,16 @@ export class DatosDeliveryComponent implements OnInit {
 
     this.infoEstablecimiento = this.establecimientoService.get();
 
+    this.isShowAddDireccionMapa = this.infoEstablecimiento.pwa_habilitar_busqueda_mapa === 1;
+
     // traer todos los clientes
     // this.getAllClientes();
 
 
     this.filteredOptions = this.myControl.valueChanges
       .pipe(
-        debounceTime(400),
-        distinctUntilChanged(),
+        // debounceTime(400), // al poner esto no actualiza formulario
+        // distinctUntilChanged(),
         startWith(''),
         switchMap(value => {
           return this._filter(value);
@@ -183,6 +187,11 @@ export class DatosDeliveryComponent implements OnInit {
         // map(value => this._filter(value))
       );
 
+  }
+
+  setTextDirClienteNoMapa(val: string) {
+    this.direccionCliente.direccion = val;
+    this.setearData();
   }
 
   setearData() {
@@ -203,7 +212,7 @@ export class DatosDeliveryComponent implements OnInit {
       this.resData.direccionEnvioSelected = this.direccionCliente;
       this.resData.tiempoEntregaProgamado = this.tiempoEntregaSelected;
       this.resData.establecimiento = this.infoEstablecimiento;
-      this.resData.referencia = this.direccionCliente.referencia;
+      this.resData.referencia = this.direccionCliente.referencia === '' ? this.resData.nombre : this.direccionCliente.referencia;
       this.resData.direccion = this.direccionCliente.direccion;
       this.resData.subTotales = this._listSubtotales;
       this.resData.propina = this.infoTokenService.getInfoUs().propina;
@@ -212,8 +221,10 @@ export class DatosDeliveryComponent implements OnInit {
       this.resData.costoTotalDelivery = this.infoEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
       // this.resData.establecimiento = this.infoEstablecimiento;
 
-      // console.log('this.resData emit', this.resData);
-      if ( !this.direccionCliente.ciudad && !this.isRecojoLocalCheked ) { this.isValid = false; }
+
+      if ( this.isShowAddDireccionMapa ) {
+        if ( !this.direccionCliente.ciudad && !this.isRecojoLocalCheked ) { this.isValid = false; }
+      }
 
       const dataEmit = {
         formIsValid: this.isValid,
@@ -240,7 +251,6 @@ export class DatosDeliveryComponent implements OnInit {
     // primero consultamos en la bd
     this.crudService.postFree(datos, 'service', 'consulta-dni-ruc', true)
     .subscribe((res: any) => {
-      // console.log(res);
       const _datosBd = res.data;
       if ( res.success && _datosBd.length > 0 ) {
         this.myForm.controls.idcliente.patchValue(_datosBd[0].idcliente);
@@ -307,8 +317,7 @@ export class DatosDeliveryComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       data => {
         if ( !data ) { return; }
-        // console.log('data dialog', data);
-        // console.log('data dialog', this.dirEstablecimiento);
+
         this.direccionCliente = <DeliveryDireccionCliente>data;
 
         // esto para poder guardar en el procedure
@@ -320,7 +329,7 @@ export class DatosDeliveryComponent implements OnInit {
 
         // recalcular
         setTimeout(() => {
-          // console.log('this.dirEstablecimiento', this.dirEstablecimiento);
+
 
           this.establecimientoService.set(this.dirEstablecimiento);
           this.infoEstablecimiento.c_servicio = c_servicio; // this.dirEstablecimiento.c_servicio;
@@ -331,7 +340,7 @@ export class DatosDeliveryComponent implements OnInit {
 
           this._listSubtotales = _arrSubtotales;
 
-          // console.log('_arrSubtotales', _arrSubtotales);
+
           this.setearData();
         }, 600);
 
@@ -369,7 +378,7 @@ export class DatosDeliveryComponent implements OnInit {
       this._listSubtotales = this._listSubtotalesTmp;
     }
 
-    // console.log('this._listSubtotales', this._listSubtotales);
+
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._listSubtotales)));
     this.infoTokenService.setPasoRecoger(this.isRecojoLocalCheked);
 
@@ -391,7 +400,7 @@ export class DatosDeliveryComponent implements OnInit {
     const dialogLoading = this.dialog.open(DialogMetodoPagoComponent, _dialogConfig);
       dialogLoading.afterClosed().subscribe((result: MetodoPagoModel) => {
         this.metodoPagoSelected = result;
-        // console.log(result);
+
         // this.verificarMontoMinimo();
         this.setearData();
       });
@@ -407,7 +416,6 @@ export class DatosDeliveryComponent implements OnInit {
   //   this.crudService.getAll('pedido', 'get-all-clientes', false, false, true)
   //   .subscribe((res: any) => {
   //     this.dataListClientes = res.data;
-  //     // console.log(res);
   //   });
   // }
 
@@ -433,7 +441,7 @@ export class DatosDeliveryComponent implements OnInit {
   }
 
   changeCliente($event: any) {
-    // console.log($event);
+
   }
 
   displayFn(option?: any): string  {
@@ -465,7 +473,7 @@ export class DatosDeliveryComponent implements OnInit {
 
     const dialogTpC = this.dialogTipoComprobante.open(DialogTiempoEntregaComponent, _dialogConfig);
     dialogTpC.afterClosed().subscribe((result: TiempoEntregaModel) => {
-        // console.log('TiempoEntregaModel ==== ', result);
+
         if ( result ) {
           // this.infoTokenService.setTiempoEntrega(result);
           this.tiempoEntregaSelected = result;

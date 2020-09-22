@@ -74,7 +74,7 @@ export class NotificacionPushService {
       idcliente: this.infoTokenService.infoUsToken.idcliente
     };
 
-    console.log('push', _data);
+    // console.log('push', _data);
 
     this.crudService.postFree(_data, 'push', 'suscripcion', false)
       .subscribe(res => console.log(res));

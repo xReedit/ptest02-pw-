@@ -21,8 +21,8 @@ export class DialogLoadingComponent implements OnInit {
       setTimeout(() => {
         // this.isSusccess = false;
         this.dialogRef.close();
-      }, 1200);
-    }, 1200);
+      }, 1500);
+    }, 1500);
   }
 
 }

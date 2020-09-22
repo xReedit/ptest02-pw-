@@ -68,6 +68,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   rippleColor = 'rgb(255,238,88, 0.5)';
   rippleColorSubItem = 'rgba(117,117,117,0.1)';
 
+  loadPrinterPrecuenta = false; // si se mando a imprimir precuenta
+
   objCuenta: any = [];
 
   isCliente: boolean; // si es cliente quien hace el pedido
@@ -101,8 +103,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     // this.establecimientoService.get();
-    // console.log('this.establecimientoService.establecimiento)', this.establecimientoService.establecimiento);
-    // console.log('this.infoToken.getInfoUs()', this.infoToken.getInfoUs());
+
     this.systemOS = this.utilService.getOS();
 
     this._miPedido = this.miPedidoService.getMiPedido();
@@ -115,7 +116,6 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
       this.establecimientoService.setRulesSubtotales(this.rulesSubtoTales);
 
-      // console.log('this.rulesSubtoTales', this.rulesSubtoTales);
 
       this.listenMiPedido();
 
@@ -216,7 +216,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       // this._miPedido = this.miPedidoService.getMiPedido();
       this._miPedido = <PedidoModel>res;
       this.pintarMiPedido();
-      // console.log(this._miPedido);
+
     });
 
     this.listenStatusService.hayCuentaBusqueda$
@@ -245,7 +245,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.destroy$))
     .subscribe(res => {
       if (!res) {
-        // console.log('===== unsubscribe unsubscribe =====');
+
         // this.unsubscribeRe.unsubscribe();
       }
     });
@@ -267,7 +267,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.destroy$))
     .subscribe((res: any) => {
       if ( res ) {
-        // console.log('cuenta del cliente desde resumen', res);
+
         this.xLoadCuentaMesa('', res);
       }
     });
@@ -320,7 +320,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(
         data => {
           if ( !data ) { return; }
-          // console.log('data dialog', data);
+
         }
     );
 
@@ -423,20 +423,30 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private showLoaderPedido(): void {
-    const _dialogConfig = new MatDialogConfig();
-    _dialogConfig.disableClose = true;
-    _dialogConfig.hasBackdrop = true;
+    this.listenStatusService.setLoaderSendPedido(true);
 
-    const dialogLoading = this.dialog.open(DialogLoadingComponent, _dialogConfig);
-    dialogLoading.afterClosed().subscribe(result => {
+
+    // seteamos el metodo pago que el cliente selecciona
+    this.infoToken.setMetodoPagoSelected(this.infoToken.getInfoUs().metodoPago);
+
+    setTimeout(() => {
       this.enviarPedido();
-    });
+    }, 1400);
+
+    // const _dialogConfig = new MatDialogConfig();
+    // _dialogConfig.hasBackdrop = true;
+    // _dialogConfig.disableClose = true;
+
+    // const dialogLoading = this.dialog.open(DialogLoadingComponent, _dialogConfig);
+    // dialogLoading.afterClosed().subscribe(result => {
+    //   this.enviarPedido();
+    // });
   }
 
   private enviarPedido(): void {
 
     // para asegurar que marque delivery si es
-    // console.log('aaa');
+
     this.checkTiposDeConsumo();
 
     // get subtotales // si es delivery porque puede que modifique la distancia y modifica el precio // que se va ver en comanda
@@ -450,11 +460,12 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     if ( this.isCliente ) {
       this.frmConfirma.solo_llevar = this.isSoloLLevar ? true : this.frmConfirma.solo_llevar;
       dataFrmConfirma.m = this.isSoloLLevar ? '' : dataUsuario.numMesaLector;
+      dataFrmConfirma.m = this.isDeliveryCliente ? '' : dataUsuario.numMesaLector;
       dataFrmConfirma.r = this.infoToken.getInfoUs().nombres.toUpperCase();
       dataFrmConfirma.nom_us = this.infoToken.getInfoUs().nombres.toLowerCase();
     } else {
       dataFrmConfirma.m = this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00';
-      dataFrmConfirma.r = this.frmConfirma.referencia || '';
+      dataFrmConfirma.r = this.frmConfirma.delivery ? this.frmDelivery.nombre : this.frmConfirma.referencia || '';
       dataFrmConfirma.nom_us = this.infoToken.getInfoUs().nombres.split(' ')[0].toLowerCase();
     }
 
@@ -462,6 +473,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // header //
 
     // const _subTotalesSave = _p_header.delivery === 1 ? this.frmDelivery.subTotales : this._arrSubtotales;
+    // debugger
+    // const idPwaPago = this.registrarPagoService.getIdPwaPago();
+
+
 
     const _p_header = {
       m: dataFrmConfirma.m, // this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00',
@@ -478,7 +493,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       idregistro_pago: 0,
       // idregistro_pago: this.isSoloLLevar ? this.registrarPagoService.getDataTrasaction().idregistro_pago : 0,
       arrDatosDelivery: this.frmDelivery,
-      systemOS: this.systemOS
+      systemOS: this.systemOS,
+      idregistra_scan_qr: this.establecimientoService.getLocalIdScanQr() // el id del scan register
     };
 
     // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
@@ -489,11 +505,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     const dataPedido = {
       p_header: _p_header,
       p_body: this._miPedido,
-      p_subtotales: _subTotalesSave
+      p_subtotales: _subTotalesSave,
+      idpedido: 0 // setea despues de guardar el pedido para enviarlo al socket
     };
 
-    // console.log('nuevoPedido', dataPedido);
-    // console.log('nuevoPedido', JSON.stringify(dataPedido));
 
 
     // enviar a print_server_detalle // para imprimir
@@ -509,6 +524,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     });
 
 
+
     const dataSend = {
       dataPedido: dataPedido,
       dataPrint: dataPrint,
@@ -518,8 +534,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       dataDescuento: [] // lista de ids de descuento para restar cantidad num_pedidos
     };
 
-    // console.log('printerComanda', dataSend);
-    // console.log('printerComanda', JSON.stringify(dataSend));
+    // quitamos el order delivery de los datos del usuario para que no sea mucho el json
+    dataSend.dataUsuario.orderDelivery = '';
+    dataSend.dataUsuario.importeDelivery = '';
+
     // this.socketService.emit('printerComanda', dataPrint);
 
     // si es clienteDelivery no se emite nada
@@ -538,46 +556,68 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     if ( this.infoToken.infoUsToken.isHayDescuento ) {
       const _listDsc = this.miPedidoService.getIdsDescuentos();
       dataSend.dataDescuento = _listDsc;
-      // console.log('_listDsc', _listDsc);
+
     }
 
     // enviar a guardar // guarda pedido e imprime comanda
-    // console.log('dataSend', dataSend);
-    this.socketService.emit('nuevoPedido', dataSend);
+    // this.socketService.emit('nuevoPedido', dataSend); // !> 150920
 
 
-    // hora del pedido
-    this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
+    this.crudService.postFree(dataSend, 'pedido', 'registrar-nuevo-pedido', false)
+    .subscribe((res: any) => {
+      dataSend.dataPedido.idpedido = res.data[0].idpedido;
+      dataSend.dataPrint = res.data[0].data;
+      this.socketService.emit('nuevoPedido2', dataSend);
 
-    //
-    // this.navigatorService.addLink('mipedido');
-    // this.isVisibleConfirmarAnimated = false;
-    // this.isRequiereMesa = false;
-    // this.isVisibleConfirmar = false;
-    //
-    this.newFomrConfirma();
-    // this.backConfirmacion();
+      this.newFomrConfirma();
+      // this.backConfirmacion();
 
-    this.miPedidoService.prepareNewPedido();
+      // this.miPedidoService.prepareNewPedido();>
 
-    // si es delivery y el pago es en efectivo o en yape, notificamos
-    if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
-      this.pagarCuentaDeliveryCliente();
-      // enviamos a pagar
-      return;
-    }
 
-    this.backConfirmacion();
+      setTimeout(() => {
+        this.listenStatusService.setLoaderSendPedido(false);
+      }, 600);
 
-    // si es usuario cliente lo envia a estado
-    if ( this.isCliente ) {
-      this.navigatorService.setPageActive('estado');
-      // this.estadoPedidoClientService.get(); // inicia calc tiempo aprox y cuenta total
-    } else {
-      this.navigatorService.setPageActive('carta');
-    }
+    });
 
-    this.isDeliveryValid = false; // formulario no valido para delivery
+      // hora del pedido
+      this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
+
+      //
+      // this.navigatorService.addLink('mipedido');
+      // this.isVisibleConfirmarAnimated = false;
+      // this.isRequiereMesa = false;
+      // this.isVisibleConfirmar = false;
+      //
+      // this.backConfirmacion();
+
+      // this.newFomrConfirma();
+
+      // this.miPedidoService.prepareNewPedido();
+
+      // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
+      if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
+        this.pagarCuentaDeliveryCliente();
+        // enviamos a pagar
+        return;
+      }
+
+      this.miPedidoService.prepareNewPedido();
+
+      this.backConfirmacion();
+
+      // si es usuario cliente lo envia a estado
+      if ( this.isCliente ) {
+        this.navigatorService.setPageActive('estado');
+        // this.estadoPedidoClientService.get(); // inicia calc tiempo aprox y cuenta total
+      } else {
+        this.navigatorService.setPageActive('carta');
+      }
+
+      this.isDeliveryValid = false; // formulario no valido para delivery
+
+
 
   }
 
@@ -616,13 +656,50 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this.frmDelivery = $event.formData;
   }
 
+  imprimirPrecuenta() {
+    this.loadPrinterPrecuenta = true;
+    const _getPrinterCaja = this.jsonPrintService.getPrinterPrecuenta();
+    if ( !_getPrinterCaja ) {return; }
+    const xArrayEncabezado = {
+            'm': this.numMesaCuenta,
+            'r': '',
+            'num_pedido': '',
+            'reservar': 0,
+            'solo_llevar': 0,
+            'correlativo_dia': '',
+            'precuenta': true,
+            'delivery': false,
+            'arrDatosDelivery': [],
+            'idregistro_pago': 0,
+            'nom_us': this.infoToken.infoUsToken.usuario
+          };
+
+    const _data = {
+      Array_enca: xArrayEncabezado,
+      Array_print: _getPrinterCaja.arrPrinters,
+      ArrayItem: _getPrinterCaja.arrBodyPrint,
+      ArraySubTotales: this._arrSubtotales
+    };
+
+    const dataSend = {
+      dataPrint: _data,
+      isprecuenta: 1
+    };
+
+
+    this.miPedidoService.printerPrecuenta(dataSend);
+    setTimeout(() => {
+      this.loadPrinterPrecuenta = false;
+    }, 2000);
+  }
+
   // _resCuentaFromCliente desde la cuenta del cliente
   xLoadCuentaMesa(mesa: string, _resCuentaFromCliente: any = null): void {
     this.isHayCuentaBusqueda = false;
     this.msjErr = false;
     this.numMesaCuenta = mesa;
     const datos = { mesa: mesa };
-    // console.log('mesa a buscar', datos);
+
 
     if ( _resCuentaFromCliente ) {
       // cuando el usuario cliente realiza un nuevo pedido y se tiene que mostrar la cuenta
@@ -715,8 +792,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       });
     });
 
-    // console.log('cuenta de mesa', res);
-    // console.log('c_tiposConsumo', c_tiposConsumo);
+
 
     _miPedidoCuenta.tipoconsumo = c_tiposConsumo;
     this.miPedidoService.setObjMiPedido(_miPedidoCuenta);
@@ -726,8 +802,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
 
-    // console.log('this._miPedido', this._miPedido);
   }
+
 
   pagarCuentaDeliveryCliente() {
     // this.navigatorService._router('./pagar-cuenta');

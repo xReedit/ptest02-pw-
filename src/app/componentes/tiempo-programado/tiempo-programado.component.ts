@@ -43,7 +43,7 @@ export class TiempoProgramadoComponent implements OnInit {
   private findTimeList() {
     // console.log('time');
     if ( this.tiempoEntregaSelected.iddia !== undefined ) {
-      this.selectedIni = this.listDia.filter(d => d.numDay === this.tiempoEntregaSelected.iddia)[0];
+      this.selectedIni = this.listDia[0]; // this.listDia.filter(d => d.numDay === this.tiempoEntregaSelected.iddia)[0];
 
       this.seletecDay = this.selectedIni;
       this.listHora = this.selectedIni.hours;
@@ -103,7 +103,7 @@ export class TiempoProgramadoComponent implements OnInit {
     const listHoursShow = [];
     let loAntesPosible = false;
     let _itemHour = {};
-    let hours  = horaNow >= horaIni ? horaNow : horaIni;
+    let hours  = isHoy ? horaNow >= horaIni ? horaNow : horaIni : horaIni;
     // for (hours; horaIni <= horaFin; hours++) {
     while (hours < horaFin) {
       if ( horaNow >= horaIni && isHoy && !loAntesPosible) {

@@ -38,7 +38,7 @@ export class MainComponent implements OnInit {
   constructor(
     private miPedidoService: MipedidoService,
     private navigatorService: NavigatorLinkService,
-    private listenStatusService: ListenStatusService,
+    public listenStatusService: ListenStatusService,
     public socketService: SocketService,
     private verifyClientService: VerifyAuthClientService,
     private infoTokenService: InfoTockenService
@@ -59,6 +59,7 @@ export class MainComponent implements OnInit {
     this.infoTokenService.getInfoUs();
     // this.navigatorService.addLink('carta');
 
+    // console.log('pedido main verifyClient');
     this.verifyClientService.verifyClient().subscribe((res: SocketClientModel) => {
       // console.log('desde incio', res);
       if ( !res ) { this.isUsuarioCliente = this.infoTokenService.infoUsToken.isCliente; } else {

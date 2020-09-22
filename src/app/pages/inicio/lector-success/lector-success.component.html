@@ -8,8 +8,23 @@
                 </div>
 
                 <!-- solo para llevar -->                
-                <div *ngIf="usLog.isSoloLLevar">                    
-                    <img src="/assets/images/solo-llevar.png">
+                <div *ngIf="usLog.isSoloLLevar" class="content-num-mesa">                    
+                    <!-- <img src="/assets/images/solo-llevar.png">
+                    <span>Para Llevar</span> -->
+                    <div class="num-mesa text-white text-center">
+                        <p class="fs-18">Para</p>
+                        <p class="fs-18">LLevar</p>
+                    </div>
+                </div>
+
+                <!-- DELIVERY -->                
+                <div *ngIf="usLog.isDelivery" class="content-num-mesa">                    
+                    <!-- <img src="/assets/images/solo-llevar.png">
+                    <span>Para Llevar</span> -->
+                    <div class="num-mesa text-white text-center">
+                        <p class="fs-18">Delivery</p>
+                        <!-- <p class="fs-18">.</p> -->
+                    </div>
                 </div>
             </div>
         </div>    
@@ -30,13 +45,21 @@
                         <p class="fw-100 fs-13">{{item.descripcion}}</p>
                     </div>            
             </div>
-        </div>        
+        </div>   
+        
+        <br>
+        <hr>
+        <!-- <button mat-button color="primary">Listo Empezar <i class="fa fa-arrow-right" aria-hidden="true"></i></button> -->
+        <div class="animated fadeInUp">
+            <button mat-flat-button color="primary" class="p-1" (click)="listoEmpezar()"><span class="fs-18 p-3">Listo, empezar</span> <i class="fa fa-arrow-right pr-2" aria-hidden="true"></i></button>
+        </div>
+        
     </div>
     
 
 
     <!-- footer -->
-    <footer>
+    <footer class="position-absolute w-100" style="bottom: 0px;">        
         <!-- login -->
         <!-- <div style="min-height: 55px;">
             <div class="content-register" *ngIf="!auth.loggedIn">
@@ -49,8 +72,8 @@
 
         <!-- iniciar -->
 
-        <div matRipple class="content-ready" (click)="listoEmpezar()">
-            <p><span class="pr-2">Listo Empezar</span><i class="fa fa-arrow-right" aria-hidden="true"></i></p>
+        <div class="content-ready">            
+            <!-- <p><span class="pr-2">Listo Empezar</span><i class="fa fa-arrow-right" aria-hidden="true"></i></p> -->
         </div>
     </footer>
 </div>

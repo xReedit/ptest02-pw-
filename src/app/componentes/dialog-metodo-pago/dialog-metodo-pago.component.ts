@@ -16,6 +16,8 @@ export class DialogMetodoPagoComponent implements OnInit {
   isMontoVisible = false;
   formValid = false;
   importeIndicado: string;
+  isFromNoComercio = false; // si no viene de comercio
+
   private idExluir: null; // id escluir // cuando el comercio toma el pedido no puede pagar con tarjeta
   private isHabilitadoYape = true;
   private isHabilitadoTarjeta = true; // comercios no afiliado no se acepta tarjeta por la comision que cobran, algunos comercios tambien pueden especificar que no desean pagos con tarjeta
@@ -32,12 +34,13 @@ export class DialogMetodoPagoComponent implements OnInit {
     private establecimientoService: EstablecimientoService
   ) {
     this.importeTotal = parseFloat(data.importeTotalPagar);
+    this.isFromNoComercio = data.isFromComercio ? false : true; // si no viene ese dato entonces viene de un coemrico
     this.idExluir = data.excluirId;
   }
 
   ngOnInit() {
 
-    this.isHabilitadoYape  = this.establecimientoService.get().pwa_delivery_acepta_yape === 1;
+    this.isHabilitadoYape  = this.isFromNoComercio ? true : this.establecimientoService.get().pwa_delivery_acepta_yape === 1;
     this.isHabilitadoTarjeta  = this.establecimientoService.get().pwa_delivery_acepta_tarjeta === 1;
     this.isComercioSolidaridad  = this.establecimientoService.get().pwa_delivery_comercio_solidaridad === 1;
 
@@ -55,7 +58,7 @@ export class DialogMetodoPagoComponent implements OnInit {
     this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 1, 'descripcion': 'Efectivo', 'checked': false, visible: true});
 
     this.validaCociones();
-    // console.log(this.listMetodoPago);
+
   }
 
   private validaCociones(): void {
@@ -115,7 +118,7 @@ export class DialogMetodoPagoComponent implements OnInit {
 
   private verificarValidForm() {
     this.formValid = this.itemSelected.idtipo_pago !== 1 ? true : this.importeValid;
-    // console.log('verificado pago', this.formValid);
+
   }
 
   cerrarDlg(): void {

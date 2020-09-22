@@ -21,7 +21,7 @@ import { MapaSoloComponent } from './mapa-solo/mapa-solo.component';
 import { DirectionsMapDirectiveDirective } from '../shared/directivas/directions-map-directive.directive';
 import { CompPedidoDetalleComponent } from './comp-pedido-detalle/comp-pedido-detalle.component';
 import { CompCalificacionComponent } from './comp-calificacion/comp-calificacion.component';
-import { DialogDesicionComponent } from './dialog-desicion/dialog-desicion.component';
+// import { DialogDesicionComponent } from './dialog-desicion/dialog-desicion.component';
 // import { DialogSelectDireccionComponent } from './dialog-select-direccion/dialog-select-direccion.component';
 
 import { StarRatingModule } from 'angular-star-rating';
@@ -29,6 +29,11 @@ import { DialogCalificacionComponent } from './dialog-calificacion/dialog-califi
 import { DialogSelectDireccionComponent } from './dialog-select-direccion/dialog-select-direccion.component';
 import { DialogTiempoEntregaComponent } from './dialog-tiempo-entrega/dialog-tiempo-entrega.component';
 import { TiempoProgramadoComponent } from './tiempo-programado/tiempo-programado.component';
+import { CompCajaTextoComponent } from './comp-caja-texto/comp-caja-texto.component';
+import { CompOpCostoEstimadoComponent } from './comp-op-costo-estimado/comp-op-costo-estimado.component';
+import { CompPideLoQueQuierasComponent } from './comp-pide-lo-que-quieras/comp-pide-lo-que-quieras.component';
+import { TipoVehiculoComponent } from './tipo-vehiculo/tipo-vehiculo.component';
+import { CompPideExpressComponent } from './comp-pide-express/comp-pide-express.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +57,12 @@ import { TiempoProgramadoComponent } from './tiempo-programado/tiempo-programado
     DialogSelectDireccionComponent,
     DialogTiempoEntregaComponent,
     TiempoProgramadoComponent,
-    DialogDesicionComponent,
+    CompCajaTextoComponent,
+    CompOpCostoEstimadoComponent,
+    CompPideLoQueQuierasComponent,
+    TipoVehiculoComponent,
+    CompPideExpressComponent,
+    // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
   imports: [
@@ -86,7 +96,12 @@ import { TiempoProgramadoComponent } from './tiempo-programado/tiempo-programado
     DialogSelectDireccionComponent,
     DialogTiempoEntregaComponent,
     TiempoProgramadoComponent,
-    DialogDesicionComponent
+    CompOpCostoEstimadoComponent,
+    CompCajaTextoComponent,
+    CompPideLoQueQuierasComponent,
+    CompPideExpressComponent,
+    TipoVehiculoComponent
+    // DialogDesicionComponent
   ],
 
   // entryComponents: [

@@ -30,7 +30,7 @@ export class DialogSelectDireccionComponent implements OnInit {
   }
 
   setDireccion($event: DeliveryDireccionCliente) {
-    // console.log($event);
+
     this.direccionSelected = $event;
 
     this.listenService.setChangeDireccionDelivery(this.direccionSelected);

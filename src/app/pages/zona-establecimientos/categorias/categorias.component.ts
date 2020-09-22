@@ -18,6 +18,7 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/operators';
+import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 // import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 
 // import { Subscription } from 'rxjs/internal/Subscription';
@@ -58,7 +59,8 @@ export class CategoriasComponent implements OnInit, OnDestroy {
     private calcDistanceService: CalcDistanciaService,
     private establecimientoService: EstablecimientoService,
     private socketService: SocketService,
-    private infoTokenService: InfoTockenService
+    private infoTokenService: InfoTockenService,
+    private pedidoService: MipedidoService
     // private activatedRoute: ActivatedRoute,
     // private navigatorService: NavigatorLinkService,
   ) { }
@@ -257,14 +259,11 @@ export class CategoriasComponent implements OnInit, OnDestroy {
     // console.log('establecimiento selected', $event);
     this.establecimientoService.set($event);
 
+    // restcarta
+    this.pedidoService.resetAllNewPedido();
+
     this.router.navigate(['/callback-auth']);
 
-    // this.veryfyClient = this.verifyClientService.verifyClient()
-    //   .subscribe(res => {
-    //     if ( !res ) {return; }
-    //     // console.log('res idcliente', res);
-    //     this.setInfoToken(res);
-    //   });
   }
 
   openDialogDireccion() {

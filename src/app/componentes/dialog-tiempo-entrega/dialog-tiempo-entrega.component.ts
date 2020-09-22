@@ -40,12 +40,12 @@ export class DialogTiempoEntregaComponent implements OnInit {
 
     this.isPersonalAutorizado = !this.inforTokenService.getInfoUs().isCliente;
     this.isComercioAceptaPedidoProgramado = this.infoEstablecimiento.pwa_delivery_habilitar_pedido_programado === 1;
-    // console.log('this.infoEstablecimiento', this.infoEstablecimiento);
+
   }
 
   selectedTime($event: TiempoEntregaModel) {
     this.tiempoEntregaSelected = $event;
-    // console.log($event);
+
   }
 
   timePersonalAutorizado() {
@@ -65,7 +65,7 @@ export class DialogTiempoEntregaComponent implements OnInit {
     this.tiempoEntregaSelected.modificado = true;
     this.tiempoEntregaSelected.isUsuarioAutorizado = true;
 
-    // console.log(this.tiempoEntregaSelected);
+
   }
 
   cerrarDlg(): void {

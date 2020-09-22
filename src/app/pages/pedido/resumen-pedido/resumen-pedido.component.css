@@ -135,7 +135,8 @@
 }
 
 .bg-1 {
-    background: antiquewhite;
+    /* background: antiquewhite; */
+    background: white;
 }
 
 .bg-2 {

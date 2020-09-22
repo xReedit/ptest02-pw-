@@ -1,0 +1,9 @@
+<div class="content-op" *ngIf="listVehiculo">
+    <div matRipple *ngFor="let item of listVehiculo"
+        class="item-propina" [ngClass]="{'propina-selected': item.selected}"
+        (click)="selectedItem(item)"
+        >
+        <img src="./assets/images/icon-app/{{item.img}}" alt="">
+        <p>{{item.descripcion}}</p>
+    </div>
+</div>

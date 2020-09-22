@@ -9,7 +9,7 @@
             <!-- <span class="text-info fs-14 fw-100">Recuerde activar la ubicacion de su telefono <i class="fa fa-map-marker"></i></span> -->
             <p>Scanear codigo</p>
             <p class="fw-100" *ngIf="!isCameraReady">Obteniendo Camara...</p>
-            <zxing-scanner class="video-scan"
+            <zxing-scanner *ngIf="isActivaCamara" class="video-scan"
                 [(device)]="currentDevice" 
                 (camerasFound)="onCamerasFound($event)" 
                 (permissionResponse)="onHasPermission($event)"

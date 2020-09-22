@@ -76,8 +76,11 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.navigatorService.disableGoBack();
     this.infoToken = this.infoTokenService.getInfoUs();
-    this.pagaConEefectivo = this.infoToken.metodoPago.idtipo_pago !== 2 ? true : false; // si es en efectivo o yape //diferente de tarjeta 2
+    this.infoToken.metodoPagoSelected = !this.infoToken.metodoPagoSelected ? this.infoToken.metodoPago : this.infoToken.metodoPagoSelected;
+    this.pagaConEefectivo = this.infoToken.metodoPagoSelected.idtipo_pago !== 2 ? true : false; // si es en efectivo o yape //diferente de tarjeta 2
     this.isTrasctionSuccess = this.pagaConEefectivo;
+
+
 
     // envia de frente a la respuesta
     if ( this.pagaConEefectivo ) {
@@ -99,9 +102,6 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     this.listener();
     this.getEmailCliente();
 
-    // console.log(this.infoToken);
-    // console.log(this.importe);
-    // console.log('cliente socket verify', this.socketClient);
   }
 
   ngOnDestroy(): void {
@@ -113,13 +113,10 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     if ( this.infoToken.isDelivery  ) {
       // el importe lo toma del localstorage
       arrTotales = JSON.parse(atob(localStorage.getItem('sys::st')));
-      // console.log('total st ', arrTotales);
       this.estadoPedido.importe = parseFloat(arrTotales[arrTotales.length - 1].importe);
     } else {
       this.estadoPedido.importe = await this.estadoPedidoClienteService.getImporteCuenta();
     }
-
-    // console.log('arrTotales', arrTotales);
 
     // para proteger de los que actualizan luego de pagar
     if ( this.estadoPedido.importe === 0 || this.estadoPedido.importe === null) {
@@ -212,7 +209,6 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     this.dataClientePago.nombre = this.utilService.primeraConMayusculas(nameCliente);
     this.dataClientePago.apellido = this.utilService.primeraConMayusculas(apPaternoCliente);
 
-    // console.log('data cleinte pago', this.dataClientePago);
 
   }
 
@@ -262,6 +258,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   private listenResponse() {
     this.timeListenerKeys = setTimeout(() => {
+
       const dataResponse = localStorage.getItem(this.listenKeyData);
       this.isLoaderTransaction = localStorage.getItem(this.listenKeyLoader) === '0' ? false : true;
 
@@ -270,7 +267,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
       if ( dataResponse !== 'null' ) {
         this.isLoadBtnPago = false;
-        // console.log('dataResponse', dataResponse);
+
         this.dataResTransaction = JSON.parse(dataResponse);
 
         this.isTrasctionSuccess = !this.dataResTransaction.error;
@@ -303,19 +300,27 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
           if ( this.infoToken.isDelivery ) {
             this.isLoaderTransaction = true;
             const _dataSendPedido = JSON.parse(atob(this.infoToken.orderDelivery));
-            // _dataSendPedido.sokcetId = this.infoToken.socketId; // para que me notificque el idpedido
-            this.socketService.emit('nuevoPedido', _dataSendPedido);
-            this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago, true);
 
-            setTimeout(() => {
-              this.isLoaderTransaction = false;
-              // marcador si actualiza la pagina cuando ya pago
-              this.infoTokenService.setIsPagoSuccess(true);
-              return;
-            }, 1900);
+            // _dataSendPedido.sokcetId = this.infoToken.socketId; // para que me notificque el idpedido
+            this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago, true)
+            .subscribe(idPwaPago => {
+              _dataSendPedido.dataPedido.p_header.idregistro_pago = idPwaPago;
+              this.socketService.emit('nuevoPedido', _dataSendPedido);
+
+              setTimeout(() => {
+                this.isLoaderTransaction = false;
+                // marcador si actualiza la pagina cuando ya pago
+                this.infoTokenService.setIsPagoSuccess(true);
+                return;
+              }, 1900);
+            });
+
           } else {
             this.infoTokenService.setIsPagoSuccess(true);
-            this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago);
+            this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago)
+            .subscribe(idPwaPago => {
+              const _idPago = idPwaPago;
+            });
           }
 
 
@@ -329,13 +334,17 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
             error: this.dataResTransaction.error
           };
 
-          this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago);
+          this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago)
+          .subscribe(idPwaPago => {
+            const _idPagoA = idPwaPago;
+          });
         }
 
           // cuenta para cerrar
           // this.cuentaRegresiva();
         // }
 
+        localStorage.removeItem(this.listenKeyData);
       } else {
         this.listenResponse();
       }
@@ -370,7 +379,8 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   }
 
   private actionAfterTransaction(): void {
-    this.lanzarPermisoNotificationPush(1);
+    // this.lanzarPermisoNotificationPush(1);
+    this.miPedidoService.prepareNewPedido();
     if ( this.dataResTransaction.error ) {
       this.navigatorService._router('../pedido');
     } else {
@@ -378,9 +388,11 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
         this.goBack();
         // this.navigatorService._router('../pedido');
       } else {
+        // verificar si el establecimiento tiene activada la opcion de encuesta
         this.navigatorService._router('../lanzar-encuesta');
       }
     }
+
   }
 
   finDelivery() {
@@ -412,12 +424,9 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     _dialogConfig.hasBackdrop = true;
     _dialogConfig.data = {idMjs: option};
 
-    // console.log('show dialog DialogDesicionComponent');
     const dialogReset = this.dialog.open(DialogDesicionComponent, _dialogConfig);
     dialogReset.afterClosed().subscribe(result => {
       if (result ) {
-        // console.log('result dialog DialogDesicionComponent', result);
-        // this.suscribirse();
         this.pushNotificationSerice.suscribirse();
       }
     });

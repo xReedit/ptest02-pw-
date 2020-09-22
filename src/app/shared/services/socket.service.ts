@@ -375,6 +375,7 @@ export class SocketService {
       // console.log('VERIFY CONECTION => FALSE');
       this.closeConnection();
       this.statusConexSocket(false, 'disconnect');
+      this.cerrarSessionBeforeTimeSession();
       this.connect();
       this.verificandoConexion = false;
     });
@@ -392,15 +393,19 @@ export class SocketService {
         break;
       case 'connect_failed': // conectando
         msj = 'Conectando datos ..';
+        this.verificandoConexion = false;
         break;
       case 'connect_error': // conectando
         msj = 'Conectando datos .';
+        this.verificandoConexion = false;
         break;
       case 'disconnect': // conectando
         msj = 'Restableciendo conexion ...';
+        this.verificandoConexion = false;
         break;
       case 'navigator_offline': // conectando
         msj = 'Conexion cerrada -b ...';
+        this.verificandoConexion = false;
         break;
       case 'navigator_online': // conectando
         msj = 'Conectando datos -b ...';
@@ -420,11 +425,13 @@ export class SocketService {
       console.log('navegador conectado');
     } else {
       console.log('!!! navegador desconectado !!');
+      this.verificandoConexion = false;
     }
   }
 
   // verifica el estado del socket, si esta cerrado intenta abrirlo
   verifyConexionSocket(): void {
+    // console.log('verificando...');
     if ( this.verificandoConexion ) {return; }
     this.verificandoConexion = true;
     this.emit('verificar-conexion', this.socket.id);

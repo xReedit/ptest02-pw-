@@ -26,33 +26,8 @@ export class SeleccionarUbicacionDeliveryComponent implements OnInit {
 
   }
 
-  // infoMaps($event: any) {
-  //   console.log($event);
-  //   this.isFormValid = false;
-  //   this.dataCliente = $event;
-
-  //   if ( this.dataCliente.isvalid ) {
-  //     this.isFormValid = true;
-  //   }
-  // }
-
-  // saveDireccion() {
-  //   this.loader = 1;
-
-  //   this.crudService.postFree(this.dataCliente, 'cliente', 'get-direccion-cliente', false)
-  //     .subscribe((res: any) => {
-  //       setTimeout(() => {
-  //         this.loader = 2;
-  //         setTimeout(() => {
-  //           this.goZonaEstablecimiento();
-  //         }, 500);
-  //       }, 1000);
-  //       console.log(res);
-  //     });
-  // }
-
   setDireccion($event: DeliveryDireccionCliente) {
-    // console.log($event);
+
     // guardar en infotoken
     this.verifyClientService.setDireccionDeliverySelected($event);
     // enviar a zona de establecimientos

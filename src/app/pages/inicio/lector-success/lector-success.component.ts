@@ -3,6 +3,7 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { Auth0Service } from 'src/app/shared/services/auth0.service';
 import { Router } from '@angular/router';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 
 @Component({
   selector: 'app-lector-success',
@@ -21,11 +22,11 @@ export class LectorSuccessComponent implements OnInit {
     private verifyClientService: VerifyAuthClientService,
     public auth: Auth0Service,
     private router: Router,
+    private establecimientoService: EstablecimientoService
   ) { }
 
   ngOnInit() {
     this.loadDataIni();
-    // // console.log(this.auth.userProfile$);
   }
 
   private loadDataIni(): void {
@@ -36,7 +37,6 @@ export class LectorSuccessComponent implements OnInit {
     };
 
     this.numMesa = this.usLog.numMesaLector;
-    // console.log(this.usLog);
 
     this.crudService.postFree(_data, 'ini', 'info-sede', false)
       .subscribe((res: any) => {
@@ -48,6 +48,10 @@ export class LectorSuccessComponent implements OnInit {
         this.verifyClientService.getDataClient();
         this.verifyClientService.setIdOrg(this.dataSede.idorg);
         this.verifyClientService.setIdSede(this.dataSede.idsede);
+
+
+        // setea el establecimiento
+        this.establecimientoService.loadEstablecimientoById(this.dataSede.idsede);
 
         // if ( !dataTpm ) {
         //   dataTpm = {
@@ -61,7 +65,6 @@ export class LectorSuccessComponent implements OnInit {
 
         // window.localStorage.setItem('sys::tpm', JSON.stringify(dataTpm));
 
-        // console.log(this.dataSede);
 
         // reglas del app
         this.crudService.getAll('ini', 'reglas-app', false, false, false)
@@ -70,7 +73,7 @@ export class LectorSuccessComponent implements OnInit {
               x.descripcion = x.descripcion.replace('?', this.dataSede.pwa_time_limit);
               return x;
             });
-            // console.log('reglas', resp);
+
           });
       });
 

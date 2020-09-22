@@ -48,7 +48,7 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     // verificar en el localstorage
     this.infoToken = this.infoTokenService.getInfoUs();
     this.isDeliveryCliente = this.infoToken.isDelivery;
-    // console.log(this.infoToken);
+
     // this.estadoPedidoClienteService.get();
 
 
@@ -74,7 +74,7 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
       if (res.pageActive === 'estado') {
         this.tituloMesa = this.infoToken.isSoloLLevar ? 'Para Llevar' : 'Mesa';
         // if ( this.estadoPedido.importe > 0 ) {
-          // console.log('desde pago cuenta');
+
           setTimeout(() => {
             this.estadoPedidoClienteService.getCuentaTotales();
           }, 2500);
@@ -86,7 +86,7 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.destroyEstado$))
     .subscribe(async (res: any) => {
       if (res.pageActive === 'estado') {
-        // console.log('desde pago cuenta');
+
         const _importe = await this.estadoPedidoClienteService.getImporteCuenta();
         this.estadoPedido.importe = <number>_importe || 0;
         // this.estadoPedidoClienteService.getCuentaTotales();
@@ -103,7 +103,7 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.destroyEstado$))
     .subscribe(res => {
       this.estadoPedido = res;
-      // console.log('desde estado pedido', this.estadoPedido);
+
 
       // if ( _importe === 0 ) {
       if ( this.estadoPedido.importe === 0 && this.estadoPedido.isRegisterOnePago ) {
@@ -121,13 +121,13 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     // tiempo de espera
     this.estadoPedidoClienteService.timeRestanteAprox$.subscribe((res: any) => {
       this.tiempoEspera = res;
-      // console.log('this.tiempoEspera', this.tiempoEspera);
+
     });
 
     this.socketService.onPedidoPagado()
     .pipe(takeUntil(this.destroyEstado$))
     .subscribe(res => {
-      // console.log('notificado de pago recalcular', res);
+
       // recalcular cuenta si es 0 agradecimiento y lanzar encuesta si aun no la lleno
       this.estadoPedidoClienteService.getCuentaTotales();
       this.estadoPedidoClienteService.setisRegisterPago(true);
@@ -139,7 +139,7 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
   }
 
   verCuenta() {
-    // console.log('ver al cuenta desde estado');
+
     this.estadoPedidoClienteService.getCuenta();
     this.navigatorService.setPageActive('mipedido');
   }

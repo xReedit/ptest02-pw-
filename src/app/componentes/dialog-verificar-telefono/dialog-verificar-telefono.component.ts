@@ -33,7 +33,7 @@ export class DialogVerificarTelefonoComponent implements OnInit {
     this.isNumberSuccess = 0;
     this.crudService.postSMS(this.data, 'delivery', 'send-sms-confirmation', true)
       .subscribe(res => {
-        // console.log(res);
+
         this.isNumberSuccess = res.msj ? 1 : 2;
         this.isSendSMS = res.msj;
         this.isValidForm = false;
@@ -51,13 +51,13 @@ export class DialogVerificarTelefonoComponent implements OnInit {
 
     this.crudService.postFree(_dataCod, 'delivery', 'verificar-codigo-sms', false)
       .subscribe(res => {
-        // console.log('res verificar codigo', res.data);
+
         this.isVerificacionOk = res.data[0].response === 1 ? true : false;
         setTimeout(() => {
           this.loader = this.isVerificacionOk ? 2 : 3;
           this.data.verificado = this.isVerificacionOk;
           // this.loader = 2;s
-          // console.log(res);
+
           if ( this.isVerificacionOk ) {
             setTimeout(() => {
               this.cerrarDlg();

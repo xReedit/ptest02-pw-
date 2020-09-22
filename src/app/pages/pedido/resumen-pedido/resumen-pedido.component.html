@@ -77,6 +77,10 @@
             <ng-container *ngIf="isHayCuentaBusqueda">
                 <div class="text-center">                    
                     <button mat-flat-button color="accent" (click)="nuevoPedidoFromCuenta()">Nuevo Pedido</button>
+                    <button *ngIf="!isCliente" mat-flat-button color="primary" class="ml-2" (click)="imprimirPrecuenta()" [disabled]="loadPrinterPrecuenta">
+                        <i class="fa fa-spinner fa-spin" *ngIf="loadPrinterPrecuenta"></i>
+                        Imprimir Precuenta
+                    </button>
                 </div>
             </ng-container>
             <br>

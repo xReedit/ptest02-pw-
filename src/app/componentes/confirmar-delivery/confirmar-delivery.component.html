@@ -93,9 +93,20 @@
                         {{item.descripcion | titlecase}}
 
                         <!-- si lluvia -->
-                        <i *ngIf="item.isDeliveryApp && isRain" class="fa fa-cloud pl-2 text-secondary"></i>
+                        <ng-container *ngIf="item.isDeliveryApp" class="d-flex">
+                            <div *ngFor="let itemIcon of listIconsEntrega" class="d-inline">
+                                <img *ngIf="itemIcon.visible" class="img-ico-entrega pl-2 text-secondary" src="../assets/images/{{itemIcon.icon}}" alt="is_rain" matTooltip="{{ itemIcon.motivo }}">
+                            </div>
+                            <!-- <img *ngIf="isRain" class="img-ico-entrega pl-2 text-secondary" src="../assets/images/x_is_rain.png" alt="is_rain" matTooltip="Lluvia">
+                            <img *ngIf="isRain" class="img-ico-entrega pl-3 text-secondary" src="../assets/images/x_is_nigth.png" alt="is_all_demand" matTooltip="Alta demanda">
+                            <img *ngIf="isRain" class="img-ico-entrega pl-3 text-secondary" src="../assets/images/x_is_all_demand.png" alt="is_all_demand" matTooltip="Alta demanda"> -->
+                            <!-- <i  class="fa fa-cloud pl-2 text-secondary"></i>                         -->
+                            <i *ngIf="isCalculandoDistanciaA" class="fa fa-spinner fa-spin fa-fw ml-3"></i>
+                        </ng-container>                        
+                        
                     </div>
-                    <div>{{item.importe | number:'0.2' }}</div>
+                    <div>
+                        {{item.importe | number:'0.2' }}</div>
                     </li>
                 </ul>
             </div>        
@@ -105,6 +116,8 @@
                         Importe minimo S/. {{montoMinimoPedido | number:'.2'}}
                     </span>                 
                 </span>
+
+                <p class="fs-11 text-info fw-100">Costo de entrega y propina es 100% para el repartidor.</p>
             </div>
             <br>
         <!-- </div> -->

@@ -45,11 +45,13 @@ export class EstablecimientoService {
       idsede: id
     };
 
-    this.crudService.postFree(_dataSend, 'delivery', 'get-establecimientos')
+    // console.log('get-establecimientos _dataSend', _dataSend);
+
+    this.crudService.postFree(_dataSend, 'delivery', 'get-establecimientos', false)
     .subscribe(res => {
+      // console.log('get-establecimientos', res);
       this.establecimiento = res.data[0];
       this.set(this.establecimiento);
-      // console.log(res);
     });
   }
 
@@ -57,6 +59,8 @@ export class EstablecimientoService {
   // para devolver el costo de entrega
   getFindDirClienteCacheEstableciemto(direccionCliente: DeliveryDireccionCliente, dirEstablecimiento: DeliveryEstablecimiento): DeliveryEstablecimiento {
     let _establecimientoEnCache = null;
+    if ( !direccionCliente ) { return _establecimientoEnCache; } // puede que sea para consumir en el local o llevar
+
     let listEsblecimientosCache = <any>this.getEstableciminetosCache();
     listEsblecimientosCache = listEsblecimientosCache.filter(e => e.idcliente_pwa_direccion ===  direccionCliente.idcliente_pwa_direccion)[0];
 
@@ -136,6 +140,29 @@ export class EstablecimientoService {
       });
 
     });
+  }
+
+  setRegisterScanQr(_sede: number, _canal: string, _idscan: number = 0) {
+    const _dataSend = {
+      idsede: _sede,
+      canal: _canal,
+      idscan: _idscan
+    };
+
+    this.crudService.postFree(_dataSend, 'pedido', 'register-scan', false)
+      .subscribe((res: any) => {
+        // console.log('register-scan',  res);
+        this.setLocalIdScanQr(res.data[0].idscanqr);
+      });
+  }
+
+  setLocalIdScanQr(id: number) {
+    localStorage.setItem('sys::scan', id.toString());
+  }
+
+  getLocalIdScanQr(): number {
+    const _id = localStorage.getItem('sys::scan') || '0';
+    return parseInt(_id, 0);
   }
 
 }

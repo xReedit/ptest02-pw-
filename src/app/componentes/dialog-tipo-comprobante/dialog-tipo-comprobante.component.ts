@@ -36,7 +36,7 @@ export class DialogTipoComprobanteComponent implements OnInit {
 
     this.listTipoComprobante.push(<TipoComprobanteModel>{'idtipo_comprobante': 1, 'descripcion': 'Boleta', 'checked': true});
     this.listTipoComprobante.push(<TipoComprobanteModel>{'idtipo_comprobante': 2, 'descripcion': 'Factura', 'checked': false});
-    // console.log(this.listTipoComprobante);
+
   }
 
   private verificarComprobanteInit() {

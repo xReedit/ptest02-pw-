@@ -35,6 +35,7 @@ export class UsuarioTokenModel {
     importeDelivery: string; // importe pendiente de confirmacion
     isPagoSuccess: boolean; // si ya pago, si es que actualiza cuando ya pago
     metodoPago: MetodoPagoModel; // metodo pago seleccionado
+    metodoPagoSelected: MetodoPagoModel; // metodo pago seleccionado
     tipoComprobante: TipoComprobanteModel; // tipo comprobante en delivery
     propina: PropinaModel; // propina para el repartidor delivery
     socketId: string;

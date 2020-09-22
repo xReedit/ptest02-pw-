@@ -11,6 +11,15 @@
   </div>     
 <!-- loader -->
 
+<!-- loader send pedido or transaction -->
+<div class="animated fadeIn div-loader-2" *ngIf="listenStatusService.isLoaderSendPedido$ | async">
+  <div class="loader">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <span class="pt-2">Enviando pedido...</span>
+  </div>    
+</div>
+<!-- loader send pedido or transaction -->
+
 
 <!-- <div *ngIf="isPagePagarShow">
   <router-outlet></router-outlet>

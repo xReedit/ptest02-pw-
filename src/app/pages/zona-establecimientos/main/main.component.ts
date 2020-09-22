@@ -40,7 +40,7 @@ export class MainComponent implements OnInit {
     private verifyClientService: VerifyAuthClientService,
     private dialogDireccion: MatDialog,
     private dialog: MatDialog,
-    private listenService: ListenStatusService,
+    public listenService: ListenStatusService,
     private router: Router,
     private socketService: SocketService,
     private navigartoService: NavigatorLinkService,
@@ -73,20 +73,6 @@ export class MainComponent implements OnInit {
 
     this.loadComerciosXCalificar();
 
-
-    // if ( this.infoTokenService.infoUsToken ) {
-    //   this.infoUser = this.infoTokenService.infoUsToken;
-    //   this.socketService.connect(this.infoClient, 0, true);
-    // } else {
-    //   this.verifyClientService.verifyClient()
-    //   .subscribe(res => {
-    //     this.infoUser = res;
-    //     this.infoTokenService.infoUsToken = res;
-    //     this.infoTokenService.set();
-    //     this.infoTokenService.converToJSON();
-    //     this.socketService.connect(this.infoClient, 0, true);
-    //   });
-    // }
 
 
     // si no hay direccion abre el dialog

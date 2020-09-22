@@ -1903,6 +1903,13 @@ export class MipedidoService {
       return _miPedidoCuenta;
   }
 
+  printerPrecuenta(_data: any) {
+    this.crudService.postFree(_data, 'pedido', 'printer-precuenta', true)
+    .subscribe(res => {
+      console.log('send-printer-precuenta',  res);
+    });
+  }
+
   // cerrar session
   cerrarSession(): void {
     this.socketService.closeConnection();
@@ -1910,4 +1917,7 @@ export class MipedidoService {
   }
 
   // <--------- listen change -------> //
+
+
+
 }

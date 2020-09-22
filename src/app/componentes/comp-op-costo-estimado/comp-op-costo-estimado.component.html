@@ -1,0 +1,9 @@
+<div class="content-op">    
+    <div matRipple *ngFor="let item of listOpciones" 
+        class="item-propina" [ngClass]="{'propina-selected': item.selected}"
+        (click)="selectedItem(item)">
+
+        <p class="fw-600">{{ item.descripcion }} </p>
+        <p class="fs-14"> {{ item.showImporte }} </p>
+    </div>
+</div>

@@ -5,6 +5,8 @@ import { EstablecimientosComponent } from './establecimientos/establecimientos.c
 import { CategoriasComponent } from './categorias/categorias.component';
 import { MisOrdenesComponent } from './mis-ordenes/mis-ordenes.component';
 import { MiOrdenDetalleComponent } from './mi-orden-detalle/mi-orden-detalle.component';
+import { CheckoutComponent } from './checkout/checkout.component';
+import { CheckoutBComponent } from './checkout-b/checkout-b.component';
 
 const routes: Routes = [{
     path: '', component: MainComponent,
@@ -32,6 +34,16 @@ const routes: Routes = [{
             path: 'pedido-detalle',
             component: MiOrdenDetalleComponent,
             data: { titulo: 'Pedido Detalle' }
+        },
+        {
+            path: 'checkout',
+            component: CheckoutComponent,
+            data: { titulo: 'Checkout' }
+        },
+        {
+            path: 'checkout-b',
+            component: CheckoutBComponent,
+            data: { titulo: 'Checkout' }
         }
     ]
 }];

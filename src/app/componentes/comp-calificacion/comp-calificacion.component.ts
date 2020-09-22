@@ -23,7 +23,6 @@ export class CompCalificacionComponent implements OnInit {
   }
 
   onRatingChange($event: any) {
-    // console.log('calificacion', $event);
     this.dataCalificado.calificacion =  $event.rating;
     if (this.dataCalificado.showTxtComentario) {return; }
     this.goAgradecimiento();
@@ -56,7 +55,6 @@ export class CompCalificacionComponent implements OnInit {
   private guardarCalificacion() {
     this.dataCalificado.comentario = this.comentario;
 
-    console.log('this.dataCalificado', this.dataCalificado);
     const _data = {
       dataCalificacion : this.dataCalificado
     };

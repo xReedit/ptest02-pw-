@@ -84,6 +84,11 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   isRain = false; // si esta lloviendo
 
+  listIconsEntrega = [];
+
+
+  isCalculandoDistanciaA = false;
+
   @Input()
   set listSubtotales(val: any) {
     this._listSubtotales = val;
@@ -110,7 +115,6 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   ngOnInit() {
 
-    // console.log('confirmar delivery');
 
     this.loadData();
 
@@ -125,8 +129,13 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.isComercioSolidaridad = _datosEstablecieminto.pwa_delivery_comercio_solidaridad === 1;
     this.titleInputDatoAdicional = this.isComercioSolidaridad ? 'Contacto' : 'Algún dato importante?';
 
-    // console.log(_datosEstablecieminto);
-    this.isRain = _datosEstablecieminto.is_rain === 1 ? true : false;
+    // this.isRain = _datosEstablecieminto.is_rain === 1 ? true : false;
+    this.listIconsEntrega = JSON.parse(JSON.stringify(_datosEstablecieminto.icons_entrega));
+
+    // si no tiene la distancia, entonces no calculo el costo de entrega
+    if ( !this.dirEstablecimiento.distancia_km ) {
+      this.calcularCostoEntrega(this.direccionCliente);
+    }
   }
 
   private getTiempoEntrega() {
@@ -161,6 +170,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
   private loadData(): void {
     this.dirEstablecimiento = this.establecimientoService.get();
 
+
     this.isComercioCerrado = this.dirEstablecimiento.cerrado === 1;
     this.isComercioAceptaPedidoProgramado = this.dirEstablecimiento.pwa_delivery_habilitar_pedido_programado === 1;
 
@@ -174,7 +184,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     // metodo de pago
     this.isHabilitadoTarjeta  = this.establecimientoService.get().pwa_delivery_acepta_tarjeta === 1;
-    this.metodoPagoSelected = this.infoTokenService.setIniMetodoPagoSegunFiltro(this.isHabilitadoTarjeta);
+    this.metodoPagoSelected =  this.infoTokenService.setIniMetodoPagoSegunFiltro(this.isHabilitadoTarjeta);
 
     // direccion de entrega
     this.infoToken = this.infoTokenService.getInfoUs();
@@ -183,7 +193,6 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.direccionCliente = this.infoToken.direccionEnvioSelected ? this.infoToken.direccionEnvioSelected : this.direccionClienteIni;
 
 
-    // console.log('info cliente from confirmacion', this.infoToken);
 
     // establecimiento seleccionado
     this.infoEstablecimiento = this.establecimientoService.get();
@@ -191,7 +200,6 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     this.isAceptaRecojoLocal = this.infoEstablecimiento.pwa_delivery_habilitar_recojo_local === 1;
 
-    // console.log('this.infoEstablecimiento', this.infoEstablecimiento);
 
     this.resData.telefono = this.infoToken.telefono;
     this.isValidForm = this.infoToken.telefono ? this.infoToken.telefono.length >= 5 ? true : false : false;
@@ -287,10 +295,10 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.isValidForm = this.isTiempoEntregaValid;
     this.isValidForm = this.resData.importeTotal >= this.montoMinimoPedido && this.isValidForm ? true : false;
     this.isValidForm = !this.metodoPagoSelected.idtipo_pago ? false : this.isValidForm;
-    this.isValidForm = !this.direccionCliente.codigo && !this.isRecojoLocalCheked ? false : this.isValidForm;
+    this.isValidForm = !this.direccionCliente.ciudad && !this.isRecojoLocalCheked ? false : this.isValidForm;
     this.isValidForm = this.resData.telefono.trim().length >= 5 ? this.isValidForm : false;
+    this.isValidForm = this.isValidForm && !this.isCalculandoDistanciaA;
     // if ( !this.direccionCliente.codigo && !this.isRecojoLocalCheked ) { this.isValidForm = false; }
-    // console.log('this.isValidForm', this.isValidForm);
     this.isReady.emit(this.isValidForm);
   }
 
@@ -311,7 +319,6 @@ export class ConfirmarDeliveryComponent implements OnInit {
         this.verificarFormValid();
 
         // this.isValidForm = !this.metodoPagoSelected.idtipo_pago ? false : this.isValidForm;
-        // console.log(result);
         this.verificarMontoMinimo();
       });
   }
@@ -350,7 +357,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
         this.resData.telefono = this.infoToken.telefono;
       }
       this.verificarMontoMinimo();
-      // console.log(result);
+
     });
 
   }
@@ -382,7 +389,6 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this._listSubtotales = this._listSubtotalesTmp;
     }
 
-    // console.log('this._listSubtotales', this._listSubtotales);
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._listSubtotales)));
     this.infoTokenService.setPasoRecoger(this.isRecojoLocalCheked);
 
@@ -390,7 +396,6 @@ export class ConfirmarDeliveryComponent implements OnInit {
   }
 
   selectedPropinaRepartidor(propina: PropinaModel) {
-    // console.log('propina', propina);
     this.propinaSelected = propina;
     this.resData.propina = propina;
   }
@@ -419,7 +424,6 @@ export class ConfirmarDeliveryComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       data => {
         if ( !data ) { return; }
-        // console.log('data dialog', data);
         this.msjErrorDir = '';
         this.direccionCliente = <DeliveryDireccionCliente>data;
 
@@ -440,29 +444,35 @@ export class ConfirmarDeliveryComponent implements OnInit {
         this.direccionCliente.idcliente_pwa_direccion = this.direccionCliente.idcliente_pwa_direccion === null ? 0 : this.direccionCliente.idcliente_pwa_direccion;
 
 
-        // console.log('calculateRoute from confirmar-delivery');
-        this.calcDistanceService.calculateRoute(<DeliveryDireccionCliente>data, this.dirEstablecimiento, false);
-
-
-        // recalcular
-        setTimeout(() => {
-          // console.log('this.dirEstablecimiento', this.dirEstablecimiento);
-
-          this.establecimientoService.set(this.dirEstablecimiento);
-          this.infoEstablecimiento.c_servicio = this.dirEstablecimiento.c_servicio;
-          this.resData.costoTotalDelivery = this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
-
-          const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
-          localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
-
-          this._listSubtotales = _arrSubtotales;
-
-          // console.log('_arrSubtotales', _arrSubtotales);
-          this.verificarMontoMinimo();
-        }, 600);
+        this.calcularCostoEntrega(this.direccionCliente);
+        // this.calcDistanceService.calculateRoute(<DeliveryDireccionCliente>data, this.dirEstablecimiento, false);
 
       }
     );
+  }
+
+  calcularCostoEntrega(direccionCliente: DeliveryDireccionCliente) {
+
+    this.isReady.emit(false);
+    this.isCalculandoDistanciaA = true;
+    this.calcDistanceService.calculateRoute(direccionCliente, this.dirEstablecimiento, false);
+    // .subscribe((res: any) => {
+    setTimeout(() => {
+      // this.dirEstablecimiento = this.dirEstablecimiento;
+      this.establecimientoService.set(this.dirEstablecimiento);
+      this.infoEstablecimiento.c_servicio = this.dirEstablecimiento.c_servicio;
+      this.resData.costoTotalDelivery = this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
+
+      const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
+      localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
+
+      this._listSubtotales = _arrSubtotales;
+      this.isCalculandoDistanciaA = false;
+
+      this.verificarMontoMinimo();
+    }, 1500);
+    // });
+
   }
 
 
@@ -476,7 +486,6 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     const dialogTpC = this.dialogTipoComprobante.open(DialogTiempoEntregaComponent, _dialogConfig);
     dialogTpC.afterClosed().subscribe((result: TiempoEntregaModel) => {
-        // console.log('TiempoEntregaModel ==== ', result);
         if ( result ) {
           this.infoTokenService.setTiempoEntrega(result);
           this.tiempoEntregaSelected = result;

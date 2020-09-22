@@ -21,6 +21,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   zoom: number;
   address: string;
   loader = 0;
+  dirInCoordenadas = false;
 
   isUsCliente = true; // si el usuario es cliente o usuario autorizado
   countMoveMap = 0;
@@ -81,8 +82,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
 
     this.dataCliente = new DeliveryDireccionCliente();
     this.inforTokenService.getInfoUs();
-    this.isUsCliente = this.inforTokenService.getInfoUs().isCliente;
-    // console.log('this.inforTokenService.getInfoUs()', this.inforTokenService.getInfoUs());
+    this.isUsCliente = this.inforTokenService.getInfoUs().isCliente;    
     this.loadForm();
   }
 
@@ -107,7 +107,6 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
           // get the place result
           const place: google.maps.places.PlaceResult = autocomplete.getPlace();
 
-          // console.log('place', place);
           this.countMoveMap = 0;
           this.dataMapa = place; // para extract data
           this.address = place.formatted_address;
@@ -162,38 +161,50 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   }
 
   markerDragEnd($event: any) {
-    // console.log($event);
     this.latitude = $event.coords.lat;
     this.longitude = $event.coords.lng;
-    // console.log('this.latitude markter',  this.latitude);
-    // console.log('this.longitude markter',  this.longitude);
-    // this.getAddress(this.latitude, this.longitude);
+  }
+
+  getDirCoordenadas(coodenadas: string) {
+    const _coordenadas = coodenadas.split(',');
+    const _lat = parseFloat(_coordenadas[0]);
+    const _lon = parseFloat(_coordenadas[1]);
+    this.latitude = _lat;
+    this.longitude = _lon;
+
+    this.isChangeDireccion = true;
+
+    this.getAddress(_lat, _lon);
   }
 
   getAddress(latitude, longitude) {
+
     // this.isDireccionValid = true;
     // const palce_id = placeId ? {'placeId': placeId} : { 'location': { lat: latitude, lng: longitude } };
     this.geoCoder.geocode({ 'location': { lat: latitude, lng: longitude } }, (results, status) => {
     // this.geoCoder.geocode(palce_id, (results, status) => {
-      // console.log(results);
-      // console.log(status);
+
       if (status === 'OK') {
         if (results[0]) {
           this.zoom = 17;
           this.address = results[0].formatted_address;
           this.dataMapa = results[0];
 
-          // console.log('this.dataMapa', this.dataMapa);
+
 
           if ( this.isChangeDireccion ) {
             this.dataCliente.direccion = this.address;
           }
 
+          if ( this.dirInCoordenadas ) {
+            this.registerForm.controls['direccion'].patchValue(this.dataCliente.direccion);
+            // this.guardarDireccion(); // para el form valid
+          }
+
           // si es usuario comercio valida la direccion del cliente
           if ( !this.isUsCliente ) {
             const codigo_postal = this.searchTypeMap('locality');
-            // console.log('codigo_postal', codigo_postal);
-            // console.log('this.dataInfoSede', this.dataInfoSede);
+
             if ( codigo_postal.toLowerCase().trim() !== this.dataInfoSede.ciudad.toLowerCase().trim() ) {
               this.isDireccionValid = false;
               // window.alert('El servicio no esta disponible en esta ubicacion');
@@ -207,9 +218,6 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
       } else {
         // window.alert('Geocoder failed due to: ' + status);
       }
-
-      // console.log('this.dataCliente', this.dataCliente);
-      // console.log('this.dataMapa', this.dataMapa);
     });
   }
 
@@ -261,24 +269,6 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     this.dataCliente.codigo = this.searchTypeMap('postal_code');
 
 
-    // this.dataCliente.isvalid = true;
-
-    // this.dataMaps.emit(this.dataCliente);
-    // console.log('this.dataMapa', this.dataMapa);
-    //
-
-    // console.log(data);
-    // console.log(this.dataCliente);
-
-    // guardar cambios
-    // this.crudService.postFree(this.dataCliente, 'cliente', 'new-direccion', false)
-    //   .subscribe((res: any) => {
-    //     setTimeout(() => {
-    //       this.loader = 2;
-    //     }, 1000);
-
-    //     console.log(res);
-    //   });
   }
 
   saveDireccion() {
@@ -293,7 +283,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
 
     // this.mapCenter.lat, this.mapCenter.lng
 
-    // console.log('this.mapCenter', this.mapCenter);
+
     if ( this.isUsCliente && this.countMoveMap > 1) {
       this.getAddress(this.mapCenter.lat, this.mapCenter.lng);
 
@@ -318,13 +308,11 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
         setTimeout(() => {
           this.loader = 2;
           setTimeout(() => {
-            // console.log('new-direccion', res);
             this.dataCliente.idcliente_pwa_direccion = res.data[0].idcliente_pwa_direccion;
             this.saveDireccionOk.emit(this.dataCliente);
             this.countMoveMap = 1;
           }, 500);
         }, 1000);
-        // console.log(res);
       });
   }
 
@@ -350,29 +338,21 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   public markerClicked = (markerObj) => {
     if (this.map) {
       this.map.setCenter({ lat: markerObj.latitude, lng: markerObj.longitude });
-      // console.log('clicked', markerObj, { lat: markerObj.latitude, lng: markerObj.longitude });
     }
   }
 
   idleMap() {
     this.countMoveMap++;
-    // console.log('this.mapCenter', this.mapCenter);
-    // this.getAddress(this.mapCenter.lat, this.mapCenter.lng);
   }
 
   centerChange(event: any) {
     if (event) {
       this.mapCenter.lat = event.lat;
       this.mapCenter.lng = event.lng;
-
-      // const latLong = new google.maps.LatLng(event.lat, event.lng);
-      // this.mapCenter = latLong;
-      // console.log(this.mapCenter);
     }
   }
 
   clickmap() {
-    // console.log('click map');
     this.isChangeDireccion = true;
   }
 

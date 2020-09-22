@@ -131,7 +131,7 @@
         <!-- no delivery -->
           <div class="text-center fs-20 fw-100 banner-res-ok p-3">
             <i class="fa fa-check-circle-o fa-2x" aria-hidden="true"></i>            
-            <p>Transacción Existosa.</p>
+            <p class="t-e-n">Transacción Existosa.</p>
             
           </div>
     
@@ -175,6 +175,12 @@
           </div>     
 
 
+          <div class="p-3 bg-white text-center">          
+            <button mat-flat-button color="primary" (click)="actionAfterTransaction()"> Listo. </button>
+            <br>
+          </div>
+
+
       </ng-container>
       <ng-template #esClienteDelivery>
         
@@ -182,29 +188,39 @@
         <div class="text-center fs-20 fw-100 banner-res-ok p-3">
           <i class="fa fa-check-circle-o fa-2x" aria-hidden="true"></i>
           <ng-container *ngIf="!pagaConEefectivo; else divPagoEfectivo">              
+            <p class="t-e">Transacción Existosa.</p>
           </ng-container>
-            <p>Transacción Existosa.</p>
           <ng-template #divPagoEfectivo>
             <p>Listo.</p>
           </ng-template>
         </div>
+
+        <!-- <div class="p-3 bg-white text-center">          
+          <button mat-flat-button color="primary" (click)="finDelivery()"> Listo. </button>
+          <br>
+        </div> -->
 
       </ng-template>
       
       
 
 
-      <div class="p-3 bg-white">
-        <div class="text-center">
-          <p class="fs-20">Pedido Confirmado</p>
-          <hr>
-          <p>Su orden llegara pronto.</p>
-          <hr>
-          <img src="./assets/images/food_delivery.gif" alt="delivery" width="160px">
-          <hr>
-          <p>Puede ver el estado de este en <br><strong>Mis Pedidos</strong>.</p>
-          <!-- <span class="fw-100 fs-25">{{ countFin | number: '2.' }}</span>
-          <p>Notificando pago a control de caja ...</p> -->
+      <div *ngIf="this.infoToken.isDelivery">
+        <div class="p-3 bg-white">
+          <div class="text-center">
+            <p class="fs-20">Pedido Confirmado</p>
+            <hr>
+            <p>Su orden llegara pronto.</p>
+            <hr>
+            <img src="./assets/images/food_delivery.gif" alt="delivery" width="160px">
+            <hr>
+            <p>Puede ver el estado de este en <br><strong>Mis Pedidos</strong>.</p>
+            <!-- <span class="fw-100 fs-25">{{ countFin | number: '2.' }}</span>
+            <p>Notificando pago a control de caja ...</p> -->
+          </div>
+        </div>
+        
+        <div class="p-3 bg-white text-center">          
           <button mat-flat-button color="primary" (click)="finDelivery()"> Listo. </button>
           <br>
         </div>

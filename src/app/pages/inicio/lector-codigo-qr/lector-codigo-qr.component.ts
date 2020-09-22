@@ -47,6 +47,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   private isDemo = false;
   private divicePos: any;
   private _comercioUrl = '';
+  private isActivaCamara = true;
 
 
   // private veryfyClient: Subscription = null;
@@ -67,21 +68,10 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
 
     // lee el url si es directo
     if (this._comercioUrl) {
+      this.isActivaCamara = false;
       this.codQR = this._comercioUrl;
       this.leerDatosQR();
     }
-
-    // const qrScanner = new QrScanner(this.videoplayer, (result: any) => // console.log('decoded qr code:', result));
-
-    // verifica si hay usuario logeado
-    // this.verifyClientService.verifyClient();
-    // this.veryfyClient = this.verifyClientService.verifyClient()
-    //   .pipe(take(1))
-    //   .subscribe(res => {
-    //     console.log('res idcliente', res);
-    //   });
-
-    // this.verifyAceptPosition();
   }
 
   ngOnDestroy(): void {
@@ -172,6 +162,19 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     this.isCodigoQrValido = true;
     let _codQr = [];
 
+    // console.log('this.codQR', this.codQR);
+
+    // 140820 -> con este cambio el codigo es leido desde cualquier lector,
+    // enviandolo a ala web o si lo scanean desde papaya lo envian a la carta
+    // si el codigo viene con la pagina
+    if ( this.codQR.indexOf('papaya.com.pe') > -1 ) {
+      const _partUrl = this.codQR.split('co=');
+      // console.log('_cadena', _partUrl);
+
+      // quita la parte del url
+      this.codQR = _partUrl[1];
+    }
+
     try {
       _codQr = atob(this.codQR).split('::');
     } catch (error) {
@@ -197,9 +200,14 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     const s = dataQr[2];
     const o = dataQr[3];
 
+    let canal = ''; // canal de consumo
+
     // -1 = solo llevar // activa ubicacion
     this.isSoloLLevar =  m === '-1' ? true : false;
     this.isDelivery =  m === '-2' ? true : false;
+
+    canal = this.isSoloLLevar ? 'LLevar' : 'Mesa ' + m;
+    canal = this.isDelivery ? 'Delivery' : canal;
 
     const dataSend = {
       m: m,
@@ -213,7 +221,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
 
     this.crudService.postFree(dataHeader, 'ini', 'info-sede-gps', false)
       .subscribe((res: any) => {
-        this.isSedeRequiereGPS = res.data[0].pwa_requiere_gps === '0' ? false : true;
+        this.isSedeRequiereGPS = res.data[0].pwa_requiere_gps.toString() === '0' ? false : true;
         this.isSedeRequiereGPS = this.isSoloLLevar ? true : this.isSedeRequiereGPS;
         this.isSedeRequiereGPS = this.isDelivery ? false : this.isSedeRequiereGPS;
 
@@ -230,6 +238,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
           // this.infoTokenService.converToJSON();
           // this.infoTokenService.infoUsToken.isDelivery = true;
           // this.infoTokenService.set();
+          this.verifyClientService.setMesa(0);
           this.verifyClientService.setIdOrg(o);
           this.getInfoEstablecimiento(s);
 
@@ -247,6 +256,9 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
         } else {
           this.resValidQR(isPositionCorrect);
         }
+
+        // registra scaneo
+        this.establecimientoService.setRegisterScanQr(s, canal);
 
     });
   }

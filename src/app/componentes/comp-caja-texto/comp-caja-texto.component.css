@@ -1,0 +1,8 @@
+.text-area-nota {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid lightgrey;
+    padding: 5px;
+    font-size: 14px;
+    background: white;
+}

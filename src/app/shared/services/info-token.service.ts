@@ -4,6 +4,7 @@ import { MetodoPagoModel } from 'src/app/modelos/metodo.pago.model';
 import { TipoComprobanteModel } from 'src/app/modelos/tipo.comprobante.model';
 import { PropinaModel } from 'src/app/modelos/propina.model';
 import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
+import { Router } from '@angular/router';
 
 
 
@@ -14,11 +15,13 @@ export class InfoTockenService {
   infoUsToken: UsuarioTokenModel;
   constructor(
     // private miPedidoService: MipedidoService,
+    private router: Router
   ) {
     this.converToJSON();
   }
 
   getInfoUs(): UsuarioTokenModel {
+    this.verificarContunuarSession();
     this.getLocalIpCliente();
     return this.infoUsToken;
   }
@@ -33,30 +36,37 @@ export class InfoTockenService {
 
   getInfoSedeToken(): string {
     // const token = jwt.decode(this.getToken());
+    this.verificarContunuarSession();
     return this.infoUsToken.idsede.toString();
     // return '1';
   }
   getInfoOrgToken(): string {
+    this.verificarContunuarSession();
     return this.infoUsToken.idorg.toString();
   }
 
   getInfoNomSede(): string {
+    this.verificarContunuarSession();
     return localStorage.getItem('sys::s');
   }
 
   isCliente(): boolean {
+    this.verificarContunuarSession();
     return this.infoUsToken.isCliente;
   }
 
   isSoloLlevar(): boolean {
+    this.verificarContunuarSession();
     return this.infoUsToken.isSoloLLevar;
   }
 
   isDelivery(): boolean {
+    this.verificarContunuarSession();
     return this.infoUsToken.isDelivery;
   }
 
   getLocalIpCliente(): string {
+    this.verificarContunuarSession();
     if ( this.infoUsToken ) {
       this.infoUsToken.ipCliente = localStorage.getItem('sys::it') || '';
       return this.infoUsToken.ipCliente;
@@ -162,6 +172,11 @@ export class InfoTockenService {
     // this.setMetodoPago( metodoPagoInit );
     // return metodoPagoInit;
 
+  }
+
+  setMetodoPagoSelected(metodo: MetodoPagoModel) {
+    this.infoUsToken.metodoPagoSelected = metodo;
+    this.set();
   }
 
   setIniTipoComprobante() {
@@ -273,9 +288,19 @@ export class InfoTockenService {
     // localStorage.removeItem('sys::tpm');
   }
 
+  cerrarSessionGoIni() {
+    this.cerrarSession();
+    this.router.navigate(['../']);
+  }
+
   // verifica el tiempo de inactividad para cerrar session
   // cerrar session despues de 3:20 => ( 12000 sec )horas inciadas
   verificarContunuarSession(): boolean {
+
+    // si no existe token cierra
+    if ( !this.infoUsToken) {
+      this.cerrarSessionGoIni();
+    }
     if ( !this.infoUsToken || !this.infoUsToken.isCliente || !this.infoUsToken.isDelivery) { // si es usuario autorizado no cuenta tiempo
       return true;
     }
