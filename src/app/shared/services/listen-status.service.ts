@@ -64,6 +64,9 @@ export class ListenStatusService {
   private isLoaderSendPedidoSource = new BehaviorSubject<boolean>(false);
   public isLoaderSendPedido$ = this.isLoaderSendPedidoSource.asObservable();
 
+  private isLoaderCartaSource = new BehaviorSubject<boolean>(false);
+  public isLoaderCarta$ = this.isLoaderCartaSource.asObservable();
+
 
   constructor() { }
 
@@ -127,5 +130,9 @@ export class ListenStatusService {
 
   setLoaderSendPedido(value: boolean) {
     this.isLoaderSendPedidoSource.next(value);
+  }
+
+  setLoaderCarta(value: boolean) {
+    this.isLoaderCartaSource.next(value);
   }
 }

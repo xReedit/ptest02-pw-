@@ -24,6 +24,11 @@
                         <i class="fa fa-bicycle"></i>
                         S/.{{ itemEstablecimiento.c_servicio | number: '0.2'}}
                     </div>
+                    <div *ngIf="itemEstablecimiento.calificacion > 3">
+                        <i class="fa fa-star text-warning"></i>
+                        {{ itemEstablecimiento.calificacion | number:'.0' }}
+                    </div>
+
                     <!-- <div>5.0</div>             -->
 
             </ng-container>

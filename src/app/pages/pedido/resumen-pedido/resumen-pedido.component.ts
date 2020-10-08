@@ -450,8 +450,13 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this.checkTiposDeConsumo();
 
     // get subtotales // si es delivery porque puede que modifique la distancia y modifica el precio // que se va ver en comanda
-    this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
+    // this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
+
+    // saca del local por que puede que se haya puestro propina
+    this._arrSubtotales = JSON.parse(atob(localStorage.getItem('sys::st')));
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
+
+    // console.log('this._arrSubtotales', this._arrSubtotales);
 
     // usuario o cliente
     const dataUsuario = this.infoToken.getInfoUs();
@@ -572,11 +577,12 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       this.newFomrConfirma();
       // this.backConfirmacion();
 
-      // this.miPedidoService.prepareNewPedido();>
+      // this.miPedidoService.prepareNewPedido();
 
 
       setTimeout(() => {
         this.listenStatusService.setLoaderSendPedido(false);
+        this.miPedidoService.stopTimerLimit();
       }, 600);
 
     });
@@ -690,6 +696,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this.miPedidoService.printerPrecuenta(dataSend);
     setTimeout(() => {
       this.loadPrinterPrecuenta = false;
+
     }, 2000);
   }
 

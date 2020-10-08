@@ -272,10 +272,14 @@ export class InfoTockenService {
   }
 
   cerrarSession(): void {
-    if (!this.infoUsToken.isDelivery) {
-      localStorage.removeItem('::token');
-      localStorage.removeItem('token');
-      localStorage.removeItem('sys::numtis');
+    try {
+      if (!this.infoUsToken.isDelivery) {
+        localStorage.removeItem('::token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('sys::numtis');
+      }
+    } catch (error) {
+      console.log(error);
     }
     localStorage.removeItem('sys::rules');
     localStorage.removeItem('sys::status');
@@ -288,8 +292,10 @@ export class InfoTockenService {
     // localStorage.removeItem('sys::tpm');
   }
 
+  // cerrar toda la sesssion
   cerrarSessionGoIni() {
-    this.cerrarSession();
+    // this.cerrarSession();
+    localStorage.clear();
     this.router.navigate(['../']);
   }
 
@@ -299,6 +305,15 @@ export class InfoTockenService {
 
     // si no existe token cierra
     if ( !this.infoUsToken) {
+
+      // trata de recuperar el token desde tpm
+      const isUsTmp = localStorage.getItem('sys::tpm');
+      if ( isUsTmp ) {
+        localStorage.setItem('::token', 'eyCJ9.' + isUsTmp);
+        this.converToJSON();
+        return;
+      }
+
       this.cerrarSessionGoIni();
     }
     if ( !this.infoUsToken || !this.infoUsToken.isCliente || !this.infoUsToken.isDelivery) { // si es usuario autorizado no cuenta tiempo

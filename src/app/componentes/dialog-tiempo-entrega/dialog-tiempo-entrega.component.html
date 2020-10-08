@@ -7,6 +7,7 @@
     <div class="div-content-dialog">
         <ng-container *ngIf="isPersonalAutorizado; else elseTemplate">
             <div class="p-4">
+                <p class="fw-100">En formato 24 horas</p>
                 <mat-form-field class="w-50 text-center">
                     <mat-label>Hora</mat-label>
                     <input matInput type="number" step="1" max="23" min="0" placeholder="Hora" [(ngModel)]="hourNow" name="hourNow" (change)="timePersonalAutorizado()">

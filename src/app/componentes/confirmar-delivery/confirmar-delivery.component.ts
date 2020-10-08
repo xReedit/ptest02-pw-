@@ -316,6 +316,9 @@ export class ConfirmarDeliveryComponent implements OnInit {
       dialogLoading.afterClosed().subscribe((result: MetodoPagoModel) => {
         this.metodoPagoSelected = result;
 
+        // guarda local mps metodo pago seleccionado
+        localStorage.setItem('sys:mps', btoa(JSON.stringify(result)));
+
         this.verificarFormValid();
 
         // this.isValidForm = !this.metodoPagoSelected.idtipo_pago ? false : this.isValidForm;

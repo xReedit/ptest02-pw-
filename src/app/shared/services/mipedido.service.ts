@@ -1071,6 +1071,7 @@ export class MipedidoService {
     this.storageService.clear('sys::order::all');
     this.storageService.clear('sys::tcount'); // timer count
     this.storageService.clear('sys::tnum'); // timer count
+    this.storageService.clear('sys::mps'); // metodo de pago seleccionado por el cliente
     // this.listItemsPedido = [];
     this.miPedido = null;
     this.miPedido = new PedidoModel();
@@ -1352,10 +1353,18 @@ export class MipedidoService {
 
   getArrSubTotales(rulesSubTotales: any[]): any {
     const subTotal = this.getSubTotalMiPedido();
-    const isCalcCostoServicioDelivery = this.establecimientoService.establecimiento.pwa_delivery_hablitar_calc_costo_servicio === 1;
+    let isCalcCostoServicioDelivery = this.establecimientoService.establecimiento.pwa_delivery_hablitar_calc_costo_servicio === 1;
+    const isCalcCostoServicioDeliverySoloApp = this.establecimientoService.establecimiento.pwa_delivery_habilitar_calc_costo_servicio_solo_app === 1;
     const comisionFijaComercioNoAfiliado = this.establecimientoService.establecimiento.pwa_delivery_comision_fija_no_afiliado; // comision fija comercio no afiliado (plaza vea cualquier pedido la comision es 2 para la platafoma)
     const is_comercio_paga_entrega = this.establecimientoService.establecimiento.pwa_delivery_comercio_paga_entrega === 1; // si el comercio paga el costo del delivery al repartidor
     this.pwa_delivery_servicio_propio = this.establecimientoService.establecimiento.pwa_delivery_servicio_propio === 1;
+    let isClienteDelivery = this.infoTokenService.infoUsToken.idusuario ? false : true; // this.establecimientoService.get().idsede ? true : false;
+
+    // si es cliente delivery
+    // si el calculo de entrega es solo para pedidos de clientes desde la aplicacion o para todos
+    if ( isClienteDelivery ) {
+      isCalcCostoServicioDelivery = isCalcCostoServicioDelivery || isCalcCostoServicioDeliverySoloApp;
+    }
 
     let sumaTotal = subTotal;
 
@@ -1419,7 +1428,7 @@ export class MipedidoService {
     const arrOtros = rulesSubTotales.filter(x => x.tipo === 'a');
 
     // si es tiene idusuario es usuario autorizado no es cliente delivery  // si existe estableciiento en localstorage entonces es un clienteDelivery
-    let isClienteDelivery = this.infoTokenService.infoUsToken.idusuario ? false : true; // this.establecimientoService.get().idsede ? true : false;
+    // let isClienteDelivery = this.infoTokenService.infoUsToken.idusuario ? false : true; // this.establecimientoService.get().idsede ? true : false;
     let isTieneDelivery =  false; // si tiene la opcion de delivery configurado
     let isAddDelivery = true; // si agrega delivery // puede que tenga otros servicio que no sea delivery
     let addServicioDeliveryExpress = false;
@@ -1631,7 +1640,7 @@ export class MipedidoService {
     this.timerLimitService.playCountTimerLimit();
   }
 
-  private stopTimerLimit(): void {
+  public stopTimerLimit(): void {
     this.timerLimitService.resetCountTimerLimit();
   }
 
@@ -1904,9 +1913,24 @@ export class MipedidoService {
   }
 
   printerPrecuenta(_data: any) {
+    console.log('precuenta');
     this.crudService.postFree(_data, 'pedido', 'printer-precuenta', true)
     .subscribe(res => {
-      console.log('send-printer-precuenta',  res);
+      console.log('send-printer-precuenta',  res.data[0].rpt);
+
+      // enviamos impresion al socket
+      const dataPrintSend = {
+        detalle_json: JSON.stringify(_data.dataPrint),
+        idprint_server_estructura: 1,
+        tipo: 'comanda',
+        descripcion_doc: 'comanda',
+        nom_documento: 'comanda',
+        idprint_server_detalle: res.data[0].rpt
+      };
+
+      this.socketService.emit('printerOnly', dataPrintSend);
+
+      this.socketService.emit('notificar-impresion-precuenta', null);
     });
   }
 

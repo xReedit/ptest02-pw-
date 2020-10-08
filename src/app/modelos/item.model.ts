@@ -37,4 +37,5 @@ export class ItemModel {
     subitems_view: SubItemsView[] = []; // subitems vista y guardar pedido detalle
     sumar: boolean; // si suma o resta en el back end -- el back envia las cantidadees
     iddescuento: number;
+    is_visible_cliente: number; // 1 no visible para el cliente
 }

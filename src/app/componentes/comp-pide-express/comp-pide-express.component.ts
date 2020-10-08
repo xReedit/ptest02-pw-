@@ -310,19 +310,24 @@ export class CompPideExpressComponent implements OnInit {
 
 
   enviarPedido() {
-    this.isLoading = true;
-    this.isEnviado = false;
-    this.datosFormUno.importe_pagar = this.importe_pagar;
-    this.datosFormUno.idcliente = this.infoToken.idcliente;
-    this.datosFormUno.direccionA = this.direccionA;
-    this.datosFormUno.direccionB = this.direccionB;
-    this.datosFormUno.metodoPago = this.metodoPagoSelected;
-    this.datosFormUno.tiempoEntrega = this.tiempoEntregaSelected;
-    this.datosFormUno.ciudad = this.laPlazaDelivery.ciudad;
-    this.datosFormUno.distancia_km = this.laPlazaDelivery.distancia_km;
-    this.datosFormUno.distancia_mt = this.laPlazaDelivery.distancia_mt;
-    this.datosFormUno.systemOS = this.systemOS;
-    this.datosFormUno.is_express = 1;
+    try {
+      this.isLoading = true;
+      this.isEnviado = false;
+      this.datosFormUno.importe_pagar = this.importe_pagar;
+      this.datosFormUno.idcliente = this.infoToken.idcliente;
+      this.datosFormUno.direccionA = this.direccionA;
+      this.datosFormUno.direccionB = this.direccionB;
+      this.datosFormUno.metodoPago = this.metodoPagoSelected;
+      this.datosFormUno.tiempoEntrega = this.tiempoEntregaSelected;
+      this.datosFormUno.ciudad = this.laPlazaDelivery.ciudad;
+      this.datosFormUno.distancia_km = this.laPlazaDelivery.distancia_km;
+      this.datosFormUno.distancia_mt = this.laPlazaDelivery.distancia_mt;
+      this.datosFormUno.systemOS = this.systemOS;
+      this.datosFormUno.is_express = 1;
+
+    } catch (error) {
+      console.log(error);
+    }
 
     const _dataSend = {
       dataInfo: this.datosFormUno

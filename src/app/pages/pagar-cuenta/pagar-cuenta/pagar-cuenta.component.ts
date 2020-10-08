@@ -17,6 +17,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 import { Subscription } from 'rxjs';
+import { MetodoPagoModel } from 'src/app/modelos/metodo.pago.model';
 
 // import * as botonPago from 'src/assets/js/boton-pago.js';
 
@@ -76,6 +77,16 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.navigatorService.disableGoBack();
     this.infoToken = this.infoTokenService.getInfoUs();
+
+    // get metodo pago seleccionado por el cliente
+    // let mps: any = atob(localStorage.getItem('sys:mps'));
+    // try {
+    //   mps = mps ? JSON.parse(mps) : this.infoToken.metodoPago;
+    // } catch (error) {
+    //   mps = null;
+    // }
+
+
     this.infoToken.metodoPagoSelected = !this.infoToken.metodoPagoSelected ? this.infoToken.metodoPago : this.infoToken.metodoPagoSelected;
     this.pagaConEefectivo = this.infoToken.metodoPagoSelected.idtipo_pago !== 2 ? true : false; // si es en efectivo o yape //diferente de tarjeta 2
     this.isTrasctionSuccess = this.pagaConEefectivo;
@@ -380,7 +391,6 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   private actionAfterTransaction(): void {
     // this.lanzarPermisoNotificationPush(1);
-    this.miPedidoService.prepareNewPedido();
     if ( this.dataResTransaction.error ) {
       this.navigatorService._router('../pedido');
     } else {
@@ -392,6 +402,8 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
         this.navigatorService._router('../lanzar-encuesta');
       }
     }
+
+    this.miPedidoService.prepareNewPedido();
 
   }
 

@@ -122,6 +122,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   initCarta() {
     this.isCargado = true;
     this.socketService.connect();
+    this.listenStatusService.setLoaderCarta(true);
 
     this.listeStatusBusqueda();
 
@@ -149,6 +150,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
         //   'carta': <CartaModel[]>res[0].carta,
         //   'bodega': <SeccionModel[]>res[0].bodega
         // };
+
+        console.log('ya tengo la carta');
+        this.listenStatusService.setLoaderCarta(false);
 
         if (this.socketService.isSocketOpenReconect) {
           // actualizar cantidad actual (stock actual) de ObjCarta del item

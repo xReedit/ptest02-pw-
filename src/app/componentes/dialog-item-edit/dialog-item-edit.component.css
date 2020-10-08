@@ -214,7 +214,7 @@
     }
 } */
 
-@media only screen and (min-width: 600px) {
+@media only screen and (min-width: 445px) {
     .img-carta {
         padding: 10px;
     }

@@ -299,19 +299,23 @@ export class CompPideLoQueQuierasComponent implements OnInit  {
 
   enviarPedido() {
 
-    this.isLoading = true;
-    this.isEnviado = false;
-    this.datosFormUno.importe_pagar = this.importe_pagar;
-    this.datosFormUno.idcliente = this.infoToken.idcliente;
-    this.datosFormUno.direccionCliente = this.direccionCliente;
-    this.datosFormUno.metodoPago = this.metodoPagoSelected;
-    this.datosFormUno.ciudad = this.laPlazaDelivery.ciudad;
-    this.datosFormUno.tiempoEntrega = this.tiempoEntregaSelected;
-    this.datosFormUno.distancia_km = this.laPlazaDelivery.distancia_km;
-    this.datosFormUno.distancia_mt = this.laPlazaDelivery.distancia_mt;
-    this.datosFormUno.systemOS = this.systemOS;
-    this.datosFormUno.is_express = 0;
+    try {
+      this.isLoading = true;
+      this.isEnviado = false;
+      this.datosFormUno.importe_pagar = this.importe_pagar;
+      this.datosFormUno.idcliente = this.infoToken.idcliente;
+      this.datosFormUno.direccionCliente = this.direccionCliente;
+      this.datosFormUno.metodoPago = this.metodoPagoSelected;
+      this.datosFormUno.ciudad = this.laPlazaDelivery.ciudad;
+      this.datosFormUno.tiempoEntrega = this.tiempoEntregaSelected;
+      this.datosFormUno.distancia_km = this.laPlazaDelivery.distancia_km;
+      this.datosFormUno.distancia_mt = this.laPlazaDelivery.distancia_mt;
+      this.datosFormUno.systemOS = this.systemOS;
+      this.datosFormUno.is_express = 0;
 
+    } catch (error) {
+      console.log(error);
+    }
 
     const _dataSend = {
       dataInfo: this.datosFormUno

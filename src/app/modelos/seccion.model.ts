@@ -10,5 +10,6 @@ export class SeccionModel {
     des: string;
     descuento = null;
     iddescuento: number;
+    is_visible_cliente: number; // 1 no visible para el cliente
     items: ItemModel[] = [];
 }

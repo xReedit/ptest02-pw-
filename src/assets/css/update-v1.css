@@ -61,6 +61,17 @@ overflow: auto;
 }
 /* main zona delivery */
 
+@media (max-width: 445px) {
+
+  .my-dialog-orden-detalle {
+    max-width: none !important;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+  }
+  
+}
+
 /* cuando es en celular el dialog detalle orden abre en pantalla completa */
 @media (max-width: 676px) {   
 
@@ -77,12 +88,12 @@ overflow: auto;
     display: none !important;  
   }
 
-  .my-dialog-orden-detalle {
+  /* .my-dialog-orden-detalle {
     max-width: none !important;
     width: 100vw;
     height: 100vh;
     overflow: auto;
-  }
+  } */
 
 
   .ini-content-options {   
