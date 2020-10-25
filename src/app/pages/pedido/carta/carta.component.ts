@@ -150,8 +150,6 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
         //   'carta': <CartaModel[]>res[0].carta,
         //   'bodega': <SeccionModel[]>res[0].bodega
         // };
-
-        console.log('ya tengo la carta');
         this.listenStatusService.setLoaderCarta(false);
 
         if (this.socketService.isSocketOpenReconect) {

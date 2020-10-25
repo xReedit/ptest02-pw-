@@ -297,7 +297,7 @@ export class CompPideLoQueQuierasComponent implements OnInit  {
   }
 
 
-  enviarPedido() {
+  enviarPedidoLoQ() {
 
     try {
       this.isLoading = true;

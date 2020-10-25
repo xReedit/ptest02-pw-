@@ -643,7 +643,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     let isMesaValid = this.frmConfirma.mesa ? this.frmConfirma.mesa !== '' ? true : false : false;
     // valida la mesa que no sea mayor a las que hay
     const numMesaIngresado = isMesaValid ? parseInt(this.frmConfirma.mesa, 0) : 0;
-    isMesaValid = numMesaIngresado === 0 || numMesaIngresado > numMesasSede ? false : true;
+    isMesaValid = numMesaIngresado <= 0 || numMesaIngresado > numMesasSede ? false : true;
     this.isRequiereMesa = this.arrReqFrm.isRequiereMesa;
 
     // this.isRequiereMesa = isTPCLocal;

@@ -26,7 +26,6 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
   logear(): void {
     this.loading = true;
     this.msjErr = false;
-
     this.authService.setLocalToken('');
     this.authService.getUserLogged(this.usuario).subscribe(res => {
       setTimeout(() => {

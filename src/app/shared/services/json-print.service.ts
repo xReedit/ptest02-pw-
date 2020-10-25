@@ -136,10 +136,13 @@ export class JsonPrintService {
                 // if (i.imprimir_comanda === 0) { return; } // no imprimir // productos bodega u otros
                   // xArrayBodyPrint[indexP][i.iditem] = [];
                   xArrayBodyPrint[indexP].conDatos = true; // si la seccion tiene items
-                  xArrayBodyPrint[indexP][i.iditem] = i;
+                  xArrayBodyPrint[indexP][i.iditem] = xArrayBodyPrint[indexP][i.iditem] ? xArrayBodyPrint[indexP][i.iditem] : i;
                   xArrayBodyPrint[indexP][i.iditem].des_seccion = s.des;
-                  xArrayBodyPrint[indexP][i.iditem].cantidad = i.cantidad_seleccionada.toString().padStart(2, '0');
-                  xArrayBodyPrint[indexP][i.iditem].precio_print = parseFloat(i.precio_print.toString()).toFixed(2);
+                  xArrayBodyPrint[indexP][i.iditem].cantidad = xArrayBodyPrint[indexP][i.iditem].cantidad ? xArrayBodyPrint[indexP][i.iditem].cantidad : 0;
+                  xArrayBodyPrint[indexP][i.iditem].precio_print_app = xArrayBodyPrint[indexP][i.iditem].precio_print_app ? xArrayBodyPrint[indexP][i.iditem].precio_print_app : 0;
+                  xArrayBodyPrint[indexP][i.iditem].cantidad += parseFloat(i.cantidad_seleccionada.toString()); // .toString().padStart(2, '0');
+                  xArrayBodyPrint[indexP][i.iditem].precio_print_app += parseFloat(i.precio_print.toString());
+                  xArrayBodyPrint[indexP][i.iditem].precio_print = parseFloat(xArrayBodyPrint[indexP][i.iditem].precio_print_app.toString()).toFixed(2);
                   if ( !i.subitems_view ) {
                     xArrayBodyPrint[indexP][i.iditem].subitems_view = null;
                   }

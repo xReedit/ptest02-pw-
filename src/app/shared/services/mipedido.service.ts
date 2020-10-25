@@ -476,7 +476,7 @@ export class MipedidoService {
   }
 
   // agrega a subitem_selected -> lista de subitems seleccionados
-  private addItemSubItemMiPedido(elItem: ItemModel, itemCarta: ItemModel, sumar: boolean): void {
+  private addItemSubItemMiPedido(elItem: ItemModel, itemCarta: ItemModel, sumar: boolean, tipoConsumo: TipoConsumoModel): void {
     if (elItem.subitems) {
       // elItem.subitems_view = elItem.subitems_view ? elItem.subitems_view : [];
 
@@ -500,6 +500,7 @@ export class MipedidoService {
           newSubItemView.precio += parseFloat(x.precio.toString());
           // newSubItemView.indicaciones += x.indicaciones === undefined ? '' :  ' (' + x.indicaciones + ')';
           newSubItemView.subitems.push(x);
+          newSubItemView.idtipo_consumo = x.idtipo_consumo;
         });
 
         newSubItemView.des = newSubItemView.listDes.join(', ');
@@ -509,12 +510,20 @@ export class MipedidoService {
         elItem.indicaciones = '';
         elItem.subitems_view = elItem.subitems_view ? elItem.subitems_view : [];
 
+        // agregamos para que no sume de otro tpc
+        // && subView.idtipo_consumo === tipoConsumo.idtipo_consumo
+        const isExistInTipoConsumo = elItem.subitems_view.filter((subView: SubItemsView) => subView.idtipo_consumo === tipoConsumo.idtipo_consumo)[0];
+        if ( !isExistInTipoConsumo ) {
+          elItem.subitems_view = [];
+        }
+
         const isExistSubItemView = elItem.subitems_view.filter((subView: SubItemsView) => subView.id === newSubItemView.id)[0];
         if ( isExistSubItemView ) {
           if ( sumar ) {
             isExistSubItemView.indicaciones += newSubItemView.indicaciones;
             isExistSubItemView.cantidad_seleccionada += 1;
             isExistSubItemView.precio += newSubItemView.precio;
+            isExistSubItemView.des = newSubItemView.des;
           } else {
             // resta
             this.restarCantSubItemView(elItem, isExistSubItemView);
@@ -523,6 +532,7 @@ export class MipedidoService {
           // si no existe
           // isExistSubItemView.indicaciones = newSubItemView.indicaciones;
           if ( sumar ) {
+            // elItem.subitems_view = [];
             elItem.subitems_view.push(newSubItemView);
           } else {
             // si es restar y no existe en la lista quita el ultimo
@@ -850,7 +860,7 @@ export class MipedidoService {
 
         elItem.subitems = item.subitems;
         elItem.subitems_selected = item.subitems_selected;
-        this.addItemSubItemMiPedido(elItem, item, sumar);
+        this.addItemSubItemMiPedido(elItem, item, sumar, _tpc);
         this.setCountCantItemTpcAndSeccion(findTpc, findSecc);
       } else {
         // si no existe seccion add
@@ -864,7 +874,7 @@ export class MipedidoService {
         findTpc.secciones.push(_newSeccion);
         // findTpc.secciones.push(_seccion);
 
-        this.addItemSubItemMiPedido(elItem, item, sumar);
+        this.addItemSubItemMiPedido(elItem, item, sumar, _tpc);
         this.setCountCantItemTpcAndSeccion(findTpc, _newSeccion);
       }
     } else {
@@ -872,7 +882,7 @@ export class MipedidoService {
       // elItem.cantidad_seleccionada = 0;
       elItem.subitems = item.subitems;
       elItem.subitems_selected = item.subitems_selected;
-      this.addItemSubItemMiPedido(elItem, item, sumar);
+      this.addItemSubItemMiPedido(elItem, item, sumar, _tpc);
       const _newSeccion = <SeccionModel>JSON.parse(JSON.stringify(_seccion));
       _newSeccion.items = [];
       _newSeccion.items.push(elItem);

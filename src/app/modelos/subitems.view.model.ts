@@ -9,4 +9,5 @@ export class SubItemsView {
     cantidad_seleccionada: number;
     precio: number;
     subitems: SubItem[];
+    idtipo_consumo: number; // idtipoconsumo para no sumar de otro tpc
 }

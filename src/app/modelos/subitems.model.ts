@@ -11,4 +11,5 @@ export class SubItem {
     selected: boolean;
     idproducto: string;
     idporcion: string;
+    idtipo_consumo: number; // para que no sume de mas o de otro tpc
 }

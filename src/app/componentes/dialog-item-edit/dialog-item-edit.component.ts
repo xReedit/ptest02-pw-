@@ -132,6 +132,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
 
   addSubItem(subitemContent: SubItemContent, subitem: SubItem): void {
     // chequeamos cuantos subitem estan checkes
+    console.log('aadd item');
     let listSubItemChecked = subitemContent.opciones.filter((x: SubItem) => x.selected);
     let countSelectReq = listSubItemChecked.length;
 
@@ -207,6 +208,9 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     let paseCantSuItem = true;
     this.item.subitems_selected = this._subitems_selected;
 
+    // agrega tipo de consumo para identificar y no sumar de otro tpc
+    this.item.subitems_selected.map(subi => subi.idtipo_consumo = tpcSelect.idtipo_consumo);
+
     // ver si selecciono subitems y si ese subitem tiene stock disponible
     this.item.subitems_selected.map((t: SubItem) => {
       if (t.cantidad !== 'ND') {
@@ -236,9 +240,18 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
 
     this.item.indicaciones = val;
 
+    let isItemSubISelected = false;
+    if ( this.isObjSubItems ) {
+      isItemSubISelected = this.item.subitems_selected?.length > 0;
+    }
+
     // agrega las indicaciones si existe en mipedido y si no tienen subitems
     const _itemFromPedido = this.miPedidoService.findOnlyItemMiPedido(this.item);
     if (_itemFromPedido && !this.isObjSubItems) {
+      _itemFromPedido.indicaciones = val;
+    }
+
+    if ( _itemFromPedido && !isItemSubISelected ) {
       _itemFromPedido.indicaciones = val;
     }
   }

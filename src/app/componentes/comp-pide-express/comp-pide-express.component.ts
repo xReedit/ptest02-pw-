@@ -309,7 +309,7 @@ export class CompPideExpressComponent implements OnInit {
   }
 
 
-  enviarPedido() {
+  enviarPedidoExpress() {
     try {
       this.isLoading = true;
       this.isEnviado = false;

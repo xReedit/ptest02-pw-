@@ -29,8 +29,6 @@ export class ItemComercioComponent implements OnInit {
     this.amPm = this.itemEstablecimiento.hora_ini ? parseInt(this.itemEstablecimiento.hora_ini.split(':')[0], 0) > 12 ? 'PM' : 'AM' : '';
     this.imgComercio = URL_IMG_COMERCIO + this.itemEstablecimiento.pwa_delivery_img;
 
-    console.log('itemEstablecimiento', this.itemEstablecimiento);
-
     if ( this.itemEstablecimiento.pwa_delivery_habilitar_pedido_programado === 1 ) {
       const dateHoy = new Date();
       const hourNow = dateHoy.getHours();
