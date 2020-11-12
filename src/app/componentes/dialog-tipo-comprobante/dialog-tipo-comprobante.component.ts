@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TipoComprobanteModel } from 'src/app/modelos/tipo.comprobante.model';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { MatDialogRef } from '@angular/material/dialog';
+import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 
 @Component({
   selector: 'app-dialog-tipo-comprobante',
@@ -20,6 +21,7 @@ export class DialogTipoComprobanteComponent implements OnInit {
   constructor(
     private dialogRef: MatDialogRef<DialogTipoComprobanteComponent>,
     private infoTokenService: InfoTockenService,
+    private utilService: UtilitariosService
   ) { }
 
   ngOnInit() {
@@ -55,7 +57,7 @@ export class DialogTipoComprobanteComponent implements OnInit {
 
   cerrarDlg(): void {
     this.itemSelected.dni = this.datosComprobante.dni;
-    this.itemSelected.otro_dato = this.datosComprobante.otro;
+    this.itemSelected.otro_dato = this.utilService.addslashes(this.datosComprobante.otro);
     this.infoTokenService.setTipoComprobante( this.itemSelected );
     this.dialogRef.close(this.itemSelected);
   }

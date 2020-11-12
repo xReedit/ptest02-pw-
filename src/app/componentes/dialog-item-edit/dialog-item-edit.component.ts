@@ -132,7 +132,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
 
   addSubItem(subitemContent: SubItemContent, subitem: SubItem): void {
     // chequeamos cuantos subitem estan checkes
-    console.log('aadd item');
+    // console.log('aadd item');
     let listSubItemChecked = subitemContent.opciones.filter((x: SubItem) => x.selected);
     let countSelectReq = listSubItemChecked.length;
 
@@ -237,8 +237,8 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   }
 
   setIndicaciones(val: string): void {
-
-    this.item.indicaciones = val;
+    this.item.indicaciones = this.uttilService.addslashes(val);
+    // this.item.indicaciones = val;
 
     let isItemSubISelected = false;
     if ( this.isObjSubItems ) {
@@ -255,6 +255,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
       _itemFromPedido.indicaciones = val;
     }
   }
+
 
   getEstadoStockItem(stock: any): string {
     if ( stock === 'ND' || isNaN(stock) ) {

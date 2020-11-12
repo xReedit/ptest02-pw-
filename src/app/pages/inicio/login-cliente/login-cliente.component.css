@@ -37,6 +37,10 @@
     background: #5e35b1;
 }
 
+.btn-social.invitado {
+    background: darkturquoise;
+}
+
 .dni-b {
     margin-left: 25px;
 }

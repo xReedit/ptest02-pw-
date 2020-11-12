@@ -58,7 +58,13 @@ export class InicioComponent implements OnInit, OnDestroy {
       // .pipe(finalize(() => localStorage.clear())) // si esta mal elimina todo
       .subscribe((res: SocketClientModel) => {
         // success => {
-          // console.log('aaaaa');
+          console.log('aaaaa');
+          // si es invitado desloguea
+          if ( res.usuario.toLowerCase() === 'invitado' ) {
+            this.cerrarSession();
+            return;
+          }
+
           this.nombreClientSocket = res.usuario;
           this.isLogin = this.verifyClientService.getIsLoginByDNI() ? true : this.verifyClientService.isLogin() ? this.verifyClientService.isLogin() : res.datalogin ? true : this.verifyClientService.isLogin();
           this.verifyClientService.setLoginOn(this.isLogin);

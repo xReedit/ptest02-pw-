@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { SocketService } from 'src/app/shared/services/socket.service';
 
 @Component({
   selector: 'app-login-personal-autorizado',
@@ -16,11 +17,16 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
   loading = false;
   msjErr = false;
 
-  constructor(private router: Router, private authService: AuthService, private infoToken: InfoTockenService, private establecimientoService: EstablecimientoService) { }
+  constructor(private socketService: SocketService, private router: Router, private authService: AuthService, private infoToken: InfoTockenService, private establecimientoService: EstablecimientoService) { }
 
   ngOnInit() {
     localStorage.clear();
     this.usuario = new UsuarioAutorizadoModel();
+
+    // cerramos socket para que cargue carta nuevamente
+    if ( this.socketService.isSocketOpen ) {
+      this.socketService.closeConnection();
+    }
   }
 
   logear(): void {

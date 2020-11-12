@@ -18,6 +18,7 @@ import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
 import { DialogTiempoEntregaComponent } from '../dialog-tiempo-entrega/dialog-tiempo-entrega.component';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
+import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 // import { MapsAPILoader } from '@agm/core';
 
 @Component({
@@ -107,6 +108,7 @@ export class DatosDeliveryComponent implements OnInit {
     private establecimientoService: EstablecimientoService,
     private calcDistanceService: CalcDistanciaService,
     private dialogTipoComprobante: MatDialog,
+    private utilService: UtilitariosService
     // private mapsAPILoader: MapsAPILoader,
     // private ngZone: NgZone,
     ) { }
@@ -118,6 +120,8 @@ export class DatosDeliveryComponent implements OnInit {
       direccion: '',
       referencia: ''
     };
+
+    // console.log('datos del delivery');
 
 
     this.tiempoEntregaSelected = new TiempoEntregaModel();
@@ -190,7 +194,7 @@ export class DatosDeliveryComponent implements OnInit {
   }
 
   setTextDirClienteNoMapa(val: string) {
-    this.direccionCliente.direccion = val;
+    this.direccionCliente.direccion = this.utilService.addslashes(val);
     this.setearData();
   }
 
@@ -212,7 +216,7 @@ export class DatosDeliveryComponent implements OnInit {
       this.resData.direccionEnvioSelected = this.direccionCliente;
       this.resData.tiempoEntregaProgamado = this.tiempoEntregaSelected;
       this.resData.establecimiento = this.infoEstablecimiento;
-      this.resData.referencia = this.direccionCliente.referencia === '' ? this.resData.nombre : this.direccionCliente.referencia;
+      this.resData.referencia = this.direccionCliente.referencia === '' ? this.resData.nombre : this.utilService.addslashes(this.direccionCliente.referencia);
       this.resData.direccion = this.direccionCliente.direccion;
       this.resData.subTotales = this._listSubtotales;
       this.resData.propina = this.infoTokenService.getInfoUs().propina;

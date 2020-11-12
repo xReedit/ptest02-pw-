@@ -76,6 +76,11 @@ export class VerifyAuthClientService {
     this.setDataClient();
   }
 
+  setIsLoginByInvitado(val: boolean): void {
+    this.clientSocket.isLoginByInvitado = val;
+    this.setDataClient();
+  }
+
   setTelefono(val: string) {
     this.clientSocket.telefono = val;
     this.setDataClient();
@@ -161,9 +166,13 @@ export class VerifyAuthClientService {
 
   }
 
-  private returnClientNull() {
-    this.subjectClient.next(null);
+  registerInvitado() {
+    this.registerCliente();
   }
+
+  // private returnClientNull() {
+  //   this.subjectClient.next(null);
+  // }
 
   private registerCliente(): void {
     let idClient = 0;

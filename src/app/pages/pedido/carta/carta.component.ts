@@ -122,14 +122,15 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   initCarta() {
     this.isCargado = true;
     this.socketService.connect();
+    // console.log('loader carta');
     this.listenStatusService.setLoaderCarta(true);
 
     this.listeStatusBusqueda();
 
-    // descarga la constate del items scala delivery
-    if ( this.infoToken.isDelivery) {
+    // descarga la constate del items scala delivery // tanto para cliente como para usuario
+    // if ( this.infoToken.isDelivery() ) {
       this.miPedidoService.getDeliveryConstCantEscala();
-    }
+    // }
 
     this.unsubscribeCarta = this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
       if (res.pageActive === 'carta') {
@@ -151,6 +152,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
         //   'bodega': <SeccionModel[]>res[0].bodega
         // };
         this.listenStatusService.setLoaderCarta(false);
+        // console.log('cerrar loader carta');
 
         if (this.socketService.isSocketOpenReconect) {
           // actualizar cantidad actual (stock actual) de ObjCarta del item

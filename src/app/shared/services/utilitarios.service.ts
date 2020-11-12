@@ -40,4 +40,17 @@ export class UtilitariosService {
 
     return os;
   }
+
+  // remplazar caracteres especiales por ''
+  addslashes(_string: string): string {
+    if ( !_string ) {return; }
+    return _string.replace(/\\/g, '').
+        replace(/\u0008/g, '\\b').
+        replace(/\t/g, '').
+        replace(/\n/g, '').
+        replace(/\f/g, '').
+        replace(/\r/g, '').
+        replace(/'/g, '').
+        replace(/"/g, '');
+  }
 }

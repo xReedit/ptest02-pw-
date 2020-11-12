@@ -477,6 +477,7 @@ export class MipedidoService {
 
   // agrega a subitem_selected -> lista de subitems seleccionados
   private addItemSubItemMiPedido(elItem: ItemModel, itemCarta: ItemModel, sumar: boolean, tipoConsumo: TipoConsumoModel): void {
+    console.log('indicaciones');
     if (elItem.subitems) {
       // elItem.subitems_view = elItem.subitems_view ? elItem.subitems_view : [];
 
@@ -1923,10 +1924,10 @@ export class MipedidoService {
   }
 
   printerPrecuenta(_data: any) {
-    console.log('precuenta');
+    // console.log('precuenta');
     this.crudService.postFree(_data, 'pedido', 'printer-precuenta', true)
     .subscribe(res => {
-      console.log('send-printer-precuenta',  res.data[0].rpt);
+      // console.log('send-printer-precuenta',  res.data[0].rpt);
 
       // enviamos impresion al socket
       const dataPrintSend = {

@@ -18,6 +18,7 @@ import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.ser
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
 import { DialogTiempoEntregaComponent } from '../dialog-tiempo-entrega/dialog-tiempo-entrega.component';
+import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 
 
 @Component({
@@ -109,7 +110,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
     private dialogTelefono: MatDialog,
     private dialogTipoComprobante: MatDialog,
     private dialogDireccion: MatDialog,
-    private dialogTiempoEntrega: MatDialog
+    private dialogTiempoEntrega: MatDialog,
+    private utilService: UtilitariosService
     // private crudService: CrudHttpService
   ) { }
 
@@ -226,7 +228,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     if (this.isValidForm) {
       this.resData.nombre = this.infoToken.nombres;
       this.resData.direccion = this.infoToken.direccionEnvioSelected.direccion;
-      this.resData.referencia = this.infoToken.direccionEnvioSelected.referencia;
+      this.resData.referencia = this.utilService.addslashes(this.infoToken.direccionEnvioSelected.referencia);
       this.resData.direccionEnvioSelected = this.infoToken.direccionEnvioSelected;
       this.resData.idcliente = this.infoToken.idcliente.toString();
       this.resData.paga_con = this.metodoPagoSelected.descripcion + '  ' + this.metodoPagoSelected.importe || '' ;
@@ -268,7 +270,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     if (this.isValidForm) {
       this.resData.nombre = this.infoToken.nombres;
       this.resData.direccion = this.infoToken.direccionEnvioSelected.direccion;
-      this.resData.referencia = this.infoToken.direccionEnvioSelected.referencia;
+      this.resData.referencia = this.utilService.addslashes(this.infoToken.direccionEnvioSelected.referencia);
       this.resData.direccionEnvioSelected = this.infoToken.direccionEnvioSelected;
       this.resData.idcliente = this.infoToken.idcliente.toString();
       this.resData.paga_con = this.metodoPagoSelected.descripcion + '  ' + this.metodoPagoSelected.importe || '';

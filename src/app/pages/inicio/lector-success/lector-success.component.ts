@@ -4,6 +4,7 @@ import { Auth0Service } from 'src/app/shared/services/auth0.service';
 import { Router } from '@angular/router';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { SocketService } from 'src/app/shared/services/socket.service';
 
 @Component({
   selector: 'app-lector-success',
@@ -22,15 +23,22 @@ export class LectorSuccessComponent implements OnInit {
     private verifyClientService: VerifyAuthClientService,
     public auth: Auth0Service,
     private router: Router,
-    private establecimientoService: EstablecimientoService
+    private establecimientoService: EstablecimientoService,
+    private socketService: SocketService,
   ) { }
 
   ngOnInit() {
     this.loadDataIni();
+
+    // cerramos socket para que cargue carta nuevamente
+    if ( this.socketService.isSocketOpen ) {
+      this.socketService.closeConnection();
+    }
   }
 
   private loadDataIni(): void {
     // datos sede
+    console.log('aaaaaa');
     this.usLog = this.verifyClientService.getDataClient();
     const _data = {
       idsede: this.usLog.idsede

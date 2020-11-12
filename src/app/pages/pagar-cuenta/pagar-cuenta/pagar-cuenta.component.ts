@@ -101,8 +101,10 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     }
 
     // marcador que ya pago, si actualiza cierra session
+    console.log('fin pago');
     if ( this.infoTokenService.infoUsToken.isPagoSuccess ) {
       if ( this.infoTokenService.isDelivery() ) {
+        console.log('fin pago delivery');
         this.finDelivery();
       } else {
         this.actionAfterTransaction();
@@ -125,6 +127,10 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
       // el importe lo toma del localstorage
       arrTotales = JSON.parse(atob(localStorage.getItem('sys::st')));
       this.estadoPedido.importe = parseFloat(arrTotales[arrTotales.length - 1].importe);
+      if (this.estadoPedido.importe === 0) {
+        arrTotales = JSON.parse(atob(this.infoToken.importeDelivery));
+        this.estadoPedido.importe = parseFloat(arrTotales[arrTotales.length - 1].importe);
+      }
     } else {
       this.estadoPedido.importe = await this.estadoPedidoClienteService.getImporteCuenta();
     }

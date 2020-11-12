@@ -7,6 +7,7 @@ import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cli
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 
 @Component({
   selector: 'app-agregar-direccion',
@@ -76,13 +77,14 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     private crudService: CrudHttpService,
     private miPedidoService: MipedidoService,
     private inforTokenService: InfoTockenService,
+    private utilService: UtilitariosService
   ) { }
 
   ngOnInit() {
 
     this.dataCliente = new DeliveryDireccionCliente();
     this.inforTokenService.getInfoUs();
-    this.isUsCliente = this.inforTokenService.getInfoUs().isCliente;    
+    this.isUsCliente = this.inforTokenService.getInfoUs().isCliente;
     this.loadForm();
   }
 
@@ -261,7 +263,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     this.dataCliente.idcliente = this.isUsCliente ? this.verifyClientService.getDataClient().idcliente : this.idClienteBuscar;
     this.dataCliente.longitude = this.mapCenter.lng;
     this.dataCliente.latitude = this.mapCenter.lat;
-    // this.dataCliente.referencia =
+    this.dataCliente.referencia = this.utilService.addslashes(this.dataCliente.referencia);
     this.dataCliente.ciudad = this.searchTypeMap('locality');
     this.dataCliente.provincia = this.searchTypeMap('administrative_area_level_2');
     this.dataCliente.departamento = this.searchTypeMap('administrative_area_level_1');
@@ -303,6 +305,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   }
 
   private setBdDireccion() {
+    this.dataCliente.referencia = this.utilService.addslashes(this.dataCliente.referencia);
     this.crudService.postFree(this.dataCliente, 'cliente', 'new-direccion', false)
       .subscribe((res: any) => {
         setTimeout(() => {

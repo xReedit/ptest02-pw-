@@ -97,7 +97,7 @@ export class EstadoPedidoClienteService {
   }
 
   getCuenta(): any {
-
+    // console.log('pide la cuenta');
     this.crudService.postFree(this.dataPost, 'pedido', 'lacuenta-cliente', false).subscribe( (res: any) => {
       if ( res.data.length === 0 ) { this.estadoPedido.hayPedidoCliente = false; return; } // si no hay cuenta pedido del cliente
 

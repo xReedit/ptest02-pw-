@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { Auth0Service } from 'src/app/shared/services/auth0.service';
+import { SocketService } from 'src/app/shared/services/socket.service';
 
 
 @Component({
@@ -33,11 +34,17 @@ constructor(
     private router: Router,
     private auth: Auth0Service,
     private crudService: CrudHttpService,
+    private socketService: SocketService,
   ) { }
 
   ngOnInit() {
     this.dataClienteSend = this.verifyClientService.getDataClient();
     // console.log('data cliente', this.dataClienteSend);
+
+    // cerramos socket para que cargue carta nuevamente
+    if ( this.socketService.isSocketOpen ) {
+      this.socketService.closeConnection();
+    }
   }
 
   // goFb() {
@@ -67,6 +74,10 @@ constructor(
 
   viewLoginDni(): void {
     this.isViewLoginDNI = !this.isViewLoginDNI;
+  }
+
+  viewLoginInvitado(): void {
+    this.loginByInvitado();
   }
 
   buscarDNI(value: string) {
@@ -238,5 +249,18 @@ constructor(
 
 
     // console.log(item);
+  }
+
+  loginByInvitado() {
+    this.verifyClientService.clientSocket.datalogin = {
+      name: 'Invitado',
+      given_name: 'Invitado'
+    };
+    this.verifyClientService.setIsLoginByDNI(false);
+    this.verifyClientService.setIsLoginByInvitado(true);
+    this.verifyClientService.registerInvitado();
+    setTimeout(() => {
+      this.router.navigate(['/callback-auth']);
+    }, 500);
   }
 }

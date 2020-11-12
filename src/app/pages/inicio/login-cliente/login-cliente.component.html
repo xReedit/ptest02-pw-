@@ -1,6 +1,6 @@
 <div class="animated fadeIn">
     <div *ngIf="!isViewLoginDNI" class="text-center">
-        <div class="p-3 pt-5">
+        <div class="pl-3 pr-3 pt-3">
             <div class="w-100 text-center">
                 <img src="assets/icons/icon-72x72.png">
                 <!-- <p class="pt-1 fw-100 fs-12 text-secondary m-0">papaya.com.pe</p> -->
@@ -8,7 +8,7 @@
             <p class="fs-18 fw-600">Registrate y comienza hacer tu pedido.</p>
         </div>
         <hr>
-        <div class="p-3  max-w">
+        <div class="pl-3 pr-3 pt-2 max-w">
             <div class="btn-social fb" matRipple (click)="goFb()">                
                 <i class="fa fa-facebook" aria-hidden="true"></i>
                 <span class="pl-2">Con Facebook</span> 
@@ -25,6 +25,22 @@
                 <span class="pl-2">Con DNI</span>
             </div>
         </div>
+
+        <!-- si solo es mesa -->
+        <ng-container *ngIf="!dataClienteSend.isDelivery && !dataClienteSend.isSoloLLevar">
+            <hr>
+            <div class="p-3  max-w">
+                <h5>Ingresar como Invitado</h5>
+                <p class="fs-11">En el modo invitados no puedes ver ni cambiar la información del perfil, tampoco accederas a promociones y descuentos.</p>
+                <div class="btn-social invitado" matRipple  (click)="viewLoginInvitado()">
+                    <i class="fa fa-user" aria-hidden="true"></i>
+                    <span class="pl-2">Como Invitado</span>
+                </div>
+            </div>
+        </ng-container>
+        
+        
+
     </div>
     
     <div *ngIf="isViewLoginDNI" class="animated fadeInUp">

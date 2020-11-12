@@ -452,6 +452,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // get subtotales // si es delivery porque puede que modifique la distancia y modifica el precio // que se va ver en comanda
     // this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
 
+    // seteamos el metodo pago que el cliente selecciona
+    this.infoToken.setMetodoPagoSelected(this.infoToken.getInfoUs().metodoPago);
+
     // saca del local por que puede que se haya puestro propina
     this._arrSubtotales = JSON.parse(atob(localStorage.getItem('sys::st')));
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
@@ -469,8 +472,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       dataFrmConfirma.r = this.infoToken.getInfoUs().nombres.toUpperCase();
       dataFrmConfirma.nom_us = this.infoToken.getInfoUs().nombres.toLowerCase();
     } else {
-      dataFrmConfirma.m = this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00';
-      dataFrmConfirma.r = this.frmConfirma.delivery ? this.frmDelivery.nombre : this.frmConfirma.referencia || '';
+      // dataFrmConfirma.m = this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00';
+      dataFrmConfirma.m = this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') : '00';
+      dataFrmConfirma.r = this.frmConfirma.delivery ? this.frmDelivery.nombre : this.utilService.addslashes(this.frmConfirma.referencia) || '';
       dataFrmConfirma.nom_us = this.infoToken.getInfoUs().nombres.split(' ')[0].toLowerCase();
     }
 
@@ -530,18 +534,29 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
 
 
+    const _dataUsuarioSend = {
+      'idusuario': dataUsuario.idusuario,
+      'idcliente': dataUsuario.idcliente,
+      'idorg': dataUsuario.idorg,
+      'idsede': dataUsuario.idsede,
+      'nombres': dataUsuario.nombres,
+      'cargo': dataUsuario.cargo,
+      'usuario': dataUsuario.usuario
+    };
+
     const dataSend = {
       dataPedido: dataPedido,
       dataPrint: dataPrint,
-      dataUsuario: dataUsuario,
+      dataUsuario: _dataUsuarioSend,
       isDeliveryAPP: _p_header.delivery === 1 ? true : false, // isClienteBuscaRepartidores, // this.isDeliveryCliente,
       isClienteRecogeLocal: this.infoToken.infoUsToken.pasoRecoger, // indica si el cliente pasa a recoger entonces ya no busca repartidor
       dataDescuento: [] // lista de ids de descuento para restar cantidad num_pedidos
     };
 
+    // ya no lo envio
     // quitamos el order delivery de los datos del usuario para que no sea mucho el json
-    dataSend.dataUsuario.orderDelivery = '';
-    dataSend.dataUsuario.importeDelivery = '';
+    // dataSend.dataUsuario.orderDelivery = '';
+    // dataSend.dataUsuario.importeDelivery = '';
 
     // this.socketService.emit('printerComanda', dataPrint);
 
@@ -566,25 +581,83 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // enviar a guardar // guarda pedido e imprime comanda
     // this.socketService.emit('nuevoPedido', dataSend); // !> 150920
+    this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => {
+      // error
+      // console.log('recibido la respuesta del servidor', resSocket);
+      if ( resSocket === false ) {
+        // si tiene error lo intenta enviar por http
+        this.crudService.postFree(JSON.stringify(dataSend), 'pedido', 'registrar-nuevo-pedido', false)
+        .subscribe((res: any) => {
+
+          if ( !res.success ) {
+            alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');
+            // guardamos el error
+            const dataError = {
+              elerror: res.error,
+              elorigen: 'resumen-pedido'
+            };
+
+            this.crudService.postFree(dataError, 'error', 'set-error', false)
+            .subscribe(resp => console.log(resp));
+
+            this.listenStatusService.setLoaderSendPedido(false);
+            return;
+          }
+
+          dataSend.dataPedido.idpedido = res.data[0].idpedido;
+          dataSend.dataPrint = res.data[0].data;
+          this.socketService.emit('nuevoPedido2', dataSend);
+
+          this.newFomrConfirma();
+          // this.backConfirmacion();
+
+          // this.miPedidoService.prepareNewPedido();
 
 
-    this.crudService.postFree(dataSend, 'pedido', 'registrar-nuevo-pedido', false)
-    .subscribe((res: any) => {
-      dataSend.dataPedido.idpedido = res.data[0].idpedido;
-      dataSend.dataPrint = res.data[0].data;
-      this.socketService.emit('nuevoPedido2', dataSend);
+          setTimeout(() => {
+            this.listenStatusService.setLoaderSendPedido(false);
+            this.miPedidoService.stopTimerLimit();
+          }, 600);
 
-      this.newFomrConfirma();
-      // this.backConfirmacion();
+          this.miPedidoService.prepareNewPedido();
 
-      // this.miPedidoService.prepareNewPedido();
+          // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
+          if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
+            this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
+            this.pagarCuentaDeliveryCliente();
+            // enviamos a pagar
+            return;
+          }
+        });
+
+      } else { // si no tiene error
+        const res = resSocket[0];
+        dataSend.dataPedido.idpedido = res.data.idpedido;
+        dataSend.dataPrint = res.data[1].print;
+        this.socketService.emit('nuevoPedido2', dataSend);
+
+        this.newFomrConfirma();
+        // this.backConfirmacion();
+
+        // this.miPedidoService.prepareNewPedido();
 
 
-      setTimeout(() => {
-        this.listenStatusService.setLoaderSendPedido(false);
-        this.miPedidoService.stopTimerLimit();
-      }, 600);
+        setTimeout(() => {
+          this.listenStatusService.setLoaderSendPedido(false);
+          this.miPedidoService.stopTimerLimit();
+        }, 600);
 
+        this.miPedidoService.prepareNewPedido();
+
+        // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
+        if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
+          this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
+          this.pagarCuentaDeliveryCliente();
+          // enviamos a pagar
+          return;
+        }
+
+      }
     });
 
       // hora del pedido
@@ -602,14 +675,14 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
       // this.miPedidoService.prepareNewPedido();
 
-      // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
-      if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
-        this.pagarCuentaDeliveryCliente();
-        // enviamos a pagar
-        return;
-      }
+      // // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
+      // if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
+      //   this.pagarCuentaDeliveryCliente();
+      //   // enviamos a pagar
+      //   return;
+      // }
 
-      this.miPedidoService.prepareNewPedido();
+      // this.miPedidoService.prepareNewPedido();
 
       this.backConfirmacion();
 
@@ -628,17 +701,21 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private checkTiposDeConsumo(): void {
+    // console.log('check tipo consumo');
     this.arrReqFrm = <FormValidRptModel>this.miPedidoService.findEvaluateTPCMiPedido();
     this.isRequiereMesa = this.arrReqFrm.isRequiereMesa;
     this.frmConfirma.solo_llevar = this.arrReqFrm.isTpcSoloDelivery ? false : this.arrReqFrm.isTpcSoloLLevar;
     this.frmConfirma.delivery = this.arrReqFrm.isTpcSoloDelivery;
   }
 
-  checkIsRequierMesa(): void {
+  checkIsRequierMesa(num: string = ''): void {
+    // console.log('check mesa', num);
+    if ( num !== '' ) {this.frmConfirma.mesa = num; }
     // const arrReqFrm = <FormValidRptModel>this.miPedidoService.findEvaluateTPCMiPedido();
     // const isTPCLocal = arrReqFrm.isTpcLocal;
     // this.isRequiereMesa = arrReqFrm.isRequiereMesa;
-    const numMesasSede = parseInt(this.miPedidoService.objDatosSede.datossede[0].mesas, 0);
+    let numMesasSede = parseInt(this.miPedidoService.objDatosSede.datossede[0].mesas, 0);
+    numMesasSede = isNaN(numMesasSede) ? 0 : numMesasSede; // para asegurar si no viene este dato
 
     let isMesaValid = this.frmConfirma.mesa ? this.frmConfirma.mesa !== '' ? true : false : false;
     // valida la mesa que no sea mayor a las que hay
