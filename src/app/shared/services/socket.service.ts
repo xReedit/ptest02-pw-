@@ -290,7 +290,6 @@ export class SocketService {
   }
 
   emitRes(evento: string, data: any) {
-    // verificar estado del socket
     return new Observable(observer => {
       this.socket.emit(evento, data, (res) => {
         // console.log('respuesta socket', res);

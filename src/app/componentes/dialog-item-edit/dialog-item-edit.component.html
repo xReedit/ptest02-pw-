@@ -76,6 +76,9 @@
                 <!-- <span class="text-bold">Instrucciones adicionales</span> -->
                 <mat-form-field class="w-100">
                     <input matInput placeholder="Agregue una indicacion" [(ngModel)]="item.indicaciones" (keyup)="setIndicaciones(txtIdicaciones.value)" name="indicaciones" #txtIdicaciones>
+                    <button mat-button *ngIf="item.indicaciones" matSuffix mat-icon-button aria-label="Clear" (click)="item.indicaciones=''">
+                        <i class="fa fa-close"></i>
+                    </button>
                 </mat-form-field>
             </div>
         </div>

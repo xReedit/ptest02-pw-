@@ -527,6 +527,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getObjDetalleSeccion(seccion: SeccionModel): String {
     let resp = '';
+    if (seccion.items === null ) {return; }
     seccion.items.map((i: ItemModel, index: number) => {
       if (index > 5) {return; }
       resp += i.des.toLowerCase() + ', ';

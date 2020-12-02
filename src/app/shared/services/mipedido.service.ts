@@ -404,7 +404,7 @@ export class MipedidoService {
       sumTotalTpcSelected = this.totalItemTpcSelected(itemInList.itemtiposconsumo) || 0;
       itemInList.cantidad_seleccionada = sumTotalTpcSelected;
       itemInList.subitems_selected = itemInPedido.subitems_selected;
-      itemInList.subitems_view = itemInPedido.subitems_view;
+      itemInList.subitems_view = sumTotalTpcSelected === 0 ? [] : itemInPedido.subitems_view;
     } else {
       this.listItemsPedido.push(item);
     }
@@ -449,13 +449,13 @@ export class MipedidoService {
   // cantidad seleccionada y precio
   addCantItemMiPedido(elItem: ItemModel, cantidad_seleccionada: number) {
     const cantSeleccionadaTPC = cantidad_seleccionada;
-    const precioTotal = cantSeleccionadaTPC * parseFloat(elItem.precio_unitario);
+    let precioTotal = cantSeleccionadaTPC * parseFloat(elItem.precio_unitario);
 
     // total subitems
     // sumar el total
-    const totalSubItems = elItem.subitems_selected ? elItem.subitems_selected.map((subIt: SubItem) => subIt.precio * subIt.cantidad_seleccionada).reduce((a, b) => a + b , 0) : 0;
-    // const totalSubItems = elItem.subitems_view ? elItem.subitems_view.map((subIt: SubItemsView) => subIt.precio).reduce((a, b) => a + b , 0) : 0;
-    // precioTotal += totalSubItems;
+    // const totalSubItems = elItem.subitems_selected ? elItem.subitems_selected.map((subIt: SubItem) => subIt.precio * subIt.cantidad_seleccionada).reduce((a, b) => a + b , 0) : 0;
+    const totalSubItems = elItem.subitems_view ? elItem.subitems_view.map((subIt: SubItemsView) => subIt.precio).reduce((a, b) => a + b , 0) : 0;
+    precioTotal += totalSubItems;
 
     elItem.cantidad_seleccionada = cantSeleccionadaTPC;
     // elItem.precio_total = precioTotal + totalSubItems;
@@ -543,6 +543,14 @@ export class MipedidoService {
 
         this.addPrecioItemMiPedido(elItem);
 
+      }  else {
+        // si no tiene ningun suitem seleccionado y ademas es restar y ademas que la cantidad es igual al los subtviews
+        // entonces agarra al primer subview y comienza a restar
+
+        if ( !sumar ) {
+          if (elItem.subitems_view.length === 0 ) { return; }
+          this.restarCantSubItemView(elItem, null);
+        }
       }
 
       // let _subItemExist: SubItem;
@@ -1766,7 +1774,7 @@ export class MipedidoService {
       this.listenStatusService.setHayDatosSede(true);
       // nombre sede
       localStorage.setItem('sys::s', this.objDatosSede.datossede[0].nombre + '|' + this.objDatosSede.datossede[0].ciudad);
-      // console.log('datos de la sede ps', this.objDatosSede);
+      console.log('datos de la sede ps', this.objDatosSede);
 
 
       this.max_minute_order = res[0].datossede[0].pwa_time_limit;
@@ -1944,6 +1952,7 @@ export class MipedidoService {
       this.socketService.emit('notificar-impresion-precuenta', null);
     });
   }
+
 
   // cerrar session
   cerrarSession(): void {

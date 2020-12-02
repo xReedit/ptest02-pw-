@@ -485,7 +485,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // debugger
     // const idPwaPago = this.registrarPagoService.getIdPwaPago();
 
-
+    console.log('aaaaaaaaaaaaaaaaaaaaa');
 
     const _p_header = {
       m: dataFrmConfirma.m, // this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00',
@@ -503,7 +503,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       // idregistro_pago: this.isSoloLLevar ? this.registrarPagoService.getDataTrasaction().idregistro_pago : 0,
       arrDatosDelivery: this.frmDelivery,
       systemOS: this.systemOS,
-      idregistra_scan_qr: this.establecimientoService.getLocalIdScanQr() // el id del scan register
+      idregistra_scan_qr: this.establecimientoService.getLocalIdScanQr(), // el id del scan register
+      is_print_subtotales: this.miPedidoService.objDatosSede.datossede[0].is_print_subtotales
     };
 
     // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
@@ -632,9 +633,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
       } else { // si no tiene error
         const res = resSocket[0];
-        dataSend.dataPedido.idpedido = res.data.idpedido;
-        dataSend.dataPrint = res.data[1].print;
-        this.socketService.emit('nuevoPedido2', dataSend);
+        dataSend.dataPedido.idpedido = res.idpedido;
+        dataSend.dataPrint = res.data[1] ? res.data[1]?.print : null;
+        // this.socketService.emit('nuevoPedido2', dataSend);
 
         this.newFomrConfirma();
         // this.backConfirmacion();

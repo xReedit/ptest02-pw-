@@ -11,6 +11,9 @@ import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 import { URL_IMG_CARTA } from 'src/app/shared/config/config.const';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+// import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
+// import { type } from 'os';
+import { SocketService } from 'src/app/shared/services/socket.service';
 
 @Component({
   selector: 'app-dialog-item-edit',
@@ -43,6 +46,8 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     private uttilService: UtilitariosService,
     private infoToken: InfoTockenService,
     private dialogRef: MatDialogRef<DialogItemEditComponent>,
+    //  private crudService: CrudHttpService,
+    private socketService: SocketService,
     @Inject(MAT_DIALOG_DATA) data: any
   ) {
 
@@ -82,9 +87,10 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     this.item.subitems_selected = null;
     this.item.subitems_view = null;
 
-    this.cocinarListSubItemsView();
+    // this.cocinarListSubItemsView();
+    this.getSubItemsItemSelect(this.item);
 
-    this.compItemSumImporte();
+    // this.compItemSumImporte();
     // this.item.subitems.map((sub: SubItem) => sub.selected = false);
 
   }
@@ -98,9 +104,46 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     return parseInt(this.miPedidoService.findItemCarta(this.item).cantidad.toString(), 0);
   }
 
+  // get subitems item seleccionado
+
+  getSubItemsItemSelect( elItem: ItemModel ): any {
+    // si de bodega no lleva subitems
+    if ( elItem.procede === 0 ) {
+      this.isObjSubItems = false;
+      this.isOptionRequeridosComplet = true;
+      return; }
+
+    // verificamos si ya buscamos los subitems de este item
+    if ( !elItem.is_search_subitems ) {
+      // buscamos
+      // const _dataIdItem = {
+      //   iditem: elItem.iditem
+      // };
+
+
+      // this.crudService.postFree(_dataIdItem, 'pedido', 'search-subitems-del-item', false).subscribe((res: any) => {
+      this.socketService.emitRes('search-subitems-del-item', elItem.iditem).subscribe((res: any) => {
+        // console.log('res subitems', res);
+        let _resSubItems = res[0].respuesta;
+        _resSubItems = typeof _resSubItems === 'string' ? JSON.parse(_resSubItems) : null;
+
+        elItem.subitems = _resSubItems;
+        elItem.is_search_subitems = true;
+
+        this.cocinarListSubItemsView();
+        this.compItemSumImporte();
+      });
+    } else {
+      this.cocinarListSubItemsView();
+      this.compItemSumImporte();
+    }
+  }
+
+  // get subitems item seleccionado
+
   private cocinarListSubItemsView(): void {
 
-
+    // console.log('subitems');
 
     if ( this.item.subitems && this.item.subitems.length > 0) {
       this.item.subitems.map( (z: SubItemContent) => {
@@ -232,7 +275,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     }, 500);
 
     this.compItemSumImporte();
-    this.item.indicaciones = this.isObjSubItems ? '' : this.item.indicaciones;
+    // this.item.indicaciones = this.isObjSubItems ? '' : this.item.indicaciones;
 
   }
 
