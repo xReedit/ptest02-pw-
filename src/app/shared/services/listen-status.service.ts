@@ -67,6 +67,10 @@ export class ListenStatusService {
   private isLoaderCartaSource = new BehaviorSubject<boolean>(false);
   public isLoaderCarta$ = this.isLoaderCartaSource.asObservable();
 
+  // observable del metodo de pago seleccionado
+  private elMetodoPagoSelectedSource = new BehaviorSubject<MetodoPagoModel>(new MetodoPagoModel());
+  public elMetodoPagoSelected$ = this.elMetodoPagoSelectedSource.asObservable();
+
 
   constructor() { }
 
@@ -134,5 +138,9 @@ export class ListenStatusService {
 
   setLoaderCarta(value: boolean) {
     this.isLoaderCartaSource.next(value);
+  }
+
+  setMetodoPagoSelected(metodoSelected: MetodoPagoModel) {
+    this.elMetodoPagoSelectedSource.next(metodoSelected);
   }
 }

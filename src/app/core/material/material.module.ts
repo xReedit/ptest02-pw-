@@ -22,6 +22,7 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatSelectModule} from '@angular/material/select';
 import {MatListModule} from '@angular/material/list';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 // import {MatSidenavModule} from '@angular/material/sidenav';
 // import { MatTooltipModule } from '@angular/material/tooltip';
@@ -50,7 +51,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatAutocompleteModule,
     MatSelectModule,
     MatListModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatSlideToggleModule
     // MatTooltipModule
   ],
   exports: [
@@ -73,7 +75,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatAutocompleteModule,
     MatSelectModule,
     MatListModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatSlideToggleModule
     // MatTooltipModule
   ]
 })

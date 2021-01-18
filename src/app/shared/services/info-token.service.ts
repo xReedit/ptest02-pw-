@@ -281,6 +281,24 @@ export class InfoTockenService {
     } catch (error) {
       console.log(error);
     }
+
+    // borra datos del storage del pedido
+    this.removeStoragePedido();
+
+    // al momento de confirmar pedido envia a cerrar session, solo debe borrar los datos del pedido
+    // localStorage.removeItem('sys::rules');
+    // localStorage.removeItem('sys::status');
+    // localStorage.removeItem('sys::st');
+
+    // localStorage.removeItem('sys::ed');
+    // localStorage.removeItem('sys::transaction-response');
+    // localStorage.removeItem('sys::transaction-load');
+    // localStorage.removeItem('data');
+    // localStorage.removeItem('sys::tpm');
+  }
+
+  // borra datos del storage del pedido
+  removeStoragePedido() {
     localStorage.removeItem('sys::rules');
     localStorage.removeItem('sys::status');
     localStorage.removeItem('sys::st');
@@ -289,7 +307,6 @@ export class InfoTockenService {
     localStorage.removeItem('sys::transaction-response');
     localStorage.removeItem('sys::transaction-load');
     localStorage.removeItem('data');
-    // localStorage.removeItem('sys::tpm');
   }
 
   // cerrar toda la sesssion

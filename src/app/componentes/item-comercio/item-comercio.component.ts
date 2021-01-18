@@ -11,6 +11,7 @@ import { URL_IMG_COMERCIO } from 'src/app/shared/config/config.const';
 export class ItemComercioComponent implements OnInit {
   isCerrado = false;
   isComercioAceptaPedidoProgramado = false;
+  isTiempoProgramadoSoloDia = false; // si el pedido se programa solo para el dia
   amPm = 'AM';
   imgComercio = '';
 
@@ -26,6 +27,10 @@ export class ItemComercioComponent implements OnInit {
 
     this.isCerrado = this.itemEstablecimiento.cerrado === 1 ? true : false;
     this.isComercioAceptaPedidoProgramado = this.itemEstablecimiento.pwa_delivery_habilitar_pedido_programado === 1 && this.isCerrado;
+    this.isTiempoProgramadoSoloDia = this.itemEstablecimiento.pwa_pedido_programado_solo_del_dia === 1;
+
+    this.isComercioAceptaPedidoProgramado = this.isComercioAceptaPedidoProgramado && !this.isTiempoProgramadoSoloDia;
+
     this.amPm = this.itemEstablecimiento.hora_ini ? parseInt(this.itemEstablecimiento.hora_ini.split(':')[0], 0) > 12 ? 'PM' : 'AM' : '';
     this.imgComercio = URL_IMG_COMERCIO + this.itemEstablecimiento.pwa_delivery_img;
 

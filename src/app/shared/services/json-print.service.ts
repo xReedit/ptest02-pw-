@@ -6,6 +6,7 @@ import { MipedidoService } from './mipedido.service';
 import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
 import { SeccionModel } from 'src/app/modelos/seccion.model';
 import { ItemModel } from 'src/app/modelos/item.model';
+import { PedidoModel } from 'src/app/modelos/pedido.model';
 
 @Injectable({
   providedIn: 'root'
@@ -32,15 +33,17 @@ export class JsonPrintService {
   }
 
   // relacionar secciones con impresoras
-  private relationRowToPrint(): void {
+  private relationRowToPrint(iscliente: boolean = false): void {
 
     // datos de la sede
     this.getDataSede();
+    console.log('aaaa qui');
 
     const _objMiPedido = this.pedidoService.getMiPedido();
     const xRptPrint: any = []; // respuesta para enviar al backend
     let xImpresoraPrint: any = []; // array de impresoras
     let xArrayBodyPrint: any = []; // el array de secciones e items a imprimir
+    let printerAsigando: any = null;
 
     this.impresoras = <any[]>this.datosSede.impresoras;
     // valores de la primera impresora // impresora donde se pone el logo
@@ -50,17 +53,26 @@ export class JsonPrintService {
     const pie_pagina_comprobante = this.datosSede.datossede[0].pie_pagina_comprobante;
     let isHayDatosPrintObj = true; // si hay datos en el obj xArrayBodyPrint para imprimir
     // let indexP = 0;
+
+    // si es cliente asigna impresora a seccion sin impresora
+    if ( iscliente ) {
+      this.setFirstPrinterSeccionCliente( _objMiPedido,  this.impresoras);
+    }
+
     this.impresoras.map((p: any) => {
       isHayDatosPrintObj = false;
       xArrayBodyPrint = [];
+
       _objMiPedido.tipoconsumo
         .map((tpc: TipoConsumoModel, indexP: number) => {
           xArrayBodyPrint[indexP] = { 'des': tpc.descripcion, 'id': tpc.idtipo_consumo, 'titlo': tpc.titulo, 'conDatos': false};
           tpc.secciones
             .filter((s: SeccionModel) => s.idimpresora === p.idimpresora)
             .map((s: SeccionModel) => {
+              printerAsigando = p;
+
               s.items.map((i: ItemModel) => {
-                if (i.imprimir_comanda === 0) { return; } // no imprimir // productos bodega u otros
+                if (i.imprimir_comanda === 0 && !iscliente) { return; } // no imprimir // productos bodega u otros
                   // xArrayBodyPrint[indexP][i.iditem] = [];
                   isHayDatosPrintObj = true;
                   xArrayBodyPrint[indexP].conDatos = true; // si la seccion tiene items
@@ -74,6 +86,7 @@ export class JsonPrintService {
                 });
               });
               // indexP++;
+
           });
 
 
@@ -81,15 +94,15 @@ export class JsonPrintService {
 
       xImpresoraPrint = [];
       const childPrinter: any = {};
-      childPrinter.ip_print = p.ip;
-      childPrinter.var_margen_iz = p.var_margen_iz;
-      childPrinter.var_size_font = p.var_size_font;
+      childPrinter.ip_print = printerAsigando.ip;
+      childPrinter.var_margen_iz = printerAsigando.var_margen_iz;
+      childPrinter.var_size_font = printerAsigando.var_size_font;
       childPrinter.local = 0;
       childPrinter.num_copias = num_copias_all;
       childPrinter.var_size_font_tall_comanda = var_size_font_tall_comanda;
       childPrinter.copia_local = 0; // no imprime // solo para impresora local
       childPrinter.img64 = '';
-      childPrinter.papel_size = p.papel_size;
+      childPrinter.papel_size = printerAsigando.papel_size;
       childPrinter.pie_pagina = pie_pagina;
       childPrinter.pie_pagina_comprobante = pie_pagina_comprobante;
 
@@ -107,6 +120,43 @@ export class JsonPrintService {
 
 
 
+  }
+
+  // recuepra la primera impresora para imprimir cuando manda el cliente y si la seccion no tiene impresora
+  private GetFirstPrinter(listPrinter: any): any {
+    let firtsPrinter: any = null;
+    const countPrinters = listPrinter.length;
+    if ( countPrinters > 0 ) {
+        firtsPrinter = listPrinter[0];
+    }
+
+    if ( countPrinters > 1 && firtsPrinter.descripcion.toLowerCase() === 'caja' ) {
+      firtsPrinter = listPrinter[1];
+    }
+
+    return firtsPrinter;
+  }
+
+  // asigna impresora a las seccion que no tienen // para cuando el cliente realize el pedido imprima
+  private setFirstPrinterSeccionCliente(_objMiPedido: PedidoModel, listPrinter: any) {
+    let firtsIdPrinter: any = {};
+    _objMiPedido.tipoconsumo
+        .map((tpc: TipoConsumoModel) => {
+          firtsIdPrinter = tpc.secciones.filter((s: SeccionModel) => s.idimpresora !== 0)[0];
+          if ( firtsIdPrinter ) { return; }
+        });
+
+      // sino encontro ningun impresora asigna impresora de la lista de impresoras
+      if ( !firtsIdPrinter ) {
+        firtsIdPrinter = this.GetFirstPrinter(listPrinter);
+      }
+
+    // asignamos a las secciones que no tienen impresora
+    _objMiPedido.tipoconsumo
+        .map((tpc: TipoConsumoModel, indexP: number) => {
+          firtsIdPrinter = tpc.secciones.filter((s: SeccionModel) => s.idimpresora === 0)
+          .map((s: SeccionModel) => { s.idimpresora = firtsIdPrinter.idimpresora; });
+        });
   }
 
   getPrinterPrecuenta() {
@@ -178,8 +228,8 @@ export class JsonPrintService {
     return xRptPrint;
   }
 
-  enviarMiPedido(): any {
-    return this.relationRowToPrint();
+  enviarMiPedido(iscliente: boolean = false): any {
+    return this.relationRowToPrint(iscliente);
   }
 
 }

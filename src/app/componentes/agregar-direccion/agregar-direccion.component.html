@@ -76,7 +76,7 @@
                             (dragEnd)="markerDragEnd($event)" -->
                     </agm-map>           
                     <div class="centerMarker"></div>     
-                    <div class="btn-confirmar-dir" *ngIf="!isUsCliente && countMoveMap > 1">
+                    <div class="btn-confirmar-dir" *ngIf="countMoveMap > 1">
                         <button class="btn btn-success" (click)="confirmarDireccion()">Confirmar</button>
                     </div>
                 </div>

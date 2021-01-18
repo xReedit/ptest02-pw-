@@ -60,7 +60,9 @@ export class ToolBarComponent implements OnInit {
 
     this.listenStatusService.setIsBusqueda();
 
+
     setTimeout(() => {
+      if ( !this.txtBuscar ) {return; }
       this.renderer.selectRootElement(this.txtBuscar.nativeElement).focus();
       this.txtBuscar.nativeElement.value = this.getStorageBusqueda();
       // this.renderer.selectRootElement(this.txtBuscar.nativeElement).value('aaaaaa');

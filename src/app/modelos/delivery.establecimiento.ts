@@ -35,6 +35,7 @@ export class DeliveryEstablecimiento {
     pwa_delivery_acepta_tarjeta: number;
     pwa_delivery_hablitar_calc_costo_servicio: number; // si el sistema calcula el servicio delivery segun distancia de los pedidos tomados por el comercio
     pwa_delivery_habilitar_calc_costo_servicio_solo_app: number; // solo habilita costo de entrega cuando pide el cliente por la aplicacion mas no cuando el comercio hace el pedido
+    pwa_delivery_reparto_solo_app: number; // los repartidores de papaya solo llevaran los pedidos ingresados por la app
     pwa_delivery_comercio_solidaridad: number; // si es comercio solidario, solo pago con tarjeta y parece campo de contacto
     pwa_delivery_comision_fija_no_afiliado: number; // comision fija comercio no afiliado (plaza vea cualquier pedido la comision es 2 para la platafoma)
     rulesSubTotales: any;
@@ -47,4 +48,5 @@ export class DeliveryEstablecimiento {
     options: any;
     centro: any;
     icons_entrega: []; // iconos json de entrega a mostrar
+    pwa_pedido_programado_solo_del_dia: number; // pedidos programados solo del dia
 }

@@ -1,4 +1,21 @@
 <div class="text-left h-100">
+
+    <div *ngIf="isRestaurante" class="border-bottom m-0 p-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <span class="fw-600 fs-14">Cubiertos  <i class="fa fa-cutlery"></i></span>
+                <ng-container *ngIf="isCubierto; else elseTemplateCubierto">
+                    <p class="fw-100 fs-12 text-secondary">El comercio incluirá cubierto en tu pedido.</p>
+                </ng-container>
+                <ng-template #elseTemplateCubierto>
+                    <p class="fw-100 fs-12 text-secondary">Ayúdanos a reducir el desperdicio de plástico. Solicita cubiertos solo cuando lo necesites.</p>                                            
+                </ng-template>
+                
+            </div>
+            <mat-slide-toggle [(ngModel)]="isCubierto" name="isCubierto"></mat-slide-toggle>
+        </div>
+    </div>
+
     <div *ngIf="!isRecojoLocalCheked" class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor" (click)="openDialogDireccion()">
         <span class="fw-100 fs-12 text-secondary">Direccion de entrega:</span>
         <p class="m-0 fs-14">
@@ -20,13 +37,15 @@
     <div class="border-bottom m-0 p-3 d-flex justify-content-between align-items-center" matRipple [matRippleColor]="rippleColor" (click)="openDialogTiempoEntrega()">
         <!-- <span class="fw-100 fs-12 text-secondary">Hora de entrega:</span> -->            
         <div>
-            <i class="fa fa-clock-o pr-2"></i>
             <span class="fw-100 fs-12 text-secondary"> Entgrega:</span>
+            <i class="fa fa-clock-o pl-2"></i>
             <p class="m-0"><span class="fs-14" [ngClass]="{'text-danger': !isTiempoEntregaValid}"> {{ tiempoEntregaSelected.descripcion }}: <strong>{{tiempoEntregaSelected.value | titlecase}} </strong> </span></p>
         </div>
 
         <div>
-            <i class="fa fa-caret-down" aria-hidden="true"></i>
+            <button class="btn btn-sm btn-secondary">
+                <span class="fw-100 fs-10">Cambiar</span>
+            </button>
         </div>
 
     </div>
@@ -34,9 +53,16 @@
 
     <!-- telefono -->
     <div class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor" (click)="openDialogsendSMS()">                
-        <span class="text-danger fs-12 fw-100" [hidden]="this.infoToken.telefono.length >= 5">Es necesario el numero de su telefono</span>        
-        <p class="m-0 fs-14">Telefono: <strong>{{ infoToken.telefono }}</strong></p>
-        <span class="fw-100 fs-12 text-danger" [hidden]="this.infoToken.telefono.length >= 5">Añade un número de teléfono para que podamos contactarte e informarte de tu pedido.</span>        
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-danger fs-12 fw-100" [hidden]="this.infoToken.telefono.length >= 5">Es necesario el numero de su telefono</span>        
+                <p class="m-0 fs-14">Telefono: <strong>{{ infoToken.telefono }}</strong></p>
+                <span class="fw-100 fs-12 text-danger" [hidden]="this.infoToken.telefono.length >= 5">Añade un número de teléfono para que podamos contactarte e informarte de tu pedido.</span>        
+            </div>
+            <button class="btn btn-sm btn-secondary">
+                <span class="fw-100 fs-10">Cambiar</span>
+            </button>
+        </div>
     </div>
     <!-- telefono -->
 
@@ -80,6 +106,14 @@
     </div>
     <br>
     <!-- dato importante o nombre de contacto si es solidaridad -->
+
+    <!-- info comercio con repartidores propios -->    
+    <ng-container *ngIf="isComercioRepartidoresPropios && !isComercioPapayaSoloPedidosApp">
+        <div class="pl-3 pr-3">
+            <span class="text-info fs-12">Comercio con repartidores propios.</span>
+            <i class="fa fa-motorcycle pl-1" aria-hidden="true"></i>        
+        </div>
+    </ng-container>
     
 
     <div class="m-0 p-3">        
@@ -117,7 +151,7 @@
                     </span>                 
                 </span>
 
-                <p class="fs-11 text-info fw-100">Costo de entrega y propina es 100% para el repartidor.</p>
+                <p class="fs-11 text-info fw-100" *ngIf="!isComercioRepartidoresPropios || isComercioPapayaSoloPedidosApp">Costo de entrega y propina es 100% para el repartidor.</p>
             </div>
             <br>
         <!-- </div> -->

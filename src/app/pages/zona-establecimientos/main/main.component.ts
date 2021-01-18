@@ -35,6 +35,8 @@ export class MainComponent implements OnInit {
   numComerciosCalificar = 0;
   isShowCalificar = false;
 
+  telefonoSoporte = '934746830';
+
   constructor(
     private infoTokenService: InfoTockenService,
     private verifyClientService: VerifyAuthClientService,
@@ -130,7 +132,7 @@ export class MainComponent implements OnInit {
 
   clickTab(op: any) {
     // op.index = typeof op === 'number' ? op : op.index;
-    // console.log($event);
+    console.log(op);
     let goToPage = '/establecimientos';
     // const index = $event.index ? $event.index : $event;
     switch (op) {
@@ -141,10 +143,19 @@ export class MainComponent implements OnInit {
         goToPage = '/pedidos';
         // this.router.navigate(['/mis-pedidos']);
         break;
+      case 2: // soporte
+        this.redirectWhatsAppSoporte();
+        return;
+        break;
       }
       this.router.navigate([`zona-delivery${goToPage}`]);
       this.showPanelRigth = false;
     // this.router.navigate([goToPage]);
+  }
+
+  redirectWhatsAppSoporte() {
+    const _link = `https://api.whatsapp.com/send?phone=51${this.telefonoSoporte}`;
+    window.open(_link, '_blank');
   }
 
   goBack() {

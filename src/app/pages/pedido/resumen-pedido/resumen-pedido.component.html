@@ -186,7 +186,7 @@
                                 <input 
                                     type="number"
                                     matInput
-                                    [(ngModel)]="frmConfirma.mesa" name="mesa"
+                                    [(ngModel)]="frmConfirma.nummesa" name="mesa"
                                     [required]="isRequiereMesa" (keyup)="checkIsRequierMesa(txtNumMesa.value)" #txtNumMesa>
                                 </mat-form-field>
                             </div>
@@ -263,7 +263,7 @@
 <!-- resumen de mi orden cuand es usuario cliente -->
 <ng-container *ngIf="!hayItems && isCliente">
     <div class="text-center d-flex flex-column h-75">
-        <p class="m-auto">Aun no tiene ningun pedido en lista.</p>
+        <p class="m-auto">Aun no tiene ningun producto en lista.</p>
     </div>    
 </ng-container>
 
@@ -281,7 +281,7 @@
         <ng-template #divBtnListo>
             <div class="btn-footer-next transicion" matRipple (click)="confirmarPeiddo()">
               <div>
-                <span class="animated fadeInRight">Listo <i class="fa fa-arrow-right"></i></span>
+                <span class="animated fadeInRight">Continuar <i class="fa fa-arrow-right"></i></span>
               </div>
             </div>
         </ng-template>

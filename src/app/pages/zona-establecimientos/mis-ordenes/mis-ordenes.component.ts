@@ -19,6 +19,8 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
   infoUser: UsuarioTokenModel;
   listMisPedidos: any;
 
+  telefonoSoporte = '934746830';
+
   constructor(
     private infoTokenService: InfoTockenService,
     private verifyClientService: VerifyAuthClientService,
@@ -107,8 +109,14 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
   }
 
   openDetalle(item: any) {
+    console.log(item);
     this.infoTokenService.setOtro(item);
     this.router.navigate(['/zona-delivery/pedido-detalle']);
+  }
+
+  redirectWhatsAppSoporte() {
+    const _link = `https://api.whatsapp.com/send?phone=51${this.telefonoSoporte}`;
+    window.open(_link, '_blank');
   }
 
 }

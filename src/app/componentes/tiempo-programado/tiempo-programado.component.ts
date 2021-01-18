@@ -22,7 +22,7 @@ export class TiempoProgramadoComponent implements OnInit {
   seletecDay: any;
   tiempoEntregaSelected: TiempoEntregaModel = new TiempoEntregaModel();
 
-
+  private isTiempoProgramadoSoloDia = false; // si el pedido se programa solo para el dia
 
   private dateHoy = new Date();
   private dateNow = new Date();
@@ -33,7 +33,9 @@ export class TiempoProgramadoComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log('aaa');
     this.infoEstablecimiento = this.establecimientoService.get();
+    this.isTiempoProgramadoSoloDia = this.infoEstablecimiento.pwa_pedido_programado_solo_del_dia === 1;
     this.getDia();
 
     this.tiempoEntregaSelected = this.infoTokenService.infoUsToken.tiempoEntrega;
@@ -78,19 +80,24 @@ export class TiempoProgramadoComponent implements OnInit {
       this.listDia.push({ numDay:  0, descripcion: 'Hoy', date: this.dateNow.toLocaleDateString(), hours: _lisHours});
     }
 
-    while (countDays <= 3) {
-      const _lisHours = this.hourSow(hourNow, horaIni, horaFni, false);
-      let numDayAdd = this.dateHoy.getDay() + 1;
-      numDayAdd = numDayAdd > 6 ? numDayAdd - 7 : numDayAdd;
-      this.dateHoy.setDate(this.dateHoy.getDate() + 1);
-      const dateAdd = this.dateHoy.toLocaleDateString();
-      const _descripcion = countDays === 1 ? 'Mañana' :  diasSemana[numDayAdd] + ' ' + this.dateHoy.getDate();
-      const _dayBus = numDayAdd;
-      const isAdd = this.infoEstablecimiento.dias_atienden.indexOf(_dayBus.toString()) > -1;
-      if ( isAdd ) {
-        this.listDia.push({ numDay: countDays, descripcion: _descripcion, date: dateAdd, hours: _lisHours});
+    // si solo se puede programar el pedido en el dia
+    if ( !this.isTiempoProgramadoSoloDia ) {
+
+      while (countDays <= 3) {
+        const _lisHours = this.hourSow(hourNow, horaIni, horaFni, false);
+        let numDayAdd = this.dateHoy.getDay() + 1;
+        numDayAdd = numDayAdd > 6 ? numDayAdd - 7 : numDayAdd;
+        this.dateHoy.setDate(this.dateHoy.getDate() + 1);
+        const dateAdd = this.dateHoy.toLocaleDateString();
+        const _descripcion = countDays === 1 ? 'Mañana' :  diasSemana[numDayAdd] + ' ' + this.dateHoy.getDate();
+        const _dayBus = numDayAdd;
+        const isAdd = this.infoEstablecimiento.dias_atienden.indexOf(_dayBus.toString()) > -1;
+        if ( isAdd ) {
+          this.listDia.push({ numDay: countDays, descripcion: _descripcion, date: dateAdd, hours: _lisHours});
+        }
+
+        countDays++;
       }
-      countDays++;
     }
 
     this.selectedIni = this.listDia[0];

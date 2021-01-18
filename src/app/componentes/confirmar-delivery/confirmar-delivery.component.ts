@@ -39,6 +39,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   isComercioCerrado = false;
   isComercioAceptaPedidoProgramado = false;
+  isComercioRepartidoresPropios = false;
+  isComercioPapayaSoloPedidosApp = false;
   isRecojoLocalCheked = false;
   isAceptaRecojoLocal = true;
   isValidForm = false;
@@ -68,7 +70,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
     subTotales: {},
     pasoRecoger: false,
     costoTotalDelivery: 0,
-    tiempoEntregaProgamado: {}
+    tiempoEntregaProgamado: {},
+    solicitaCubiertos: 0
   };
 
   _listSubtotalesTmp: any;
@@ -89,6 +92,9 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
 
   isCalculandoDistanciaA = false;
+
+  isRestaurante = false;
+  isCubierto = false;
 
   @Input()
   set listSubtotales(val: any) {
@@ -130,6 +136,9 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     this.isComercioSolidaridad = _datosEstablecieminto.pwa_delivery_comercio_solidaridad === 1;
     this.titleInputDatoAdicional = this.isComercioSolidaridad ? 'Contacto' : 'Algún dato importante?';
+
+    this.isComercioRepartidoresPropios = _datosEstablecieminto.pwa_delivery_servicio_propio === 1;
+    this.isComercioPapayaSoloPedidosApp = _datosEstablecieminto.pwa_delivery_reparto_solo_app === 1;
 
     // this.isRain = _datosEstablecieminto.is_rain === 1 ? true : false;
     this.listIconsEntrega = JSON.parse(JSON.stringify(_datosEstablecieminto.icons_entrega));
@@ -200,6 +209,9 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.infoEstablecimiento = this.establecimientoService.get();
     this.getTiempoEntrega();
 
+    // si es restaurante muestra opciones adicionales como la posibilidad de pedir cubiertos
+    this.isRestaurante = this.infoEstablecimiento.idsede_categoria === 1;
+
     this.isAceptaRecojoLocal = this.infoEstablecimiento.pwa_delivery_habilitar_recojo_local === 1;
 
 
@@ -225,13 +237,15 @@ export class ConfirmarDeliveryComponent implements OnInit {
     // const importeTotal = parseInt(this._listSubtotales[0].importe, 0);
     const importeTotal = this._listSubtotales[this._listSubtotales.length - 1].importe;
 
+    const importeMetodoPago = this.metodoPagoSelected.importe ? this.metodoPagoSelected.importe : '';
+
     if (this.isValidForm) {
       this.resData.nombre = this.infoToken.nombres;
       this.resData.direccion = this.infoToken.direccionEnvioSelected.direccion;
       this.resData.referencia = this.utilService.addslashes(this.infoToken.direccionEnvioSelected.referencia);
       this.resData.direccionEnvioSelected = this.infoToken.direccionEnvioSelected;
       this.resData.idcliente = this.infoToken.idcliente.toString();
-      this.resData.paga_con = this.metodoPagoSelected.descripcion + '  ' + this.metodoPagoSelected.importe || '' ;
+      this.resData.paga_con = this.metodoPagoSelected.descripcion + '  ' + importeMetodoPago;
       this.resData.telefono = telefono;
       this.resData.metodoPago = this.metodoPagoSelected;
       this.resData.tipoComprobante = this.tipoComprobanteSelected;
@@ -245,6 +259,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this.resData.pasoRecoger = this.isRecojoLocalCheked;
       this.resData.dato_adicional = this.valInputDatoAdicianal;
       this.resData.costoTotalDelivery = this.infoEstablecimiento.costo_total_servicio_delivery;
+      this.resData.solicitaCubiertos = this.isCubierto ? 1 : 0;
 
       // this.infoTokenService.set();
 
@@ -265,6 +280,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     this.propinaSelected = this.infoTokenService.infoUsToken.propina;
 
+    const importeMetodoPago = this.metodoPagoSelected.importe ? this.metodoPagoSelected.importe : '';
+
     // if ( !this.direccionCliente.codigo && !this.isRecojoLocalCheked ) { this.isValidForm = false; }
 
     if (this.isValidForm) {
@@ -273,7 +290,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this.resData.referencia = this.utilService.addslashes(this.infoToken.direccionEnvioSelected.referencia);
       this.resData.direccionEnvioSelected = this.infoToken.direccionEnvioSelected;
       this.resData.idcliente = this.infoToken.idcliente.toString();
-      this.resData.paga_con = this.metodoPagoSelected.descripcion + '  ' + this.metodoPagoSelected.importe || '';
+      this.resData.paga_con = this.metodoPagoSelected.descripcion + '  ' + importeMetodoPago;
       this.resData.telefono = this.infoToken.telefono;
       this.resData.metodoPago = this.metodoPagoSelected;
       this.resData.tiempoEntregaProgamado = this.tiempoEntregaSelected;
@@ -285,6 +302,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this.resData.pasoRecoger = this.isRecojoLocalCheked;
       this.resData.dato_adicional = this.valInputDatoAdicianal;
       this.resData.costoTotalDelivery = this.infoEstablecimiento.costo_total_servicio_delivery;
+      this.resData.solicitaCubiertos = this.isCubierto ? 1 : 0;
       // this.infoToken.telefono = telefono;
       // this.infoTokenService.setTelefono(telefono);
 

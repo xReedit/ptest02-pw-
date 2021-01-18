@@ -5,8 +5,13 @@
     </div>    
 </div>
 <div class="animated fadeInUp p-3">
-    <div class="max-w">
-        <p class="fs-18">Mis Pedidos</p>
+    <div class="max-w d-flex justify-content-between align-items-center">
+        <p class="fs-18">Últimos 5 Pedidos</p>
+
+        <div class="text-center" (click)="redirectWhatsAppSoporte()">
+            <i class="fa fa-whatsapp" aria-hidden="true"></i>
+            <p class="fs-10">Soporte</p>      
+        </div>
     </div>
     <hr>
     <div class="max-w">

@@ -150,7 +150,6 @@ export class CategoriasComponent implements OnInit, OnDestroy {
     this.crudService.postFree(_data, 'delivery', 'get-establecimientos', false)
       .subscribe( (res: any) => {
         // setTimeout(() => {
-          // console.log(res);
           this.listEstablecimientos = res.data;
           this.listEstablecimientos.map((dirEstablecimiento: DeliveryEstablecimiento) => {
             dirEstablecimiento.visible = true;

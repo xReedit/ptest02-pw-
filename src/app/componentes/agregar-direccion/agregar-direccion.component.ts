@@ -124,9 +124,14 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
           this.zoom = 17;
           this.isChangeDireccion = false;
 
+          // 090121 genera error cambiar lat > lng
           // actualiza marcador pantalla
-          this.mapCenter.lng = this.latitude;
-          this.mapCenter.lat = this.longitude;
+          // console.log('liena error');
+          // this.mapCenter.lng = this.latitude;
+          // this.mapCenter.lat = this.longitude;
+
+          this.mapCenter.lat = this.latitude;
+          this.mapCenter.lng = this.longitude;
 
           setTimeout(() => {
             this.isChangeDireccion = true;
@@ -305,6 +310,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   }
 
   private setBdDireccion() {
+    // console.log( 'save',  this.dataCliente);
     this.dataCliente.referencia = this.utilService.addslashes(this.dataCliente.referencia);
     this.crudService.postFree(this.dataCliente, 'cliente', 'new-direccion', false)
       .subscribe((res: any) => {

@@ -27,7 +27,7 @@ export class SeleccionarDireccionComponent implements OnInit {
   ngOnInit() {
     this.infoClienteLogueado = this.verifyClientService.getDataClient();
     this.idClienteDirecciones = this.idClienteBuscar ? this.idClienteBuscar : this.infoClienteLogueado.idcliente;
-    console.log(this.infoClienteLogueado);
+    // console.log(this.infoClienteLogueado);
 
     this.loadDireccion();
     // console.log('load direcciones');

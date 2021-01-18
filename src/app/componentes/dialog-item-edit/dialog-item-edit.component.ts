@@ -26,10 +26,10 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   item: ItemModel;
   objItemTipoConsumoSelected: ItemTipoConsumoModel[];
   _subitems_selected = []; // subitems chequeados
-  isOptionRequeridosComplet = false; // si todos los cheks requeridos estan marcados
+  isOptionRequeridosComplet = true; // si todos los cheks requeridos estan marcados
   precioProducto: number;
   _precioProductoIni: number; // precio incio
-  isObjSubItems = false; // si el item tiene subitems
+  isObjSubItems = true; // si el item tiene subitems
   isUsCliente = true; // si el usario es cliente o es personal autorizado
 
   isOneTipoConsumo = false; // s si solo hay un tipo de consumo sale enves del boton continuar

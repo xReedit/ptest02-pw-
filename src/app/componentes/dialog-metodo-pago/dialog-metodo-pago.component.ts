@@ -20,7 +20,7 @@ export class DialogMetodoPagoComponent implements OnInit {
 
   private idExluir: null; // id escluir // cuando el comercio toma el pedido no puede pagar con tarjeta
   private isHabilitadoYape = true;
-  private isHabilitadoTarjeta = true; // comercios no afiliado no se acepta tarjeta por la comision que cobran, algunos comercios tambien pueden especificar que no desean pagos con tarjeta
+  isHabilitadoTarjeta = true; // comercios no afiliado no se acepta tarjeta por la comision que cobran, algunos comercios tambien pueden especificar que no desean pagos con tarjeta
   private isComercioSolidaridad = false;
 
   private itemSelected: MetodoPagoModel;

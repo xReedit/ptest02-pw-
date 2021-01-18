@@ -58,7 +58,6 @@ export class InicioComponent implements OnInit, OnDestroy {
       // .pipe(finalize(() => localStorage.clear())) // si esta mal elimina todo
       .subscribe((res: SocketClientModel) => {
         // success => {
-          console.log('aaaaa');
           // si es invitado desloguea
           if ( res.usuario.toLowerCase() === 'invitado' ) {
             this.cerrarSession();

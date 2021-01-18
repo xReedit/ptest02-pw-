@@ -75,6 +75,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    // console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa pago');
     this.navigatorService.disableGoBack();
     this.infoToken = this.infoTokenService.getInfoUs();
 
@@ -87,10 +88,26 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     // }
 
 
+
+
     this.infoToken.metodoPagoSelected = !this.infoToken.metodoPagoSelected ? this.infoToken.metodoPago : this.infoToken.metodoPagoSelected;
     this.pagaConEefectivo = this.infoToken.metodoPagoSelected.idtipo_pago !== 2 ? true : false; // si es en efectivo o yape //diferente de tarjeta 2
     this.isTrasctionSuccess = this.pagaConEefectivo;
 
+
+    // marcador que ya pago, si actualiza cierra session
+    // console.log('fin pago');
+    if ( this.infoTokenService.infoUsToken.isPagoSuccess ) {
+      if ( this.infoTokenService.isDelivery() ) {
+        // console.log('fin pago delivery');
+        this.finDelivery();
+        return;
+      } else {
+        this.actionAfterTransaction();
+      }
+    }
+    // this.estadoPedidoClienteService.get();
+    // this.socketClient = this.verifyClientService.getDataClient();
 
 
     // envia de frente a la respuesta
@@ -98,20 +115,9 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
       this.dataResTransaction = {
         error: false
       };
+      this.infoTokenService.setIsPagoSuccess(true);
     }
 
-    // marcador que ya pago, si actualiza cierra session
-    console.log('fin pago');
-    if ( this.infoTokenService.infoUsToken.isPagoSuccess ) {
-      if ( this.infoTokenService.isDelivery() ) {
-        console.log('fin pago delivery');
-        this.finDelivery();
-      } else {
-        this.actionAfterTransaction();
-      }
-    }
-    // this.estadoPedidoClienteService.get();
-    // this.socketClient = this.verifyClientService.getDataClient();
     this.listener();
     this.getEmailCliente();
 

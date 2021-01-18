@@ -132,7 +132,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
             if (res.url.indexOf('confirma') > 0) {
               // this.confirmarPeiddo();
             } else {
-              this.backConfirmacion();
+              // this.backConfirmacion();
             }
           }
         });
@@ -175,7 +175,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private newFomrConfirma(): void {
     this.frmConfirma = {
-      mesa: '',
+      nummesa: '',
+      nummesa_resplado: '',
       referencia: '',
       reserva: false,
       solo_llevar: false,
@@ -193,13 +194,14 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
-    this.hayItems = this._arrSubtotales[0].importe > 0 ? true : false;
+    this.hayItems = parseFloat(this._arrSubtotales[0].importe) > 0 ? true : false;
 
   }
 
   listenMiPedido() {
-    if ( this.isFirstLoadListen ) {return; }
-    this.isFirstLoadListen = true; // para que no vuelva a cargar los observables cuando actualizan desde sockets
+    // 090121 // comentamos estas lineas para corregir error de "Aun no tiene ningun producto en lista"
+    // if ( this.isFirstLoadListen ) {return; }
+    // this.isFirstLoadListen = true; // para que no vuelva a cargar los observables cuando actualizan desde sockets
 
 
     this.miPedidoService.countItemsObserve$
@@ -427,7 +429,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
 
     // seteamos el metodo pago que el cliente selecciona
-    this.infoToken.setMetodoPagoSelected(this.infoToken.getInfoUs().metodoPago);
+    this.infoToken.setMetodoPagoSelected(this.infoToken.infoUsToken.metodoPago);
 
     setTimeout(() => {
       this.enviarPedido();
@@ -454,6 +456,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // seteamos el metodo pago que el cliente selecciona
     this.infoToken.setMetodoPagoSelected(this.infoToken.getInfoUs().metodoPago);
+    // this.infoToken.setMetodoPagoSelected(this.infoToken.infoUsToken.metodoPago);
 
     // saca del local por que puede que se haya puestro propina
     this._arrSubtotales = JSON.parse(atob(localStorage.getItem('sys::st')));
@@ -463,6 +466,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // usuario o cliente
     const dataUsuario = this.infoToken.getInfoUs();
+    // const dataUsuario = this.infoToken.infoUsToken;
 
     const dataFrmConfirma: any = {};
     if ( this.isCliente ) {
@@ -471,9 +475,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       dataFrmConfirma.m = this.isDeliveryCliente ? '' : dataUsuario.numMesaLector;
       dataFrmConfirma.r = this.infoToken.getInfoUs().nombres.toUpperCase();
       dataFrmConfirma.nom_us = this.infoToken.getInfoUs().nombres.toLowerCase();
+      dataFrmConfirma.m_respaldo = dataFrmConfirma.m;
     } else {
       // dataFrmConfirma.m = this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00';
-      dataFrmConfirma.m = this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') : '00';
+      dataFrmConfirma.m_respaldo = this.frmConfirma.nummesa_resplado;
+      dataFrmConfirma.m = this.frmConfirma.nummesa ? this.frmConfirma.nummesa : this.arrReqFrm.isRequiereMesa ? this.frmConfirma.nummesa_resplado : '00';
       dataFrmConfirma.r = this.frmConfirma.delivery ? this.frmDelivery.nombre : this.utilService.addslashes(this.frmConfirma.referencia) || '';
       dataFrmConfirma.nom_us = this.infoToken.getInfoUs().nombres.split(' ')[0].toLowerCase();
     }
@@ -485,10 +491,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // debugger
     // const idPwaPago = this.registrarPagoService.getIdPwaPago();
 
-    console.log('aaaaaaaaaaaaaaaaaaaaa');
+
 
     const _p_header = {
       m: dataFrmConfirma.m, // this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00',
+      m_respaldo: dataFrmConfirma.m_respaldo,
       r: dataFrmConfirma.r, // this.frmConfirma.referencia || '',
       nom_us: dataFrmConfirma.nom_us, // this.infoToken.getInfoUs().nombres.split(' ')[0].toLowerCase(),
       delivery: this.frmConfirma.delivery || this.isDeliveryCliente ? 1 : 0,
@@ -504,7 +511,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       arrDatosDelivery: this.frmDelivery,
       systemOS: this.systemOS,
       idregistra_scan_qr: this.establecimientoService.getLocalIdScanQr(), // el id del scan register
-      is_print_subtotales: this.miPedidoService.objDatosSede.datossede[0].is_print_subtotales
+      is_print_subtotales: this.miPedidoService.objDatosSede.datossede[0].is_print_subtotales,
+      isprint_copy_short: this.miPedidoService.objDatosSede.datossede[0].isprint_copy_short,
+      isprint_all_short: this.miPedidoService.objDatosSede.datossede[0].isprint_all_short
     };
 
     // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
@@ -519,10 +528,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       idpedido: 0 // setea despues de guardar el pedido para enviarlo al socket
     };
 
-
+    console.log('_p_header', _p_header);
 
     // enviar a print_server_detalle // para imprimir
-    const arrPrint = this.jsonPrintService.enviarMiPedido();
+    const arrPrint = this.jsonPrintService.enviarMiPedido(this.isCliente);
     const dataPrint: any = [];
     arrPrint.map((x: any) => {
       dataPrint.push({
@@ -580,9 +589,13 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     }
 
+    // console.log('aaaaaaaaaaaaaaa');
+
     // enviar a guardar // guarda pedido e imprime comanda
     // this.socketService.emit('nuevoPedido', dataSend); // !> 150920
     this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => {
+      // seteamos el metodo pago que el cliente selecciona
+      this.infoToken.setMetodoPagoSelected(_p_header.arrDatosDelivery.metodoPago);
       // error
       // console.log('recibido la respuesta del servidor', resSocket);
       if ( resSocket === false ) {
@@ -605,6 +618,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
             return;
           }
 
+          setTimeout(() => {
+            this.listenStatusService.setLoaderSendPedido(false);
+            this.miPedidoService.stopTimerLimit();
+          }, 600);
+
           dataSend.dataPedido.idpedido = res.data[0].idpedido;
           dataSend.dataPrint = res.data[0].data;
           this.socketService.emit('nuevoPedido2', dataSend);
@@ -612,23 +630,27 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
           this.newFomrConfirma();
           // this.backConfirmacion();
 
+          // hora del pedido
+        this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
+
           // this.miPedidoService.prepareNewPedido();
-
-
-          setTimeout(() => {
-            this.listenStatusService.setLoaderSendPedido(false);
-            this.miPedidoService.stopTimerLimit();
-          }, 600);
 
           this.miPedidoService.prepareNewPedido();
 
           // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
-          if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
+          // if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
+          if ( this.isDeliveryCliente && _p_header.arrDatosDelivery.metodoPago.idtipo_pago !== 2) {
             this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
-            this.pagarCuentaDeliveryCliente();
+            this.confirmarPedidoDeliveryEnviado();
+
+            // this.pagarCuentaDeliveryCliente();
             // enviamos a pagar
             return;
           }
+
+
+
+          this.backConfirmarPedido();
         });
 
       } else { // si no tiene error
@@ -639,6 +661,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
         this.newFomrConfirma();
         // this.backConfirmacion();
+
+        // hora del pedido
+        this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
 
         // this.miPedidoService.prepareNewPedido();
 
@@ -651,18 +676,24 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
         this.miPedidoService.prepareNewPedido();
 
         // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
-        if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
+        // if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
+        if ( this.isDeliveryCliente && _p_header.arrDatosDelivery.metodoPago.idtipo_pago !== 2) {
           this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
-          this.pagarCuentaDeliveryCliente();
+          this.confirmarPedidoDeliveryEnviado();
+
+          // this.pagarCuentaDeliveryCliente();
           // enviamos a pagar
           return;
         }
 
+        this.backConfirmarPedido();
       }
+
+      // this.backConfirmarPedido()
     });
 
       // hora del pedido
-      this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
+      // this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
 
       //
       // this.navigatorService.addLink('mipedido');
@@ -685,20 +716,34 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
       // this.miPedidoService.prepareNewPedido();
 
-      this.backConfirmacion();
+      // this.backConfirmacion();
 
-      // si es usuario cliente lo envia a estado
-      if ( this.isCliente ) {
-        this.navigatorService.setPageActive('estado');
-        // this.estadoPedidoClientService.get(); // inicia calc tiempo aprox y cuenta total
-      } else {
-        this.navigatorService.setPageActive('carta');
-      }
+      // // si es usuario cliente lo envia a estado
+      // if ( this.isCliente ) {
+      //   this.navigatorService.setPageActive('estado');
+      //   // this.estadoPedidoClientService.get(); // inicia calc tiempo aprox y cuenta total
+      // } else {
+      //   this.navigatorService.setPageActive('carta');
+      // }
 
       this.isDeliveryValid = false; // formulario no valido para delivery
 
 
 
+  }
+
+  private backConfirmarPedido() {
+    this.backConfirmacion();
+
+    // si es usuario cliente lo envia a estado
+    if ( this.isCliente ) {
+      this.navigatorService.setPageActive('estado');
+      // this.estadoPedidoClientService.get(); // inicia calc tiempo aprox y cuenta total
+    } else {
+      this.navigatorService.setPageActive('carta');
+    }
+
+    this.isDeliveryValid = false; // formulario no valido para delivery
   }
 
   private checkTiposDeConsumo(): void {
@@ -711,16 +756,17 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   checkIsRequierMesa(num: string = ''): void {
     // console.log('check mesa', num);
-    if ( num !== '' ) {this.frmConfirma.mesa = num; }
+    if ( num !== '' ) {this.frmConfirma.nummesa = num; }
+    this.frmConfirma.nummesa_resplado = num;
     // const arrReqFrm = <FormValidRptModel>this.miPedidoService.findEvaluateTPCMiPedido();
     // const isTPCLocal = arrReqFrm.isTpcLocal;
     // this.isRequiereMesa = arrReqFrm.isRequiereMesa;
     let numMesasSede = parseInt(this.miPedidoService.objDatosSede.datossede[0].mesas, 0);
     numMesasSede = isNaN(numMesasSede) ? 0 : numMesasSede; // para asegurar si no viene este dato
 
-    let isMesaValid = this.frmConfirma.mesa ? this.frmConfirma.mesa !== '' ? true : false : false;
+    let isMesaValid = this.frmConfirma.nummesa ? this.frmConfirma.nummesa !== '' ? true : false : false;
     // valida la mesa que no sea mayor a las que hay
-    const numMesaIngresado = isMesaValid ? parseInt(this.frmConfirma.mesa, 0) : 0;
+    const numMesaIngresado = isMesaValid ? parseInt(this.frmConfirma.nummesa, 0) : 0;
     isMesaValid = numMesaIngresado <= 0 || numMesaIngresado > numMesasSede ? false : true;
     this.isRequiereMesa = this.arrReqFrm.isRequiereMesa;
 
@@ -913,6 +959,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // this.listenStatusService.setIsPagePagarCuentaShow(true);
   }
 
+
+  // pedido delivery pagado con efectivo o yape
+  private confirmarPedidoDeliveryEnviado() {
+    this.router.navigate(['./pedido-confirmado']);
+  }
 
   private goBackOutEstablecimiento() {
     const dialogConfig = new MatDialogConfig();

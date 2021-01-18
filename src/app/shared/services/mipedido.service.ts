@@ -477,7 +477,7 @@ export class MipedidoService {
 
   // agrega a subitem_selected -> lista de subitems seleccionados
   private addItemSubItemMiPedido(elItem: ItemModel, itemCarta: ItemModel, sumar: boolean, tipoConsumo: TipoConsumoModel): void {
-    console.log('indicaciones');
+    // console.log('indicaciones');
     if (elItem.subitems) {
       // elItem.subitems_view = elItem.subitems_view ? elItem.subitems_view : [];
 
@@ -730,7 +730,7 @@ export class MipedidoService {
     let rpt: ItemModel;
     this.objCarta.carta.map((cat: CategoriaModel) => {
       cat.secciones.map((sec: SeccionModel) => {
-          const _rpt = sec.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0];
+          const _rpt = sec.items.filter((x: ItemModel) => x.idcarta_lista.toString() === item.idcarta_lista.toString())[0];
           if (_rpt) {
             rpt = _rpt;
             return rpt;
@@ -814,7 +814,7 @@ export class MipedidoService {
     this.miPedido.tipoconsumo
       .map((tpc: TipoConsumoModel) => {
         tpc.secciones.map((sec: SeccionModel) => {
-          rpt = sec.items.filter((i: ItemModel) => i.idcarta_lista === itemSearch.idcarta_lista)[0];
+          rpt = sec.items.filter((i: ItemModel) => i.idcarta_lista.toString() === itemSearch.idcarta_lista.toString())[0];
         });
       });
     return rpt;
@@ -834,13 +834,13 @@ export class MipedidoService {
 
     this.addCantItemMiPedido(elItem, cantSeleccionadaTPC);
 
-    const findTpc = <TipoConsumoModel>this.miPedido.tipoconsumo.filter((x: TipoConsumoModel) => x.idtipo_consumo === _tpc.idtipo_consumo)[0];
+    const findTpc = <TipoConsumoModel>this.miPedido.tipoconsumo.filter((x: TipoConsumoModel) => x.idtipo_consumo.toString() === _tpc.idtipo_consumo.toString())[0];
     if (findTpc) {
       // if (!sumar) { this.quitarTpcMiPedido(findTpc); return; }
       const findSecc = <SeccionModel>findTpc.secciones.filter((sec: SeccionModel) => sec.idseccion === _seccion.idseccion)[0];
       if (findSecc) {
         // if (!sumar) { this.quitarTpcMiPedido(findTpc); }
-        const _rpt = findSecc.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0];
+        const _rpt = findSecc.items.filter((x: ItemModel) => x.idcarta_lista.toString() === item.idcarta_lista.toString())[0];
         if (_rpt) {
 
           // indicaciones
@@ -1160,7 +1160,7 @@ export class MipedidoService {
       // if (item.isalmacen === 0) { //
         this.objCarta.carta.map((cat: CategoriaModel) => {
           cat.secciones.map((sec: SeccionModel) => {
-            const itemUpdate = sec.items.filter((x: ItemModel) => x.idcarta_lista === item.idcarta_lista)[0];
+            const itemUpdate = sec.items.filter((x: ItemModel) => x.idcarta_lista.toString() === item.idcarta_lista.toString())[0];
             if (itemUpdate) {
               // itemUpdate.cantidad = item.cantidad;
               itemUpdate.cantidad_seleccionada = item.cantidad_seleccionada;
@@ -1184,7 +1184,7 @@ export class MipedidoService {
       if (item.isalmacen === 0) {
         this.objCarta.carta.map((cat: CategoriaModel) => {
           cat.secciones.map((sec: SeccionModel) => {
-            const itemUpdate = <ItemModel>sec.items.filter((x: ItemModel) => x.isporcion !== 'ND' && x.idcarta_lista === item.idcarta_lista)[0];
+            const itemUpdate = <ItemModel>sec.items.filter((x: ItemModel) => x.isporcion !== 'ND' && x.idcarta_lista.toString() === item.idcarta_lista.toString())[0];
             if (itemUpdate) {
               itemUpdate.cantidad = parseInt(itemUpdate.cantidad.toString(), 0) + item.cantidad_seleccionada;
             }
@@ -1371,6 +1371,7 @@ export class MipedidoService {
   // isClienteDelivery = si es delivery el costo del servicio es segun calculo
 
   getArrSubTotales(rulesSubTotales: any[]): any {
+
     const subTotal = this.getSubTotalMiPedido();
     let isCalcCostoServicioDelivery = this.establecimientoService.establecimiento.pwa_delivery_hablitar_calc_costo_servicio === 1;
     const isCalcCostoServicioDeliverySoloApp = this.establecimientoService.establecimiento.pwa_delivery_habilitar_calc_costo_servicio_solo_app === 1;
@@ -1514,7 +1515,7 @@ export class MipedidoService {
       // juntar si son del mismo tipo ej: taper - llevar, taper - delivery
       const findItem = rptOtros.filter((x: any) => x.descripcion === rpt.descripcion)[0];
       if (findItem) {
-        findItem.importe += parseFloat(rpt.importe);
+        findItem.importe = parseFloat(findItem.importe) + parseFloat(rpt.importe);
       } else {
         rptOtros.push(rpt);
       }
@@ -1774,7 +1775,7 @@ export class MipedidoService {
       this.listenStatusService.setHayDatosSede(true);
       // nombre sede
       localStorage.setItem('sys::s', this.objDatosSede.datossede[0].nombre + '|' + this.objDatosSede.datossede[0].ciudad);
-      console.log('datos de la sede ps', this.objDatosSede);
+      // console.log('datos de la sede ps', this.objDatosSede);
 
 
       this.max_minute_order = res[0].datossede[0].pwa_time_limit;

@@ -34,6 +34,7 @@ import { CompOpCostoEstimadoComponent } from './comp-op-costo-estimado/comp-op-c
 import { CompPideLoQueQuierasComponent } from './comp-pide-lo-que-quieras/comp-pide-lo-que-quieras.component';
 import { TipoVehiculoComponent } from './tipo-vehiculo/tipo-vehiculo.component';
 import { CompPideExpressComponent } from './comp-pide-express/comp-pide-express.component';
+import { CompCheckComponent } from './comp-check/comp-check.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +63,7 @@ import { CompPideExpressComponent } from './comp-pide-express/comp-pide-express.
     CompPideLoQueQuierasComponent,
     TipoVehiculoComponent,
     CompPideExpressComponent,
+    CompCheckComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],

@@ -25,6 +25,13 @@
         </mat-form-field>
     </ng-container>
     <hr>
+    
+    <ng-container *ngIf="!isHabilitadoTarjeta">
+        <span class="text-info fs-11">El Comercio no acepta pagos con Tarjeta</span>
+        <i class="fa fa-credit-card-alt pl-1" aria-hidden="true"></i>
+        <hr>
+    </ng-container>
+    
 
 
     <div class="text-center">

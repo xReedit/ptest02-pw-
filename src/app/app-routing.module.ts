@@ -41,6 +41,12 @@ const routes: Routes = [
       data: { 'tituloModulo': 'Cuenta' }
     },
     {
+      path: 'pedido-confirmado',
+      loadChildren: () => import('./pages/pedido-confirmado/pedido-confirmado.module').then(m => m.PedidoConfirmadoModule),
+      canActivate: [AuthGuard],
+      data: { 'tituloModulo': 'pedido-confirmado' }
+    },
+    {
       path: 'cliente-profile',
       loadChildren: () => import('./pages/cliente-profile/cliente-profile.module').then(m => m.ClienteProfileModule),
       canActivate: [ClienteProfileGuard],
