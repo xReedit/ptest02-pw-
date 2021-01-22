@@ -151,6 +151,8 @@ export class JsonPrintService {
         firtsIdPrinter = this.GetFirstPrinter(listPrinter);
       }
 
+      if ( !firtsIdPrinter ) { return; }
+
     // asignamos a las secciones que no tienen impresora
     _objMiPedido.tipoconsumo
         .map((tpc: TipoConsumoModel, indexP: number) => {

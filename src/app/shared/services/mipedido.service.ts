@@ -548,7 +548,8 @@ export class MipedidoService {
         // entonces agarra al primer subview y comienza a restar
 
         if ( !sumar ) {
-          if (elItem.subitems_view.length === 0 ) { return; }
+          if ( !elItem?.subitems_view ) { return; }
+          if (elItem?.subitems_view.length === 0 ) { return; }
           this.restarCantSubItemView(elItem, null);
         }
       }

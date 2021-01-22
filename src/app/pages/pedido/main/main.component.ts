@@ -66,7 +66,7 @@ export class MainComponent implements OnInit {
         this.isUsuarioCliente = res.isCliente || false;
       }
       this.listenStatusService.setIsUsuarioCliente(this.isUsuarioCliente);
-      this.isClienteDelivery = res.isDelivery;
+      this.isClienteDelivery = res?.isDelivery;
 
       // para que reconecte, porque al iniciar no conecta si viene delivery codigo qr
       if (this.verifyClientService.getIsDelivery() && this.verifyClientService.getIsQrSuccess()) {

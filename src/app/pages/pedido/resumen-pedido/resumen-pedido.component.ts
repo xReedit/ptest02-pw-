@@ -76,6 +76,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   isSoloLLevar: boolean; // si es solo llevar
   isDeliveryCliente: boolean; // si es cliente delivery
   isReadyClienteDelivery = false; // si el formulario(confirmacion) clienteDelivery esta listo
+  isReloadListPedidos = false;
 
   private isFirstLoadListen = false; // si es la primera vez que se carga, para no volver a cargar los observables
 
@@ -188,6 +189,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   pintarMiPedido() {
+    this.isReloadListPedidos = true;
     // if (!this.isHayCuentaBusqueda) {
       this.miPedidoService.validarReglasCarta(this.rulesCarta);
     // }
@@ -195,6 +197,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
     this.hayItems = parseFloat(this._arrSubtotales[0].importe) > 0 ? true : false;
+
+    setTimeout(() => {
+      this.isReloadListPedidos = false;
+    }, 1000);
 
   }
 
@@ -528,7 +534,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       idpedido: 0 // setea despues de guardar el pedido para enviarlo al socket
     };
 
-    console.log('_p_header', _p_header);
+    // console.log('_p_header', _p_header);
 
     // enviar a print_server_detalle // para imprimir
     const arrPrint = this.jsonPrintService.enviarMiPedido(this.isCliente);

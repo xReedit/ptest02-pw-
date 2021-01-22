@@ -262,8 +262,18 @@
 
 <!-- resumen de mi orden cuand es usuario cliente -->
 <ng-container *ngIf="!hayItems && isCliente">
-    <div class="text-center d-flex flex-column h-75">
-        <p class="m-auto">Aun no tiene ningun producto en lista.</p>
+    <div class="text-center d-flex flex-column h-75">        
+        <div class="m-auto">
+            <p>Aun no tiene ningun producto en lista.</p>
+            <button class="btn btn-sm btn-secondary" (click)="pintarMiPedido()"> 
+                <ng-container *ngIf="isReloadListPedidos; else elseTemplateText">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </ng-container>
+                <ng-template #elseTemplateText>
+                    Recargar Lista
+                </ng-template>                            
+            </button>        
+        </div>
     </div>    
 </ng-container>
 
