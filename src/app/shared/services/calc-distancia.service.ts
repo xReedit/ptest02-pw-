@@ -122,7 +122,11 @@ export class CalcDistanciaService {
 
             dirEstablecimiento.distancia_km = _establecimientoCacheado.distancia_km;
             dirEstablecimiento.c_servicio = this.calCostoDistancia(dirEstablecimiento, _establecimientoCacheado.distancia_km);
-            return dirEstablecimiento.c_servicio;
+
+            // si el costo del delivery es mayor a 15 lo vuelve a calcular
+            if ( dirEstablecimiento.c_servicio <= 15 ) {
+              return dirEstablecimiento.c_servicio;
+            }
           }
         }
 

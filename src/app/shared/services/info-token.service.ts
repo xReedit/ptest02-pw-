@@ -274,8 +274,9 @@ export class InfoTockenService {
   cerrarSession(): void {
     try {
       if (!this.infoUsToken.isDelivery) {
-        localStorage.removeItem('::token');
-        localStorage.removeItem('token');
+        // no quitamos token para que pueda consultar sus pedidos
+        // localStorage.removeItem('::token');
+        // localStorage.removeItem('token');
         localStorage.removeItem('sys::numtis');
       }
     } catch (error) {

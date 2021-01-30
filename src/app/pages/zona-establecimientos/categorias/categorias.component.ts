@@ -171,6 +171,7 @@ export class CategoriasComponent implements OnInit, OnDestroy {
     // const listEsblecimientosCache = this.isMismaDireccionSelectd ? this.establecimientoService.getEstableciminetosCache() : [];
     let listEsblecimientosCache = <any>this.establecimientoService.getEstableciminetosCache();
 
+
     // buscamos si la direccion del cliente ya fue cacheada
     listEsblecimientosCache = listEsblecimientosCache.filter(e => e.idcliente_pwa_direccion ===  this.direccionCliente.idcliente_pwa_direccion)[0];
     listEsblecimientosCache = listEsblecimientosCache ? listEsblecimientosCache.listEstablecimientos : [];
@@ -208,7 +209,8 @@ export class CategoriasComponent implements OnInit, OnDestroy {
           // console.log('establecimiento cacheado', _establecimientoEnCache);
           _dirEstablecimiento.distancia_km = _establecimientoEnCache.distancia_km;
           _dirEstablecimiento.c_servicio = this.calcDistanceService.calCostoDistancia(_dirEstablecimiento, _establecimientoEnCache.distancia_km);
-          yaCalculado  = true;
+          // si el costo del delivery es mayor a 15 lo vuelve a calcular
+          yaCalculado  = _dirEstablecimiento.c_servicio <= 15;
         }
 
         if ( _dirEstablecimiento.cerrado === 0 && !yaCalculado) {
