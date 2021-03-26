@@ -78,6 +78,18 @@ export class CategoriasComponent implements OnInit, OnDestroy {
     // };
     // history.pushState(null, null, document.title);
 
+    // escucha si se cierra comercio from monitor
+    // this.socketService.onComercioOpenChangeFromMonitor()
+    //   .subscribe((res: any) => {
+    //     console.log('onComercioOpenChangeFromMonitor id ', res);
+    //     const _esChange = this.listEstablecimientos.filter(e => e.idsede === res.idsede)[0];
+    //     if ( _esChange ) {
+    //       _esChange.cerrado = res.estado;
+    //     }
+
+    //     // this.listEstablecimientos = JSON.parse(JSON.stringify(this.listEstablecimientos));
+    //   });
+
 
     // reseteamos
     // this.infoTokenService.getInfoUs();

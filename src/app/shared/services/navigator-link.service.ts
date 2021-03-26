@@ -32,32 +32,9 @@ export class NavigatorLinkService {
     // private dialog: MatDialog,
     // private miPedidoService: MipedidoService,
   ) {
-    // router.events.pipe(
-    //   filter((event: NavigationEvent) => {
-    //     return (event instanceof NavigationStart);
-    //   })
-    // ).subscribe(
-    //   (event: NavigationStart) => {
-    //     console.log('navigation', event);
-    //     if (event.navigationTrigger !== 'popstate') {
-    //       let _urlParams: any;
-    //       try {
-    //         _urlParams = event.url.split(';')[1].split('=')[1];
-    //       } catch (error) {
-    //         // this.managerGoBack();
-    //         _urlParams = [];
-    //         return;
-    //       }
 
-    //       if (_urlParams.length > 0) {
-    //         this.resNavigator.pageActive = this.pageActive;
-    //         this.resNavigator.url = _urlParams;
+    console.log('inicio navigate service');
 
-    //         // this.saveHistoryPageActive(this.pageActive, _urlParams);
-    //         this.resNavigatorSource.next(this.resNavigator);
-    //       }
-    //     }
-    //   });
 
     this.listenEventNavigator();
   }
@@ -236,7 +213,7 @@ export class NavigatorLinkService {
 
   // usar router de servicio
   _router(link: string) {
-    this.router.navigate([link]);
+    // this.router.navigate([link]);
     return false;
   }
 

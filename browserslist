@@ -7,7 +7,7 @@
 > 0.5%
 last 2 versions
 Firefox ESR
-ios_saf >= 8
-Safari >= 8
+ios_saf >= 6
+Safari >= 6
 not dead
 not IE 9-11

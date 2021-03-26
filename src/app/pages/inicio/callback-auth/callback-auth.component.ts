@@ -63,6 +63,16 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
       this.authService.setLoggedStatus(true);
       this.infoToken.converToJSON();
 
+      console.log('redirige');
+      let _linkToRedirec = this.verifyClientService.getLinkRedirecLogin();
+      _linkToRedirec = _linkToRedirec ? _linkToRedirec : '';
+
+      if ( _linkToRedirec !== '' ) {
+        this.router.navigate([_linkToRedirec]);
+        this.verifyClientService.setLinkRedirecLogin('');
+        return;
+      }
+
       if ( !this.infoToken.infoUsToken.direccionEnvioSelected && this.infoToken.isDelivery()) {
 
         // si cliente scaneo qr para delivery

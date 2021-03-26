@@ -48,7 +48,8 @@ export class SocketService {
   }
 
   // _isOutCarta si esta fuera de la carta // si esta en la plataforma de deliverys estableciemientos
-  connect(infoUser: any = null, opFrom: number = 1, _isOutCarta = false) {
+  // isCashAtm si esta desde cash atm
+  connect(infoUser: any = null, opFrom: number = 1, _isOutCarta = false, _isCashAtm = false) {
     if ( this.isSocketOpen ) {
       this.infoTockenService.setSocketId(this.socket.id);
       return; } // para cuando se desconecta y conecta desde el celular
@@ -69,6 +70,7 @@ export class SocketService {
       idcliente: infToken.idcliente,
       iscliente: infToken.isCliente || false,
       isOutCarta: _isOutCarta,
+      isCashAtm: _isCashAtm,
       isFromApp: opFrom,
       firts_socketid: infToken.socketId
     };
@@ -258,6 +260,15 @@ export class SocketService {
     });
   }
 
+
+  onComercioOpenChangeFromMonitor() {
+    return new Observable(observer => {
+      this.socket.on('set-comercio-open-change-from-monitor', (comercioId: any) => {
+        observer.next(comercioId);
+      });
+    });
+  }
+
   // onDeliveryGetLastIdPedido() {
   //   return new Observable(observer => {
   //     this.socket.on('get-lastid-pedido', (res: any) => {
@@ -333,7 +344,13 @@ export class SocketService {
       this.showStatusConexNavigator(true, 'navigator_online');
     });
     window.addEventListener('offline', () => {
+      console.log('out focus');
       this.showStatusConexNavigator(false, 'navigator_offline');
+    });
+
+    window.addEventListener('blur', () => {
+      console.log('out focus');
+      // this.showStatusConexNavigator(false, 'navigator_offline');
     });
 
 

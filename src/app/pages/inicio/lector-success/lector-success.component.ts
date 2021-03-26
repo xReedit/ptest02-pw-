@@ -38,7 +38,7 @@ export class LectorSuccessComponent implements OnInit {
 
   private loadDataIni(): void {
     // datos sede
-    console.log('aaaaaa');
+    // console.log('aaaaaa');
     this.usLog = this.verifyClientService.getDataClient();
     const _data = {
       idsede: this.usLog.idsede

@@ -189,7 +189,7 @@
     /* border: solid 1px #e0e0e0; */
     /* margin-bottom: 5px; */
     /* max-height: 250px; */
-    height: 40vh;
+    max-height: 40vh;
     object-fit: cover;
     transition: all 0.1s;
 }

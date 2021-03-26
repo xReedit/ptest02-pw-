@@ -1,6 +1,15 @@
 <div class="animated fadeIn content-comercio pb-2 text-left" matRipple (click)="_itemSelected()">
     <mat-card>
     <div class="content-img-comercio">
+        <!-- si acepta tarjeta -->
+        <div *ngIf="itemEstablecimiento.pwa_delivery_acepta_tarjeta === 1">
+            <div class="title-acepta-tarjeta">
+                <span> <i class="fa fa-credit-card mr-1"></i> Acepta Tarjeta</span>
+            </div>
+            <div class="div-acepta-tarjeta">
+            </div>
+        </div>
+
         <img class="img-comercio" src="{{imgComercio}}" alt="">
         <div class="div-cerrado" *ngIf="isCerrado && !isComercioAceptaPedidoProgramado">
             <p>Cerrado Ahora</p>                    

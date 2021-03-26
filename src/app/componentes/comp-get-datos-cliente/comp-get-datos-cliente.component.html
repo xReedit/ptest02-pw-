@@ -1,0 +1,85 @@
+<div id="div-2 animated fadeIn">
+      
+    <div *ngIf="opciones.showDirreccionA">
+        <p class="fs-16 pb-2">{{ titleDirA }}</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="m-0" matRipple [matRippleColor]="rippleColor" (click)="openDialogDireccion(0)">
+                <p class="fs-13"><strong [ngClass]="{'text-danger': direccionA.direccion === ''}">{{direccionA.titulo}}</strong><br> {{direccionA.direccion}}</p>
+                <p class="fs-12 text-secondary fw-600"> {{direccionA.referencia}} </p>
+                <p *ngIf="msjErrorDir.length > 0" class="text-danger fs-12 fw-100 m-0">  {{ msjErrorDir }} </p>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-secondary" (click)="openDialogDireccion(0)">
+                    <span class="fw-100 fs-10">Cambiar</span>
+                </button>
+            </div>
+        </div>  
+        <hr>
+    </div>
+    
+    <!-- direccion de entrega -->        
+    <div *ngIf="opciones.showDirreccionB">
+        <p class="fs-16 pb-2">{{ titleDirB }}</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="m-0" matRipple [matRippleColor]="rippleColor" (click)="openDialogDireccion(1)">
+                <p class="fs-13"><strong [ngClass]="{'text-danger': direccionB.direccion === ''}">{{direccionB.titulo}}</strong><br> {{direccionB.direccion}}</p>
+                <p class="fs-12 text-secondary fw-600"> {{direccionB.referencia}} </p>
+                <p *ngIf="msjErrorDir.length > 0" class="text-danger fs-12 fw-100 m-0">  {{ msjErrorDir }} </p>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-secondary" (click)="openDialogDireccion(1)">
+                    <span class="fw-100 fs-10">Cambiar</span>
+                </button>
+            </div>
+        </div>
+        <hr>
+    </div>
+
+    <!-- tiempo de entrega -->
+    <div *ngIf="opciones.tiempoEntrega">
+        <div class="d-flex justify-content-between align-items-center" matRipple [matRippleColor]="rippleColor" (click)="openDialogTiempoEntrega()">
+            <div>
+                <p class="fs-16 pb-2">Cuando lo entregamos?</p>
+                <p class="m-0"><span class="fs-14" [ngClass]="{'text-danger': !isTiempoEntregaValid}"> {{ tiempoEntregaSelected.descripcion }}: <strong>{{tiempoEntregaSelected.value | titlecase}} </strong> </span></p>
+            </div>
+
+            <div>
+                <i class="fa fa-caret-down" aria-hidden="true"></i>
+            </div>
+        </div>
+        <hr>
+    </div>
+    <!-- tiempo de entrega -->
+
+    <!-- metodo de pago -->
+    <div *ngIf="opciones.metodoPago">                
+        <div class="m-0" matRipple [matRippleColor]="rippleColor" (click)="openDialogMetodoPago()">
+            <div class="d-flex justify-content-between align-items-center">
+                <p class="m-0 fs-16">Metodo de pago: <strong>{{metodoPagoSelected.descripcion}}</strong></p>
+                <button class="btn btn-sm btn-secondary">
+                    <span class="fw-100 fs-10">Cambiar</span>
+                </button>
+                <!-- <i class="fa fa-caret-down" aria-hidden="true"></i>                 -->
+            </div>
+            <span class="fw-100 fs-12 text-danger" [hidden]="this.metodoPagoSelected.idtipo_pago">Especifique un metodo de pago.</span>
+        </div>
+        <hr>
+    </div>
+
+    <!-- telefono -->
+    <div *ngIf="opciones.telefono">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="m-0" matRipple [matRippleColor]="rippleColor" (click)="openDialogsendSMS()">                
+                <span class="text-danger fs-12 fw-100" [hidden]="this.infoToken.telefono.length >= 5">Es necesario el numero de su telefono</span>        
+                <p class="m-0 fs-16">Telefono contacto: <strong>{{ infoToken.telefono }}</strong></p>
+                <span class="fw-100 fs-12 text-danger" [hidden]="this.infoToken.telefono.length >= 5">Añade un número de teléfono para que podamos contactarte e informarte de tu pedido.</span>        
+            </div>
+            <div>
+                <button class="btn btn-sm btn-secondary" (click)="openDialogsendSMS(1)">
+                    <span class="fw-100 fs-10">Cambiar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+</div>

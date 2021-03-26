@@ -1,0 +1,26 @@
+.btn-postion {
+    position: relative;
+    float: right;
+}
+
+.btn-circle-add {    
+    padding: 5px;
+    border: 1px solid;
+    border-radius: 50%;
+    font-size: 10px;
+    width: 26px;
+    text-align: center;    
+    color: #3f51b5;
+}
+
+.btn-detalle {
+    display: grid;
+    width: 89px;
+    background: #3f51b5;
+    color: white;
+    grid-template-columns: auto 23px auto;
+    text-align: center;
+    padding: 2px 5px;
+    border-radius: 5px;
+    /* font-weight: 600; */
+}

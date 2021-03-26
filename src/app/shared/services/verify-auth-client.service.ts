@@ -115,6 +115,7 @@ export class VerifyAuthClientService {
   }
 
   verifyClient(): Observable<any> {
+    console.log('verificar cliente');
     this.getDataClient();
 
     // verrifica si esta logueado
@@ -199,6 +200,17 @@ export class VerifyAuthClientService {
   setDataClient(): void {
     const dataClie = JSON.stringify(this.clientSocket);
     localStorage.setItem('sys::tpm', btoa(dataClie));
+  }
+
+  setLinkRedirecLogin(_link: string) {
+    localStorage.setItem('sys::lrl', _link);
+  }
+
+  // link de redireccionamiento despues del login
+  getLinkRedirecLogin() {
+    let _link = localStorage.getItem('sys::lrl');
+    _link = _link ? _link : '';
+    return _link;
   }
 
   getDataClient(): SocketClientModel {

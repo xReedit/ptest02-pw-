@@ -13,6 +13,7 @@ import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.ser
 import { DatosCalificadoModel } from 'src/app/modelos/datos.calificado.model';
 import { DialogCalificacionComponent } from 'src/app/componentes/dialog-calificacion/dialog-calificacion.component';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { AuthService } from 'src/app/shared/services/auth.service';
 
 
 
@@ -46,7 +47,8 @@ export class MainComponent implements OnInit {
     private router: Router,
     private socketService: SocketService,
     private navigartoService: NavigatorLinkService,
-    private establecientoService: EstablecimientoService
+    private establecientoService: EstablecimientoService,
+    private authService: AuthService
     // public ngxService: NgxUiLoaderService
   ) { }
 
@@ -222,6 +224,7 @@ export class MainComponent implements OnInit {
 
   cerrarAllSession() {
     localStorage.clear();
+    this.authService.setLocalToken('');
   }
 
 }

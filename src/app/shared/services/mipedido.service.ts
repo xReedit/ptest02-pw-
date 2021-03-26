@@ -1830,6 +1830,8 @@ export class MipedidoService {
       //   // _itemInCarta.subitems.filter((bsub: SubItem) => asub.iditem_subitem === bsub.iditem_subitem)[0].cantidad = asub.cantidad;
 
       // });
+      if ( !res.subitems ) { res.subitems = []; }
+
       res.subitems.map((subitemOp: SubItemContent) => {
         subitemOp.opciones.map((subitem: SubItem) => {
           _itemInCarta.subitems.map((s: SubItemContent) => {

@@ -51,7 +51,7 @@ export class EstablecimientosComponent implements OnInit {
 
     this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
       if ( res ) {
-        this.vistaInicio = res.options.vista ? res.options.vista : 0 ;
+        this.vistaInicio = res?.options?.vista ? res.options.vista : 0 ;
 
         // this.goComercios();
       }

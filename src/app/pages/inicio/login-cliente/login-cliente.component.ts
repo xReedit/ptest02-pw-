@@ -22,6 +22,7 @@ export class LoginClienteComponent implements OnInit {
   dataCliente: any;
   dataClienteSend: SocketClientModel = new SocketClientModel();
   msj_error = '';
+  private idClienteBD = 0;
 
   listViewDate: any = [];
   private listDay: any = [];
@@ -94,30 +95,65 @@ constructor(
 
     this.loadConsulta = true;
     // buscamos cliente en bd
-    this.crudService.getConsultaRucDni('dni', this.numDocumento)
-    .subscribe(
-      (response) => {
-          if ( !response.success ) {
-            this.loadConsulta = false;
-            this.isValidDNI = false;
-            this.msj_error = 'Numero de documento no valido. Ó intente registrarse con Gmail o Facebook';
-            return;
-          }
+    const _dataClienteNum = {
+      documento: this.numDocumento
+    };
 
+    console.log('con dni');
+    this.crudService.postFree(_dataClienteNum, 'service', 'consulta-dni-ruc-no-tk', false)
+    .subscribe((res: any) => {
+      const _datosBd = res.data;
+      if ( res.success && _datosBd.length > 0 ) {
+        this.idClienteBD = _datosBd[0].idcliente;
+        const num_verificador = _datosBd[0].dni_num_verificador === '' ? _datosBd[0]?.pwa_data_session?.dni_num_verificador : _datosBd[0].dni_num_verificador;
+        if ( num_verificador !== null ) {
+
+          _datosBd[0].dni_num_verificador = num_verificador;
           this.loadConsulta = false;
           this.isValidDNI = true;
-          this.dataCliente =  response.data;
+          this.dataCliente =  _datosBd[0];
+          this.dataCliente.verification_code = parseInt(_datosBd[0].dni_num_verificador, 0);
+          this.dataCliente.date_of_birthday = this.dataCliente.f_nac;
+          this.dataCliente.number = this.numDocumento;
+          this.dataCliente.names = this.dataCliente.nombres;
+          this.dataCliente.name = this.dataCliente.nombres;
+          this.dataCliente.sub = `dni|${this.numDocumento}`;
           // console.log(response);
           this.getListDatesCode();
-        },
-      (error) => {
-          this.loadConsulta = false;
-          this.isValidDNI = false;
-          this.msj_error = 'No se encontro, intentelo nuevamente. Ó intente registrarse con Gmail o Facebook';
-          // alert(error.message);
-          // console.log(error.message);
+          return;
         }
-    );
+      }
+
+
+      // console.log('continue con api');
+      this.crudService.getConsultaRucDni('dni', this.numDocumento)
+      .subscribe(
+        (response) => {
+            if ( !response.success ) {
+              this.loadConsulta = false;
+              this.isValidDNI = false;
+              this.msj_error = 'Numero de documento no valido. Ó intente registrarse con Gmail o Facebook';
+              return;
+            }
+
+            this.loadConsulta = false;
+            this.isValidDNI = true;
+            this.dataCliente =  response.data;
+            this.dataCliente.idcliente = this.idClienteBD;
+            // console.log(response);
+            this.getListDatesCode();
+          },
+        (error) => {
+            this.loadConsulta = false;
+            this.isValidDNI = false;
+            this.msj_error = 'No se encontro, intentelo nuevamente. Ó intente registrarse con Gmail o Facebook';
+            // alert(error.message);
+            // console.log(error.message);
+          }
+      );
+
+    });
+
   }
 
   private limpiarFrm(): void {
@@ -223,6 +259,7 @@ constructor(
   verificarDNI(item: any): void {
     // this.listViewDate.map( (x: any) => x.selected = false);
     // item.selected = true;
+    console.log('verificar dni');
 
     this.isListDateSelect = true;
     // this.isDateBirthdayValid = item.fecha === this.dataCliente.date_of_birthday;
@@ -232,17 +269,23 @@ constructor(
 
     if (this.isPaseOk) {
       // const _name = this.dataCliente.names.indexOf(this.dataCliente.first_name) > -1 ? this.dataCliente.names + ' ' + this.dataCliente.first_name + ' ' + this.dataCliente.last_name : this.dataCliente.names;
+      this.dataCliente.last_name = this.dataCliente.last_name ? this.dataCliente.last_name : '';
+      this.dataCliente.first_name = this.dataCliente.first_name ? this.dataCliente.first_name : '';
       const _name = this.dataCliente.name + ' ' + this.dataCliente.first_name + ' ' + this.dataCliente.last_name;
-      this.verifyClientService.clientSocket.datalogin = this.dataCliente;
-      this.verifyClientService.clientSocket.datalogin.sub = 'dni|' + this.dataCliente.number;
-      this.verifyClientService.clientSocket.datalogin.name = _name;
-      this.verifyClientService.clientSocket.datalogin.given_name = this.dataCliente.name ? this.dataCliente.name.indexOf(' ') > 0 ? this.dataCliente.name.split(' ')[0] : this.dataCliente.name : this.dataCliente.name;
+      // if ( !this.verifyClientService.clientSocket.datalogin ) {
+        this.verifyClientService.clientSocket.datalogin = this.verifyClientService.clientSocket.datalogin ? this.verifyClientService.clientSocket.datalogin : this.dataCliente;
+        this.verifyClientService.clientSocket.datalogin.sub = this.verifyClientService.clientSocket.datalogin.sub ? this.verifyClientService.clientSocket.datalogin.sub : 'dni|' + this.dataCliente.number;
+        this.verifyClientService.clientSocket.datalogin.name = this.verifyClientService.clientSocket.datalogin.name ? this.verifyClientService.clientSocket.datalogin.name : this.dataCliente.first_name ? _name : this.dataCliente.name;
+        this.verifyClientService.clientSocket.datalogin.given_name = this.verifyClientService.clientSocket.datalogin.given_name ? this.verifyClientService.clientSocket.datalogin.given_name :
+          this.dataCliente.name ? this.dataCliente.name.indexOf(' ') > 0 ? this.dataCliente.name.split(' ')[0] : this.dataCliente.name : this.dataCliente.name;
+      // }
+      this.verifyClientService.clientSocket.idcliente = this.dataCliente.idcliente;
       this.verifyClientService.setDataClient();
       this.verifyClientService.setIsLoginByDNI(true);
       this.auth.loggedIn = true;
       setTimeout(() => {
         this.router.navigate(['/callback-auth']);
-      }, 2000);
+      }, 1700);
     } else {
       this.limpiarFrm();
     }

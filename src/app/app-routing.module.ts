@@ -57,6 +57,12 @@ const routes: Routes = [
       loadChildren: () => import('./pages/zona-establecimientos/zona-establecimientos.module').then(m => m.ZonaEstablecimientosModule),
       // canActivate: [ClienteProfileGuard],
       data: { 'tituloModulo': 'Cliente Zona Delivery' }
+    },
+    {
+      path: 'cash-atm',
+      loadChildren: () => import('./pages/cash/cash.module').then(m => m.CashModule),
+      // canActivate: [ClienteProfileGuard],
+      data: { 'tituloModulo': 'Atm' }
     }
 ];
 

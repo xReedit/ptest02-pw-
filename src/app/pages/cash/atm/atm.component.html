@@ -1,0 +1,86 @@
+<!-- <h1>atm</h1> -->
+
+<div class="animated fadeIn w-100 div-content overflow-auto" *ngIf="opShowPage !== 2">
+<div style="min-width: 186px; background: lightsteelblue;">
+    <img src="assets/images/icon-app/atm2.jpg" alt="" width="100%">
+</div>
+<div [hidden]="opShowPage != 0">
+    <div class="p-3">
+        <p class="fs-13 fw-100">Selecciona el monto que deseas retirar. Confirma la cantidad y un repartidor te llevará el efectivo. El monto maximo a retirar es de <span class="fw-600">S/. 200.00</span></p>
+    </div>
+    <hr>
+    <div class="pl-3 pr-3 pt-1">
+        <h4>ATM</h4>        
+        <div class="d-flex justify-content-start">            
+            <div class="img-billete mr-4" *ngFor="let item of listBilletes">
+                <app-comp-ctrl-add-fast 
+                    (objResponse)="resultCantItem($event)" 
+                    [objItem]="item"
+                    [stopAdd]="stopAdd"></app-comp-ctrl-add-fast>
+                <img src="assets/images/icon-app/{{item.img}}" alt="b100">                
+                <p class="text-secondary fs-12"> {{ item.denominacion }} </p>
+                <p class="fw-600">{{ item.simbolo }}  {{ item.valor | number: '.2'}}</p>
+            </div>            
+        </div>
+
+        
+    </div>
+    <hr>
+    <div class="w-100 text-center">
+        <br>
+        <button mat-raised-button color="primary" class="w-75" [disabled]="importeRetirar === 0" (click)="btnNext()">
+            Continuar 
+            <span [hidden]="importeRetirar === 0"> S/. {{ importeRetirar | number: '.2' }} </span>
+        </button>                
+    </div>
+    <br><br>
+</div>
+
+
+<!-- siguiente -->
+<div class="animated fadeInRight w-100 p-3" [hidden]="opShowPage != 1">
+    <h5>Detalle del retiro</h5>
+    <br>
+
+    <app-comp-get-datos-cliente class="fs-12" [opciones] = "opcionesFrmCliente" (frmResponse)="frmClienteResponse($event)"></app-comp-get-datos-cliente>
+    <hr>
+    <table class="w-100">        
+        <tbody>
+            <tr>
+                <td><span>Monto a retirar</span></td>
+                <td align="right" class="aling-right"><span class="fw-600 fs-16">S/. {{ importeRetirar | number:'.2'  }}</span></td>
+            </tr>            
+            <tr>
+                <td><span> Costo de entrega </span> </td>
+                <td align="right"> 
+                    <ng-container *ngIf="isLoadingCosto; else elseTemplate">
+                        <span class="fa fa-circle-o-notch fa-spin"></span>
+                    </ng-container>
+                    <ng-template #elseTemplate>                        
+                        <span> S/. {{ costoEntrega | number : '.2' }} </span>
+                    </ng-template>                                    
+                </td>
+            </tr>
+            <tr>
+                <td><span> Total </span> </td>
+                <td align="right"> <span class="fw-600 fs-17">S/. {{ importeNetoRetirar | number : '.2' }}</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <hr>
+    <br>
+    <div class="w-100 text-center">
+        <button mat-raised-button color="accent" class="mr-2" (click)="btnBackAtm()"><span class="fa fa-arrow-circle-left pr-1"></span> Atras</button>
+        <button mat-raised-button color="primary" [disabled]="!enabledSendPedido" (click)="nextPagar()">
+            Listo, Confirmar            
+        </button>
+    </div>
+    <br><br>
+</div>
+</div>
+
+<!-- pasarela de pago -->
+
+<div class="animated fadeInRight w-100 p-1" *ngIf="opShowPage === 2">
+    <app-comp-pasarela-pago [dataTrasa]="dataAtmPago" (responseTransa)="respuestaTransaccion($event)" (repuestaBtnListo)="finTransaccionOk($event)"></app-comp-pasarela-pago>
+</div>

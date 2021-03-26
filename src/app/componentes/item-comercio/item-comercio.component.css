@@ -68,3 +68,21 @@
     position: relative;
     margin: 0;
 }
+
+.div-acepta-tarjeta {
+    position: absolute;
+    right: 20px;
+    background: aliceblue;
+    width: 97px;
+    height: 25px;
+    border-radius: 0px 0px 0px 5px;
+    opacity: 0.7;
+}
+
+.title-acepta-tarjeta {
+    position: fixed;
+    right: 27px;
+    font-size: 10px;
+    z-index: 1;
+    margin-top: 5px;
+}

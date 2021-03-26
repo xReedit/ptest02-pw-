@@ -27,4 +27,17 @@ export class SedeDeliveryService {
     });
 
   }
+
+  getComisionAtm(_importe: number): Observable<any[]> {
+    const _dataSend = {
+      importe: _importe
+    };
+    return new Observable(observer => {
+      this.crudService.postFree(_dataSend, 'delivery', 'get-comsion-atm', false)
+      .subscribe((res: any) => {
+        // console.log(res);
+        observer.next(res.data[0]);
+      });
+    });
+  }
 }

@@ -42,7 +42,23 @@
   <style type="text/css">
     body, html {
   height: 100%;
+  /* background: linear-gradient(0deg, rgba(0,100,191,1) 0%, #3f51b5 100%); */
+  /* background: linear-gradient(0deg, rgba(0,100,191,1) 0%, #3f51b5 100%); */
+  /* background: linear-gradient(0deg, rgba(0,172,193,1) 0%, #3f51b5 100%); */
+  /* background: #351465; */
+  /* background: #3f51b5; */
 }
+
+/* .content-all {
+
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  overflow: auto;
+  background: linear-gradient(0deg, rgba(0,100,191,1) 0%, #3f51b5 100%);
+} */
 .app-loading {
   overflow: hidden;
   position: relative;
@@ -52,6 +68,7 @@
   justify-content: center;
   height: 100%;
   text-align: center;
+  background: linear-gradient(0deg, rgba(0,100,191,1) 0%, #3f51b5 100%);
 }
 
 .app-loading p {
@@ -86,17 +103,18 @@
   stroke-dashoffset: 0;
   animation: dash 1.5s ease-in-out infinite;
   stroke-linecap: round;
-  stroke: #ddd;
+  stroke: rgba(221, 221, 221, 0.767);
 }
 
 .logo-loading {
-  width: 80px;
-  height: 80px;
-  background:
-    url('data:image/png;base64,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')
+  width: 180px;
+  height: 180px;  
+  background:        
+    url('./assets/icons/logo_app.png')
     no-repeat
     center center;
   padding: 5px 0 5px 25px;
+  color: white;
 }
 
 @keyframes rotate {
@@ -134,7 +152,7 @@
   <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="./assets/css/waves.css">
   <link rel="stylesheet" href="./assets/css/util.css"> -->
-
+  
   <link rel="stylesheet" href="assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="assets/css/util.css">
   <link rel="stylesheet" href="assets/css/update-v1.css">
@@ -151,7 +169,16 @@
   <!-- <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400&display=swap" rel="stylesheet"> -->
   <title>Papaya Express</title>
   <!-- <base href="/express/"> -->
-  <script>document.write('<base href="' + document.location + '" />');</script>
+  <script>
+    document.write('<base href="' + document.location + '" />');
+    window.onload = function() {
+      // console.log('aaaaaaaaaaaaa');
+      document.body.style.backgroundColor = '#fff';
+      document.body.style.background = '#fff';
+                };
+  </script>
+
+
 
 </head>
 <body>  
@@ -168,7 +195,9 @@
   <!-- <script type="text/javascript" src="assets/js/jquery.js"></script> -->
     
   <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo&libraries=places" type="text/javascript"></script> -->
+
   <script  type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo&libraries=places"></script>
+  
   <!-- <script type="text/javascript" src="assets/js/boton-pago.js"></script> -->
   <!-- <script type="text/javascript">
     function googleTranslateElementInit() {
@@ -186,14 +215,16 @@
     </div> -->
 
   <app-root>    
-    <div class="app-loading">
+    <div class="app-loading ">
       <div class="logo-loading">     
-      </div>      
-      <p class="t-p-0">Papaya Express</p>
-      <p class="t-p-1">papaya.com.pe</p>
+      </div>            
+      <!-- <p class="t-p-0">Papaya Express</p> -->
       <svg class="spinner" viewBox="25 25 50 50">
         <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
       </svg>
+      <div style="bottom: 10px; position: fixed;">
+        <p class="t-p-1" style="color: white;">papaya.com.pe</p>
+      </div>
     </div>
   </app-root>  
 </body>

@@ -19,6 +19,7 @@ import { DialogTiempoEntregaComponent } from '../dialog-tiempo-entrega/dialog-ti
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
+import { ClienteService } from 'src/app/shared/services/cliente.service';
 // import { MapsAPILoader } from '@agm/core';
 
 @Component({
@@ -90,7 +91,8 @@ export class DatosDeliveryComponent implements OnInit {
     buscarRepartidor: true,
     isFromComercio: 1, // el pedido esta yendo desde el comercio,
     costoTotalDelivery: 0,
-    tiempoEntregaProgamado: {}
+    tiempoEntregaProgamado: {},
+    num_verificador: ''
   };
 
   dirEstablecimiento: DeliveryEstablecimiento;
@@ -108,7 +110,8 @@ export class DatosDeliveryComponent implements OnInit {
     private establecimientoService: EstablecimientoService,
     private calcDistanceService: CalcDistanciaService,
     private dialogTipoComprobante: MatDialog,
-    private utilService: UtilitariosService
+    private utilService: UtilitariosService,
+    private clienteService: ClienteService
     // private mapsAPILoader: MapsAPILoader,
     // private ngZone: NgZone,
     ) { }
@@ -121,7 +124,7 @@ export class DatosDeliveryComponent implements OnInit {
       referencia: ''
     };
 
-    // console.log('datos del delivery');
+
 
 
     this.tiempoEntregaSelected = new TiempoEntregaModel();
@@ -152,7 +155,8 @@ export class DatosDeliveryComponent implements OnInit {
       // direccion: new FormControl('', [Validators.required]),
       telefono: new FormControl(''),
       // paga_con: new FormControl('', [Validators.required]),
-      dato_adicional: new FormControl('')
+      dato_adicional: new FormControl(''),
+      num_verificador: new FormControl('')
     });
 
     this.myForm.statusChanges.subscribe(res => {
@@ -205,6 +209,7 @@ export class DatosDeliveryComponent implements OnInit {
       this.resData.dni = this.myForm.controls.dni.value;
       this.resData.nombre = this.myForm.controls.nombre.value;
       this.resData.f_nac = this.myForm.controls.f_nac.value;
+      this.resData.num_verificador = this.myForm.controls.num_verificador.value;
       // this.resData.direccion = this.myForm.controls.direccion.value.toString();
       this.resData.telefono = this.myForm.controls.telefono.value;
       // this.resData.paga_con = this.myForm.controls.paga_con.value.toString();
@@ -260,6 +265,7 @@ export class DatosDeliveryComponent implements OnInit {
         this.myForm.controls.idcliente.patchValue(_datosBd[0].idcliente);
         this.myForm.controls.nombre.patchValue(_datosBd[0].nombres);
         this.myForm.controls.f_nac.patchValue(_datosBd[0].f_nac);
+        this.myForm.controls.num_verificador.patchValue('');
 
         this.myControl.patchValue(_datosBd[0].nombres);
 
@@ -268,6 +274,15 @@ export class DatosDeliveryComponent implements OnInit {
         this.loadConsulta = false;
         this.isNuevoCliente = false;
         this.errorDni = false;
+
+        // verificar datos en el api y actualizar
+        if ( _datosBd[0].dni_num_verificador == null ) {
+          this.clienteService.serchClienteByDni(datos.documento).subscribe((resClienteApi: any) => {
+            this.myForm.controls.f_nac.patchValue(resClienteApi.date_of_birthday);
+            this.myForm.controls.num_verificador.patchValue(resClienteApi.verification_code);
+          });
+        }
+
       } else {
 
         this.crudService.getConsultaRucDni('dni', datos.documento)
@@ -278,6 +293,7 @@ export class DatosDeliveryComponent implements OnInit {
             this.myForm.controls.idcliente.patchValue(0);
             this.myForm.controls.nombre.patchValue(_nombre);
             this.myForm.controls.f_nac.patchValue(_datos.date_of_birthday);
+            this.myForm.controls.num_verificador.patchValue(_datos.verification_code);
             this.isNuevoCliente = true;
             this.errorDni = false;
           } else {

@@ -270,6 +270,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     };
     this.crudService.postFree(_dataEstablecimiento, 'delivery', 'get-establecimientos', false)
     .subscribe( (res: any) => {
+      console.log(res);
       const _e = res.data[0];
       this.establecimientoService.set(_e);
     });

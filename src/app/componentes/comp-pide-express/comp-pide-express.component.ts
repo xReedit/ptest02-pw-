@@ -30,8 +30,8 @@ export class CompPideExpressComponent implements OnInit {
   direccionClienteIni: DeliveryDireccionCliente;
   infoToken: UsuarioTokenModel;
   metodoPagoSelected: MetodoPagoModel;
-  laPlazaDelivery: DeliveryEstablecimiento;
   tiempoEntregaSelected: TiempoEntregaModel;
+  laPlazaDelivery: DeliveryEstablecimiento;
   lasCiudad = '';
   importe_pagar = 3;
   isLoading = false;

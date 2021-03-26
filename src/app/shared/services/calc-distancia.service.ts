@@ -5,6 +5,8 @@ import { EstablecimientoService } from './establecimiento.service';
 import { GeoPositionModel } from 'src/app/modelos/geoposition.model';
 import { Observable } from 'rxjs/internal/Observable';
 
+declare var google: any;
+
 import {
   insideCircle, distanceTo
 } from 'geolocation-utils';

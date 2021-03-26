@@ -1,0 +1,28 @@
+<!-- inicio -->
+<div [hidden]="showDetalle" class="animated fadeIn">
+    <div class="btn-circle-add btn-postion animated" [ngClass]="{'headShake': showAnimateStop}" (click)="showCantDetalle()" >
+        <ng-container *ngIf="cantidad === 0; else elseTemplateCant">
+            <span class="fa fa-plus"></span>
+        </ng-container>
+        <ng-template #elseTemplateCant>
+            <span> {{ cantidad}}  </span>
+        </ng-template>        
+    </div>
+</div>
+
+<!-- con catnidad -->
+<div class="btn-detalle btn-postion animated fadeInUp" [hidden]="!showDetalle" (blur)="outFocusCant()">
+    <div>
+        <ng-container *ngIf="cantidad === 1; else elseTemplate">
+            <span class="fa fa-trash" (click)="menos()"></span>
+        </ng-container>
+        <ng-template #elseTemplate>            
+            <span class="fa fa-minus" (click)="menos()"></span>
+        </ng-template>
+        
+    </div>
+    <div class="fw-600">{{ cantidad }}</div>
+    <div>
+        <span class="fa fa-plus animated" [ngClass]="{'headShake': showAnimateStop}" (click)="add()"></span>
+    </div>
+</div>

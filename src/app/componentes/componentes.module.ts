@@ -6,9 +6,10 @@ import { MaterialModule } from '../core/material/material.module';
 import { DebounceClickDirective } from '../shared/directivas/debounce-click.directive';
 import { EncuestaOpcionComponent } from './encuesta-opcion/encuesta-opcion.component';
 // import { DialogUbicacionComponent } from './dialog-ubicacion/dialog-ubicacion.component';
+import { AgmCoreModule } from '@agm/core';
+
 import { AgregarDireccionComponent } from './agregar-direccion/agregar-direccion.component';
 
-import { AgmCoreModule } from '@agm/core';
 import { ItemComercioComponent } from './item-comercio/item-comercio.component';
 import { SeleccionarDireccionComponent } from './seleccionar-direccion/seleccionar-direccion.component';
 import { ConfirmarDeliveryComponent } from './confirmar-delivery/confirmar-delivery.component';
@@ -35,6 +36,9 @@ import { CompPideLoQueQuierasComponent } from './comp-pide-lo-que-quieras/comp-p
 import { TipoVehiculoComponent } from './tipo-vehiculo/tipo-vehiculo.component';
 import { CompPideExpressComponent } from './comp-pide-express/comp-pide-express.component';
 import { CompCheckComponent } from './comp-check/comp-check.component';
+import { CompCtrlAddFastComponent } from './comp-ctrl-add-fast/comp-ctrl-add-fast.component';
+import { CompGetDatosClienteComponent } from './comp-get-datos-cliente/comp-get-datos-cliente.component';
+import { CompPasarelaPagoComponent } from './comp-pasarela-pago/comp-pasarela-pago.component';
 
 @NgModule({
   declarations: [
@@ -64,26 +68,29 @@ import { CompCheckComponent } from './comp-check/comp-check.component';
     TipoVehiculoComponent,
     CompPideExpressComponent,
     CompCheckComponent,
+    CompCtrlAddFastComponent,
+    CompGetDatosClienteComponent,
+    CompPasarelaPagoComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
   imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FormsModule,
-    MaterialModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo',
       libraries: ['places']
     }),
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MaterialModule,
 
     StarRatingModule.forRoot()
   ],
   exports: [
+    AgregarDireccionComponent,
     DatosDeliveryComponent,
     DebounceClickDirective,
     EncuestaOpcionComponent,
-    AgregarDireccionComponent,
     ItemComercioComponent,
     SeleccionarDireccionComponent,
     ConfirmarDeliveryComponent,
@@ -102,7 +109,10 @@ import { CompCheckComponent } from './comp-check/comp-check.component';
     CompCajaTextoComponent,
     CompPideLoQueQuierasComponent,
     CompPideExpressComponent,
-    TipoVehiculoComponent
+    TipoVehiculoComponent,
+    CompCtrlAddFastComponent,
+    CompGetDatosClienteComponent,
+    CompPasarelaPagoComponent
     // DialogDesicionComponent
   ],
 

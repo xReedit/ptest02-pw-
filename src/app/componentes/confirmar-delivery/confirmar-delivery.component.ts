@@ -141,7 +141,11 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.isComercioPapayaSoloPedidosApp = _datosEstablecieminto.pwa_delivery_reparto_solo_app === 1;
 
     // this.isRain = _datosEstablecieminto.is_rain === 1 ? true : false;
-    this.listIconsEntrega = JSON.parse(JSON.stringify(_datosEstablecieminto.icons_entrega));
+    try {
+      this.listIconsEntrega = JSON.parse(JSON.stringify(_datosEstablecieminto.icons_entrega));
+    } catch (error) {
+      this.listIconsEntrega = [];
+    }
 
     // si no tiene la distancia, entonces no calculo el costo de entrega
     if ( !this.dirEstablecimiento.distancia_km ) {

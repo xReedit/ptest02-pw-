@@ -71,6 +71,14 @@ export class ListenStatusService {
   private elMetodoPagoSelectedSource = new BehaviorSubject<MetodoPagoModel>(new MetodoPagoModel());
   public elMetodoPagoSelected$ = this.elMetodoPagoSelectedSource.asObservable();
 
+  // observable page show atm
+  private numberPageShowAtmSoruce = new BehaviorSubject<number>(0);
+  public numberPageShowAtm$ = this.numberPageShowAtmSoruce.asObservable();
+
+  // observable atm cash -> pago tarjeta
+  // private isDataFromCashAtmSoruce = new BehaviorSubject<any>({});
+  // public isDataFromCashAtm$ = this.isDataFromCashAtmSoruce.asObservable();
+
 
   constructor() { }
 
@@ -143,4 +151,12 @@ export class ListenStatusService {
   setMetodoPagoSelected(metodoSelected: MetodoPagoModel) {
     this.elMetodoPagoSelectedSource.next(metodoSelected);
   }
+
+  setNumberShowPageAtm(num: number) {
+    this.numberPageShowAtmSoruce.next(num);
+  }
+
+  // setDataFromAtmCash (dataAtm: any) {
+  //   this.isDataFromCashAtmSoruce.next(dataAtm);
+  // }
 }

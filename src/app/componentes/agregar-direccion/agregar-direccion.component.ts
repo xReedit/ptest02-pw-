@@ -9,6 +9,8 @@ import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 
+declare var google: any;
+
 @Component({
   selector: 'app-agregar-direccion',
   templateUrl: './agregar-direccion.component.html',
@@ -99,6 +101,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     this.mapsAPILoader.load().then(() => {
       this.setCurrentLocation();
       this.geoCoder = new google.maps.Geocoder;
+
 
       const autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
         // types: ['address'],

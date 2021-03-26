@@ -1,0 +1,14 @@
+p {
+    margin: 0;
+}
+
+.div-content {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.img-billete img{
+    width: 140px;
+    padding-right: 5px;
+}

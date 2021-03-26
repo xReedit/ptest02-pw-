@@ -39,6 +39,9 @@ export class InicioComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this.loadAll = true;
+
+      // document.body.style.backgroundColor = '#fff';
+      // document.body.style.background = '#fff';
     }, 2000);
   }
 
@@ -98,6 +101,17 @@ export class InicioComponent implements OnInit, OnDestroy {
   showDelivery() {
     // return false;
     this.router.navigate(['./zona-delivery']);
+  }
+
+  showAtm() {
+    // return false;
+    if ( this.isLogin ) {
+      this.router.navigate(['./cash-atm']);
+    } else {
+      this.verifyClientService.setIsDelivery(true);
+      this.verifyClientService.setLinkRedirecLogin('./cash-atm');
+      this.router.navigate(['/login-client']);
+    }
   }
 
   // solo dev
