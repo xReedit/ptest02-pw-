@@ -233,7 +233,7 @@ export class CalcDistanciaService {
 
             dirEstablecimiento.distancia_km = _establecimientoCacheado.distancia_km;
             dirEstablecimiento.c_servicio = this.calCostoDistancia(dirEstablecimiento, _establecimientoCacheado.distancia_km);
-            console.log('rpt a', dirEstablecimiento);
+            // console.log('rpt a', dirEstablecimiento);
             observer.next(dirEstablecimiento);
             return;
           }
@@ -287,7 +287,7 @@ export class CalcDistanciaService {
 
             this.estableciminetoService.setEstableciminetosCache(establecimientoToCache);
 
-            console.log('rpt b', dirEstablecimiento);
+            // console.log('rpt b', dirEstablecimiento);
             observer.next(dirEstablecimiento);
 
           }

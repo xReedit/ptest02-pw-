@@ -1,0 +1,7 @@
+::ng-deep .mat-dialog-container {
+    padding: 24px;
+}
+
+p {
+    margin: 0px;
+}

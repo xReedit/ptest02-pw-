@@ -439,7 +439,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     const _DdialogConfig = new MatDialogConfig();
     _DdialogConfig.disableClose = true;
     _DdialogConfig.hasBackdrop = true;
-    _DdialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'],
+    _DdialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
     _DdialogConfig.data = {
       isGuardar: this.infoTokenService.infoUsToken.idcliente ? true : false, // no guarda sole devuelve los datos de la direccion
       isFromComercio: true, // para empezar en la posicion del comercio

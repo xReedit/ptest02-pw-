@@ -65,6 +65,11 @@ export class InfoTockenService {
     return this.infoUsToken.isDelivery;
   }
 
+  isReserva(): boolean {
+    this.verificarContunuarSession();
+    return this.infoUsToken.isReserva;
+  }
+
   getLocalIpCliente(): string {
     this.verificarContunuarSession();
     if ( this.infoUsToken ) {
@@ -224,10 +229,10 @@ export class InfoTockenService {
 
   converToJSON(): void {
     if (localStorage.getItem('::token')) {
-      const _token =  JSON.parse(atob(localStorage.getItem('::token').split('.')[1]));
+      let _token =  JSON.parse(atob(localStorage.getItem('::token').split('.')[1]));
 
       // si existe idcliente, setea al usuario
-      if ( _token.idcliente ) {
+      if ( _token?.idcliente ) {
         const _newUs = new UsuarioTokenModel();
         _newUs.isCliente = true;
         _newUs.idcliente = _token.idcliente;
@@ -240,6 +245,8 @@ export class InfoTockenService {
         _newUs.ipCliente = _token.ipCliente;
         _newUs.isSoloLLevar = _token.isSoloLLevar;
         _newUs.isDelivery = _token.isDelivery;
+        _newUs.isReserva = _token.isReserva;
+        _newUs.isRetiroCash = _token.isRetiroCash;
         _newUs.direccionEnvioSelected = _token.direccionEnvioSelected;
         _newUs.tiempoEntrega = _token.tiempoEntrega;
         _newUs.telefono = _token.telefono;
@@ -258,7 +265,9 @@ export class InfoTockenService {
         if (!this.infoUsToken.metodoPago)  { this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); this.setPasoRecoger(false);  } // this.setIniTiempoEntrega();
       } else {
 
-        this.infoUsToken = typeof _token.usuario === 'object' ? <UsuarioTokenModel>_token.usuario : <UsuarioTokenModel>_token;
+        _token = _token ? _token : new UsuarioTokenModel();
+
+        this.infoUsToken = typeof _token?.usuario === 'object' ? <UsuarioTokenModel>_token.usuario : <UsuarioTokenModel>_token;
         // this.infoUsToken = <UsuarioTokenModel>_token;
 
         // inicializa valores

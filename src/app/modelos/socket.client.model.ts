@@ -16,6 +16,8 @@ export class SocketClientModel {
     isLoginByInvitado: boolean; // si el logue fue por invitado
     isSoloLLevar: boolean; // si escanea codigo que sea solo para llevar
     isDelivery: boolean;
+    isReserva: boolean; // si es reserva
+    isRetiroCash: boolean;
     direccionEnvioSelected: DeliveryDireccionCliente;
     telefono: string;
     systemOS: string;

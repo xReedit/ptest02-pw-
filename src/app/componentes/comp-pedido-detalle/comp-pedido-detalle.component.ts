@@ -31,7 +31,7 @@ export class CompPedidoDetalleComponent implements OnInit {
 
     this.crudService.postFree(_data, 'pedido', 'lacuenta-zona-delivery', false)
       .subscribe(res => {
-        console.log(res);
+        // console.log(res);
         this._miPedido = this.miPedidoService.darFormatoPedido(res);
 
         // obtener subtotales bd

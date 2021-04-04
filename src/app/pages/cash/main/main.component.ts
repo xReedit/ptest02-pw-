@@ -19,15 +19,15 @@ export class MainComponent implements OnInit {
   ngOnInit(): void {
 
     this.listenService.numberPageShowAtm$.subscribe(res => {
-      console.log('from main showpage', res);
       this.numberShowPageAtm = res;
     });
   }
 
-  goBack() {
+  goBackCash() {
     --this.numberShowPageAtm;
+
     if ( this.numberShowPageAtm < 0 ) {
-      this.router.navigate(['../']);
+      this.router.navigate(['../home']);
     }
 
     this.numberShowPageAtm = this.numberShowPageAtm < 0 ? 0 : this.numberShowPageAtm;

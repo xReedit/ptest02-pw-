@@ -27,7 +27,8 @@
         </div>
 
         <!-- si solo es mesa -->
-        <ng-container *ngIf="!dataClienteSend.isDelivery && !dataClienteSend.isSoloLLevar">
+        <!-- <ng-container *ngIf="!dataClienteSend.isDelivery && !dataClienteSend.isSoloLLevar"> -->
+        <ng-container *ngIf="dataClienteSend.isQrSuccess && !dataClienteSend.isSoloLLevar && !dataClienteSend.isDelivery">
             <hr>
             <div class="p-3  max-w">
                 <h5>Ingresar como Invitado</h5>

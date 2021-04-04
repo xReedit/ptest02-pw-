@@ -328,7 +328,32 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
             this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago, true)
             .subscribe(idPwaPago => {
               _dataSendPedido.dataPedido.p_header.idregistro_pago = idPwaPago;
-              this.socketService.emit('nuevoPedido', _dataSendPedido);
+              // this.socketService.emit('nuevoPedido', _dataSendPedido);
+
+              // 280321
+              // hay algunos pagos que no se registran, si el socket no responde por algun motivio
+              // guarda por post
+              // this.socketService.emitRes('nuevoPedido', _dataSendPedido).subscribe(resSocket => {
+              //   if ( resSocket === false ) {
+              //     this.crudService.postFree(JSON.stringify(_dataSendPedido), 'pedido', 'registrar-nuevo-pedido', false)
+              //     .subscribe((res: any) => {
+              //       console.log('pedido registrado');
+              //     });
+              //   }
+              // });
+
+              // priorizamos el post
+              this.crudService.postFree(JSON.stringify(_dataSendPedido), 'pedido', 'registrar-nuevo-pedido', false)
+              .subscribe((res: any) => {
+                if ( !res.success ) {
+                  this.socketService.emitRes('nuevoPedido', _dataSendPedido).subscribe(resSocket => {
+                    if ( resSocket === false ) {
+                      alert('!Ups a ocurrido un error, al registrar el pedido por favor, cominiquese con soporte.');
+                      return;
+                    }
+                    });
+                }
+              });
 
               setTimeout(() => {
                 this.isLoaderTransaction = false;

@@ -12,7 +12,7 @@
                 <ng-container *ngIf="tpc.count_items_seccion > 0">
                     <div class="div-plr titulo-tpc">
                         <span [hidden]="isDeliveryCliente">{{tpc.descripcion}}</span>
-                        <span [hidden]="!isDeliveryCliente">Resumen de mi orden</span>
+                        <span [hidden]="!isDeliveryCliente"><i class="fa fa-arrow-left pr-2" (click)="goBackCarta()"></i>  Resumen de mi orden</span>
                         <div class="countItem countTpc">{{tpc.count_items_seccion}}</div>
                     </div>
                     <div *ngFor="let seccion of tpc.secciones">
@@ -93,7 +93,7 @@
     <div class="div-resumen-pre-pago w-100" [hidden]="!isVisibleConfirmar">
         <div class="xcontent div-confirma-pedido w-100 p-3 transicion animated fadeInRight"
           [ngClass]="[isVisibleConfirmarAnimated ? 'show' : 'hide', isVisibleConfirmarAnimated ? 'fadeInRight' : 'fadeInLeft', !isDeliveryCliente ? 'bg-1': 'bg-2']">
-            <div class="text-center">
+            <div class="text-center d-flex justify-content-center">
 
                 <!-- cuando es usuario cliente y escaneo codigo solo para llevar -->
                 <!-- <ng-container *ngIf="isCliente && isSoloLLevar">
@@ -128,44 +128,66 @@
                 <!-- cuando es usuario cliente -->                                
                 <ng-container *ngIf="isCliente">
 
-                    <ng-container *ngIf="!isDeliveryCliente; else templateDelivery">
+                    <ng-container *ngIf="isReservaCliente; else elseTemplateDelivery">
 
-                        <div class="text-center">
-                            <br><br>
-                            <hr>
-                            <p class="fw-100 fs-17 text-dark">
+                        <div class="w-100 p-2" style="max-width: 500px;">
+                            <app-comp-datos-reserva 
+                            (isReady)="isReadyClienteReserva = $event"
+                            (dataReserva) = "getDatosFormConfirmaReserva($event)"></app-comp-datos-reserva>
+
+                            <p class="fw-100 fs-14 text-secondary">
                                 <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
                                 Por favor, verifique su pedido, una vez enviado ya no podra realizar ningun
-                            cambio.</p>
-                            <hr>
-                            
-                            <br>
+                                cambio.</p>
+                                <hr>
+                        </div>
+
+                        
+                    </ng-container>
+                    <ng-template #elseTemplateDelivery>
+                        
+                        <ng-container *ngIf="!isDeliveryCliente; else templateDelivery">
+    
                             <div class="text-center">
-                                <div class="btn-footer-next transicion w-50 m-auto" matRipple (click)="prepararEnvio()"
-                                            [ngClass]="{'xdisabled': isRequiereMesa}">
-                                    <div>
-                                        <span class="animated fadeInLeft">Enviar Pedido</span>
+                                <br><br>
+                                <hr>
+                                <p class="fw-100 fs-17 text-dark">
+                                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                    Por favor, verifique su pedido, una vez enviado ya no podra realizar ningun
+                                cambio.</p>
+                                <hr>
+                                
+                                <br>
+                                <div class="text-center">
+                                    <div class="btn-footer-next transicion w-50 m-auto" matRipple (click)="prepararEnvio()"
+                                                [ngClass]="{'xdisabled': isRequiereMesa}">
+                                        <div>
+                                            <span class="animated fadeInLeft">Enviar Pedido</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    
-                    </ng-container>
-                    <ng-template #templateDelivery>
                         
-                        <!-- si es cliente deliver -->
-
-
-                        <app-confirmar-delivery 
-                            [listSubtotales] = "_arrSubtotales" 
-                            (isReady)="isReadyClienteDelivery = $event"
-                            (dataDelivery) = "getDatosFormConfirmaDelivery($event)">
-                        </app-confirmar-delivery>
-                       
-
-                        <!-- si es cliente deliver -->
+                        </ng-container>
+                        <ng-template #templateDelivery>
+                            
+                            <!-- si es cliente deliver -->
+    
+    
+                            <app-confirmar-delivery 
+                                [listSubtotales] = "_arrSubtotales" 
+                                (isReady)="isReadyClienteDelivery = $event"
+                                (dataDelivery) = "getDatosFormConfirmaDelivery($event)">
+                            </app-confirmar-delivery>
+                           
+    
+                            <!-- si es cliente deliver -->
+    
+                        </ng-template>
 
                     </ng-template>
+                    
+
                     
                 </ng-container>
 
@@ -320,6 +342,16 @@
                 [ngClass]="{'xdisabled': !isReadyClienteDelivery}">
                 <div>
                     <span class="animated fadeInLeft">Confirmar</span>
+                </div>
+                </div>
+            </ng-container>
+
+             <!-- cliente reserva -->
+             <ng-container *ngIf="isReservaCliente">
+                <div class="btn-footer-next transicion" matRipple (click)="prepararEnvio()"
+                [ngClass]="{'xdisabled': !isReadyClienteReserva}">
+                <div>
+                    <span class="animated fadeInLeft">Enviar Reserva</span>
                 </div>
                 </div>
             </ng-container>

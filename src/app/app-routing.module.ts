@@ -23,6 +23,11 @@ const routes: Routes = [
       data: { 'tituloModulo': 'Inicio' }
     },
     {
+      path: 'home',
+      loadChildren: () => import('./pages/inicio/inicio.module').then(m => m.InicioModule),
+      data: { 'tituloModulo': 'Inicio' }
+    },
+    {
       path: 'pedido',
       loadChildren: () => import('./pages/pedido/pedido.module').then(m => m.PedidoModule),
       canActivate: [AuthGuard],
@@ -61,8 +66,12 @@ const routes: Routes = [
     {
       path: 'cash-atm',
       loadChildren: () => import('./pages/cash/cash.module').then(m => m.CashModule),
-      // canActivate: [ClienteProfileGuard],
       data: { 'tituloModulo': 'Atm' }
+    },
+    {
+      path: 'reservar-mesa',
+      loadChildren: () => import('./pages/reservar-mesa/reservar-mesa.module').then(m => m.ReservarMesaModule),
+      data: { 'tituloModulo': 'Reserva' }
     }
 ];
 

@@ -28,6 +28,8 @@ export class UsuarioTokenModel {
     ipCliente: string; // ip del cliente api autorizacion
     isSoloLLevar: boolean; // si escanea qr solo para llevar
     isDelivery: boolean; // si es delivery
+    isReserva: boolean; // si es delivery
+    isRetiroCash: boolean; // si es delivery
     direccionEnvioSelected: DeliveryDireccionCliente;
     tiempoEntrega: TiempoEntregaModel;
     telefono: string;

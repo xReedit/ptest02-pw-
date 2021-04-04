@@ -26,8 +26,8 @@ export class AuthGuard implements CanActivate {
   canActivate() {
     const us = this.authService.getLoggedStatus();
     const infoToken = this.infoTokenService.getInfoUs();
-    const res = infoToken.isCliente ? infoToken.isDelivery ? true : this.verifyClientService.getIsQrSuccess() && us : us;
-    // console.log('canActivate', us);
+    const res = infoToken.isCliente ? infoToken.isDelivery || infoToken.isReserva  ? true : this.verifyClientService.getIsQrSuccess() && us : us;
+
     // if ( us )
     return res;
   }

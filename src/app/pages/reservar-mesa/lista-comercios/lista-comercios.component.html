@@ -1,0 +1,43 @@
+<div class="animated fadeIn div-loader-2" *ngIf="loaderPage">
+    <div class="loader">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <span class="pt-2">Obteniendo datos...</span>
+    </div>    
+</div>
+
+<div class="animated fadeInRight">
+    <!-- seleccionar ciudad -->
+    <div class="p-5 text-center w-100" *ngIf="!showListComercios">        
+        <div style="max-width: 500px; display: inline-block;">
+            <p class="fs-15 fw-600 text-secondary">Elige una ciudad donde contamos con el servicio</p>
+            <hr>        
+            <app-select-ciudad-delivery (cuidadSelected)="selectedCiudad($event)"></app-select-ciudad-delivery>
+        </div>
+    </div>
+
+
+
+    <!-- listado de establecimientos -->    
+    <div class="animated fadeInRight content-body" *ngIf="showListComercios">    
+        <br>
+
+        <div *ngIf="listEstablecimientos.length === 0" class="text-center p-3">
+            <p class="fw-600 fs-18 text-secondary">No se encontro comercios que acepten reservas en esta ciudad.</p>
+            <br>
+            <button mat-raised-button color="primary" (click)="showListComercios = false">
+                <span> <i class="fa fa-arrow-left pr-2"></i></span>
+                Regresar
+            </button>  
+        </div>
+            
+        <div class="content-master-establecimiento" *ngIf="listEstablecimientos">                            
+            <div class="content-all-comercio">
+                <div *ngFor="let item of listEstablecimientos">
+                    <app-item-comercio *ngIf="item.visible" [itemEstablecimiento] = "item"  (itemSelected) = "itemSelected($event)" [reserva]="true"></app-item-comercio>
+                </div>
+            </div>
+            <br><br>
+            
+        </div>
+    </div>
+</div>

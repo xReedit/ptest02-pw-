@@ -1,0 +1,24 @@
+<div class="d-flex justify-content-between align-items-center">
+    <p>Comentarios</p>
+    <button class="btn btn-sm btn-secondary" mat-dialog-close> <i class="fa fa-close"></i> </button>
+</div>
+<hr>
+<div class="p-2">    
+    <div>
+        <span class="badge badge-secondary mr-2 fs-13"> <i class="fa fa-star"></i> {{ dataComentarios.calificacion | number: '.1' }}</span>
+        <span class="fs-13">Puntuacion basada en {{ dataComentarios.cantidad | number: '2.' }} opiniones de usuarios.</span>
+    </div>
+    <hr>
+    <div>
+        <div *ngFor="let item of listComentarios" class="border-bottom pb-2 pt-2 mb-1 fs-12">
+            <div class="d-flex justify-content-between">
+                <p class="fw-600 text-secondary mr-2 fs-11">{{ item.nomcliente }} </p>
+                <div class="d-flex">
+                    <span class="badge badge-secondary mr-2">{{ item.numpedidos | number: '2.' }}</span>
+                    <p class="badge badge-success" [ngClass]="{'badge-danger': item.calificacion < 3, 'badge-warning': item.calificacion < 4}" > <i class="fa fa-star"></i> {{ item.calificacion | number: '.1' }}</p>
+                </div>
+            </div>            
+            <p *ngIf="item.comentario !=''" class="fw-100 text-secondary">{{ item.comentario }}</p>            
+        </div>
+    </div>
+</div>

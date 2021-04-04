@@ -785,6 +785,7 @@ export class MipedidoService {
   // resetear las cantidades seleccionadas en el item carta, luego de hacer un pedido para que no se quede marcado
   private resetCantidadesTpcItemCarta(): void {
     if ( !this.objCarta ) {return; }
+    if ( !this.objCarta.carta ) {return; }
     this.objCarta.carta.map((cat: CategoriaModel) => {
       cat.secciones.map((sec: SeccionModel) => {
         sec.items.map( x => {
@@ -1126,6 +1127,7 @@ export class MipedidoService {
         const _item = this.findItemCarta(item);
         _item.indicaciones = '';
         _item.cantidad_seleccionada = 0;
+        // _item.cantidad_selected = 0;
         _item.itemtiposconsumo = null;
         // _item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
         //   tpc.cantidad_seleccionada = 0;
@@ -1612,7 +1614,7 @@ export class MipedidoService {
     return rpt;
   }
 
-  private getSubTotalMiPedido(): number {
+  getSubTotalMiPedido(): number {
     let sumSubTotal = 0;
     let cantItemOrder = 0;
     this.miPedido.tipoconsumo

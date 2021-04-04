@@ -27,6 +27,8 @@ export class DialogMetodoPagoComponent implements OnInit {
   private importeTotal: number;
   private importeValid = false;
 
+  private isClientePedido  = false;
+
   constructor(
     private dialogRef: MatDialogRef<DialogMetodoPagoComponent>,
     @Inject(MAT_DIALOG_DATA) data: any,
@@ -43,7 +45,7 @@ export class DialogMetodoPagoComponent implements OnInit {
     this.isHabilitadoYape  = this.isFromNoComercio ? true : this.establecimientoService.get().pwa_delivery_acepta_yape === 1;
     this.isHabilitadoTarjeta  = this.establecimientoService.get().pwa_delivery_acepta_tarjeta === 1;
     this.isComercioSolidaridad  = this.establecimientoService.get().pwa_delivery_comercio_solidaridad === 1;
-
+    this.isClientePedido = this.infoTokenService.infoUsToken.isCliente;
 
     this.loadMetodoPago();
     this.itemSelected = this.infoTokenService.infoUsToken.metodoPago;
@@ -53,9 +55,11 @@ export class DialogMetodoPagoComponent implements OnInit {
   private loadMetodoPago() {
     this.listMetodoPago = [];
 
-    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 2, 'descripcion': 'Tarjeta', 'checked': true, visible: this.isHabilitadoTarjeta});
-    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 3, 'descripcion': 'Yape', 'checked': false, visible: this.isHabilitadoYape});
+    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 2, 'descripcion': 'Tarjeta', 'checked': true, visible: this.isHabilitadoTarjeta, importe: ''});
+    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 3, 'descripcion': 'Yape', 'checked': false, visible: this.isHabilitadoYape, importe: ''});
     this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 1, 'descripcion': 'Efectivo', 'checked': false, visible: true});
+    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 4, 'descripcion': 'POS', 'checked': false, visible: !this.isClientePedido, importe: ''});
+    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 5, 'descripcion': 'Trasferencia', 'checked': false, visible: !this.isClientePedido, importe: ''});
 
     this.validaCociones();
 

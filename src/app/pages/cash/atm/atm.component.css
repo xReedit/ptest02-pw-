@@ -8,6 +8,10 @@ p {
     margin: 0 auto;
 }
 
+.img-billete {
+    display: grid;
+}
+
 .img-billete img{
     width: 140px;
     padding-right: 5px;

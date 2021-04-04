@@ -62,6 +62,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   isDeliveryValid = false;
   frmConfirma: any = {};
   frmDelivery: any = {};
+  frmReservaCliente: any = {};
 
   arrReqFrm: FormValidRptModel;
 
@@ -75,7 +76,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   isCliente: boolean; // si es cliente quien hace el pedido
   isSoloLLevar: boolean; // si es solo llevar
   isDeliveryCliente: boolean; // si es cliente delivery
+  isReservaCliente: boolean; // si es cliente delivery
   isReadyClienteDelivery = false; // si el formulario(confirmacion) clienteDelivery esta listo
+  isReadyClienteReserva = false; // si el formulario(confirmacion) reserva esta listo
   isReloadListPedidos = false;
 
   private isFirstLoadListen = false; // si es la primera vez que se carga, para no volver a cargar los observables
@@ -155,6 +158,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this.isCliente = this.infoToken.isCliente();
     this.isSoloLLevar = this.infoToken.isSoloLlevar();
     this.isDeliveryCliente = this.infoToken.isDelivery();
+    this.isReservaCliente = this.infoToken.isReserva();
     this.isClienteSetValues();
   }
 
@@ -379,6 +383,21 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this.frmDelivery = $event;
   }
 
+  getDatosFormConfirmaReserva($event: any) {
+    this.frmReservaCliente = $event.formData;
+
+    const _frmConfirma = {
+      nummesa: '',
+      nummesa_resplado: '',
+      referencia: this.frmReservaCliente.nombre_reserva + ' ' + this.frmReservaCliente.empresa + ' ' + this.frmReservaCliente.hora_reserva,
+      reserva: true,
+      solo_llevar: false,
+      delivery: false
+    };
+
+    this.frmConfirma = _frmConfirma;
+  }
+
   private confirmarPeiddo(): void {
 
     if (this.isVisibleConfirmarAnimated ) { // enviar pedido
@@ -475,7 +494,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // const dataUsuario = this.infoToken.infoUsToken;
 
     const dataFrmConfirma: any = {};
-    if ( this.isCliente ) {
+    if ( this.isCliente && !this.isReservaCliente ) {
       this.frmConfirma.solo_llevar = this.isSoloLLevar ? true : this.frmConfirma.solo_llevar;
       dataFrmConfirma.m = this.isSoloLLevar ? '' : dataUsuario.numMesaLector;
       dataFrmConfirma.m = this.isDeliveryCliente ? '' : dataUsuario.numMesaLector;
@@ -515,6 +534,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       idregistro_pago: 0,
       // idregistro_pago: this.isSoloLLevar ? this.registrarPagoService.getDataTrasaction().idregistro_pago : 0,
       arrDatosDelivery: this.frmDelivery,
+      arrDatosReserva: this.frmReservaCliente, // datos de la reserva que hace el cliente
       systemOS: this.systemOS,
       idregistra_scan_qr: this.establecimientoService.getLocalIdScanQr(), // el id del scan register
       is_print_subtotales: this.miPedidoService.objDatosSede.datossede[0].is_print_subtotales,
@@ -598,18 +618,26 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // console.log('aaaaaaaaaaaaaaa');
 
     // enviar a guardar // guarda pedido e imprime comanda
-    // this.socketService.emit('nuevoPedido', dataSend); // !> 150920
-    this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => {
+
+    // prioridad guardar por post
+    this.crudService.postFree(JSON.stringify(dataSend), 'pedido', 'registrar-nuevo-pedido', false)
+        .subscribe((res: any) => {
+
+    // // this.socketService.emit('nuevoPedido', dataSend); // !> 150920
+    // this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => { // prioridad guardar por post
       // seteamos el metodo pago que el cliente selecciona
       this.infoToken.setMetodoPagoSelected(_p_header.arrDatosDelivery.metodoPago);
       // error
       // console.log('recibido la respuesta del servidor', resSocket);
-      if ( resSocket === false ) {
+      // if ( resSocket === false ) {
+      if ( !res.success ) {
         // si tiene error lo intenta enviar por http
-        this.crudService.postFree(JSON.stringify(dataSend), 'pedido', 'registrar-nuevo-pedido', false)
-        .subscribe((res: any) => {
+        // this.crudService.postFree(JSON.stringify(dataSend), 'pedido', 'registrar-nuevo-pedido', false) // prioridad guardar por post
+        // .subscribe((res: any) => { // prioridad guardar por post
+        this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => {
 
-          if ( !res.success ) {
+          // if ( !res.success ) {
+          if ( resSocket === false ) {
             alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');
             // guardamos el error
             const dataError = {
@@ -628,16 +656,21 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
             this.listenStatusService.setLoaderSendPedido(false);
             this.miPedidoService.stopTimerLimit();
           }, 600);
+          // post
+          // dataSend.dataPedido.idpedido = res.data[0].idpedido;
+          // dataSend.dataPrint = res.data[0].data;
+          // this.socketService.emit('nuevoPedido2', dataSend);
 
-          dataSend.dataPedido.idpedido = res.data[0].idpedido;
-          dataSend.dataPrint = res.data[0].data;
-          this.socketService.emit('nuevoPedido2', dataSend);
+          // socket
+          const _res = resSocket[0];
+          dataSend.dataPedido.idpedido = _res.idpedido;
+          dataSend.dataPrint = _res.data[1] ? _res.data[1]?.print : null;
 
           this.newFomrConfirma();
           // this.backConfirmacion();
 
           // hora del pedido
-        this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
+          this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
 
           // this.miPedidoService.prepareNewPedido();
 
@@ -654,16 +687,27 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
             return;
           }
 
+          if ( this.isReservaCliente ) {
+            this.confirmarPedidoDeliveryEnviado();
+            return;
+          }
+
 
 
           this.backConfirmarPedido();
         });
 
       } else { // si no tiene error
-        const res = resSocket[0];
-        dataSend.dataPedido.idpedido = res.idpedido;
-        dataSend.dataPrint = res.data[1] ? res.data[1]?.print : null;
+
+        // socket
+        // const res = resSocket[0];
+        // dataSend.dataPedido.idpedido = res.idpedido;
+        // dataSend.dataPrint = res.data[1] ? res.data[1]?.print : null;
         // this.socketService.emit('nuevoPedido2', dataSend);
+
+        dataSend.dataPedido.idpedido = res.data[0].idpedido;
+        dataSend.dataPrint = res.data[0].data;
+        this.socketService.emit('nuevoPedido2', dataSend);
 
         this.newFomrConfirma();
         // this.backConfirmacion();
@@ -689,6 +733,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
           // this.pagarCuentaDeliveryCliente();
           // enviamos a pagar
+          return;
+        }
+
+        if ( this.isReservaCliente ) {
+          this.confirmarPedidoDeliveryEnviado();
           return;
         }
 
@@ -988,6 +1037,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
           }
         });
 
+  }
+
+  goBackCarta(): void {
+    this.navigatorService.setPageActive('carta');
   }
 
 }

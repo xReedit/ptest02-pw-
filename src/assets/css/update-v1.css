@@ -69,8 +69,15 @@ overflow: auto;
     height: 100vh;
     overflow: auto;
   }
+
   
 }
+
+/* .my-dialog-item-producto {
+  padding: 0px;
+  min-width: 300px;
+  max-width: 450px !important;
+} */
 
 /* cuando es en celular el dialog detalle orden abre en pantalla completa */
 @media (max-width: 676px) {   

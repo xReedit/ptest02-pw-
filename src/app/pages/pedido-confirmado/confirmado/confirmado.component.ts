@@ -3,6 +3,7 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-confirmado',
@@ -11,18 +12,33 @@ import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 })
 export class ConfirmadoComponent implements OnInit {
 
+  titulo = 'Pedido Confirmado';
+  subtitulo = 'Su orden llegara pronto.';
+  img = 'food_delivery.gif';
+  isReservaCliente = false;
+
   constructor(
     private infoTokenService: InfoTockenService,
     private navigatorService: NavigatorLinkService,
+    private router: Router,
     private socketService: SocketService,
     private miPedidoService: MipedidoService,
   ) { }
 
   ngOnInit(): void {
     this.navigatorService.disableGoBack();
+    this.navigatorService.setOffListenNavigator(true);
+
+    this.isReservaCliente = this.infoTokenService.infoUsToken.isReserva;
+
+    if ( this.isReservaCliente ) {
+      this.titulo = 'Reserva Confirmada';
+      this.subtitulo = 'Su reserva esta hecha. Lo esperamos a la hora que indico.';
+      this.img = 'icon-app/reserva.JPG';
+    }
   }
 
-  finDelivery() {
+  finDeliveryAvisoMsj() {
 
     // this.lanzarPermisoNotificationPush(0);
 
@@ -33,8 +49,10 @@ export class ConfirmadoComponent implements OnInit {
 
     this.socketService.isSocketOpenReconect = true;
     this.socketService.closeConnection();
+    this.navigatorService.cerrarSession();
 
-    this.navigatorService._router('../zona-delivery');
+    // this.navigatorService._router('../zona-delivery');
+    this.router.navigate(['./home']);
 
   }
 

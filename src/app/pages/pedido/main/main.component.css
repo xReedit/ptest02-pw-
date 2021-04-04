@@ -86,6 +86,30 @@
   color: #eeeeee;
 }
 
+.footer-btn-go-lista {
+  position: fixed;
+  bottom: -15px;
+  width: 100%;  
+  text-align: center;  
+  background: #e0e0e0;
+  display: flex;
+  justify-content: center;
+}
+
+.footer-btn-go-lista .content {
+  background: #3f51b5;
+  color: white;
+  width: 85%;
+  font-size: 14px;
+  border-radius: 5px 5px 0px 0px;
+  padding: 10px;
+  font-weight: 100;
+  margin-top: 10px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
 ::ng-deep.header-less-tabs.mat-tab-group .mat-tab-header { display: none; }
 

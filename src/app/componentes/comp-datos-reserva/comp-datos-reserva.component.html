@@ -1,0 +1,37 @@
+<div>
+    <h5>Datos de la Reserva</h5>
+    <hr>
+    <div class="w-100">
+        <mat-form-field class="w-100 text-center">
+            <input readonly matInput placeholder="Reserva a nombre de:" [(ngModel)]="frmConfirma.nombre_reserva"
+            name="nombre_reserva">
+        </mat-form-field>
+    </div>
+
+    <div class="w-100">
+        <mat-form-field class="w-100 text-center">
+            <input matInput placeholder="(Opcional) Empresa o Institucion:" [(ngModel)]="frmConfirma.empresa"
+            name="empresa" (keyup)="emitData()">
+        </mat-form-field>
+    </div>    
+
+    <div class="w-100">
+        <mat-form-field class="w-100 text-center">
+            <input type="number" matInput placeholder="Numero de personas:" 
+            [(ngModel)]="frmConfirma.num_personas"
+            name="num_personas"
+            (keyup)="emitData()">
+        </mat-form-field>
+    </div>
+
+
+    <app-comp-get-hora [parametros]="compHoraParams" (changeHora)="setHora($event)"></app-comp-get-hora>
+    <hr>
+
+    <app-comp-get-datos-cliente 
+        class="fs-12" 
+        [opciones] = "opcionesFrmCliente" 
+        (frmResponse)="frmClienteResponse($event)"></app-comp-get-datos-cliente>
+
+    <hr>
+</div>

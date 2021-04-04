@@ -1,15 +1,6 @@
 <div class="animated fadeIn content-comercio pb-2 text-left" matRipple (click)="_itemSelected()">
     <mat-card>
-    <div class="content-img-comercio">
-        <!-- si acepta tarjeta -->
-        <div *ngIf="itemEstablecimiento.pwa_delivery_acepta_tarjeta === 1">
-            <div class="title-acepta-tarjeta">
-                <span> <i class="fa fa-credit-card mr-1"></i> Acepta Tarjeta</span>
-            </div>
-            <div class="div-acepta-tarjeta">
-            </div>
-        </div>
-
+    <div class="content-img-comercio">        
         <img class="img-comercio" src="{{imgComercio}}" alt="">
         <div class="div-cerrado" *ngIf="isCerrado && !isComercioAceptaPedidoProgramado">
             <p>Cerrado Ahora</p>                    
@@ -17,19 +8,29 @@
     </div>
     <div >
         <div class="div-info-comercio">
-            <p class="fw-600 fs-18">{{itemEstablecimiento.nombre | titlecase}}</p>
+            <p class="fw-600 fs-18">
+                {{itemEstablecimiento.nombre | titlecase}}                
+            </p>
             <p class="fs-13" *ngIf="itemEstablecimiento.eslogan.length > 0">{{itemEstablecimiento.eslogan | titlecase}}</p>
             <p class="fw-100 fs-12">{{itemEstablecimiento.sub_categoria}}</p>
+
+            <!-- si acepta tarjeta -->
+            <div>
+                <span *ngIf="itemEstablecimiento.pwa_delivery_acepta_tarjeta === 1"
+                    class="div-acepta-tarjeta"> 
+                    <i class="fa fa-credit-card mr-1"></i> Acepta Tarjeta</span>
+            </div>
         </div>
         <hr>
-        <div class="d-flex div-sub-info-comercio">
+        <div class="d-flex div-sub-info-comercio">            
             <ng-container *ngIf="!isCerrado; else elseTemplate">
                             
+                <div *ngIf="!reserva" class="d-flex">
                     <div>
                         <i class="fa fa-clock-o"></i>
                         {{ itemEstablecimiento.tiempo_aprox_entrega | lowercase }}
                     </div>
-                    <div>
+                    <div *ngIf="itemEstablecimiento.c_servicio">
                         <i class="fa fa-bicycle"></i>
                         S/.{{ itemEstablecimiento.c_servicio | number: '0.2'}}
                     </div>
@@ -37,8 +38,15 @@
                         <i class="fa fa-star text-warning"></i>
                         {{ itemEstablecimiento.calificacion | number:'.0' }}
                     </div>
+                </div>
 
-                    <!-- <div>5.0</div>             -->
+                <div *ngIf="reserva">
+                    <div>
+                        <i class="fa fa-clock-o"></i>
+                        Atencion hasta las <strong>{{ itemEstablecimiento.hora_fin }}</strong>
+                    </div>
+                </div>
+
 
             </ng-container>
             <ng-template #elseTemplate>                            

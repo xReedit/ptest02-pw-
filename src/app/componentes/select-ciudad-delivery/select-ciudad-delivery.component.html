@@ -1,0 +1,8 @@
+<div class="p-2">
+    <div *ngFor="let item of listCiudadesServicio" class="pb-2 border-bottom">
+        <div class="d-flex justify-content-between p-2 align-items-center" matRipple (click)="selectedCiudad(item)">
+            <span> {{ item.ciudad }}</span>
+            <span> <i class="fa fa-arrow-right"></i></span>
+        </div>
+    </div>
+</div>

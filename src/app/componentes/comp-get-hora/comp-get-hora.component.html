@@ -1,0 +1,19 @@
+<div matRipple>
+    <p class="text-secondary" [ngClass]="{'text-danger': !isHourValid}">{{ parametros.titulo }}</p>
+    <input matInput [placeholder]="parametros.tituloHora" aria-label="Hora" 
+        [ngxTimepicker]="default" 
+        [min]="hora_min"
+        [max]="hora_max"
+        [value]="hora_show"
+        readonly>
+    
+    <ngx-material-timepicker #default 
+        [defaultTime]="hora_show" (timeSet) = 
+        "responseHora($event)">
+    </ngx-material-timepicker>
+
+    <span *ngIf="parametros.showHoraMinMax && !isHourValid" class="text-info fs-12 fw-100">
+        Máximo hasta las {{ parametros.hora_max }}
+    </span>
+    
+</div>

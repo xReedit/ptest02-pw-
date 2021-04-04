@@ -17,7 +17,7 @@ export class VerifyAuthClientService {
 
   public clientSocket: SocketClientModel;
   private subjectClient = new Subject<any>();
-  private isClientValid = false;
+  public isClientValid = false;
   // private subjectClientSource = new BehaviorSubject<any>(null);
   // public subjectClient$ = this.subjectClientSource.asObservable();
 
@@ -63,6 +63,16 @@ export class VerifyAuthClientService {
 
   setIsDelivery(val: boolean): void {
     this.clientSocket.isDelivery = val;
+    this.setDataClient();
+  }
+
+  setIsReserva(val: boolean): void {
+    this.clientSocket.isReserva = val;
+    this.setDataClient();
+  }
+
+  setIsRetiroCash(val: boolean): void {
+    this.clientSocket.isRetiroCash = val;
     this.setDataClient();
   }
 
@@ -114,8 +124,26 @@ export class VerifyAuthClientService {
     return this.clientSocket.isDelivery || false;
   }
 
+  getIsReserva(): boolean {
+    // this.getDataClient();
+    if (!this.clientSocket) {
+      this.getDataClient();
+    }
+
+    return this.clientSocket.isReserva || false;
+  }
+
+  getIsRetiroCash(): boolean {
+    // this.getDataClient();
+    if (!this.clientSocket) {
+      this.getDataClient();
+    }
+
+    return this.clientSocket.isRetiroCash || false;
+  }
+
   verifyClient(): Observable<any> {
-    console.log('verificar cliente');
+
     this.getDataClient();
 
     // verrifica si esta logueado

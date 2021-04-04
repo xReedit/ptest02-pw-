@@ -21,6 +21,8 @@ import { URL_IMG_CARTA } from 'src/app/shared/config/config.const';
 import { Subscription } from 'rxjs';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
+import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
+import { DialogCalificacionSedeComponent } from 'src/app/componentes/dialog-calificacion-sede/dialog-calificacion-sede.component';
 
 
 
@@ -37,6 +39,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   objCartaBus: any = [];
   isBusqueda = false;
   rutaImgItem = URL_IMG_CARTA;
+  imgNull = './assets/images/icon-app/img-null.png';
   private isCargado = true;
 
   public showCategoria = false;
@@ -75,6 +78,11 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   // tamaño de la pamtalla
   isScreenIsMobile = true;
 
+  isViewMercado = false;
+  isShowCalificacion = false;
+  isCliente = false;
+  dataCalificacion: any;
+
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.detectScreenSize();
@@ -92,7 +100,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       private infoToken: InfoTockenService,
       private dialog: MatDialog,
       private establecimientoService: EstablecimientoService,
-      private calcDistanciaService: CalcDistanciaService
+      private calcDistanciaService: CalcDistanciaService,
+      private crudService: CrudHttpService
       ) {
 
   }
@@ -107,10 +116,32 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.detectScreenSize();
     this.initCarta();
 
-    // console.log('this.establecimientoService', this.establecimientoService.get());
-    // console.log('this.infoToken.getInfoUs', this.infoToken.getInfoUs());
+    this.isViewMercado = this.establecimientoService.get().pwa_show_item_view_mercado === 1;
+    this.isCliente = this.infoToken.infoUsToken.isCliente;
+    // console.log('this.establecimientoService.get()', this.establecimientoService.get());
 
-    if ( this.infoToken.getInfoUs().isCliente ) {
+    // calificacion y comentarios
+    this.isShowCalificacion = this.establecimientoService.get().calificacion >= 3.7;
+    if ( this.isShowCalificacion ) {
+      this.dataCalificacion = {
+        calificacion: this.establecimientoService.get().calificacion,
+        cantidad: 0,
+        listCalificacion: []
+      };
+
+      const _dataSendCalificacion = {
+        idsede: this.establecimientoService.get().idsede
+      };
+
+      this.crudService.postFree(_dataSendCalificacion, 'delivery', 'get-calificacion-sede', false)
+      .subscribe((res: any) => {
+        this.dataCalificacion.listCalificacion = res.data;
+        this.dataCalificacion.cantidad = this.dataCalificacion.listCalificacion.map(c => c.numpedidos).reduce((a, b) => a + b, 0);
+        console.log('this.dataCalificacion', this.dataCalificacion);
+      });
+    }
+
+    if ( this.infoToken.getInfoUs().isCliente &&  !this.infoToken.getInfoUs().isReserva) {
       this.calcDistanciaService.calcCostoEntregaApiGoogleRain(this.infoToken.getInfoUs().direccionEnvioSelected, this.establecimientoService.get());
     }
   }
@@ -129,10 +160,13 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // descarga la constate del items scala delivery // tanto para cliente como para usuario
     // if ( this.infoToken.isDelivery() ) {
-      this.miPedidoService.getDeliveryConstCantEscala();
+      if ( !this.infoToken.isReserva() ) {
+        this.miPedidoService.getDeliveryConstCantEscala();
+      }
     // }
 
     this.unsubscribeCarta = this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
+
       if (res.pageActive === 'carta') {
         if (this.countSeeBack < 2) { this.countSeeBack++; return; }
         this.goBack();
@@ -362,6 +396,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // extraemos
     let _itemFind: any;
+    if ( !_objFind.carta ) { return; }
     _objFind.carta.map((c: CategoriaModel) => {
       c.secciones.map((s: SeccionModel) => {
         s.items.map((i: ItemModel) => {
@@ -445,7 +480,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       item: _itemFromCarta,
       objItemTipoConsumoSelected: this.itemSelected.itemtiposconsumo
     };
-    dialogConfig.panelClass =  ['my-dialog-orden-detalle'];
+    dialogConfig.panelClass =  ['my-dialog-orden-detalle', 'my-dialog-item-producto'];
 
     const dialogRef = this.dialog.open(DialogItemEditComponent, dialogConfig);
 
@@ -536,6 +571,24 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     return resp.slice(0, -2);
   }
 
+  resultCantItemMercado(_selectedItem: any) {
+    // solo para delivery
+
+    this.itemSelected = _selectedItem;
+    const _objNewItemTiposConsumo = JSON.parse(JSON.stringify(this.objNewItemTiposConsumo));
+    this.objItemTipoConsumoSelected = _selectedItem.itemtiposconsumo ? _selectedItem.itemtiposconsumo : _objNewItemTiposConsumo;
+
+    if ( !_selectedItem.itemtiposconsumo ) {
+      _selectedItem.itemtiposconsumo = this.objItemTipoConsumoSelected;
+    }
+
+    this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
+    const tpcSelect = this.objItemTipoConsumoSelected[0];
+    const _isSuma = _selectedItem.isSuma_selected ? 0 : 1;
+
+    this.miPedidoService.addItem2(tpcSelect, this.itemSelected, _isSuma);
+  }
+
   // addSubItem(subitem: SubItem): void {
   //   // subitem.selected = !subitem.selected;
 
@@ -560,5 +613,23 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   // }
 
 
+  openDialogComentarios() {
+    const dialogConfig = new MatDialogConfig();
+
+    // dialogConfig.panelClass = 'dialog-item-edit';
+    dialogConfig.autoFocus = false;
+    dialogConfig.data = this.dataCalificacion;
+    dialogConfig.panelClass =  ['my-dialog-orden-detalle', 'my-dialog-scrool'];
+
+    const dialogRef = this.dialog.open(DialogCalificacionSedeComponent, dialogConfig);
+
+    // subscribe al cierre y obtiene los datos
+    dialogRef.afterClosed().subscribe(
+        data => {
+          if ( !data ) { return; }
+
+        }
+    );
+  }
 
 }

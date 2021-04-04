@@ -18,6 +18,7 @@ export class InicioComponent implements OnInit, OnDestroy {
   private veryfyClient: Subscription = null;
 
   isLogin = false;
+  isCliente = false;
   nombreClientSocket = '';
 
   private countnDev = 0;
@@ -49,6 +50,9 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.verifyClientService.getDataClient();
     this.verifyClientService.setQrSuccess(false);
     this.verifyClientService.setIsDelivery(false);
+    this.verifyClientService.setIsReserva(false);
+    this.verifyClientService.setIsRetiroCash(false);
+    this.verifyClientService.setLinkRedirecLogin('');
     this.verifyClientService.setDireccionDeliverySelected(null);
 
     this.isLogin = this.verifyClientService.isLogin();
@@ -57,6 +61,14 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.verifyClientService.setMesa(null);
     this.verifyClientService.setIdOrg(null);
     this.verifyClientService.setIdSede(null);
+    this.verifyClientService.setDataClient();
+
+
+    if ( this.isLogin ) {
+      this.isCliente = true;
+      this.nombreClientSocket = this.verifyClientService.clientSocket.usuario;
+      return; }
+
     this.veryfyClient = this.verifyClientService.verifyClient()
       // .pipe(finalize(() => localStorage.clear())) // si esta mal elimina todo
       .subscribe((res: SocketClientModel) => {
@@ -67,10 +79,17 @@ export class InicioComponent implements OnInit, OnDestroy {
             return;
           }
 
+          this.isCliente = true;
           this.nombreClientSocket = res.usuario;
           this.isLogin = this.verifyClientService.getIsLoginByDNI() ? true : this.verifyClientService.isLogin() ? this.verifyClientService.isLogin() : res.datalogin ? true : this.verifyClientService.isLogin();
           this.verifyClientService.setLoginOn(this.isLogin);
           this.verifyClientService.setQrSuccess(false);
+          this.verifyClientService.setIsDelivery(false);
+          this.verifyClientService.setIsReserva(false);
+          this.verifyClientService.setIsRetiroCash(false);
+          this.verifyClientService.setLinkRedirecLogin('');
+          this.verifyClientService.setDataClient();
+
         // },
         // error => {
         //   // this.router.navigate(['../']);
@@ -80,7 +99,10 @@ export class InicioComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     // this.verifyClientService.unsubscribeClient();
-    this.veryfyClient.unsubscribe();
+    try {
+      this.veryfyClient.unsubscribe();
+    } catch (error) {
+    }
   }
 
   // changeLenguage() {
@@ -100,17 +122,36 @@ export class InicioComponent implements OnInit, OnDestroy {
 
   showDelivery() {
     // return false;
+    this.verifyClientService.setIsDelivery(true);
+    this.verifyClientService.setIsReserva(false);
+    this.verifyClientService.setDataClient();
     this.router.navigate(['./zona-delivery']);
   }
 
   showAtm() {
     // return false;
-    if ( this.isLogin ) {
+    if ( this.isLogin && this.isCliente ) {
       this.router.navigate(['./cash-atm']);
     } else {
-      this.verifyClientService.setIsDelivery(true);
+      this.verifyClientService.setIsDelivery(false);
+      this.verifyClientService.setIsReserva(false);
+      this.verifyClientService.setIsRetiroCash(true);
+      this.verifyClientService.setDataClient();
       this.verifyClientService.setLinkRedirecLogin('./cash-atm');
       this.router.navigate(['/login-client']);
+    }
+  }
+
+  showReserva() {
+    // return false;
+    if ( this.isLogin && this.isCliente ) {
+      this.router.navigate(['./reservar-mesa']);
+    } else {
+      this.verifyClientService.setIsDelivery(false);
+      this.verifyClientService.setIsReserva(true);
+      this.verifyClientService.setDataClient();
+      this.verifyClientService.setLinkRedirecLogin('./reservar-mesa');
+      this.router.navigate(['./login-client']);
     }
   }
 

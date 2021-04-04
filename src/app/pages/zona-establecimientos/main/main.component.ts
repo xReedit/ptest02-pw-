@@ -134,7 +134,6 @@ export class MainComponent implements OnInit {
 
   clickTab(op: any) {
     // op.index = typeof op === 'number' ? op : op.index;
-    console.log(op);
     let goToPage = '/establecimientos';
     // const index = $event.index ? $event.index : $event;
     switch (op) {
@@ -161,22 +160,22 @@ export class MainComponent implements OnInit {
   }
 
   goBack() {
-    // console.log('this.navigartoService.nowUrl', this.navigartoService.nowUrl);
+
 
     if ( window.location.href.indexOf('/zona-delivery/establecimientos') > -1 ) {
-      this.navigartoService._router('../');
+      this.navigartoService.__router('../');
       return;
     }
 
-    if ( window.location.href.indexOf('/zona-delivery/categorias') > -1 ) {
-      this.navigartoService._router('/zona-delivery/establecimientos');
-      return;
-    }
+    // if ( window.location.href.indexOf('/zona-delivery/categorias') > -1 ) {
+    //   this.navigartoService._router('/zona-delivery/establecimientos');
+    //   return;
+    // }
 
-    if ( window.location.href.indexOf('/zona-delivery/pedido-detalle') > -1 ) {
-      this.navigartoService._router('/zona-delivery/pedidos');
-      return;
-    }
+    // if ( window.location.href.indexOf('/zona-delivery/pedido-detalle') > -1 ) {
+    //   this.navigartoService._router('/zona-delivery/pedidos');
+    //   return;
+    // }
 
     window.history.back();
   }

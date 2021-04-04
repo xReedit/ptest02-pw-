@@ -23,6 +23,8 @@ export class NavigatorLinkService {
   public lastUrlHistory = '';
   public nowUrl = '';
 
+  closeListenNavigator = false;
+
 
   constructor(
     private router: Router,
@@ -33,16 +35,18 @@ export class NavigatorLinkService {
     // private miPedidoService: MipedidoService,
   ) {
 
-    console.log('inicio navigate service');
-
 
     this.listenEventNavigator();
   }
 
   private listenEventNavigator() {
+    if ( this.closeListenNavigator ) {return; }
     this.router.events.pipe(
       filter(e => e instanceof NavigationStart)
       , bufferCount(2, 1)).subscribe((e: any) => {
+        // return false;
+        if ( this.closeListenNavigator ) {return; }
+
         if (e !== null && e !== undefined) {
           this.nowUrl = e[0]['url'];
           // if ( this.disabledBack ) {return false; }
@@ -67,6 +71,7 @@ export class NavigatorLinkService {
 
 
   setPageActive(_pageActive): void {
+    // return;
     this.pageActive = _pageActive;
     this.lastUrlHistory = _pageActive !== 'carta' ? _pageActive : this.lastUrlHistory;
 
@@ -84,22 +89,30 @@ export class NavigatorLinkService {
   }
 
   private saveHistoryPageActive(key: string, url: string): void {
+    // return;
     this.historyNavigator[key] = [];
     this.historyNavigator[key].key = key;
     this.historyNavigator[key].url = url;
   }
 
   private findPageActiveInHistory(_key: string): any {
+    // return false;
     return Object.values(this.historyNavigator).filter(x => x.key === _key)[0];
   }
 
   addLink(params: string): void {
+    // return;
     this.router.navigate(['.', { state: params }]);
 
     this.saveHistoryPageActive(this.pageActive, params);
   }
 
   cerrarSession(reload: boolean = false) {
+    if ( this.infoTokenService.isReserva() ) {
+      this.router.navigate(['../home']);
+      return;
+    }
+
     if ( this.infoTokenService.isDelivery() ) {
       this.router.navigate(['../zona-delivery']);
     } else {
@@ -120,9 +133,11 @@ export class NavigatorLinkService {
   // si es [carta-i-] -> 'carta'
   // si es [carta] -> inicio
   managerGoBack(previusUrl: string, nexturl: string) {
+    // return;
+    if ( this.closeListenNavigator ) {return; }
     // const _url = this.lastUrlHistory;
     let _pageActive = '';
-    // console.log('managerGoBack', previusUrl);
+    console.log('managerGoBack', previusUrl);
     switch (previusUrl) {
       case 'carta-i-secciones-items':
         _pageActive = 'carta';
@@ -174,42 +189,6 @@ export class NavigatorLinkService {
     }
   }
 
-  // // control alos backs de zona establecimiento
-  // private managerGoZonaEstablecimiento(arrUrl: any, e): void {
-  //   // console.log('arrUrl', arrUrl);
-  //   // previusUrl = previusUrl.split('?')[0];
-  //   const urlFrom = arrUrl.split('?')[0];
-  //   // const urlTo = arrUrl[1].split('?')[0];
-  //   let _pageActive = '';
-
-  //   switch (urlFrom) {
-  //     case '/zona-delivery/establecimientos':
-  //       _pageActive = '../inicio';
-  //       // console.log('desde navigatot service establecimientos');
-  //       // this.disabledBack = true;
-  //       // this.disableGoBack();
-  //       break;
-  //     case '/zona-delivery/pedidos':
-  //       console.log('desde navigatot service establecimientos');
-  //       _pageActive = '/zona-delivery/establecimientos';
-  //       // this.disabledBack = false;
-  //       break;
-  //     case '/zona-delivery/categorias':
-  //       console.log('desde navigatot service establecimientos');
-  //       _pageActive = '/zona-delivery/establecimientos';
-  //       break;
-  //     case '/zona-delivery':
-  //       console.log('desde zona-delivery');
-  //       _pageActive = '../';
-  //       e = null;
-  //       this.disableGoBack();
-  //       break;
-  //   }
-
-  //   if (_pageActive !== '' ) {
-  //     this._router(_pageActive);
-  //   }
-  // }
 
   // usar router de servicio
   _router(link: string) {
@@ -217,7 +196,13 @@ export class NavigatorLinkService {
     return false;
   }
 
+  __router(link: string) {
+    this.router.navigate([link]);
+    return false;
+  }
+
   disableGoBack(): void {
+
     this.disabledBack = true;
     history.pushState(null, null, location.href);
     window.onpopstate = function () {
@@ -234,6 +219,10 @@ export class NavigatorLinkService {
 
       // }
     }
+  }
+
+  setOffListenNavigator(val: boolean) {
+    this.closeListenNavigator = val;
   }
 
   // private findAndApplyHistory(_pageActive): void {

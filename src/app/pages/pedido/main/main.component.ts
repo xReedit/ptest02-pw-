@@ -22,10 +22,12 @@ export class MainComponent implements OnInit {
   selectedTab = 0;
   isUsuarioCliente = false; // si es usuario cliente
   isClienteDelivery = false;
+  isClienteReserva = false;
   isPagePagarShow = false;
 
 
   private lastValScrollTop = 0;
+  importeTotalProductos = 0;
 
 
   // tamaño de la pamtalla
@@ -67,6 +69,7 @@ export class MainComponent implements OnInit {
       }
       this.listenStatusService.setIsUsuarioCliente(this.isUsuarioCliente);
       this.isClienteDelivery = res?.isDelivery;
+      this.isClienteReserva = res?.isReserva;
 
       // para que reconecte, porque al iniciar no conecta si viene delivery codigo qr
       if (this.verifyClientService.getIsDelivery() && this.verifyClientService.getIsQrSuccess()) {
@@ -111,6 +114,7 @@ export class MainComponent implements OnInit {
 
     this.miPedidoService.countItemsObserve$.subscribe((res) => {
       this.countTotalItems = res;
+      this.importeTotalProductos = this.miPedidoService.getSubTotalMiPedido();
     });
 
     // this.tooltip.show();
@@ -134,7 +138,7 @@ export class MainComponent implements OnInit {
 
 
 
-    // console.log('event tab', $event);
+    console.log('event tab', $event);
     this.selectedTab = $event.index;
 
     // if ( this.selectedTab === 1 && !this.isScreenIsMobile ) {return false; }
@@ -150,5 +154,19 @@ export class MainComponent implements OnInit {
     if ( !this.isHayCuentaBusqueda ) { return; }
     this.miPedidoService.resetObjMiPedido();
     this.listenStatusService.setHayCuentaBuesqueda(false);
+  }
+
+  goListaProductos() {
+    const _tabList = {
+      index: 1,
+      tab: {
+        isActive: true,
+        origin: 1,
+        position: 0,
+        textLabel: 'MiPedido'
+      }
+    };
+
+    this.clickTab(_tabList);
   }
 }

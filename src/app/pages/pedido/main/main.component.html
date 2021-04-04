@@ -50,6 +50,16 @@
           <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">          
             <app-carta></app-carta>
             <br>
+
+            <!-- footer boton ir a mi pedido -->
+            <div class="footer-btn-go-lista animated fadeIn" [ngClass]="{'fadeInUp':  countTotalItems > 0,'fadeOutDown': countTotalItems <= 0}" *ngIf="isUsuarioCliente && isScreenIsMobile">
+              <div class="content" (click)="goListaProductos()">
+                <p class="badge badge-light">{{ countTotalItems }}</p>
+                <p>Ver pedido</p>
+                <p>S/. {{ importeTotalProductos | number: '.2' }}</p>
+              </div>
+            </div>
+
           </div>     
         </mat-tab>
         <mat-tab label="MiPedido" [disabled]="!isScreenIsMobile">
@@ -73,7 +83,7 @@
         </mat-tab>
 
         <!-- solo si es usuario cliente  -->
-        <mat-tab label="Estado" *ngIf="isUsuarioCliente && !isClienteDelivery">
+        <mat-tab label="Estado" *ngIf="isUsuarioCliente && !isClienteDelivery && !isClienteReserva">
           <!-- <ng-container *ngIf="isUsuarioCliente"> -->
             <div class="x100-toolbar-hidden" (scroll)="onScroll($event)"> 
               <app-estado-pedido></app-estado-pedido>

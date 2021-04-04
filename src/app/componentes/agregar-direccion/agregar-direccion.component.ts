@@ -313,7 +313,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   }
 
   private setBdDireccion() {
-    // console.log( 'save',  this.dataCliente);
+
     this.dataCliente.referencia = this.utilService.addslashes(this.dataCliente.referencia);
     this.crudService.postFree(this.dataCliente, 'cliente', 'new-direccion', false)
       .subscribe((res: any) => {

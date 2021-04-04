@@ -18,6 +18,7 @@ export class ItemComercioComponent implements OnInit {
   descripcionDiaProgramado = '';
 
   @Input() itemEstablecimiento: DeliveryEstablecimiento;
+  @Input() reserva: boolean;
 
   @Output() itemSelected = new EventEmitter<DeliveryEstablecimiento>();
 

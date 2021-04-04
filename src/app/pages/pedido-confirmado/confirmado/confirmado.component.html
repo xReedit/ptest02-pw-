@@ -1,15 +1,17 @@
 <!-- confirmacion de pedido solo delivery -->
 
 <div class="animated fadeIn h-100 d-flex justify-content-center align-items-center" style="background-color: #3f51b5;">
-    <mat-card class="mt-2 mb-2">
+    <mat-card class="m-2 mb-2">
         <div class="p-3" style="max-width: 500px; margin: 0 auto;">
             <div class="p-3 bg-white">
                 <div class="text-center">
-                  <p class="fs-20">Pedido Confirmado</p>
+                  <p class="fs-20">{{ titulo }}</p>
                   <hr>
-                  <p>Su orden llegara pronto.</p>
+                  <div style="max-width: 220px">
+                    <p>{{ subtitulo }}</p>
+                  </div>
                   <hr>
-                  <img src="./assets/images/food_delivery.gif" alt="delivery" width="160px">
+                  <img src="./assets/images/{{ img }}" alt="delivery" width="160px">
                   <hr>
                   <p>Puede ver el estado en <br><strong>Mis Pedidos</strong>.</p>
                   <!-- <span class="fw-100 fs-25">{{ countFin | number: '2.' }}</span>
@@ -18,7 +20,7 @@
               </div>
               
               <div class="p-3 bg-white text-center">          
-                <button mat-flat-button color="primary" (click)="finDelivery()"> Listo. </button>
+                <button mat-flat-button color="primary" (click)="finDeliveryAvisoMsj()"> Listo. </button>
                 <br>
               </div>
         </div>

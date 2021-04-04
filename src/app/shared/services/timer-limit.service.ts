@@ -34,7 +34,7 @@ export class TimerLimitService {
   }
 
   playCountTimerLimit(): void {
-    if ( this.infoToken.isDelivery() ) { return; } // cuando es delivery no cuenta tiempo
+    if ( this.infoToken.isDelivery() || this.infoToken.isReserva() ) { return; } // cuando es delivery no cuenta tiempo
     if (this.isPlayTimer) {return; }
     this.isPlayTimer = true;
     this.initCount();

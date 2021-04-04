@@ -75,7 +75,6 @@ export class AtmComponent implements OnInit {
     // console.log('listBilletes', this.listBilletes);
 
     this.listenService.numberPageShowAtm$.subscribe(res => {
-      console.log('from ATM showpage', res);
       this.opShowPage = res;
     });
 
@@ -91,14 +90,12 @@ export class AtmComponent implements OnInit {
   }
 
   resultCantItem(e) {
-    console.log(this.listBilletes);
 
     this.importeRetirar = this.listBilletes.map(i => {
       i.cantidad_selected = i.cantidad_selected ? i.cantidad_selected : 0;
       i.importeTotal = i.cantidad_selected * i.valor;
       return i.importeTotal;
     }).reduce( (a, b) => a + b , 0 );
-    console.log('this.importeRetirar', this.importeRetirar);
 
     this.stopAdd = this.importeRetirar >= 200;
   }
@@ -117,7 +114,6 @@ export class AtmComponent implements OnInit {
 
   private getComisionAtm() {
     this.parametrosDelivery.getComisionAtm(this.importeRetirar).subscribe((res: any) => {
-      console.log('res comsion', res);
       this.comisionAtm = res['comision'];
     });
   }
@@ -138,7 +134,7 @@ export class AtmComponent implements OnInit {
 
   frmClienteResponse(e: any) {
     this.isLoadingCosto = true;
-    console.log('frmClienteResponse', e);
+    // console.log('frmClienteResponse', e);
 
     this.responseFrmDatosCliente = e;
 
@@ -163,7 +159,6 @@ export class AtmComponent implements OnInit {
   }
 
   respuestaTransaccion(e: any) {
-    console.log('e response transaccion', e);
     if ( e.success ) {
       const sendData = {
           importeSolicita: this.importeRetirar,

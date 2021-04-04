@@ -99,7 +99,7 @@ constructor(
       documento: this.numDocumento
     };
 
-    console.log('con dni');
+
     this.crudService.postFree(_dataClienteNum, 'service', 'consulta-dni-ruc-no-tk', false)
     .subscribe((res: any) => {
       const _datosBd = res.data;
@@ -259,10 +259,27 @@ constructor(
   verificarDNI(item: any): void {
     // this.listViewDate.map( (x: any) => x.selected = false);
     // item.selected = true;
-    console.log('verificar dni');
 
     this.isListDateSelect = true;
     // this.isDateBirthdayValid = item.fecha === this.dataCliente.date_of_birthday;
+
+    try {
+
+      const _pwa_data_session = this.dataCliente.pwa_data_session;
+      const _pwa_data_usuario = this.dataCliente.pwa_data_usuario;
+
+      _pwa_data_session.pwa_data_session = null;
+      _pwa_data_usuario.datalogin = null;
+
+      this.dataCliente.pwa_data_session = _pwa_data_session;
+      this.dataCliente.pwa_data_usuario = _pwa_data_usuario;
+    } catch (error) {
+      console.log(error);
+    }
+
+
+
+
     this.isDateBirthdayValid = item === this.dataCliente.verification_code;
 
     this.isPaseOk = this.isDateBirthdayValid;

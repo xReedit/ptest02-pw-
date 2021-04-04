@@ -23,6 +23,7 @@ export class ItemModel {
     cantidad_seleccionada_x_tpc = 0; // cantidad seleccionada por tipo cosnumo
     cantidad_reset: number; // cuando caduca el tiempo y recupera stock
     cantidad_descontado = 0; // cantidad que se decuenta por reglas de carta
+    // cantidad_selected: number; // cantidad selecciona del control de add fast comp-ctl-add-fast
     des: string;
     indicaciones: string; // indicaciones del pedido
     detalles: string; // descripcion en detalle

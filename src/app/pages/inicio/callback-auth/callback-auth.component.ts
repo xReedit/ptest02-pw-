@@ -63,7 +63,6 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
       this.authService.setLoggedStatus(true);
       this.infoToken.converToJSON();
 
-      console.log('redirige');
       let _linkToRedirec = this.verifyClientService.getLinkRedirecLogin();
       _linkToRedirec = _linkToRedirec ? _linkToRedirec : '';
 

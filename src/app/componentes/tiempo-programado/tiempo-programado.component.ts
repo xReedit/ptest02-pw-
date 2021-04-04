@@ -33,7 +33,7 @@ export class TiempoProgramadoComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log('aaa');
+    // console.log('aaa');
     this.infoEstablecimiento = this.establecimientoService.get();
     this.isTiempoProgramadoSoloDia = this.infoEstablecimiento.pwa_pedido_programado_solo_del_dia === 1;
     this.getDia();
@@ -44,7 +44,8 @@ export class TiempoProgramadoComponent implements OnInit {
 
   private findTimeList() {
     // console.log('time');
-    if ( this.tiempoEntregaSelected.iddia !== undefined ) {
+    // if( !this.tiempoEntregaSelected ) { return; }
+    if ( this.tiempoEntregaSelected?.iddia !== undefined ) {
       this.selectedIni = this.listDia[0]; // this.listDia.filter(d => d.numDay === this.tiempoEntregaSelected.iddia)[0];
 
       this.seletecDay = this.selectedIni;

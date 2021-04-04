@@ -37,7 +37,7 @@ export class JsonPrintService {
 
     // datos de la sede
     this.getDataSede();
-    console.log('aaaa qui');
+
 
     const _objMiPedido = this.pedidoService.getMiPedido();
     const xRptPrint: any = []; // respuesta para enviar al backend

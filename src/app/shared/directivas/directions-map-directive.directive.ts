@@ -66,7 +66,7 @@ export class DirectionsMapDirectiveDirective implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('changes directiva', changes.origin);
+
       if (changes.origin || changes.showDirection) {
           // this checks if the show directions input changed, if so the directions are removed
           // else we redraw the directions

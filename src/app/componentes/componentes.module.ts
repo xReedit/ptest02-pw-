@@ -39,6 +39,12 @@ import { CompCheckComponent } from './comp-check/comp-check.component';
 import { CompCtrlAddFastComponent } from './comp-ctrl-add-fast/comp-ctrl-add-fast.component';
 import { CompGetDatosClienteComponent } from './comp-get-datos-cliente/comp-get-datos-cliente.component';
 import { CompPasarelaPagoComponent } from './comp-pasarela-pago/comp-pasarela-pago.component';
+import { SelectCiudadDeliveryComponent } from './select-ciudad-delivery/select-ciudad-delivery.component';
+import { CompDatosReservaComponent } from './comp-datos-reserva/comp-datos-reserva.component';
+import { CompGetHoraComponent } from './comp-get-hora/comp-get-hora.component';
+
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { DialogCalificacionSedeComponent } from './dialog-calificacion-sede/dialog-calificacion-sede.component';
 
 @NgModule({
   declarations: [
@@ -71,6 +77,10 @@ import { CompPasarelaPagoComponent } from './comp-pasarela-pago/comp-pasarela-pa
     CompCtrlAddFastComponent,
     CompGetDatosClienteComponent,
     CompPasarelaPagoComponent,
+    SelectCiudadDeliveryComponent,
+    CompDatosReservaComponent,
+    CompGetHoraComponent,
+    DialogCalificacionSedeComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
@@ -83,8 +93,8 @@ import { CompPasarelaPagoComponent } from './comp-pasarela-pago/comp-pasarela-pa
     ReactiveFormsModule,
     FormsModule,
     MaterialModule,
-
-    StarRatingModule.forRoot()
+    StarRatingModule.forRoot(),
+    NgxMaterialTimepickerModule
   ],
   exports: [
     AgregarDireccionComponent,
@@ -112,7 +122,11 @@ import { CompPasarelaPagoComponent } from './comp-pasarela-pago/comp-pasarela-pa
     TipoVehiculoComponent,
     CompCtrlAddFastComponent,
     CompGetDatosClienteComponent,
-    CompPasarelaPagoComponent
+    CompPasarelaPagoComponent,
+    SelectCiudadDeliveryComponent,
+    CompDatosReservaComponent,
+    CompGetHoraComponent,
+    DialogCalificacionSedeComponent
     // DialogDesicionComponent
   ],
 

@@ -4,7 +4,6 @@
     padding: 0px;
     min-width: 300px;
     max-width: 450px !important;
-    /* overflow: hidden; */
 }
 
 ::ng-deep .cdk-overlay-dark-backdrop {

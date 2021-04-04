@@ -92,13 +92,16 @@ export class DatosDeliveryComponent implements OnInit {
     isFromComercio: 1, // el pedido esta yendo desde el comercio,
     costoTotalDelivery: 0,
     tiempoEntregaProgamado: {},
-    num_verificador: ''
+    num_verificador: '',
+    solicitaCubiertos: 0
   };
 
   dirEstablecimiento: DeliveryEstablecimiento;
   importeTota = 0;
 
   isShowAddDireccionMapa = true; // si esta habilitado busqueda en el mapa
+
+  isCubierto = false;
 
   constructor(
     private fb: FormBuilder,
@@ -228,6 +231,7 @@ export class DatosDeliveryComponent implements OnInit {
       this.resData.pasoRecoger = this.isRecojoLocalCheked;
       this.resData.buscarRepartidor = this.establecimientoService.establecimiento.pwa_delivery_servicio_propio === 0;
       this.resData.costoTotalDelivery = this.infoEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
+      this.resData.solicitaCubiertos = this.isCubierto ? 1 : 0;
       // this.resData.establecimiento = this.infoEstablecimiento;
 
 

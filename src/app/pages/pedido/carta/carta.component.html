@@ -11,26 +11,42 @@
 
     <!-- categorias -->
     <div [hidden]="!showCategoria" class="content-secciones xanimated xfadeIn">
-        <ng-container *ngIf="miPedidoService.objCarta">
-            <ul>
-                <li *ngFor="let item of miPedidoService.objCarta.carta" class="xCursor"
-                    matRipple [matRippleColor]="rippleColor"
-                    (click)="getSecciones(item)">
-                    <div class="m1">                          
-                      <div class="img mt-2">
-                        <img src="assets/images/048-grill.png" alt="">
-                      </div>                        
-                      <div>
-                        <span class="fw-100 fs-20">{{item.des}}</span><br>                        
-                        <div class="text-secondary">
-                          <span class="mt-2 fs-15">{{ item.detalle | lowercase }}</span><br>
-                          <i class="fa fa-clock-o pr-2" aria-hidden="true"></i>
-                          <span class="mt-2 fs-12">Horario de atencion: de {{item.hora_ini}} a {{item.hora_fin}} </span>
+
+        <!-- informacion y comentarios solo delivery cliente -->
+        <div class="p-2 pl-3 pr-3 border-bottom d-flex justify-content-between fs-14" 
+            style="background: #e3f2fd;" matRipple [matRippleColor]="rippleColor"
+            *ngIf="isShowCalificacion && isCliente"
+            (click)="openDialogComentarios()"
+            >
+          <div class="d-flex">
+            <span class="pr-2"><i class="fa fa-star text-warning pr-1"></i> {{ dataCalificacion.calificacion | number: '.1' }}</span>
+          </div>
+          <div>
+            <span>{{ dataCalificacion.cantidad }} Opiniones <i class="fa fa-angle-right text-secondary pl-2"></i></span>            
+          </div>
+        </div>
+
+        <ng-container *ngIf="miPedidoService.objCarta">                 
+              <ul>
+                  <li *ngFor="let item of miPedidoService.objCarta.carta" class="xCursor"
+                      matRipple [matRippleColor]="rippleColor"
+                      (click)="getSecciones(item)">
+                      <div class="m1">                          
+                        <div class="img mt-2">
+                          <img src="assets/images/048-grill.png" alt="">
+                        </div>                        
+                        <div>
+                          <span class="fw-100 fs-20">{{item.des}}</span><br>                        
+                          <div class="text-secondary">
+                            <span class="mt-2 fs-15">{{ item.detalle | lowercase }}</span><br>
+                            <i class="fa fa-clock-o pr-2" aria-hidden="true"></i>
+                            <span class="mt-2 fs-12">Horario de atencion: de {{item.hora_ini}} a {{item.hora_fin}} </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                </li>
-            </ul>    
+                  </li>
+              </ul>    
+            
         </ng-container>
     </div>    
 
@@ -67,106 +83,131 @@
             </div>
           </li>
         </ul>
-      </ng-container>
+        <br><br>
+      </ng-container>      
     </div>
 
     <!-- items -->
     <!-- color-fondo-ul -->
     <div [hidden]="!showItems && isScreenIsMobile" class="content-items xtransicion m-main-pt-40">
       <ng-container>
-        <ul class="ul-items">
-            <!-- [ngClass]="{'li-padding-selected': item.selected}" -->
-          <li *ngFor="let item of objItems" class="li-item">
-            <div class="xcontent child-item border-left-item-{{getEstadoStockItem(item.cantidad)}}"> 
-              <!-- titulo item -->
-              <div class="m1 d-flex xtitulo" matRipple [matRippleColor]="rippleColor" [ngClass]="{'li-tachado': item.cantidad < 1, 'p-titulo-item-sin-detalle': item.detalles.length === 0}" (click)="selectedItem(item)">
-                
-                <!-- <div class="content-titulo-item w-100 d-flex align-items-center justify-content-between w-100">
-                   
-                    <div class="d-flex align-items-center w-100">
-                      <ng-container *ngIf="item.img != ''">
-                        <img class="icon-item-carta" src="{{rutaImgItem}}{{item.img}}" alt="icon-item-carta">
-                      </ng-container>
-                      
-                   
-                      <div class="d-flex justify-content-between w-100">
-                        <div>
-                          <span class="fw-600 fs-11 item-titulo">{{item.des}}</span>
-                          
-                          <ng-container *ngIf="item.detalles.length > 0">
-                            <p class="titlo-detalle mb-1" >{{item.detalles}}</p>                    
-                          </ng-container>                   
-                        </div>
-                        <div class="text-right pl-1">
-                          <p class="mb-0 fw-600">{{item.precio | number:'0.2' }}</p>
-                          <p *ngIf="item.precio_antes" class="mb-0 fw-600 li-tachado">{{item.precio_antes | number:'0.2' }}</p>
-                        </div>
-                      </div>
-                      
-                    </div>
 
-                </div>    -->
-                
-                <!-- style 2.0 200720 -->
-                <div class="content-titulo-item w-100 d-flex align-items-center justify-content-between w-100">
-                    <ng-container *ngIf="item.img === ''; else elseConImagen">
-                      <!-- sin imagen -->                      
-                        <div class="d-flex justify-content-between w-100">
+
+        <!-- vista tradiciconal -->
+        <ng-container *ngIf="!isViewMercado; else elseViewItemMercado">
+          
+          <ul class="ul-items">
+            <li *ngFor="let item of objItems" class="li-item">
+              <div class="xcontent child-item border-left-item-{{getEstadoStockItem(item.cantidad)}}"> 
+                <div class="m1 d-flex xtitulo" matRipple [matRippleColor]="rippleColor" [ngClass]="{'li-tachado': item.cantidad < 1, 'p-titulo-item-sin-detalle': item.detalles.length === 0}" (click)="selectedItem(item)">                                
+                  <!-- style 2.0 200720 -->
+                  <div class="content-titulo-item w-100 d-flex align-items-center justify-content-between w-100">
+                      <ng-container *ngIf="item.img === ''; else elseConImagen">
+                        <!-- sin imagen -->                      
+                          <div class="d-flex justify-content-between w-100">
+                            <div>
+                              <span class="fw-600 fs-11 item-titulo">{{item.des}}</span>
+                              
+                              <ng-container *ngIf="item.detalles.length > 0">
+                                <p class="titlo-detalle mb-1" >{{item.detalles}}</p>                    
+                                
+                              </ng-container>                            
+                            </div>
+                            <!-- si no hay detalles -->
+                            <div class="text-right pl-1">
+                              <p class="mb-0 fw-600">
+                                <span *ngIf="item.precio_antes" class="fw-600 li-tachado mr-1">{{item.precio_antes | number:'0.2' }}</span>
+                                {{item.precio | number:'0.2' }}
+                              </p>                            
+                            </div>
+                          </div>                      
+                      </ng-container>                    
+                      <ng-template #elseConImagen>
+                        <!-- con imagen -->
+                        <div class="d-flex justify-content-between w-100 align-items-center">
                           <div>
                             <span class="fw-600 fs-11 item-titulo">{{item.des}}</span>
                             
-                            <ng-container *ngIf="item.detalles.length > 0">
-                              <p class="titlo-detalle mb-1" >{{item.detalles}}</p>                    
+                            <ng-container>
+                              <p *ngIf="item.detalles.length > 0" class="titlo-detalle mb-1" >{{item.detalles}}</p>                    
                               
                               <!-- si hay detalles los precios abajo -->
-                              <!-- <div>
-                                <p class="mb-0 fw-600 pr-2">{{item.precio | number:'0.2' }}</p>
+                              <div>
                                 <p *ngIf="item.precio_antes" class="mb-0 fw-600 li-tachado">{{item.precio_antes | number:'0.2' }}</p>
-                              </div> -->
+                                <p class="mb-0 fw-600 pr-2">{{item.precio | number:'0.2' }}</p>
+                              </div>
                             </ng-container>                            
                           </div>
-                          <!-- si no hay detalles -->
-                          <div class="text-right pl-1">
-                            <p class="mb-0 fw-600">
-                              <span *ngIf="item.precio_antes" class="fw-600 li-tachado mr-1">{{item.precio_antes | number:'0.2' }}</span>
-                              {{item.precio | number:'0.2' }}
-                            </p>                            
-                          </div>
-                        </div>                      
-                    </ng-container>                    
-                    <ng-template #elseConImagen>
-                      <!-- con imagen -->
-                      <div class="d-flex justify-content-between w-100 align-items-center">
-                        <div>
-                          <span class="fw-600 fs-11 item-titulo">{{item.des}}</span>
-                          
-                          <ng-container>
-                            <p *ngIf="item.detalles.length > 0" class="titlo-detalle mb-1" >{{item.detalles}}</p>                    
-                            
-                            <!-- si hay detalles los precios abajo -->
-                            <div>
-                              <p *ngIf="item.precio_antes" class="mb-0 fw-600 li-tachado">{{item.precio_antes | number:'0.2' }}</p>
-                              <p class="mb-0 fw-600 pr-2">{{item.precio | number:'0.2' }}</p>
+                          <!-- imagen -->
+                          <div class="text-right ml-1">
+                            <div class="rounded-circle icon-div-carta">
+                              <img class="icon-item-carta rounded-circle" src="{{rutaImgItem}}{{item.img}}" alt="icon-item-carta">
                             </div>
-                          </ng-container>                            
-                        </div>
-                        <!-- imagen -->
-                        <div class="text-right ml-1">
-                          <div class="rounded-circle icon-div-carta">
-                            <img class="icon-item-carta rounded-circle" src="{{rutaImgItem}}{{item.img}}" alt="icon-item-carta">
                           </div>
                         </div>
-                      </div>
-                    </ng-template>
-                    
-                    
+                      </ng-template>
+                      
+                      
+                  </div>
+  
                 </div>
+                
+              </div>            
+            </li>          
+          </ul> 
 
-              </div>
-              
-            </div>            
-          </li>          
-        </ul>        
+        </ng-container>
+
+        <!-- vista mercado -->
+        <ng-template #elseViewItemMercado>
+          <ul class="content-view-item-mercado">
+            <li *ngFor="let item of objItems" class="li-content-mercado">
+                <div class="li-item-mercado d-flex xtitulo p-titulo-item-sin-detalle" matRipple [ngClass]="{'li-tachado': item.cantidad < 1}">
+                  <div class="w-100">                                            
+                        <!-- con imagen -->
+                        <div class="w-100 align-items-center">
+
+                          <div>
+                            
+                            <app-comp-ctrl-add-fast class="div-control-add-fast"
+                              (objResponse)="resultCantItemMercado($event)" 
+                              [objItem]="item"
+                              [limitAdd]="item.cantidad">
+                            </app-comp-ctrl-add-fast>
+  
+                            <!-- imagen -->
+                            <div class="text-right ml-1">
+                              <div class="text-center">
+                                <ng-container *ngIf="item.img===''; else elseTemplateConImg" >
+                                  <img class="icon-item-carta" src="{{imgNull}}" alt="icon-item-carta" (click)="selectedItem(item)">
+                                </ng-container>
+                                <ng-template #elseTemplateConImg>
+                                  <img class="icon-item-carta" src="{{rutaImgItem}}{{item.img}}" alt="icon-item-carta" (click)="selectedItem(item)">                                  
+                                </ng-template>
+                                
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div class="text-center" (click)="selectedItem(item)">
+                            <span class="fw-600 fs-11 item-titulo">{{item.des}}</span>                                                          
+                            <div>
+                                <p *ngIf="item.precio_antes" class="mb-0 fw-600 li-tachado">{{item.precio_antes | number:'0.2' }}</p>
+                                <p class="mb-0 fw-600 pr-2">{{item.precio | number:'0.2' }}</p>
+                            </div>             
+                          </div>
+                          
+                        </div>
+                  </div>
+  
+                </div>      
+            </li>          
+          </ul> 
+        </ng-template>
+        
+
+        
+               
       </ng-container>
     </div>
 

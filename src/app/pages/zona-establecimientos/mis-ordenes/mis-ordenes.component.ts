@@ -109,7 +109,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
   }
 
   openDetalle(item: any) {
-    console.log(item);
+
     this.infoTokenService.setOtro(item);
     this.router.navigate(['/zona-delivery/pedido-detalle']);
   }
