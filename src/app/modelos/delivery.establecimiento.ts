@@ -50,4 +50,6 @@ export class DeliveryEstablecimiento {
     centro: any;
     icons_entrega: []; // iconos json de entrega a mostrar
     pwa_pedido_programado_solo_del_dia: number; // pedidos programados solo del dia
+    pwa_acepta_reservas: number; // 1 acepta recervas
+    pwa_acepta_reserva_desde: string; // hora desde que acepta reserva
 }

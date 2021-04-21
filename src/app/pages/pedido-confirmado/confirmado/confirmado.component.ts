@@ -45,14 +45,16 @@ export class ConfirmadoComponent implements OnInit {
     // limpiar storage transaccion
     this.miPedidoService.prepareNewPedido();
     this.infoTokenService.removeStoragePedido();
+    this.infoTokenService.setIdCliente();
     // this.infoTokenService.cerrarSession();
 
     this.socketService.isSocketOpenReconect = true;
     this.socketService.closeConnection();
     this.navigatorService.cerrarSession();
 
+
     // this.navigatorService._router('../zona-delivery');
-    this.router.navigate(['./home']);
+    // this.router.navigate(['./home']);
 
   }
 

@@ -11,7 +11,7 @@
         <div style="max-width: 500px; display: inline-block;">
             <p class="fs-15 fw-600 text-secondary">Elige una ciudad donde contamos con el servicio</p>
             <hr>        
-            <app-select-ciudad-delivery (cuidadSelected)="selectedCiudad($event)"></app-select-ciudad-delivery>
+            <app-select-ciudad-delivery (cuidadSelected)="selectedCiudad($event)" [isOnlyReserva]="true"></app-select-ciudad-delivery>
         </div>
     </div>
 

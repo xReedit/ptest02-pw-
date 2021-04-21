@@ -177,7 +177,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
       // this.dataClientePago.email = 'integraciones.visanet@necomplus.com'; // desarrollo
       // // this.dataClientePago.email = 'review@cybersource.com';
-      // this.dataClientePago.isSaveEmail = false;
+      // this.dataClientePago.isSaveEmail = false; // desarrollo
 
       // email // comentar si es review@cybersource.com
       this.isRequiredEmail = this.dataClientePago.email === '' ?  true : false;
@@ -455,7 +455,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     this.socketService.isSocketOpenReconect = true;
     this.socketService.closeConnection();
 
-    this.navigatorService._router('../zona-delivery');
+    this.navigatorService.__router('../zona-delivery');
 
   }
 

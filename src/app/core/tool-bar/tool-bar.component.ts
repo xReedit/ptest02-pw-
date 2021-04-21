@@ -8,12 +8,27 @@ import { Router } from '@angular/router';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 import { filter } from 'rxjs/operators';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
+import {MAT_TOOLTIP_DEFAULT_OPTIONS, MatTooltipDefaultOptions} from '@angular/material/tooltip';
+import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
+
+export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
+  showDelay: 500,
+  hideDelay: 1000,
+  touchendHideDelay: 500,
+};
+
 
 @Component({
   selector: 'app-tool-bar',
   templateUrl: './tool-bar.component.html',
-  styleUrls: ['./tool-bar.component.css']
+  styleUrls: ['./tool-bar.component.css'],
+  providers: [
+    {provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults}
+  ]
 })
+
+
 export class ToolBarComponent implements OnInit {
   isBusqueda = false;
   rippleColor = 'rgba(238,238,238,0.2)';
@@ -22,6 +37,8 @@ export class ToolBarComponent implements OnInit {
   isClienteDelivery = false;
 
   nomSede = '';
+  idSedeCartaVirtual: number;
+  urlSharedCartaVirtual: string;
 
   @ViewChild('txtBuscar') txtBuscar: ElementRef;
 
@@ -34,7 +51,9 @@ export class ToolBarComponent implements OnInit {
     private dialog: MatDialog,
     private listenStatusService: ListenStatusService,
     private renderer: Renderer2,
-    private infoTokenService: InfoTockenService
+    private infoTokenService: InfoTockenService,
+    private utilitariosSerivce: UtilitariosService,
+    private crudService: CrudHttpService,
     ) { }
 
   ngOnInit() {
@@ -48,10 +67,24 @@ export class ToolBarComponent implements OnInit {
     });
 
     this.isClienteDelivery = this.infoTokenService.isDelivery();
+    this.idSedeCartaVirtual = this.infoTokenService.infoUsToken.idsede;
+
+    this.getLinkSharedCarta();
   }
 
   private getNomSede(): void {
     this.nomSede =  this.miPedidoService.objDatosSede.datossede[0].sedenombre;
+  }
+
+  private getLinkSharedCarta() {
+    const _dataSend = {
+      idsede: this.idSedeCartaVirtual
+    };
+
+    this.crudService.postFree(_dataSend, 'delivery', 'get-shared-url-carta', false)
+    .subscribe((res: any) => {
+      this.urlSharedCartaVirtual = res.data[0].qr_delivery;
+    });
   }
 
   activaBusqueda(): void {
@@ -121,6 +154,10 @@ goBackOutEstablecimiento() {
         }
       });
 
+}
+
+sharedCarta() {
+  this.utilitariosSerivce.sharedNative(this.urlSharedCartaVirtual, this.nomSede);
 }
 
 

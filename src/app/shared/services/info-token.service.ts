@@ -217,6 +217,18 @@ export class InfoTockenService {
     this.set();
   }
 
+  // setea en sotrage el id del cliente despues de hacer un pedido para llamar en mis ordenes
+  setIdCliente(id: number = null) {
+    id = id ? id : this.infoUsToken?.idcliente || null;
+    localStorage.setItem('sys::ic-orden', btoa(id.toString()));
+  }
+
+  // id cliente del ultimo
+  getIdCliente(): any {
+    const _id = localStorage.getItem('sys::ic-orden');
+    return _id ? atob(_id) : null;
+  }
+
   // guarda en el local storage
   set() {
     const _token = `eyCJ9.${btoa(JSON.stringify(this.infoUsToken))}`;

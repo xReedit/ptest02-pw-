@@ -14,13 +14,14 @@ export class CompCtrlAddFastComponent implements OnInit {
   public showAnimateStop = false;
 
   private timerViewAfter = 0; // para volver la vista orginal
-  private countSegundos = 4;
+  private countSegundos = 60;
   private intervalShowaAfter: any;
   private isSuma = true;
 
 
   @Input() stopAdd: boolean; // si se detiene la adicion
   @Input() limitAdd: number; // si se detiene la adicion
+  @Input() zoom: number; // tamaño del control
   @Output() objResponse = new EventEmitter<any>();
 
 
@@ -37,6 +38,7 @@ export class CompCtrlAddFastComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    this.zoom = this.zoom ? this.zoom : 1;
   }
 
   showCantDetalle() {
@@ -79,6 +81,7 @@ export class CompCtrlAddFastComponent implements OnInit {
   add() {
     this.timerViewAfter = this.countSegundos;
     this.isSuma = true;
+    console.log('aaaaaaaaa');
 
     if ( !isNaN(this.limitAdd) ) {
       this.stopAdd = this.limitAdd <= 0;

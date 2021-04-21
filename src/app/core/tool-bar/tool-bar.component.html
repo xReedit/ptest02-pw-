@@ -5,6 +5,14 @@
      <!-- <i *ngIf="isClienteDelivery" class="fa fa-arrow-left pr-2" (click)="goBackOutEstablecimiento()"></i>   -->
     <span class="nom-comercio">{{ nomSede | titlecase }}</span>
     <span class="example-spacer"></span>
+    
+    <div class="example-ripple-container fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor"
+     (click)="sharedCarta()"
+     matTooltip="Enlace Copiado"
+     >
+     <i title="Compartir Carta" class="fa fa-share-alt" aria-hidden="true"></i>
+     
+    </div>
     <div style="display: contents;">       
        <div class="example-ripple-container fs-15" matRipple 
          [matRippleColor]="rippleColorBusqueda"
@@ -13,10 +21,10 @@
          matRippleRadius="290"
          (click)="activaBusqueda()"
          title="Buscar">
-            <i title="Cerrar Sesion" class="fa fa-search" aria-hidden="true"></i>
+            <i title="Buscar" class="fa fa-search" aria-hidden="true"></i>
        </div>
        <div class="example-ripple-container fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor" title="Cerrar Sesion" (click)="cerrarSession()">
-            <i title="Cerrar Sesion" class="fa fa-sign-out" aria-hidden="true"></i>
+            <i title="Cerrar Sesion" class="fa fa-close" aria-hidden="true"></i>
        </div>
        <!-- <button class="noSelect" mat-icon-button title="Cerrar Sesion"  (click)="cerrarSession()">
             <i title="Cerrar Sesion" class="fa fa-sign-out" aria-hidden="true"></i>
@@ -31,7 +39,7 @@
        </div>
        <input type="text" class="text-busqueda w-100" placeholder="Buscar..." #txtBuscar (keyup)="buscarCharAhora(txtBuscar.value)" autofocus>
        <div [hidden]="txtBuscar.value === ''" class="example-ripple-container text-dark fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColorPlomo"  (click)="clearTextBuqueda()">
-            <i title="Cerrar Sesion" class="fa fa-times" aria-hidden="true"></i>
+            <i title="Atras" class="fa fa-times" aria-hidden="true"></i>
        </div>
       </div>
    </ng-container>

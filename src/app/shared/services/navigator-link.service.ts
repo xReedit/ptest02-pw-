@@ -115,6 +115,7 @@ export class NavigatorLinkService {
 
     if ( this.infoTokenService.isDelivery() ) {
       this.router.navigate(['../zona-delivery']);
+      // this.router.navigate(['../home']);
     } else {
       this.router.navigate(['../'])
       .then(() => {
@@ -192,7 +193,7 @@ export class NavigatorLinkService {
 
   // usar router de servicio
   _router(link: string) {
-    // this.router.navigate([link]);
+    this.router.navigate([link]);
     return false;
   }
 

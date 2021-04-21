@@ -1602,8 +1602,9 @@ export class MipedidoService {
   private calcCostoCantItemsDelivery(): number {
     let rpt = 0;
     const _cantItemScala = parseInt(this.deliveryArrConstantes.cantItemsScala.toString(), 0);
+    if ( _cantItemScala === 0 ) { return 0; }
     if (this.deliveryCanItemsInOrder > _cantItemScala) {
-      const _div = this.deliveryCanItemsInOrder / this.deliveryArrConstantes.cantItemsScala;
+      const _div = this.deliveryCanItemsInOrder / _cantItemScala;
       // _div = Math.floor(_div);
       if ( _div > 1 ) {
         rpt = Math.floor(_div) * this.deliveryArrConstantes.costoScala;

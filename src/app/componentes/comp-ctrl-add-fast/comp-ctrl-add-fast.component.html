@@ -11,7 +11,7 @@
 </div>
 
 <!-- con catnidad -->
-<div class="btn-detalle btn-postion animated fadeInUp" [hidden]="!showDetalle">
+<div class="btn-detalle btn-postion animated fadeInUp"  [style.zoom]="zoom"  [hidden]="!showDetalle" >
     <div>
         <ng-container *ngIf="cantidad === 1; else elseTemplate">
             <span class="fa fa-trash" (click)="menos()"></span>

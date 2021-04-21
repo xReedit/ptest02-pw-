@@ -2,7 +2,7 @@
     <mat-card>
     <div class="content-img-comercio">        
         <img class="img-comercio" src="{{imgComercio}}" alt="">
-        <div class="div-cerrado" *ngIf="isCerrado && !isComercioAceptaPedidoProgramado">
+        <div class="div-cerrado" *ngIf="isCerrado && !isComercioAceptaPedidoProgramado && !isComercioReservacionesActiva">
             <p>Cerrado Ahora</p>                    
         </div>
     </div>
@@ -40,10 +40,14 @@
                     </div>
                 </div>
 
-                <div *ngIf="reserva">
+                <div *ngIf="reserva" class="d-flex">
                     <div>
                         <i class="fa fa-clock-o"></i>
                         Atencion hasta las <strong>{{ itemEstablecimiento.hora_fin }}</strong>
+                    </div>
+                    <div *ngIf="itemEstablecimiento.calificacion > 3" class="ml-2">
+                        <i class="fa fa-star text-warning"></i>
+                        {{ itemEstablecimiento.calificacion | number:'.0' }}
                     </div>
                 </div>
 
@@ -54,6 +58,14 @@
                     <span class="">
                         <i class="fa fa-calendar"></i>
                         Pídelo para {{ descripcionDiaProgramado }} desde <strong>las {{ itemEstablecimiento.hora_ini }} </strong>
+                    </span>
+                </div>
+
+                <!-- si es reserva  muestra la hora que acepta reservas -->
+                <div  *ngIf="reserva">
+                    <span>
+                        <i class="fa fa-clock-o"></i>
+                        Reservas desde {{ horaAceptaReservas }}
                     </span>
                 </div>
             </ng-template>

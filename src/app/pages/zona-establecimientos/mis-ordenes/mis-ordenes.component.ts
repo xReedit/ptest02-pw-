@@ -19,6 +19,8 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
   infoUser: UsuarioTokenModel;
   listMisPedidos: any;
 
+  idClientePedidos: number;
+
   telefonoSoporte = '934746830';
 
   constructor(
@@ -31,8 +33,18 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    this.idClientePedidos = this.infoTokenService.getIdCliente();
+    if ( this.idClientePedidos ) {
+      this.conectServices();
+      console.log('from getsotrage id cliente');
+      return;
+    }
+
+    this.infoTokenService.getInfoUs();
+
     if ( this.infoTokenService.infoUsToken ) {
       this.infoUser = this.infoTokenService.infoUsToken;
+      this.idClientePedidos = this.infoUser.idcliente;
       this.conectServices();
     } else {
       this.verifyClientService.verifyClient()
@@ -41,6 +53,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
         this.infoTokenService.infoUsToken = res;
         this.infoTokenService.set();
         this.infoTokenService.converToJSON();
+        this.idClientePedidos = this.infoUser.idcliente;
         this.conectServices();
       });
     }
@@ -71,12 +84,14 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
   loadMisPedidos(): void {
     this.loaderPage = false;
     const _data = {
-      idcliente: this.infoUser.idcliente
+      idcliente: this.idClientePedidos
     };
 
+    this.listMisPedidos = [];
     this.crudService.postFree(_data, 'delivery', 'get-mis-pedidos', false)
       .subscribe( res => {
-        // console.log(res);
+        console.log(res);
+        if ( !res.success ) {return; }
         this.listMisPedidos = res.data;
         this.listMisPedidos.map( x => {
           x.arrDatosDelivery = JSON.parse(x.arrDatosDelivery);
@@ -117,6 +132,10 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
   redirectWhatsAppSoporte() {
     const _link = `https://api.whatsapp.com/send?phone=51${this.telefonoSoporte}`;
     window.open(_link, '_blank');
+  }
+
+  recargarLista() {
+    window.location.reload();
   }
 
 }

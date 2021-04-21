@@ -87,7 +87,6 @@ export class Auth0Service {
 
   private handleAuthCallback() {
     // Call when app reloads after user logs in with Auth0
-    console.log('handleAuthCallback > ayth0.service');
     const params = window.location.search;
     if (params.includes('code=') && params.includes('state=')) {
       let targetRoute: string; // Path to redirect to after login processsed

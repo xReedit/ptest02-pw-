@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
+import {ClipboardModule, Clipboard} from '@angular/cdk/clipboard';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UtilitariosService {
 
-  constructor() { }
+  constructor(
+    private clipboard: Clipboard
+  ) { }
 
   primeraConMayusculas(field: string): string {
     field = field.toLowerCase();
@@ -52,5 +55,28 @@ export class UtilitariosService {
         replace(/\r/g, '').
         replace(/'/g, '').
         replace(/"/g, '');
+  }
+
+  // compartir data titulo y url
+  sharedNative(urlCartaVirtual: string , nomSede: string): any {
+    // verificar si es telfono
+    const _oSUs = this.getOS();
+    if ( _oSUs === 'Windows' ||  _oSUs === 'Mac OS') {
+      this.clipboard.copy(urlCartaVirtual);
+      return;
+    }
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'Carta Virutal ' + nomSede,
+        url: urlCartaVirtual
+      }).then(() => {
+        console.log('Thanks for sharing!');
+        return {mensaje: 'Copiado'};
+      })
+      .catch(console.error);
+    } else {
+      // fallback
+    }
   }
 }

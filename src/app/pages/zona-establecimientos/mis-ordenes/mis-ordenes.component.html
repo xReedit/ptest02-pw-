@@ -14,31 +14,39 @@
         </div>
     </div>
     <hr>
-    <div class="max-w">
-        <div matRipple 
-            (click) = "openDetalle(item)"
-            class="div-flat-white-borde mb-3 fs-13 text-dark text-left" 
-            *ngFor="let item of listMisPedidos">
-            <div class="d-flex justify-content-between">
-                <p class="fw-100">Pedido: <span class="fw-600">#{{item.idpedido}}</span></p>
-                <p class="fw-600"
-                    [ngClass]="{'text-success': item.pwa_delivery_status==='1'}"
-                >{{item.estado}}</p>
-            </div>
-            <hr>
-            <div class="row">
-                <div class="col-9">
-                    <p class="fs-12 text-secondary">{{item.fecha}} {{item.hora}}</p>
-                    <p>{{item.ciudad}} | {{item.nombre}}</p>
+    <ng-container *ngIf="listMisPedidos.length === 0; else elseTemplateList">
+        <div class="max-w text-center">
+            <button class="btn btn-secondary" (click)="recargarLista()"> Recargar Lista ...</button>
+        </div>        
+    </ng-container>
+    <ng-template #elseTemplateList>        
+        <div class="max-w">
+            <div matRipple 
+                (click) = "openDetalle(item)"
+                class="div-flat-white-borde mb-3 fs-13 text-dark text-left" 
+                *ngFor="let item of listMisPedidos">
+                <div class="d-flex justify-content-between">
+                    <p class="fw-100">Pedido: <span class="fw-600">#{{item.idpedido}}</span></p>
+                    <p class="fw-600"
+                        [ngClass]="{'text-success': item.pwa_delivery_status==='1'}"
+                    >{{item.estado}}</p>
                 </div>
-                <div class="col-3 text-right">
-                    <p>S/.{{item.total_r}}</p>
-                </div>
-            </div>            
-            <div *ngIf="item.nom_repartidor">
                 <hr>
-                <p class="fs-12 text-secondary fw-600">Repartidor Asignado: {{ item.nom_repartidor | titlecase }}</p>
+                <div class="row">
+                    <div class="col-9">
+                        <p class="fs-12 text-secondary">{{item.fecha}} {{item.hora}}</p>
+                        <p>{{item.ciudad}} | {{item.nombre}}</p>
+                    </div>
+                    <div class="col-3 text-right">
+                        <p>S/.{{item.total_r}}</p>
+                    </div>
+                </div>            
+                <div *ngIf="item.nom_repartidor">
+                    <hr>
+                    <p class="fs-12 text-secondary fw-600">Repartidor Asignado: {{ item.nom_repartidor | titlecase }}</p>
+                </div>
             </div>
         </div>
-    </div>
+    </ng-template>
+    
 </div>

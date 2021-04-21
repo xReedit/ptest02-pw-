@@ -52,6 +52,9 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   ) {
 
     // this.idTpcItemResumenSelect = data.idTpcItemResumenSelect;
+    // clear subitem cantidad
+    this.clearSubItemOpcionesCtrlCant(data.item);
+
     this.item = data.item;
     this.item.cantidad = this.getCantidadItemCarta(); // trae el stock del item carta
     this.objItemTipoConsumoSelected = <ItemTipoConsumoModel[]>data.objItemTipoConsumoSelected;
@@ -65,6 +68,8 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     this.item.detalles = this.primerMayuscula(this.item.detalles);
 
     // this.miPedidoService.listenChangeCantItem();
+
+    console.log('this.item', this.item);
 
   }
 
@@ -100,6 +105,33 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     this.destroyDlg$.unsubscribe();
   }
 
+  // reset control cantidad
+  clearSubItemOpcionesCtrlCant(_item: any) {
+    if ( !_item.cantidad_seleccionada || _item?.cantidad_seleccionada === 0) {
+      if ( !_item.subitems ) { return; }
+      _item.subitems.map((i: any) => {
+        if ( i.show_cant_item === 1 ) {
+          i.opciones.map((o: any) => {
+            if ( o?.cantidad_selected > 0) {
+              o.des = o.desIni;
+              o.precio = o.precio_first.toFixed(2);
+              o.cantidad_selected = 0;
+            }
+          });
+        }
+      });
+    }
+  }
+
+  shoFirstChartUpperOptions(_item: any) {
+    if ( !_item.subitems ) { return; }
+      _item.subitems.map((i: any) => {
+          i.opciones.map((o: any) => {
+            o.des = this.uttilService.primeraConMayusculas(o.des.toLowerCase());
+          });
+      });
+  }
+
   getCantidadItemCarta(): number {
     return parseInt(this.miPedidoService.findItemCarta(this.item).cantidad.toString(), 0);
   }
@@ -130,13 +162,16 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
         elItem.subitems = _resSubItems;
         elItem.is_search_subitems = true;
 
+        this.shoFirstChartUpperOptions(elItem);
         this.cocinarListSubItemsView();
         this.compItemSumImporte();
       });
     } else {
+      this.shoFirstChartUpperOptions(elItem);
       this.cocinarListSubItemsView();
       this.compItemSumImporte();
     }
+
   }
 
   // get subitems item seleccionado
@@ -150,6 +185,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
             z.isSoloUno = z.subitem_cant_select === 1 ? true : false;
             z.isObligatorio = z.subitem_required_select === 1 ? true : false;
             z.des_cant_select = z.isSoloUno ? 'Solo ' : 'Hasta ';
+            z.subitem_cant_select_ini = z.subitem_cant_select;
             z.subitem_cant_select = z.subitem_cant_select === 0 ? z.opciones.length : z.subitem_cant_select;
             // z.isRequeridComplet = !z.isObligatorio ? true : false;
 
@@ -173,9 +209,49 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     }
   }
 
+  addSubItemCtrlCantidad(subitemContent: SubItemContent, subItemCant: any) {
+    subItemCant.selected = subItemCant.cantidad_selected > 0;
+    if ( subItemCant.cantidad_selected === 1 ) {
+      if ( parseFloat(subItemCant.precio) > subItemCant.precio_first ) {
+        subItemCant.precio_first = subItemCant.precio_first;
+      } else {
+        subItemCant.desIni = subItemCant.des;
+        subItemCant.precio_first = parseFloat(subItemCant.precio);
+      }
+    }
+
+    // subItemCant.precio_first = subItemCant.cantidad_selected === 1 ? parseFloat(subItemCant.precio) > subItemCant.precio_first ? subItemCant.precio_first : parseFloat(subItemCant.precio) : subItemCant.precio_first;
+
+    if ( subItemCant.cantidad_selected > 1 ) {
+      subItemCant.precio = subItemCant.isSuma_selected ? parseFloat(subItemCant.precio) + parseFloat(subItemCant.precio_first) : parseFloat(subItemCant.precio) - parseFloat(subItemCant.precio_first);
+    } else {
+      subItemCant.precio = subItemCant.precio_first;
+    }
+
+    subItemCant.des = subItemCant.cantidad_selected > 0 ? `${subItemCant.cantidad_selected} ${subItemCant.desIni}` : subItemCant.desIni;
+
+
+    subItemCant.precio = subItemCant.precio.toFixed(2);
+
+    // stop add
+    if ( subitemContent.subitem_cant_select_ini ===  0 ) {
+      subItemCant.stop_add = false;
+    } else {
+      const _cantOpciones = subitemContent.opciones.map((x: any) => x.cantidad_selected || 0).reduce((a, b) => a + b, 0);
+      const isStopAdd = subitemContent.subitem_cant_select === _cantOpciones;
+      subitemContent.opciones.map((x: any) => x.stop_add = isStopAdd);
+
+    }
+
+    console.log('subItemCant', subItemCant);
+
+    this.addSubItem( subitemContent, subItemCant);
+  }
+
   addSubItem(subitemContent: SubItemContent, subitem: SubItem): void {
     // chequeamos cuantos subitem estan checkes
-    // console.log('aadd item');
+    console.log('aadd subitem', subitem);
+    console.log('aadd subitemContent', subitemContent);
     let listSubItemChecked = subitemContent.opciones.filter((x: SubItem) => x.selected);
     let countSelectReq = listSubItemChecked.length;
 
@@ -317,5 +393,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   primerMayuscula(val: string): string {
     return this.uttilService.primeraConMayusculas(val);
   }
+
+
 
 }

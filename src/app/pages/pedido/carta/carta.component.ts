@@ -137,7 +137,6 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe((res: any) => {
         this.dataCalificacion.listCalificacion = res.data;
         this.dataCalificacion.cantidad = this.dataCalificacion.listCalificacion.map(c => c.numpedidos).reduce((a, b) => a + b, 0);
-        console.log('this.dataCalificacion', this.dataCalificacion);
       });
     }
 

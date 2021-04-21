@@ -1,19 +1,45 @@
 <div matRipple>
     <p class="text-secondary" [ngClass]="{'text-danger': !isHourValid}">{{ parametros.titulo }}</p>
-    <input matInput [placeholder]="parametros.tituloHora" aria-label="Hora" 
+    <!-- <input matInput [placeholder]="parametros.tituloHora" aria-label="Hora" 
         [ngxTimepicker]="default" 
         [min]="hora_min"
         [max]="hora_max"
         [value]="hora_show"
-        readonly>
+        readonly> -->
     
-    <ngx-material-timepicker #default 
-        [defaultTime]="hora_show" (timeSet) = 
-        "responseHora($event)">
-    </ngx-material-timepicker>
+    <!-- <ngx-material-timepicker #default 
+        [enableKeyboardInput]="true"
+        [defaultTime]="hora_show" (timeSet) = "responseHora($event)"
+        (timeChanged)="changeAm($event)"
+        >
+    </ngx-material-timepicker> -->
+
+    <!-- <ngx-timepicker-field 
+    [defaultTime]="hora_show"
+    [min]="hora_min"
+    [max]="hora_max"
+    (timeChanged) = "responseHora($event)"
+    ></ngx-timepicker-field> -->
+
+    <div class="d-flex">
+        <mat-form-field class="text-center DivHora">
+            <input type="number" matInput placeholder="Hora" max="12" maxlength="2" [(ngModel)]="setHoraControl.h" name="h" (keyup)="responseHora()">
+        </mat-form-field>
+        <mat-form-field class="text-center DivHora">
+            <input type="number" matInput placeholder="Min" max="60" maxlength="2" [(ngModel)]="setHoraControl.m" name="m" (keyup)="responseHora()">
+        </mat-form-field> 
+
+        <mat-form-field class="DivHora text-center">
+            <mat-select [(ngModel)]="setHoraControl.ap" name="ap" (selectionChange)="responseHora()">
+              <mat-option value="AM">AM</mat-option>
+              <mat-option value="PM">PM</mat-option>              
+            </mat-select>
+          </mat-form-field>
+    </div>
 
     <span *ngIf="parametros.showHoraMinMax && !isHourValid" class="text-info fs-12 fw-100">
         Máximo hasta las {{ parametros.hora_max }}
     </span>
+    <br>
     
 </div>

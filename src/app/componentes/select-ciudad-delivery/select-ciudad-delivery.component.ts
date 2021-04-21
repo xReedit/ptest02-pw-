@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 
 @Component({
@@ -8,6 +8,7 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 })
 export class SelectCiudadDeliveryComponent implements OnInit {
 
+  @Input() isOnlyReserva: boolean;
   @Output() cuidadSelected = new EventEmitter<any>();
   listCiudadesServicio: any;
 
@@ -22,7 +23,12 @@ export class SelectCiudadDeliveryComponent implements OnInit {
   private loadCiudades() {
     this.crudService.getAll('delivery', 'get-ciudades-delivery', false, false, false)
     .subscribe((res: any) => {
+      console.log('res', res);
       this.listCiudadesServicio = res.data;
+
+      if ( this.isOnlyReserva ) {
+        this.listCiudadesServicio = this.listCiudadesServicio.filter(s => s.isreserva === 1);
+      }
     });
   }
 

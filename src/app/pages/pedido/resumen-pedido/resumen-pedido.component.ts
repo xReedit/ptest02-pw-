@@ -473,6 +473,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   private enviarPedido(): void {
 
     // para asegurar que marque delivery si es
+    const isPagoConTarjeta = this.infoToken.getInfoUs().metodoPago.idtipo_pago === 2;
 
     this.checkTiposDeConsumo();
 
@@ -615,6 +616,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     }
 
+    // registrar el id cliente para consultar luego en mis pedidos
+    if ( this.infoToken.infoUsToken.isCliente ) {
+      this.infoToken.setIdCliente();
+    }
+
     // console.log('aaaaaaaaaaaaaaa');
 
     // enviar a guardar // guarda pedido e imprime comanda
@@ -626,7 +632,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // // this.socketService.emit('nuevoPedido', dataSend); // !> 150920
     // this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => { // prioridad guardar por post
       // seteamos el metodo pago que el cliente selecciona
-      this.infoToken.setMetodoPagoSelected(_p_header.arrDatosDelivery.metodoPago);
+      // this.infoToken.setMetodoPagoSelected(_p_header.arrDatosDelivery.metodoPago);
       // error
       // console.log('recibido la respuesta del servidor', resSocket);
       // if ( resSocket === false ) {
@@ -655,6 +661,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
           setTimeout(() => {
             this.listenStatusService.setLoaderSendPedido(false);
             this.miPedidoService.stopTimerLimit();
+            this.miPedidoService.prepareNewPedido();
           }, 600);
           // post
           // dataSend.dataPedido.idpedido = res.data[0].idpedido;
@@ -674,11 +681,13 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
           // this.miPedidoService.prepareNewPedido();
 
-          this.miPedidoService.prepareNewPedido();
+          // this.miPedidoService.prepareNewPedido();
 
           // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
           // if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
-          if ( this.isDeliveryCliente && _p_header.arrDatosDelivery.metodoPago.idtipo_pago !== 2) {
+          // if ( this.isDeliveryCliente && _p_header.arrDatosDelivery.metodoPago.idtipo_pago !== 2) {
+            // if ( this.isDeliveryCliente && this.infoToken.infoUsToken.metodoPago.idtipo_pago !== 2) {
+          if ( this.isDeliveryCliente && !isPagoConTarjeta) {
             this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
             this.confirmarPedidoDeliveryEnviado();
 
@@ -721,13 +730,16 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           this.listenStatusService.setLoaderSendPedido(false);
           this.miPedidoService.stopTimerLimit();
+          this.miPedidoService.prepareNewPedido();
         }, 600);
 
-        this.miPedidoService.prepareNewPedido();
+        //
 
         // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
         // if ( this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago !== 2) {
-        if ( this.isDeliveryCliente && _p_header.arrDatosDelivery.metodoPago.idtipo_pago !== 2) {
+        // if ( this.isDeliveryCliente && _p_header.arrDatosDelivery.metodoPago.idtipo_pago !== 2) {
+        // if ( this.isDeliveryCliente && this.infoToken.infoUsToken.metodoPago.idtipo_pago !== 2) {
+        if ( this.isDeliveryCliente && !isPagoConTarjeta) {
           this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
           this.confirmarPedidoDeliveryEnviado();
 
@@ -985,6 +997,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this._miPedido = this.miPedidoService.getMiPedido();
 
     // para notificar antes del pago
+    console.log('bbbbbbbbbbbbbbbbbbb');
     this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
 

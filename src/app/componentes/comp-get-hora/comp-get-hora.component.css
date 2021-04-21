@@ -1,3 +1,11 @@
 p {
     margin: 0;
 }
+
+.DivHora {
+    max-width: 60px;
+}
+
+.top-1 {
+    top: -1px;
+}

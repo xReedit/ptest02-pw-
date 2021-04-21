@@ -25,7 +25,9 @@
     </div>
 
 
-    <app-comp-get-hora [parametros]="compHoraParams" (changeHora)="setHora($event)"></app-comp-get-hora>
+    <div class="w-100 d-flex justify-content-center">
+        <app-comp-get-hora [parametros]="compHoraParams" (changeHora)="setHora($event)"></app-comp-get-hora>
+    </div>
     <hr>
 
     <app-comp-get-datos-cliente 

@@ -48,23 +48,52 @@
                         <!-- subitems - opciones -->
                         <div>
                             <div class="xoption w-100" matRipple *ngFor="let subitem of contentSub.opciones; let i = index">
-                                <mat-checkbox 
-                                    class="w-100"
-                                    (change)="addSubItem(contentSub, subitem)" 
-                                    [(ngModel)]="subitem.selected" 
-                                    [ngClass]="{'li-tachado': subitem.cantidad < 1}"
-                                    [disabled]="subitem.cantidad < 1"
-                                >
-                                    <div class="w-100 d-flex justify-content-between">
-                                        <div>
-                                            <span>{{subitem.des | lowercase}} </span>
+
+                                
+
+                                <ng-container *ngIf="contentSub?.show_cant_item === 0; else elseTemplate">
+
+                                    <mat-checkbox 
+                                        class="w-100"
+                                        (change)="addSubItem(contentSub, subitem)" 
+                                        [(ngModel)]="subitem.selected" 
+                                        [ngClass]="{'li-tachado': subitem.cantidad < 1}"
+                                        [disabled]="subitem.cantidad < 1"
+                                    >
+                                        <div class="w-100 d-flex justify-content-between fs-13">                                        
+                                            <div>
+                                                <span>{{subitem.des }} </span>
+                                                <span class="xprecio pl-1" [hidden]="!subitem.cantidad_visible"> | {{subitem.cantidad}}</span>                                                
+                                            </div>
+                                            <div class="xprecio aling-derecha">                                                
+                                                    <div *ngIf="subitem.precio != 0" class="fw-600 fs-12"> 
+                                                        + {{subitem.precio | number:'0.2'}}
+                                                    </div>
+                                            </div>                                                                                            
+                                        </div>
+                                    </mat-checkbox>
+
+                                </ng-container>
+
+                                <ng-template #elseTemplate>
+                                    <div class="w-100 d-flex justify-content-between fs-13 pt-2 pb-2" [ngClass]="{'li-tachado': subitem.cantidad < 1}" >  
+                                        <div>                                            
+                                            <span>{{subitem.des }} </span>
                                             <span class="xprecio pl-1" [hidden]="!subitem.cantidad_visible"> | {{subitem.cantidad}}</span>
+                                            <span *ngIf="subitem.precio != 0" class="ml-2 fs-11 fw-600"> 
+                                                + S/. {{subitem.precio | number:'0.2'}}
+                                            </span>
                                         </div>
-                                        <div *ngIf="subitem.precio != 0" class="xprecio aling-derecha"> 
-                                            + {{subitem.precio | number:'0.2'}}
-                                        </div>
+                                        <div class="xprecio aling-derecha">
+                                            <app-comp-ctrl-add-fast 
+                                                [objItem]="subitem" 
+                                                [stopAdd]="subitem.stop_add"
+                                                [zoom]="1.2"
+                                                (objResponse)="addSubItemCtrlCantidad(contentSub, $event)"></app-comp-ctrl-add-fast>                                                                            
+                                        </div>                                                                                            
                                     </div>
-                                </mat-checkbox>
+                                </ng-template>
+                                
                             </div>
                         </div>
                     </div>
