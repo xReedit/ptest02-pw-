@@ -7,6 +7,7 @@ import { MisOrdenesComponent } from './mis-ordenes/mis-ordenes.component';
 import { MiOrdenDetalleComponent } from './mi-orden-detalle/mi-orden-detalle.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { CheckoutBComponent } from './checkout-b/checkout-b.component';
+import { PideLoQueQuierasComponent } from './pide-lo-que-quieras/pide-lo-que-quieras.component';
 
 const routes: Routes = [{
     path: '', component: MainComponent,
@@ -36,8 +37,8 @@ const routes: Routes = [{
             data: { titulo: 'Pedido Detalle' }
         },
         {
-            path: 'checkout',
-            component: CheckoutComponent,
+            path: 'lo-que-quieras',
+            component: PideLoQueQuierasComponent,
             data: { titulo: 'Checkout' }
         },
         {

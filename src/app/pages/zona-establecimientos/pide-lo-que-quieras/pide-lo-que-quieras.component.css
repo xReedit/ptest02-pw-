@@ -1,0 +1,23 @@
+p {
+    margin: 0;
+}
+
+.div-content {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.div-enviado {
+    text-align: center;
+    height: 80vh;
+    width: 100%;
+    justify-content: center;
+
+}
+
+.div-listo {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+}

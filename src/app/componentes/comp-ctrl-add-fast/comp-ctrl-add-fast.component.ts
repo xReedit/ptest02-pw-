@@ -14,7 +14,7 @@ export class CompCtrlAddFastComponent implements OnInit {
   public showAnimateStop = false;
 
   private timerViewAfter = 0; // para volver la vista orginal
-  private countSegundos = 60;
+  private countSegundos = 10;
   private intervalShowaAfter: any;
   private isSuma = true;
 
@@ -81,7 +81,6 @@ export class CompCtrlAddFastComponent implements OnInit {
   add() {
     this.timerViewAfter = this.countSegundos;
     this.isSuma = true;
-    console.log('aaaaaaaaa');
 
     if ( !isNaN(this.limitAdd) ) {
       this.stopAdd = this.limitAdd <= 0;

@@ -90,6 +90,10 @@ export class CompGetDatosClienteComponent implements OnInit {
     this.titleDirA = this.opciones.tituloDirA;
     this.titleDirB = this.opciones.tituloDirB;
 
+    if (this.opciones.metodoPago) {
+      this.metodoPagoSelected = this.infoTokenService.setIniMetodoPagoSegunFiltro(this.opciones.metodoPagoAceptaTarjeta);
+    }
+
   }
 
   openDialogDireccion(op: number) {
@@ -197,7 +201,8 @@ export class CompGetDatosClienteComponent implements OnInit {
       telefono: this.datosFormUno.telefono,
       ladingCostoServicio: this.isCalculandoDistancia,
       costosPlaza: this.laPlazaDelivery,
-      cliente: this.infoToken
+      cliente: this.infoToken,
+      systemOS: this.systemOS
     };
 
     this.frmResponse.emit(res);

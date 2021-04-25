@@ -5,9 +5,11 @@
     </div>    
 </div>
 <div class="animated fadeInUp">    
-    <div class="p-3">
+
+
+
+    <!-- <div class="p-3">
         <div *ngIf="vistaInicio === 0" class="d-flex text-center text-white justify-content-center">
-            <!-- items principales -->
             <div matRipple class="div-ico" (click)="goComercioCategoria(4)">
                 <img class="img-ico" src="assets/images/icon-app/icon-p-4.jpg" alt="">
                 <div class="titulo">
@@ -22,18 +24,19 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- otras categorias -->
+    <div class="pt-5">
     <div class="div-otros d-flex justify-content-center">
         <div class="div-categorias mb-3 fs-13 text-dark text-left bg-white">            
             <div *ngIf="vistaInicio === 0" class="div-content-ico">
                 <div matRipple (click)="goComercioCategoria(item.idsede_categoria)" class="div-ico-circle" *ngFor="let item of listIcoCategoria">
                     <ng-container *ngIf="item.visible">
-                        <div class="img-ico-circle-border">
+                        <div class="img-ico-circle-border" [style.background] ="item.color_fondo">
                             <img src="{{imgIcoCategoria}}{{item.img}}" alt="">
                         </div>
-                        <p class="fs-12 fw-600">{{ item.descripcion }}</p>
+                        <p class="fs-11 fw-600">{{ item.descripcion }}</p>
                     </ng-container>
                     
                 </div>
@@ -53,20 +56,21 @@
             </div>
         </div>
     </div>
+    </div>
 
 
     <!-- Otras opciones -->
     <div class="div-otros d-flex justify-content-center">
         <div class="div-categorias mb-3 fs-13 text-dark text-left bg-white d-flex justify-content-around w-100">
             <div matRipple class="div-ico-circle" (click)="checkOut(0)">
-                <div class="img-ico-circle-border">
+                <div class="img-ico-circle-border" style="background: #ddecfd;">
                     <img src="assets/images/icon-app/icon-p-5.png" alt="loquesea">
                 </div>
                 <p class="fs-12 fw-600">Lo que quieras</p>
             </div>
 
             <div matRipple class="div-ico-circle" (click)="checkOut(1)">
-                <div class="img-ico-circle-border">
+                <div class="img-ico-circle-border" style="background: #ddecfd;">
                     <img src="assets/images/icon-app/icon-p-6.png" alt="loquesea">
                 </div>
                 <p class="fs-12 fw-600">Envios Express</p>

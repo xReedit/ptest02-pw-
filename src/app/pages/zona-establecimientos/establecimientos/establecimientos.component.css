@@ -35,6 +35,7 @@
     justify-content: center;
 }
 
+
 .div-ico-circle{
     /* background: lightgreen; */
     float: left;
@@ -43,14 +44,28 @@
 }
 
 .img-ico-circle-border {
-    display: inline-block;    
+    /* display: inline-block;    
     border-radius: 50%;
     background: white;
     padding: 15px;
     filter: drop-shadow(1px 1px 3px #757575);
     border: 1px solid #eeeeee;
     margin: 10px;
-    max-width: 64px;
+    max-width: 64px; */
+
+    display: inline-block;
+    border-radius: 15px;
+    /* background: white; */
+    padding: 15px;
+    /* -webkit-filter: drop-shadow(1px 1px 3px #757575);
+    filter: drop-shadow(1px 1px 3px #757575); */
+    /* border: 1px solid #bababa; */
+    border: 1px solid #e0e0e0;
+    margin: 6px; 
+}
+
+.img-ico-circle-border img {
+    width: 50px;
 }
 
 .div-categorias {

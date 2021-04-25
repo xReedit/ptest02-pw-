@@ -69,7 +69,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
 
     // this.miPedidoService.listenChangeCantItem();
 
-    console.log('this.item', this.item);
+    // console.log('this.item', this.item);
 
   }
 
@@ -116,6 +116,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
               o.des = o.desIni;
               o.precio = o.precio_first.toFixed(2);
               o.cantidad_selected = 0;
+              o.stop_add = false;
             }
           });
         }
@@ -182,11 +183,12 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
 
     if ( this.item.subitems && this.item.subitems.length > 0) {
       this.item.subitems.map( (z: SubItemContent) => {
-            z.isSoloUno = z.subitem_cant_select === 1 ? true : false;
+            z.isSoloUno = z.subitem_cant_select_ini === 1 ? true : false;
             z.isObligatorio = z.subitem_required_select === 1 ? true : false;
-            z.des_cant_select = z.isSoloUno ? 'Solo ' : 'Hasta ';
-            z.subitem_cant_select_ini = z.subitem_cant_select;
+            // z.subitem_cant_select_ini = z.subitem_cant_select;
             z.subitem_cant_select = z.subitem_cant_select === 0 ? z.opciones.length : z.subitem_cant_select;
+            z.des_cant_select = z.isSoloUno ?  `Solo 1` : `Hasta ${z.subitem_cant_select}`;
+            z.des_cant_select = z.show_cant_item === 1 && z.subitem_cant_select_ini === 0 ? 'Seleccione' : z.des_cant_select;
             // z.isRequeridComplet = !z.isObligatorio ? true : false;
 
             z.opciones.map((x: SubItem) => {
@@ -215,7 +217,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
       if ( parseFloat(subItemCant.precio) > subItemCant.precio_first ) {
         subItemCant.precio_first = subItemCant.precio_first;
       } else {
-        subItemCant.desIni = subItemCant.des;
+        subItemCant.desIni = subItemCant.precio_first !== 0 ? subItemCant.des : subItemCant.desIni;
         subItemCant.precio_first = parseFloat(subItemCant.precio);
       }
     }
@@ -243,15 +245,15 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
 
     }
 
-    console.log('subItemCant', subItemCant);
+    // console.log('subItemCant', subItemCant);
 
     this.addSubItem( subitemContent, subItemCant);
   }
 
   addSubItem(subitemContent: SubItemContent, subitem: SubItem): void {
     // chequeamos cuantos subitem estan checkes
-    console.log('aadd subitem', subitem);
-    console.log('aadd subitemContent', subitemContent);
+    // console.log('aadd subitem', subitem);
+    // console.log('aadd subitemContent', subitemContent);
     let listSubItemChecked = subitemContent.opciones.filter((x: SubItem) => x.selected);
     let countSelectReq = listSubItemChecked.length;
 
@@ -267,7 +269,12 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     const countOptionsCheks = listSubItemChecked.length;
     // quita el obligatorio
     if ( subitemContent.subitem_required_select === 1 ) {
-      subitemContent.isObligatorio = countOptionsCheks === subitemContent.subitem_cant_select ? false : true;
+      if ( subitemContent.show_cant_item === 1 ) {
+        const _cantOptionsSelcted = subitemContent.opciones.map((x: any) => x.cantidad_selected || 0).reduce((a, b) => a + b, 0 );
+        subitemContent.isObligatorio = _cantOptionsSelcted === subitemContent.subitem_cant_select ? false : true;
+      } else {
+        subitemContent.isObligatorio = countOptionsCheks === subitemContent.subitem_cant_select ? false : true;
+      }
     }
 
     // agrega las opciones seleccionadas al subitems_selected del item;

@@ -3,6 +3,7 @@ export class GetFormDatosCliente {
     showDirreccionB: boolean;
     tiempoEntrega: boolean;
     metodoPago: boolean;
+    metodoPagoAceptaTarjeta: boolean;
     telefono: boolean;
     calDistanciaCentro: boolean; // si calcula del centro
     calDistanciaAB: boolean; // si calcula distancia desde dirA a dirB

@@ -113,7 +113,7 @@ export class EstablecimientosComponent implements OnInit {
       this.listenService.setIsShowFooterZonaDelivery(false);
       switch (op) {
         case 0:
-          this.router.navigate(['/zona-delivery/checkout']);
+          this.router.navigate(['/zona-delivery/lo-que-quieras']);
           break;
         case 1:
           this.router.navigate(['/zona-delivery/checkout-b']);
