@@ -63,11 +63,35 @@ export class JsonPrintService {
       isHayDatosPrintObj = false;
       xArrayBodyPrint = [];
 
+
+      console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+
       _objMiPedido.tipoconsumo
         .map((tpc: TipoConsumoModel, indexP: number) => {
           xArrayBodyPrint[indexP] = { 'des': tpc.descripcion, 'id': tpc.idtipo_consumo, 'titlo': tpc.titulo, 'conDatos': false};
           tpc.secciones
             .filter((s: SeccionModel) => s.idimpresora === p.idimpresora)
+            .map((s: SeccionModel) => {
+              printerAsigando = p;
+
+              s.items.map((i: ItemModel) => {
+                if (i.imprimir_comanda === 0 && !iscliente) { return; } // no imprimir // productos bodega u otros
+                  // xArrayBodyPrint[indexP][i.iditem] = [];
+                  isHayDatosPrintObj = true;
+                  xArrayBodyPrint[indexP].conDatos = true; // si la seccion tiene items
+                  xArrayBodyPrint[indexP][i.iditem] = i;
+                  xArrayBodyPrint[indexP][i.iditem].des_seccion = s.des;
+                  xArrayBodyPrint[indexP][i.iditem].cantidad = i.cantidad_seleccionada.toString().padStart(2, '0');
+                  xArrayBodyPrint[indexP][i.iditem].precio_print = parseFloat(i.precio_print.toString()).toFixed(2);
+                  if ( !i.subitems_view ) {
+                    xArrayBodyPrint[indexP][i.iditem].subitems_view = null;
+                  }
+                });
+              });
+
+            // otra impresora en seccion
+            tpc.secciones
+            .filter((s: SeccionModel) => s.idimpresora_otro === p.idimpresora)
             .map((s: SeccionModel) => {
               printerAsigando = p;
 

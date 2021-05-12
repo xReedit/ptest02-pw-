@@ -348,13 +348,14 @@ export class DatosDeliveryComponent implements OnInit {
         this.direccionCliente.idcliente_pwa_direccion = this.direccionCliente.idcliente_pwa_direccion === null ? 0 : this.direccionCliente.idcliente_pwa_direccion;
 
 
-        const c_servicio = this.calcDistanceService.calculateRoute(<DeliveryDireccionCliente>data, this.dirEstablecimiento, false);
+        // console.log('aaaa calculateRoute');
+        let c_servicio = this.calcDistanceService.calculateRoute(<DeliveryDireccionCliente>data, this.dirEstablecimiento, false);
 
 
         // recalcular
         setTimeout(() => {
 
-
+          c_servicio = this.dirEstablecimiento.c_servicio;
           this.establecimientoService.set(this.dirEstablecimiento);
           this.infoEstablecimiento.c_servicio = c_servicio; // this.dirEstablecimiento.c_servicio;
           this.resData.costoTotalDelivery = c_servicio; // this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
@@ -366,7 +367,7 @@ export class DatosDeliveryComponent implements OnInit {
 
 
           this.setearData();
-        }, 600);
+        }, 800);
 
       }
     );

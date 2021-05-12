@@ -120,6 +120,15 @@ export class InicioComponent implements OnInit, OnDestroy {
   //   }
   // }
 
+  showScanCodeQr() {
+    // return false;
+    this.verifyClientService.setIsDelivery(false);
+    this.verifyClientService.setIsReserva(false);
+    this.verifyClientService.setIsReserva(false);
+    this.verifyClientService.setDataClient();
+    this.router.navigate(['./lector-qr']);
+  }
+
   showDelivery() {
     // return false;
     this.verifyClientService.setIsDelivery(true);

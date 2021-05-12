@@ -116,7 +116,7 @@ export class EstablecimientosComponent implements OnInit {
           this.router.navigate(['/zona-delivery/lo-que-quieras']);
           break;
         case 1:
-          this.router.navigate(['/zona-delivery/checkout-b']);
+          this.router.navigate(['/zona-delivery/pedidos-express']);
           break;
       }
     }, 300);

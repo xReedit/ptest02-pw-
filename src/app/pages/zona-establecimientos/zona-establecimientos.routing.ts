@@ -8,6 +8,7 @@ import { MiOrdenDetalleComponent } from './mi-orden-detalle/mi-orden-detalle.com
 import { CheckoutComponent } from './checkout/checkout.component';
 import { CheckoutBComponent } from './checkout-b/checkout-b.component';
 import { PideLoQueQuierasComponent } from './pide-lo-que-quieras/pide-lo-que-quieras.component';
+import { PedidoExpressComponent } from './pedido-express/pedido-express.component';
 
 const routes: Routes = [{
     path: '', component: MainComponent,
@@ -42,9 +43,9 @@ const routes: Routes = [{
             data: { titulo: 'Checkout' }
         },
         {
-            path: 'checkout-b',
-            component: CheckoutBComponent,
-            data: { titulo: 'Checkout' }
+            path: 'pedidos-express',
+            component: PedidoExpressComponent,
+            data: { titulo: 'Checkout-express' }
         }
     ]
 }];

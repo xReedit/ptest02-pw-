@@ -352,6 +352,11 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
                       return;
                     }
                     });
+                } else {
+                  // enviar socket impresion
+                  _dataSendPedido.dataPedido.idpedido = res.data[0].idpedido;
+                  _dataSendPedido.dataPrint = res.data[0].data;
+                  this.socketService.emit('nuevoPedido2', _dataSendPedido);
                 }
               });
 

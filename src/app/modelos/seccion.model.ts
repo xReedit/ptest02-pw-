@@ -3,6 +3,7 @@ import { ItemModel } from './item.model';
 export class SeccionModel {
     idseccion: number;
     idimpresora: number;
+    idimpresora_otro: number;
     imprimir: number;
     sec_orden: number;
     count_items: number;

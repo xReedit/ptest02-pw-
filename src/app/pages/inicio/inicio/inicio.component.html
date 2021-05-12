@@ -50,7 +50,7 @@
           <div class="div-all-options pt-3">          
             <div class="div-content-option-ini">
               
-              <div class="option-ini" matRipple [routerLink]="['/lector-qr']">
+              <div class="option-ini" matRipple (click)="showScanCodeQr()">
                 <img src="assets/images/icon-app/001-qr-code.png" alt="">
                 <p class="titulo">Escanear Qr</p>
                 <p class="fs-11 text-secondary">Escanea el codigo QR <br>para hacer un pedido.</p>            
@@ -63,7 +63,7 @@
               </div>
 
               <div class="option-ini" matRipple (click)="showReserva()">
-                <img src="assets/images/icon-app/001-beef.png" alt="">
+                <img src="assets/images/icon-app/001-beefc.png" alt="">
                 <p class="titulo">Reservar</p>
                 <p class="fs-11 text-secondary">Tus platos favoritos <br>de tu local favorito.</p>            
               </div>

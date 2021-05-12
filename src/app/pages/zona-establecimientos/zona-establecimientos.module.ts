@@ -13,6 +13,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { PideLoQueQuierasComponent } from './pide-lo-que-quieras/pide-lo-que-quieras.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { CheckoutBComponent } from './checkout-b/checkout-b.component';
+import { PedidoExpressComponent } from './pedido-express/pedido-express.component';
 // import { NgxUiLoaderModule } from 'ngx-ui-loader';
 
 
@@ -27,6 +28,7 @@ import { CheckoutBComponent } from './checkout-b/checkout-b.component';
     PideLoQueQuierasComponent,
     CheckoutComponent,
     CheckoutBComponent,
+    PedidoExpressComponent,
   ],
   imports: [
     CommonModule,

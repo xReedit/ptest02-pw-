@@ -1,0 +1,86 @@
+<div class="w-100">
+    <ng-container *ngIf="!isEnviado; else pedidoEnviado">
+
+    
+        <div class="p-4 div-content">
+            <div class="animated fadeInUp" [hidden]="isShowFinalize">
+                <p class="fs-18">Envios Express.</p>
+                <p class="fw-100 fs-14">Llevaremos cualquier artículo o paquete de un lugar a otro de la ciudad.</p>
+                <p class="fs-12 fw-600">Si alcanza en la mochila del repartidor lo podemos llevar.</p>
+                <hr>
+                <p class="text-secondary fs-12">Si deseas que compremos algo por ti, utiliza la opcion "Lo que quieras" ó en los comercios afiliados.</p>                                    
+                <hr>
+                <!-- <div>
+                    <p class="fs-16">Tipo de movilidad que requiere.</p>
+                    <app-tipo-vehiculo (optionSelected)="vehiculoSelected($event)"></app-tipo-vehiculo>        
+                </div>
+                <hr> -->
+                <div id="div-1">
+                    <p class="fs-16 pb-2">Articulo o paquete.</p>
+                    <app-comp-caja-texto 
+                        placeholder_txt="Que articulo o paquete te gustaria enviar?"
+                        (textChanged)="textChanged($event)"
+                        ></app-comp-caja-texto>                    
+                    <hr>        
+
+                    <div class="text-center w-100">
+                        <button class="w-50" mat-raised-button color="primary" [disabled]="!isFormValid" (click)="goNext()">Listo, continuar</button>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- datos del cliente, donde compramos, direccion de entrega, telefono -->
+            <div id="div-2 animated fadeIn" [hidden]="!isShowFinalize" [ngClass]="{'fadeInRight': isShowFinalize}">
+
+                <p><i class="fa fa-arrow-left pr-2" (click)="goNext()"></i> Envios Express</p>
+                <hr>
+                
+
+                <app-comp-get-datos-cliente
+                    [opciones]="paramDatosCliente" 
+                    (frmResponse)="getDatosCliente($event)"></app-comp-get-datos-cliente>
+
+
+                <br>
+                <div class="d-flex justify-content-between">
+                    <div class="fs-17 fw-600">Costo de entrega</div>
+                    <div class="fs-18 fw-600 text-right">
+                        <i *ngIf="isCalculandoDistanciaA" class="fa fa-spinner fa-spin fa-fw"></i>
+                        S/. {{ importe_pagar | number: '.2'}}</div>   
+                </div>
+                <p class="fs-12 fw-100 text-secondary">Entrega sin contacto: cuando sea posible, seleccione pagar con Yape.</p>
+                <br>
+                <hr>
+                <div class="text-center w-100">
+                    <button class="w-50" mat-raised-button color="primary" [disabled]="!isFormValidDos || isLoading" (click)="enviarPedidoLoQ()">
+                        <i *ngIf="isLoading" class="fa fa-spinner fa-spin fa-fw mr-2"></i>
+                        Listo, Enviar.
+                    </button>
+                </div>
+                <br><br>
+
+            </div>
+
+        </div>
+
+    </ng-container>
+
+    <ng-template #pedidoEnviado>
+        <div class="p-3 m-0 d-flex align-items-center div-enviado">
+            <div class="div-listo">
+                <i class="fa fa-check fa-3x text-success"></i>
+                <br>
+                <p class="fs-18">
+                    Pedido enviado.
+                </p>
+                <p class="fs-12 text-secondary">Atenderemos su pedido lo mas pronto posible. En breve un repartidor se comunicara con usted para cumplir con su pedido.</p>
+                <hr>
+                <button mat-stroked-button color="primary" (click)="goZona()">Listo</button>
+            </div>
+        </div>
+    </ng-template>
+
+
+</div>

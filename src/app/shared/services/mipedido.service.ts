@@ -298,6 +298,7 @@ export class MipedidoService {
     this.mpObjSeccionSelected = new SeccionModel();
     this.mpObjSeccionSelected.des = seccion.des;
     this.mpObjSeccionSelected.idimpresora = seccion.idimpresora;
+    this.mpObjSeccionSelected.idimpresora_otro = seccion.idimpresora_otro;
     this.mpObjSeccionSelected.idseccion = seccion.idseccion;
     this.mpObjSeccionSelected.sec_orden = seccion.sec_orden;
     this.mpObjSeccionSelected.ver_stock_cero = seccion.ver_stock_cero;
@@ -331,7 +332,7 @@ export class MipedidoService {
   // idTpcItemResumenSelect tipo consumo del item al modificar desde resumen, si el tpc es diferente al seleccionado en el dialog entonces no suma al item
   addItem2(tipoconsumo: ItemTipoConsumoModel, item: ItemModel, signo: number = 0, idTpcItemResumenSelect: number = null) {
     // let sumTotalTpcSelected = this.totalItemTpcSelected();
-
+    console.log('add item');
     // el item que viene es de carta o del resumen
     // buscamos el item en la carta para el stock
     // de esta manera manejamos una sola cantidad
@@ -439,7 +440,8 @@ export class MipedidoService {
     // itemInPedido.subitems_selected = null;
     // item.subitems_view = null;
 
-    this.playTimerLimit();
+    // 070521 quitamos no hay caso mantenerlo
+    // this.playTimerLimit();
   }
 
   totalItemTpcSelected(_arrTpc: any): number {
