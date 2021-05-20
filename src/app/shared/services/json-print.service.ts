@@ -41,6 +41,7 @@ export class JsonPrintService {
 
     const _objMiPedido = this.pedidoService.getMiPedido();
     const xRptPrint: any = []; // respuesta para enviar al backend
+    const listOnlyPrinters: any = []; // lista de solo impresoras
     let xImpresoraPrint: any = []; // array de impresoras
     let xArrayBodyPrint: any = []; // el array de secciones e items a imprimir
     let printerAsigando: any = null;
@@ -54,7 +55,7 @@ export class JsonPrintService {
     let isHayDatosPrintObj = true; // si hay datos en el obj xArrayBodyPrint para imprimir
     // let indexP = 0;
 
-    // si es cliente asigna impresora a seccion sin impresora
+    // si es cliente asigna impresora a seccion sin impresora // ej delivery por aplicacion
     if ( iscliente ) {
       this.setFirstPrinterSeccionCliente( _objMiPedido,  this.impresoras);
     }
@@ -63,8 +64,6 @@ export class JsonPrintService {
       isHayDatosPrintObj = false;
       xArrayBodyPrint = [];
 
-
-      console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 
       _objMiPedido.tipoconsumo
         .map((tpc: TipoConsumoModel, indexP: number) => {
@@ -138,7 +137,11 @@ export class JsonPrintService {
         arrBodyPrint: xArrayBodyPrint,
         arrPrinters: xImpresoraPrint
       });
+
+      listOnlyPrinters.push(childPrinter);
     });
+
+    xRptPrint.listPrinters = listOnlyPrinters;
 
     return xRptPrint;
 

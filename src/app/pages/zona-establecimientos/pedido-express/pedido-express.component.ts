@@ -43,12 +43,12 @@ export class PedidoExpressComponent implements OnInit {
 
 
     this.datosFormUno = {};
-    this.datosFormUno.que_compramos = '';
+    this.datosFormUno.descripcion_paquete = '';
 
   }
 
   textChanged(val: any) {
-    this.datosFormUno.que_compramos = val;
+    this.datosFormUno.descripcion_paquete = val;
     this.validFormUno();
   }
 
@@ -71,7 +71,7 @@ export class PedidoExpressComponent implements OnInit {
   }
 
   private validFormUno() {
-    this.isFormValid = this.datosFormUno.que_compramos !== '';
+    this.isFormValid = this.datosFormUno.descripcion_paquete !== '';
   }
 
   goNext() {
@@ -103,6 +103,7 @@ export class PedidoExpressComponent implements OnInit {
       this.datosFormUno.distancia_mt = this.datosClientePedido.costosPlaza.distancia_mt;
       this.datosFormUno.systemOS = this.datosClientePedido.systemOS;
       this.datosFormUno.is_express = 1;
+      this.datosFormUno.telefono = this.datosClientePedido.telefono;
 
     // } catch (error) {
     //   console.log(error);

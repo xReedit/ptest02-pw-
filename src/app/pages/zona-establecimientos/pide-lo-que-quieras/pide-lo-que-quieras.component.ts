@@ -102,6 +102,7 @@ export class PideLoQueQuierasComponent implements OnInit {
       this.datosFormUno.distancia_km = this.datosClientePedido.costosPlaza.distancia_km;
       this.datosFormUno.distancia_mt = this.datosClientePedido.costosPlaza.distancia_mt;
       this.datosFormUno.systemOS = this.datosClientePedido.systemOS;
+      this.datosFormUno.telefono = this.datosClientePedido.telefono;
       this.datosFormUno.is_express = 0;
 
     // } catch (error) {

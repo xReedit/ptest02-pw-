@@ -587,7 +587,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       dataUsuario: _dataUsuarioSend,
       isDeliveryAPP: _p_header.delivery === 1 ? true : false, // isClienteBuscaRepartidores, // this.isDeliveryCliente,
       isClienteRecogeLocal: this.infoToken.infoUsToken.pasoRecoger, // indica si el cliente pasa a recoger entonces ya no busca repartidor
-      dataDescuento: [] // lista de ids de descuento para restar cantidad num_pedidos
+      dataDescuento: [], // lista de ids de descuento para restar cantidad num_pedidos
+      listPrinters: arrPrint.listPrinters
     };
 
     // ya no lo envio

@@ -102,11 +102,15 @@ constructor(
 
     this.crudService.postFree(_dataClienteNum, 'service', 'consulta-dni-ruc-no-tk', false)
     .subscribe((res: any) => {
+      // console.log('consulta-dni', res);
       const _datosBd = res.data;
       if ( res.success && _datosBd.length > 0 ) {
         this.idClienteBD = _datosBd[0].idcliente;
-        const num_verificador = _datosBd[0].dni_num_verificador === '' ? _datosBd[0]?.pwa_data_session?.dni_num_verificador : _datosBd[0].dni_num_verificador;
-        if ( num_verificador !== null ) {
+
+        let num_verificador = _datosBd[0].dni_num_verificador === '' ? _datosBd[0]?.pwa_data_session?.dni_num_verificador : _datosBd[0].dni_num_verificador;
+        num_verificador = isNaN(parseInt(num_verificador, 0)) ? null : num_verificador;
+
+        if ( !!num_verificador === true ) {
 
           _datosBd[0].dni_num_verificador = num_verificador;
           this.loadConsulta = false;
