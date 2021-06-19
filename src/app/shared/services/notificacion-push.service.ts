@@ -30,6 +30,8 @@ export class NotificacionPushService {
     // });
 
     this.swPush.notificationClicks.subscribe( event => {
+      alert('aaaaaaaaaaa');
+      console.log('clic notification', event);
       // const url = event.notification.data.url;
       // window.location.reload();
       // window.open('reparto.papaya.com.pe');
@@ -43,7 +45,7 @@ export class NotificacionPushService {
 
   // se suscribe a la notificacion
   suscribirse(): void {
-    // console.log('llego a suscribirse estado this.swPush.isEnabled: ', this.swPush.isEnabled);
+    console.log('llego a suscribirse estado this.swPush.isEnabled: ', this.swPush.isEnabled);
     // if ( this.swPush.isEnabled ) {
       // this.swPush.subscription.subscribe(res => {
         // if (!res) {return; }
@@ -62,7 +64,7 @@ export class NotificacionPushService {
     })
     .then(subscription => {
       // send subscription to the server
-      // console.log('suscrito a notificaciones push', subscription);
+      console.log('suscrito a notificaciones push', subscription);
       this.saveSuscripcion(subscription);
     })
     .catch(console.error);

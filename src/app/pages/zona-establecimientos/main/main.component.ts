@@ -167,15 +167,15 @@ export class MainComponent implements OnInit {
       return;
     }
 
-    // if ( window.location.href.indexOf('/zona-delivery/categorias') > -1 ) {
-    //   this.navigartoService._router('/zona-delivery/establecimientos');
-    //   return;
-    // }
+    if ( window.location.href.indexOf('/zona-delivery/categorias') > -1 ) {
+      this.navigartoService._router('/zona-delivery/establecimientos');
+      return;
+    }
 
-    // if ( window.location.href.indexOf('/zona-delivery/pedido-detalle') > -1 ) {
-    //   this.navigartoService._router('/zona-delivery/pedidos');
-    //   return;
-    // }
+    if ( window.location.href.indexOf('/zona-delivery/pedido-detalle') > -1 ) {
+      this.navigartoService._router('/zona-delivery/pedidos');
+      return;
+    }
 
     window.history.back();
   }

@@ -4,6 +4,9 @@ import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.ser
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { Router } from '@angular/router';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
+import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 
 @Component({
   selector: 'app-confirmado',
@@ -23,6 +26,8 @@ export class ConfirmadoComponent implements OnInit {
     private router: Router,
     private socketService: SocketService,
     private miPedidoService: MipedidoService,
+    private dialog: MatDialog,
+    private pushNotificationSerice: NotificacionPushService
   ) { }
 
   ngOnInit(): void {
@@ -40,7 +45,7 @@ export class ConfirmadoComponent implements OnInit {
 
   finDeliveryAvisoMsj() {
 
-    // this.lanzarPermisoNotificationPush(0);
+    this.lanzarPermisoNotificationPush(0);
 
     // limpiar storage transaccion
     this.miPedidoService.prepareNewPedido();
@@ -56,6 +61,35 @@ export class ConfirmadoComponent implements OnInit {
     // this.navigatorService._router('../zona-delivery');
     // this.router.navigate(['./home']);
 
+  }
+
+
+  private lanzarPermisoNotificationPush(option: number = 0) {
+    // this.pushNotificationSerice.suscribirse(option);
+
+    // console.log('aaaaaaaaaaaaaaaaaaaaaaa');
+    if ( this.pushNotificationSerice.getIsTienePermiso() ) {
+      this.pushNotificationSerice.suscribirse();
+      return;
+    }
+    // else {
+    //   this.pushNotificationSerice.suscribirse();
+    //   return;
+    // }
+
+    // si no tiene permiso le pregunta
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+    _dialogConfig.data = {idMjs: option};
+
+    const _dialogReset = this.dialog.open(DialogDesicionComponent, _dialogConfig);
+    _dialogReset.afterClosed().subscribe(result => {
+      if ( result ) {
+        // console.log('result', result);
+        this.pushNotificationSerice.suscribirse();
+      }
+    });
   }
 
 }

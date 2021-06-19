@@ -1,0 +1,6 @@
+{
+	"appId": "papaya.com.pe",
+	"appName": "Papaya Express",
+	"webDir": "dist/pwa-app-pedido",
+	"bundledWebRuntime": false
+}

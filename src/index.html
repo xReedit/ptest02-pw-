@@ -10,7 +10,12 @@
   <meta name="msapplication-tap-highlight" content="no">
   <!-- <meta name="Description" content="Aplicacion de delivery, restaurantes, mozo virtual."> -->
   <link rel="icon" type="image/x-icon" href="favicon.ico">  
+
+  <meta name="description" content="Aplicacion mozo virtual, carta virtual, delivery por aplicacion.">
   <!-- <link rel="manifest" href="manifest.webmanifest"> -->
+
+
+  <base href="/">
 
   <!-- android -->
   <meta name="theme-color" content="#3f51b5">
@@ -159,7 +164,7 @@
   <link rel="stylesheet" href="assets/css/waves.css">
   <link rel="stylesheet" href="assets/css/loader.css">
   <link rel="stylesheet" href="assets/vendor/animate/animate.css">
-  <link rel="stylesheet" href="assets/css/bootstrap.min.css">  
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
 
   <link rel="manifest" href="manifest.webmanifest">
   
@@ -170,7 +175,7 @@
   <title>Papaya Express</title>
   <!-- <base href="/express/"> -->
   <script>
-    document.write('<base href="' + document.location + '" />');
+    // document.write('<base href="' + document.location + '" />');
     window.onload = function() {
       document.body.style.backgroundColor = '#fff';
       document.body.style.background = '#fff';
@@ -195,7 +200,7 @@
     
   <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo&libraries=places" type="text/javascript"></script> -->
 
-  <script  type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo&libraries=places"></script>
+  
   
   <!-- <script type="text/javascript" src="assets/js/boton-pago.js"></script> -->
   <!-- <script type="text/javascript">
@@ -214,7 +219,7 @@
     </div> -->
 
   <app-root>    
-    <div class="app-loading ">
+    <div class="app-loading">
       <div class="logo-loading">     
       </div>            
       <!-- <p class="t-p-0">Papaya Express</p> -->
@@ -226,5 +231,9 @@
       </div>
     </div>
   </app-root>  
+
+
+  <script defer type="text/javascript" src="assets/js/jquery.js"></script>
+  <script async type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo&libraries=places"></script>
 </body>
 </html>

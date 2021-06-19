@@ -120,6 +120,10 @@ export class SocketService {
     // this.onListenSocketDisconnet();
   }
 
+  getIdSocket(): string {
+    return this.socket.id;
+  }
+
   onGetCarta() {
     return new Observable(observer => {
         this.socket.on('getLaCarta', (res: any) => {
@@ -265,6 +269,15 @@ export class SocketService {
     return new Observable(observer => {
       this.socket.on('set-comercio-open-change-from-monitor', (comercioId: any) => {
         observer.next(comercioId);
+      });
+    });
+  }
+
+  // repuesta del mensaje de verificacion
+  onMsjVerificacionResponse() {
+    return new Observable(observer => {
+      this.socket.on('mensaje-verificacion-telefono-rpt', (data: any) => {
+        observer.next(data);
       });
     });
   }

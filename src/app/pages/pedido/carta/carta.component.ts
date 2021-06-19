@@ -118,7 +118,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.isViewMercado = this.establecimientoService.get().pwa_show_item_view_mercado === 1;
     this.isCliente = this.infoToken.infoUsToken.isCliente;
-    console.log('this.establecimientoService.get()', this.establecimientoService.get());
+    // console.log('this.establecimientoService.get()', this.establecimientoService.get());
 
     // calificacion y comentarios
     this.isShowCalificacion = this.establecimientoService.get().calificacion >= 3.7;
@@ -179,7 +179,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     // if (!this.socketService.isSocketOpen) {
       this.unsubscribeCarta = this.socketService.onGetCarta().subscribe((res: any) => {
 
-        console.log('onGetCarta', res);
+        // console.log('onGetCarta', res);
         // this.objCartaCarta = {
         //   'carta': <CartaModel[]>res[0].carta,
         //   'bodega': <SeccionModel[]>res[0].bodega

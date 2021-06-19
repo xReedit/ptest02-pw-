@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { Router } from '@angular/router';
+import { VIEW_APP_MOZO } from 'src/app/shared/config/config.const';
 // import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 // import { finalize } from 'rxjs/internal/operators/finalize';
 // import { take } from 'rxjs/internal/operators/take';
@@ -20,6 +21,7 @@ export class InicioComponent implements OnInit, OnDestroy {
   isLogin = false;
   isCliente = false;
   nombreClientSocket = '';
+  isViewOnlyMozo = VIEW_APP_MOZO;
 
   private countnDev = 0;
   private countLogo = 0;

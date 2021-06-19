@@ -27,7 +27,8 @@ import { environment } from '../environments/environment';
     FormsModule,
     AppRoutingModule,
     CoreModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+    // ServiceWorkerModule.register('assets/js/custom-service-worker.js', { enabled: environment.production })
   ],
   providers: [{provide: ErrorHandler, useClass: GlobalErrorHandler}],
   bootstrap: [AppComponent]

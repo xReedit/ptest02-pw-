@@ -30,7 +30,6 @@
               "./node_modules/css-star-rating/css/star-rating.css"              
             ],
             "scripts": [
-              "src/assets/js/jquery.js",
               "src/assets/js/boton-pago.js"              
             ],
             "crossOrigin": "use-credentials"
@@ -60,7 +59,7 @@
                 }
               ],
               "serviceWorker": true,
-              "ngswConfigPath": "ngsw-config.json"
+              "ngswConfigPath": "./ngsw-config.json"
             }
           }
         },

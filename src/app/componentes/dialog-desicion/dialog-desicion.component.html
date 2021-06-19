@@ -2,8 +2,8 @@
     <span class="fw-100 fs-15">{{msj}}</span>
     <hr>
     <div class="d-flex">
-        <button mat-flat-button color="primary" [mat-dialog-close]="true">{{titleBtnSuccess}}</button>
-        <button class="ml-2" mat-stroked-button mat-dialog-close>{{titleBtnCancel}}</button>
+        <button class="btn btn-success" (click)="cerrarDlg(true)">{{titleBtnSuccess}}</button>
+        <button class="ml-2 btn btn-danger" (click)="cerrarDlg(false)">{{titleBtnCancel}}</button>
     </div>
     <br>
 </div>

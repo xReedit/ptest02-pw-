@@ -28,7 +28,7 @@ export class ItemComercioComponent implements OnInit {
 
   ngOnInit() {
 
-    console.log('aa');
+    // console.log('aa');
 
     this.isCerrado = this.itemEstablecimiento.cerrado === 1 ? true : false;
 

@@ -71,6 +71,8 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   mapCenter: any = {};
   map: any;
 
+  _componentRestrictions: any = { country: 'pe' };
+
   constructor(
     private formBuilder: FormBuilder,
     private mapsAPILoader: MapsAPILoader,
@@ -79,7 +81,8 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     private crudService: CrudHttpService,
     private miPedidoService: MipedidoService,
     private inforTokenService: InfoTockenService,
-    private utilService: UtilitariosService
+    private utilService: UtilitariosService,
+    private establecimientoService: EstablecimientoService
   ) { }
 
   ngOnInit() {
@@ -87,6 +90,11 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     this.dataCliente = new DeliveryDireccionCliente();
     this.inforTokenService.getInfoUs();
     this.isUsCliente = this.inforTokenService.getInfoUs().isCliente;
+
+    // if ( !this.isUsCliente ) {
+    //   this._componentRestrictions.postalCode = this.establecimientoService.get().codigo_postal;
+    // }
+
     this.loadForm();
   }
 
@@ -97,6 +105,8 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   private  loadInitComponent() {
     // this.setCurrentLocation();
 
+    // console.log('this._componentRestrictions', this._componentRestrictions);
+
     // load Places Autocomplete
     this.mapsAPILoader.load().then(() => {
       this.setCurrentLocation();
@@ -105,7 +115,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
 
       const autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
         // types: ['address'],
-        componentRestrictions: { country: 'pe' }
+        componentRestrictions: this._componentRestrictions
       });
       autocomplete.addListener('place_changed', () => {
         this.ngZone.run(() => {
@@ -371,6 +381,10 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   confirmarDireccion() {
     this.countMoveMap = 1;
     this.getAddress(this.mapCenter.lat, this.mapCenter.lng);
+  }
+
+  recargarPage() {
+    window.location.reload();
   }
 
 }

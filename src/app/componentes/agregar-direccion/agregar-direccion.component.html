@@ -130,13 +130,19 @@
                 </ng-template>
                 
             </button> 
+
+            <!-- recargar -->
+            <button class="mt-2"mat-flat-button color="primary" *ngIf="!registerForm.valid" (click)="recargarPage()">
+                <span class="fa fa-refresh mr-1"></span>                
+                Recargar
+            </button>
             
-            <p *ngIf="!registerForm.valid" class="fw-600 text-danger fs-14">Indique direccion y una referencia.</p>                
-            <p *ngIf="!isDireccionValid" class="fw-600 text-danger fs-16">El servicio no esta disponible en esta ubicación.</p>                
             
             
         </div>  
-    
+        
+        <p *ngIf="!registerForm.valid" class="fw-600 text-danger fs-14">Indique direccion y una referencia.</p>                
+        <p *ngIf="!isDireccionValid" class="fw-600 text-danger fs-16">El servicio no esta disponible en esta ubicación.</p>                
     
 
 </div>

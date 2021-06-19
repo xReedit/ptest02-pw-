@@ -14,17 +14,29 @@
     <br>
     <button 
         mat-flat-button color="primary"
-        [disabled]="!isValidForm"
+        [disabled]="!isValidForm || isContandoShow"
         (click)="sendSMS()"        
-        *ngIf="!isSendSMS"
-    >
-        Verificar telefono
+    >   
+        <ng-container *ngIf="isContandoShow; else elseTemplateMsjVerificacion">
+            <span class="mr-2" >{{ numSegundosActivarBtn | number: '2.'}}</span>
+            Enviando Mensaje...
+        </ng-container>
+        <ng-template #elseTemplateMsjVerificacion>
+            <ng-container *ngIf="intentoVerificacion === 0; else elseTemplateMsjNuevamente">
+                Enviar mensaje de verificación
+            </ng-container>
+            <ng-template #elseTemplateMsjNuevamente>
+                Enviar mensaje nuevamente
+            </ng-template>
+        </ng-template>
+        
+        <!-- Verificar telefono -->
     </button>
     
 </div>
 <hr>
 <div class="p-4" *ngIf="isSendSMS">
-    <p class="text-success fs-600">Recibiras un mensaje de texto. Escribelo el codigo aqui:</p>
+    <p class="text-success fs-600">En breve recibiras un mensaje. Escribelo el codigo aqui:</p>
     <mat-form-field class="w-100">
         <input type="number" matInput 
         placeholder="Codigo" #txtCodigo>
@@ -48,7 +60,7 @@
                 Hecho
             </ng-template> 
         </ng-template>            
-    </button>
-    <p *ngIf="loader > 0 && !isVerificacionOk" class="text-danger fw-600">Codigo ingresado incorrecto.</p>
+    </button>    
+    <p *ngIf="loader > 0 && !isVerificacionOk" class="text-danger fw-600 pt-2">Codigo ingresado incorrecto.</p>
 </div>
 <!-- <hr> -->

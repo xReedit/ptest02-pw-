@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { GetFormDatosCliente } from 'src/app/modelos/GetFormDatosCliente';
 import { Router } from '@angular/router';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
+import { SocketService } from 'src/app/shared/services/socket.service';
+import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
+import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 
 @Component({
   selector: 'app-pedido-express',
@@ -24,12 +27,19 @@ export class PedidoExpressComponent implements OnInit {
   paramDatosCliente: GetFormDatosCliente = new GetFormDatosCliente;
   private datosClientePedido: any;
 
+  infoClient: SocketClientModel;
+
   constructor(
     private crudService: CrudHttpService,
-    private router: Router
+    private router: Router,
+    private socketService: SocketService,
+    private verifyClientService: VerifyAuthClientService
   ) { }
 
   ngOnInit(): void {
+
+    this.infoClient = this.verifyClientService.getDataClient();
+    this.socketService.connect(this.infoClient, 0, false, true);
 
     this.paramDatosCliente.showDirreccionA = true; // en realidad
     this.paramDatosCliente.tituloDirA = 'Lo recogemos en?';
@@ -115,6 +125,8 @@ export class PedidoExpressComponent implements OnInit {
 
     this.crudService.postFree(_dataSend, 'delivery', 'set-pedido-mandado', false)
     .subscribe(res => {
+
+      this.socketService.emit('nuevo-pedido-mandado', '');
 
       setTimeout(() => {
         this.isLoading = false;

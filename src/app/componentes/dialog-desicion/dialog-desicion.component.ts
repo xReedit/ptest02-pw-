@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-dialog-desicion',
@@ -11,6 +11,7 @@ export class DialogDesicionComponent implements OnInit {
   titleBtnCancel = 'No';
   titleBtnSuccess = 'Si, por favor';
   constructor(
+    private dialogRef: MatDialogRef<DialogDesicionComponent>,
     @Inject(MAT_DIALOG_DATA) data: any,
   ) {
     const idMsj = data ? data.idMjs : 0;
@@ -25,6 +26,11 @@ export class DialogDesicionComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+
+  cerrarDlg(value: boolean): void {
+    this.dialogRef.close(value);
   }
 
 }
