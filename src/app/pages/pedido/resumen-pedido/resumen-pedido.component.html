@@ -1,12 +1,18 @@
+<div *ngIf="isDeliveryCliente" class="animated fadeIn transicion" [ngClass]="[!isVisibleConfirmarAnimated ? 'fadeInLeft' : 'fadeOutLeft d-none']">
+    <app-comp-list-item-pedido-cliente        
+        [arrSubtotales]="_arrSubtotales"
+    ></app-comp-list-item-pedido-cliente>
+</div>
+
 <div [hidden]="!isHayCuentaBusqueda" class="bg-dark fs-13 p-2 text-white text-center">
     CUENTA DE LA MESA {{numMesaCuenta | number: '2.'}}
 </div>
 
 <div class="d-flex w-100 xanimated xfadeIn div-content-all" 
     [ngClass]="{'xh-100': isVisibleConfirmarAnimated}"
-    *ngIf="hayItems" id="cardcontentall">
+    *ngIf="hayItems " id="cardcontentall">
     <!-- <div class="w-100"> -->
-        <div class="w-100 div-resumen-pedido transicion"
+        <div *ngIf="!isDeliveryCliente" class="w-100 div-resumen-pedido transicion"
         [ngClass]="[!isVisibleConfirmarAnimated ? 'd-inline' : 'd-none']">
             <div *ngFor="let tpc of _miPedido.tipoconsumo" class="xCursor">
                 <ng-container *ngIf="tpc.count_items_seccion > 0">
@@ -283,11 +289,11 @@
 </div>
 
 <!-- resumen de mi orden cuand es usuario cliente -->
-<ng-container *ngIf="!hayItems && isCliente">
+<ng-container *ngIf="!hayItems && isCliente && !isDeliveryCliente">
     <div class="text-center d-flex flex-column h-75">        
         <div class="m-auto">
             <p>Aun no tiene ningun producto en lista.</p>
-            <button class="btn btn-sm btn-secondary" (click)="pintarMiPedido()"> 
+            <button class="btn btn-sm btn-secondary" (click)="pintarMiPedidoNuevamente()"> 
                 <ng-container *ngIf="isReloadListPedidos; else elseTemplateText">
                     <i class="fa fa-spinner fa-spin"></i>
                 </ng-container>
@@ -305,7 +311,15 @@
     <div class="xfooter">
       <div class="m-0 w-100 d-flex justify-content-between">
         <div class="btn-footer-cancel" matRipple (click)="nuevoPedido()">
-            <span [hidden]="isVisibleConfirmarAnimated" class="animated fadeInRight">Nuevo Pedido</span>
+            <span [hidden]="isVisibleConfirmarAnimated" class="animated fadeInRight">
+                <ng-container *ngIf="isCliente; else elseTemplateisDeliveryCliente">
+                    Borrar Lista
+                </ng-container>
+                <ng-template #elseTemplateisDeliveryCliente>
+                    Nuevo Pedido
+                </ng-template>
+                
+            </span>            
             <span [hidden]="!isVisibleConfirmarAnimated" class="animated fadeInLeft"><i class="fa fa-arrow-left"></i> Atras </span>
         </div>
         

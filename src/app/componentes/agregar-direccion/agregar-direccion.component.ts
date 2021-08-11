@@ -117,6 +117,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
         // types: ['address'],
         componentRestrictions: this._componentRestrictions
       });
+
       autocomplete.addListener('place_changed', () => {
         this.ngZone.run(() => {
           // get the place result

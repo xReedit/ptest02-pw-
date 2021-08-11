@@ -1,0 +1,132 @@
+<!-- seleccionar/buscar direccion  -->
+<div class="p-2" class="animated fadeIn" *ngIf="showSelectedDireccion">
+    
+        <div *ngIf="!showBusqueda" class="animated fadeInDown">
+            <p class="fs-18 fw-600">
+                <i class="fa fa-arrow-left pr-2" (click)="cerrarDlg()"></i> 
+                Agrega o escoge una dirección </p>
+        </div>
+        <div class="div-txt-dir d-flex align-items-center">
+            <!-- btn atras busqueda -->
+            <div *ngIf="showBusqueda" class="animated fadeInLeft">
+                <i class="fa fa-arrow-left pr-2" (click)="showBusqueda = false; direccionBuscar = ''"></i> 
+            </div>
+    
+            <i class="fa fa-map-marker mr-2 text-secondary" aria-hidden="true"></i>
+            <input type="text" placeholder="Ingrese una direccion de entrega"
+            [(ngModel)]="direccionBuscar" name="direccionBuscar" id="direccionBuscar"            
+            (ngModelChange)="this.direccionBuscarUpdate.next($event)"            
+            autocomplete="off"
+            autofocus="off"
+            >
+        </div>
+        <br>
+    
+        <!-- lista de direcciones anteriormente guardadas -->
+        <div *ngIf="!showBusqueda">            
+            <div *ngFor="let item of listDirecciones" class="item-direccion-prediction d-flex" matRipple (click)="goDireccionGuardada(item)">                        
+                <div class="mr-2 p-1">
+                    <ng-container *ngIf="item.selected; else elseDirNoSolected">
+                        <i class="fa fa-check text-success" aria-hidden="true"></i>
+                    </ng-container>
+                    <ng-template #elseDirNoSolected>                        
+                        <i class="fa fa-map-pin" aria-hidden="true"></i>
+                    </ng-template>
+                    
+                </div>
+                <div [ngClass]="{'text-success': item.selected}">
+                    <p class="fw-600">{{ item.direccion }}</p>
+                    <p class="text-secondary fs-12" [ngClass]="{'text-success': item.selected}">{{ item.titulo }}, {{ item.ciudad }}, {{ item.pais }}</p>
+                    <p *ngIf="item.referencia !== ''" class="text-secondary fs-12" [ngClass]="{'text-success': item.selected}">{{ item.referencia }}</p>
+                </div>
+            </div>
+        </div>
+    
+    
+        <!-- lista de predicciones -->
+        <div *ngIf="showBusqueda">
+            <div *ngFor="let item of listPredicciones" class="item-direccion-prediction" matRipple (click)="goDireccion(item)">        
+                <p class="fw-600">{{ item.structured_formatting.main_text }}</p>
+                <p class="text-secondary fs-12">{{ item.structured_formatting.secondary_text }}</p>
+            </div>
+        </div>
+    
+        <!-- boton de direccion actual -->    
+        <div class="item-direccion fs-16" matRipple (click)="goUbicacionActual()"l>
+            <i class="fa fa-location-arrow text-success mr-2" aria-hidden="true"></i>
+            <span class="fw-600">Ubicación actual</span>
+        </div>    
+
+</div>
+
+<!-- confirmar direccion / mapa -->
+<div *ngIf="!showSelectedDireccion" class="animated fadeInRight">
+
+    <div  class="animated fadeInDown">
+        <i class="fa fa-arrow-left pr-2" (click)="goBackEscogerDireccion()"></i> 
+        <p class="fs-18 fw-600">
+            Confirmar tu dirección </p>
+    </div>
+
+    <!-- mapa -->
+    <div class="border" id="map_canvas">
+        <agm-map 
+            [latitude]="latitude" 
+            [longitude]="longitude"
+            [zoom]="zoom"          
+            [zoomControl]="false" [streetViewControl]="false" [disableDefaultUI]="true"              
+            [showDefaultInfoWindow] = "false"
+            (centerChange)="centerChange($event)"
+            (mapClick)="clickmap()"
+            (idle)="idleMap()"
+            >                
+        </agm-map>           
+        <div class="centerMarker"></div>     
+        <div class="centerMarker-fondo"></div>
+        <div class="btn-confirmar-dir" *ngIf="countMoveMap > 1">
+            <button class="btn btn-success" (click)="confirmarDireccion()">Confirmar</button>
+        </div>
+    </div>
+
+    <div class="p-2">
+        <mat-form-field class="w-100">
+            <input class="input-dir" matInput placeholder="Direccion" (keyup)="goBackEscogerDireccion()" [(ngModel)]="dataCliente.direccion" name="direccion" id="direccion" >
+            <button *ngIf="dataCliente.direccion" matSuffix mat-icon-button aria-label="Clear" (click)="goBackEscogerDireccion()">
+                <mat-icon matSuffix>
+                    <i class="fa fa-close"></i>
+                </mat-icon>
+              </button>
+        </mat-form-field> 
+        <mat-form-field class="w-100">
+            <input class="input-dir" matInput placeholder="Ciudad" readonly [(ngModel)]="dataCliente.ciudad" name="ciudad" id="ciudad">
+        </mat-form-field> 
+
+        <mat-form-field class="w-100">
+            <input class="input-dir" matInput placeholder="Referencia" [(ngModel)]="dataCliente.referencia" name="referencia" id="referencia">
+        </mat-form-field> 
+
+
+        <div class="text-center pb-3">
+            <button mat-flat-button color="primary"  
+                [disabled]="loader > 0"             
+                (click)="saveDireccion()"
+                >        
+                <ng-container *ngIf="loader === 0; then thenTemplate; else elseTemplate"></ng-container>
+                <ng-template #thenTemplate>            
+                    Listo Guardar Dirección
+                </ng-template>
+                <ng-template #elseTemplate>
+                    <ng-container *ngIf="loader === 1; else elseTemplateHecho">
+                        <i class="fa fa-spinner fa-spin fa-fw"></i>
+                        Guardando ...
+                    </ng-container>
+                    <ng-template #elseTemplateHecho>
+                        <i class="fa fa-check"></i>
+                        Hecho
+                    </ng-template>                    
+                </ng-template>
+                
+            </button>
+        </div>
+    </div>
+</div>

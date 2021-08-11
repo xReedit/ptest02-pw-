@@ -21,6 +21,7 @@ export class EstablecimientosComponent implements OnInit {
   imgIcoCategoria = 'assets/images/icon-app/';
   listIcoCategoria: any;
   vistaInicio = 0;
+  timeLoader = null;
 
   private isClienteLogueado = false;
   constructor(
@@ -65,6 +66,8 @@ export class EstablecimientosComponent implements OnInit {
 
   private xLoadCategoria() {
     this.loaderPage = true;
+    this.verificarLoaderReload();
+
     this.crudService.getAll('delivery', 'get-categorias', false, false, false)
       .subscribe((res: any) => {
         this.listIcoCategoria = res.data.map(x => {x.visible = x.img !== ''; return x; });
@@ -76,7 +79,17 @@ export class EstablecimientosComponent implements OnInit {
         //   this.loaderPage = false;
         // }, 500);
         this.loaderPage = false;
+        clearTimeout(this.timeLoader);
       });
+  }
+
+  // 12 segundos de cargar, reload page
+  private verificarLoaderReload() {
+    this.timeLoader = setTimeout(() => {
+      if ( this.loaderPage ) {
+        window.location.reload();
+      }
+    }, 12000);
   }
 
   goComercioCategoria(idsede_categoria: number) {

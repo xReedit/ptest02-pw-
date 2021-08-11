@@ -175,9 +175,9 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     this.crudService.postFree(dataClient, 'transaction', 'get-email-client', false).subscribe((res: any) => {
       this.dataClientePago.email = res.data[0].correo ? res.data[0].correo : '';
 
-      // this.dataClientePago.email = 'integraciones.visanet@necomplus.com'; // desarrollo
+      this.dataClientePago.email = 'integraciones.visanet@necomplus.com'; // desarrollo
       // // this.dataClientePago.email = 'review@cybersource.com';
-      // this.dataClientePago.isSaveEmail = false; // desarrollo
+      this.dataClientePago.isSaveEmail = false; // desarrollo
 
       // email // comentar si es review@cybersource.com
       this.isRequiredEmail = this.dataClientePago.email === '' ?  true : false;
@@ -330,35 +330,36 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
               _dataSendPedido.dataPedido.p_header.idregistro_pago = idPwaPago;
               // this.socketService.emit('nuevoPedido', _dataSendPedido);
 
+              // 050721 // priorizamos socket
               // 280321
               // hay algunos pagos que no se registran, si el socket no responde por algun motivio
               // guarda por post
-              // this.socketService.emitRes('nuevoPedido', _dataSendPedido).subscribe(resSocket => {
-              //   if ( resSocket === false ) {
-              //     this.crudService.postFree(JSON.stringify(_dataSendPedido), 'pedido', 'registrar-nuevo-pedido', false)
-              //     .subscribe((res: any) => {
-              //       console.log('pedido registrado');
-              //     });
-              //   }
-              // });
-
-              // priorizamos el post
-              this.crudService.postFree(JSON.stringify(_dataSendPedido), 'pedido', 'registrar-nuevo-pedido', false)
-              .subscribe((res: any) => {
-                if ( !res.success ) {
-                  this.socketService.emitRes('nuevoPedido', _dataSendPedido).subscribe(resSocket => {
-                    if ( resSocket === false ) {
-                      alert('!Ups a ocurrido un error, al registrar el pedido por favor, cominiquese con soporte.');
-                      return;
-                    }
-                    });
-                } else {
-                  // enviar socket impresion
-                  _dataSendPedido.dataPedido.idpedido = res.data[0].idpedido;
-                  _dataSendPedido.dataPrint = res.data[0].data;
-                  this.socketService.emit('nuevoPedido2', _dataSendPedido);
+              this.socketService.emitRes('nuevoPedido', _dataSendPedido).subscribe(resSocket => {
+                if ( resSocket === false ) {
+                  this.crudService.postFree(JSON.stringify(_dataSendPedido), 'pedido', 'registrar-nuevo-pedido', false)
+                  .subscribe((res: any) => {
+                    console.log('pedido registrado');
+                  });
                 }
               });
+
+              // priorizamos el post
+              // this.crudService.postFree(JSON.stringify(_dataSendPedido), 'pedido', 'registrar-nuevo-pedido', false)
+              // .subscribe((res: any) => {
+              //   if ( !res.success ) {
+              //     this.socketService.emitRes('nuevoPedido', _dataSendPedido).subscribe(resSocket => {
+              //       if ( resSocket === false ) {
+              //         alert('!Ups a ocurrido un error, al registrar el pedido por favor, cominiquese con soporte.');
+              //         return;
+              //       }
+              //       });
+              //   } else {
+              //     // enviar socket impresion
+              //     _dataSendPedido.dataPedido.idpedido = res.data[0].idpedido;
+              //     _dataSendPedido.dataPrint = res.data[0].data;
+              //     this.socketService.emit('nuevoPedido2', _dataSendPedido);
+              //   }
+              // });
 
               setTimeout(() => {
                 this.isLoaderTransaction = false;

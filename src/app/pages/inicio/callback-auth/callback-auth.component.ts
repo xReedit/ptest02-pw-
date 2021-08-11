@@ -34,7 +34,7 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
     // if ( this.showErrornweVersion ) {return; }
     try {
 
-      // console.log('callbak verifyClient');
+      console.log('callbak verifyClient');
 
       this.veryfyClient = this.verifyClientService.verifyClient()
         .subscribe(res => {

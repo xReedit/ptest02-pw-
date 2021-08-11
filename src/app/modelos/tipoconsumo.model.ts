@@ -6,4 +6,5 @@ export class TipoConsumoModel {
     titulo: string;
     count_items_seccion: number;
     secciones: SeccionModel[] = [];
+    cantidad_seleccionada: number;
 }

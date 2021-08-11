@@ -45,6 +45,9 @@ import { CompGetHoraComponent } from './comp-get-hora/comp-get-hora.component';
 
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { DialogCalificacionSedeComponent } from './dialog-calificacion-sede/dialog-calificacion-sede.component';
+import { DialogNombreClienteComponent } from './dialog-nombre-cliente/dialog-nombre-cliente.component';
+import { DialogDireccionClienteDeliveryComponent } from './dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
+import { CompListItemPedidoClienteComponent } from './comp-list-item-pedido-cliente/comp-list-item-pedido-cliente.component';
 
 @NgModule({
   declarations: [
@@ -81,6 +84,9 @@ import { DialogCalificacionSedeComponent } from './dialog-calificacion-sede/dial
     CompDatosReservaComponent,
     CompGetHoraComponent,
     DialogCalificacionSedeComponent,
+    DialogNombreClienteComponent,
+    DialogDireccionClienteDeliveryComponent,
+    CompListItemPedidoClienteComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
@@ -126,7 +132,8 @@ import { DialogCalificacionSedeComponent } from './dialog-calificacion-sede/dial
     SelectCiudadDeliveryComponent,
     CompDatosReservaComponent,
     CompGetHoraComponent,
-    DialogCalificacionSedeComponent
+    DialogCalificacionSedeComponent,
+    CompListItemPedidoClienteComponent
     // DialogDesicionComponent
   ],
 

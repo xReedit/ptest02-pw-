@@ -61,6 +61,17 @@ overflow: auto;
 }
 /* main zona delivery */
 
+.my-dialog-orden-detalle {
+  width: 440px;
+  overflow: auto;
+}
+
+.my-dialog-orden-detalle.margen-0 .mat-dialog-container {
+  padding: 0px !important;
+  min-width: 300px;
+  max-width: 450px !important;
+}
+
 @media (max-width: 445px) {
 
   .my-dialog-orden-detalle {
@@ -72,6 +83,7 @@ overflow: auto;
 
   
 }
+
 
 /* .my-dialog-item-producto {
   padding: 0px;

@@ -171,6 +171,7 @@
                             
                             <app-comp-ctrl-add-fast class="div-control-add-fast"
                               (objResponse)="resultCantItemMercado($event)" 
+                              [cantidad_show] = "item.cantidad_seleccionada"
                               [objItem]="item"
                               [limitAdd]="item.cantidad">
                             </app-comp-ctrl-add-fast>

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import createAuth0Client from '@auth0/auth0-spa-js';
 import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
 import { from, of, Observable, BehaviorSubject, combineLatest, throwError } from 'rxjs';
-import { tap, catchError, concatMap, shareReplay } from 'rxjs/operators';
+import { tap, catchError, concatMap, shareReplay, delay, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -24,18 +24,34 @@ export class Auth0Service {
   // For each Auth0 SDK method, first ensure the client instance is ready
   // concatMap: Using the client instance, call SDK method; SDK returns a promise
   // from: Convert that resulting promise into an observable
+
+  // isAuthenticated$ = this.auth0Client$.pipe(
+  //   concatMap((client: Auth0Client) => from(client.isAuthenticated())),
+  //   tap(res => this.loggedIn = res)
+  // );
+
+  private urlFromAuth: string;
+  // Create a local property for login status
+  loggedIn: boolean = null;
+
+  // handleRedirectCallback$ = this.auth0Client$.pipe(
+  //   concatMap((client: Auth0Client) => from(client.handleRedirectCallback()))
+  // );
+
+  handleRedirectCallback$ = this.auth0Client$.pipe(
+    concatMap((client: Auth0Client) => from(client.handleRedirectCallback(this.urlFromAuth)))
+  );
+
   isAuthenticated$ = this.auth0Client$.pipe(
-    concatMap((client: Auth0Client) => from(client.isAuthenticated())),
+    delay(500), // add delay to pipe
+    switchMap((client: Auth0Client) => from(client.isAuthenticated())),
     tap(res => this.loggedIn = res)
   );
-  handleRedirectCallback$ = this.auth0Client$.pipe(
-    concatMap((client: Auth0Client) => from(client.handleRedirectCallback()))
-  );
+
   // Create subject and public observable of user profile data
   private userProfileSubject$ = new BehaviorSubject<any>(null);
   userProfile$ = this.userProfileSubject$.asObservable();
-  // Create a local property for login status
-  loggedIn: boolean = null;
+
 
   constructor(private router: Router) {
     // On initial load, check authentication state with authorization server
@@ -87,6 +103,7 @@ export class Auth0Service {
 
   private handleAuthCallback() {
     // Call when app reloads after user logs in with Auth0
+    this.urlFromAuth = window.location.href;
     const params = window.location.search;
     if (params.includes('code=') && params.includes('state=')) {
       let targetRoute: string; // Path to redirect to after login processsed

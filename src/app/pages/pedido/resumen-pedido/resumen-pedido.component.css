@@ -11,6 +11,7 @@
 .div-content-all {
     top: 0px;
     position: relative;
+    background: white;
 }
 
 .titulo-tpc {
@@ -122,7 +123,7 @@
 
 .div-confirma-pedido {        
     /* position: absolute; */
-    background: antiquewhite;
+    background: white;
     /* position: relative; */
     /* height: calc(100vh - 50px); */
     /* overflow: auto; */
@@ -140,7 +141,7 @@
 }
 
 .bg-2 {
-    background: linen;
+    background: white;
 }
 
 .div-confirma-pedido.hide {
@@ -241,6 +242,10 @@
         font-size: 14px !important;
     }
     
+}
+
+.content-resumen{
+    background: #eeeeee;
 }
 
 @media only screen and (max-width: 1050px) {

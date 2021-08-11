@@ -1,0 +1,85 @@
+<div class="p-3 div-content-list">    
+    <div class="d-flex justify-content-between">
+        <div>
+            <i class="fa fa-arrow-left mr-2" (click)="goBackCarta()"></i>
+            <span class="fw-600 fs-17">Mi Pedido</span>
+        </div>
+        <!-- <p class="fw-600 text-info fs-17">BORRAR</p> -->
+    </div>
+    <div *ngFor="let tpc of miPedido.tipoconsumo">
+        <div class="div-tp-consumo">
+            <!-- titulo -->
+            <div class="div-plr titulo-tpc" *ngIf="!isDeliveryCliente">
+                <span [hidden]="isDeliveryCliente">{{tpc.descripcion}}</span>            
+                <span [hidden]="!isDeliveryCliente">{{tpc.descripcion}}</span>            
+            </div>
+            
+            <!-- seccion -->
+            <div *ngFor="let seccion of tpc.secciones" let="i=index" class="secciones">
+                <ng-container *ngIf="seccion.count_items > 0">
+                    <div class="div-plr titulo-seccion">
+                        <span class="fs-13">{{seccion.des | titlecase}}</span>                    
+                    </div>
+
+                    <!-- items -->
+                    <div class="div-seccion" *ngFor="let item of seccion.items" matRipple>
+                        <div class="item">
+                            <div class="seccion-item" (click)="openDlgItemToResumen(seccion, item)">
+                                <p class="fs-14"> {{item.des | titlecase}} <span [hidden]="!item.indicaciones">( {{item.indicaciones}} )</span></p>
+                                
+                                <!-- subitems -->
+                                <ng-container *ngIf="item.subitems_view">                                                
+                                    <div>
+                                        <ul class="w-100 m-0 ml-2">                                                        
+                                            <!-- <div *ngFor="let subitem of item.subitems_view">                   -->
+                                                    <!-- (click)="openDlgSubItem(tpc, seccion, item, subitem)"                                       -->
+                                                <li class="d-flex div-plr li-item fw-100 fs-13 text-secondary subitem-content-resumen" *ngFor="let subitem of item.subitems_view" matRipple [matRippleColor]="rippleColorSubItem">
+                                                    <!-- <div class="w-100 d-flex"> -->
+                                                        <div class="d-flex w-100 sub-item" [ngClass]="{'pl-4': isHayCuentaBusqueda}">
+                                                            <!-- <div class="btnCount btnMenos" *ngIf="!isHayCuentaBusqueda" (click)="addItemToResumen(tpc, seccion, item, subitem, 1)">-</div>  -->
+                                                                <span class="fw-600 mr-1">{{subitem.cantidad_seleccionada | number: '2.'}}</span> {{subitem.des}}
+                                                            <!-- <div class="btnCount btnMas" *ngIf="!isHayCuentaBusqueda" (click)="addItemToResumen(tpc, seccion, item, subitem, 0)">+</div>  -->
+                                                        </div>
+
+                                                        <!-- <div class="fs-11 text-right" style="width: 45px;" [hidden]="subitem.precio === 0">
+                                                            + {{subitem.precio | number:'0.2' }}
+                                                        </div>                                                                     -->
+                                                    <!-- </div> -->
+                                                </li>
+                                            <!-- </div> -->
+                                        </ul>
+                                    </div>
+                                </ng-container>
+
+
+
+                                <p class="fw-600 fs-14">S/. {{ item.precio_print | number:'0.2' }}</p>
+                            </div>
+                            <div>
+                                <app-comp-ctrl-add-fast class="div-control-add-fast"
+                                  (objResponse)="resultCantItemMercado($event, tpc, seccion)" 
+                                  [objItem]="item"
+                                  [cantidad_show] = "item.cantidad_seleccionada"
+                                  [comprimir] = "false"
+                                  [limitAdd]="item.cantidad">
+                                </app-comp-ctrl-add-fast>
+                            </div>
+                        </div>
+
+                        
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>    
+
+    <!-- subtotales -->
+    <div class="div-tp-consumo mt-3 mb-5">        
+        <ul class="w-100 ul-total">
+            <li class="d-flex div-plr li-item" *ngFor="let item of arrSubtotales">
+                <div class="w-100">{{item.descripcion | titlecase}}</div>
+                <div>{{item.importe | number:'0.2' }}</div>
+            </li>
+        </ul>
+    </div>
+</div>

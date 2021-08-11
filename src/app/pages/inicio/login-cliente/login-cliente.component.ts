@@ -5,6 +5,11 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { Auth0Service } from 'src/app/shared/services/auth0.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
+import { GetFormDatosCliente } from 'src/app/modelos/GetFormDatosCliente';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DialogVerificarTelefonoComponent } from 'src/app/componentes/dialog-verificar-telefono/dialog-verificar-telefono.component';
+import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+import { DialogNombreClienteComponent } from 'src/app/componentes/dialog-nombre-cliente/dialog-nombre-cliente.component';
 
 
 @Component({
@@ -21,6 +26,7 @@ export class LoginClienteComponent implements OnInit {
   isPaseOk = false;
   dataCliente: any;
   dataClienteSend: SocketClientModel = new SocketClientModel();
+  // opcionesFrmCliente: GetFormDatosCliente = new GetFormDatosCliente;
   msj_error = '';
   private idClienteBD = 0;
 
@@ -36,16 +42,22 @@ constructor(
     private auth: Auth0Service,
     private crudService: CrudHttpService,
     private socketService: SocketService,
+    private dialogTelefono: MatDialog,
+    private dialogNombre: MatDialog,
+    // private infoTokenService: InfoTockenService,
   ) { }
 
   ngOnInit() {
     this.dataClienteSend = this.verifyClientService.getDataClient();
     // console.log('data cliente', this.dataClienteSend);
 
+    // console.log('this.infoTokenService.getInfoUs()', this.infoTokenService.getInfoUs());
     // cerramos socket para que cargue carta nuevamente
     if ( this.socketService.isSocketOpen ) {
       this.socketService.closeConnection();
     }
+
+    // this.opcionesFrmCliente.telefono = true;
   }
 
   // goFb() {
@@ -73,6 +85,71 @@ constructor(
     // flowName=GeneralOAuthFlow', '_self');
   }
 
+  goCelular() {
+
+    console.log('this.dataClienteSend', this.dataClienteSend);
+
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+    _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
+    _dialogConfig.data = {
+      idcliente: -1,
+      numberphone: ''
+    };
+
+    const dialogRefTelefono = this.dialogTelefono.open(DialogVerificarTelefonoComponent, _dialogConfig);
+
+    dialogRefTelefono.afterClosed().subscribe((result: any) => {
+      if ( result.verificado ) {
+        console.log('result.numberphone', result);
+
+        if ( !result.cliente ) {
+          // perdir nombre
+          this.openDialogSolicitaNombre(result.numberphone);
+        } else {
+          this.dataCliente =  result.cliente;
+
+          this.verifyClientService.clientSocket.idcliente = this.dataCliente.idcliente;
+          this.verifyClientService.clientSocket.datalogin = {
+            name: result.cliente.nombres,
+            given_name: result.cliente.nombres.split(' ')[0]
+          };
+
+          this.loginByTelefono();
+
+        }
+      }
+    });
+
+  }
+
+  private openDialogSolicitaNombre(telefono: string) {
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+    _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
+
+    const dialogNombre = this.dialogNombre.open(DialogNombreClienteComponent, _dialogConfig);
+    dialogNombre.afterClosed().subscribe((result: string) => {
+      // this.dataCliente = {};
+      // this.dataCliente.idcliente = -1;
+      // this.dataCliente.nombres = result;
+      // this.dataCliente.sub = `phone|${telefono}`;
+      // this.dataCliente.telefono = telefono;
+
+      this.verifyClientService.clientSocket.idcliente = -1;
+      this.verifyClientService.clientSocket.telefono = telefono;
+      this.verifyClientService.clientSocket.datalogin = {
+        name: result,
+        given_name: result.split(' ')[0],
+        sub: `phone|${telefono}`
+      };
+
+      this.loginByTelefono();
+    });
+  }
+
   viewLoginDni(): void {
     this.isViewLoginDNI = !this.isViewLoginDNI;
   }
@@ -82,6 +159,7 @@ constructor(
   }
 
   buscarDNI(value: string) {
+    // console.log('aaaaaaaaaaaaaaaaaaa');
     if ( value.length < 8 || this.numDocumento === value ) { return; }
 
     this.isValidDNI = false;
@@ -107,7 +185,9 @@ constructor(
       if ( res.success && _datosBd.length > 0 ) {
         this.idClienteBD = _datosBd[0].idcliente;
 
-        let num_verificador = _datosBd[0].dni_num_verificador === '' ? _datosBd[0]?.pwa_data_session?.dni_num_verificador : _datosBd[0].dni_num_verificador;
+        let num_verificador = _datosBd[0].dni_num_verificador;
+        num_verificador = isNaN(parseInt(num_verificador, 0)) ? null : num_verificador;
+        num_verificador = num_verificador === null ? _datosBd[0]?.pwa_data_session?.verification_code : num_verificador;
         num_verificador = isNaN(parseInt(num_verificador, 0)) ? null : num_verificador;
 
         if ( !!num_verificador === true ) {
@@ -321,10 +401,41 @@ constructor(
       given_name: 'Invitado'
     };
     this.verifyClientService.setIsLoginByDNI(false);
+    this.verifyClientService.setIsLoginByTelefono(false);
     this.verifyClientService.setIsLoginByInvitado(true);
     this.verifyClientService.registerInvitado();
     setTimeout(() => {
       this.router.navigate(['/callback-auth']);
     }, 500);
+  }
+
+  loginByTelefono() {
+    // this.verifyClientService.clientSocket.datalogin = {
+    //   name: cliente.nombres,
+    //   given_name: cliente.nombres.split(' ')[0],
+    // };
+
+    // this.verifyClientService.setIsLoginByDNI(false);
+    // this.verifyClientService.setIsLoginByInvitado(false);
+    // this.verifyClientService.setIsLoginByTelefono(true);
+
+    // if ( isregistrar ) {
+    //   this.verifyClientService.registerInvitado();
+    // }
+
+    // setTimeout(() => {
+    //   this.router.navigate(['/callback-auth']);
+    // }, 500);
+
+
+
+    this.verifyClientService.setIsLoginByDNI(false);
+    this.verifyClientService.setIsLoginByInvitado(false);
+    this.verifyClientService.setIsLoginByTelefono(true);
+    this.verifyClientService.registerInvitado();
+    setTimeout(() => {
+      this.router.navigate(['/callback-auth']);
+    }, 500);
+
   }
 }

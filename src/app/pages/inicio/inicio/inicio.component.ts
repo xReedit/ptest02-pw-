@@ -58,7 +58,7 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.verifyClientService.setDireccionDeliverySelected(null);
 
     this.isLogin = this.verifyClientService.isLogin();
-    // console.log('desde incio', this.isLogin);
+    console.log('desde incio', this.isLogin);
 
     this.verifyClientService.setMesa(null);
     this.verifyClientService.setIdOrg(null);

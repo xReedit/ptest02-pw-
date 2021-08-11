@@ -64,8 +64,8 @@ export class SocketService {
     const infToken = this.infoTockenService.infoUsToken || infoUser;
 
     const dataSocket = {
-      idorg: infToken.idorg,
-      idsede: infToken.idsede,
+      idorg: infToken.idorg || 0,
+      idsede: infToken.idsede || 0,
       idusuario: infToken.idusuario,
       idcliente: infToken.idcliente,
       iscliente: infToken.isCliente || false,

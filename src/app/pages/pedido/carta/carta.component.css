@@ -60,6 +60,7 @@
         border: 2px solid #bdbdbd;
         height: calc(100vh - 110px);
         overflow: auto;
+        background: #eeeeee;
     }
 
   }

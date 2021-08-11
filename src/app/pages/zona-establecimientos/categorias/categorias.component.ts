@@ -7,7 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { DialogSelectDireccionComponent } from 'src/app/componentes/dialog-select-direccion/dialog-select-direccion.component';
 import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
@@ -19,6 +19,7 @@ import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/operators';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
+import { DialogDireccionClienteDeliveryComponent } from 'src/app/componentes/dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
 // import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 
 // import { Subscription } from 'rxjs/internal/Subscription';
@@ -279,7 +280,7 @@ export class CategoriasComponent implements OnInit, OnDestroy {
 
   }
 
-  openDialogDireccion() {
+  openDialogDireccion1() {
     // const dialogConfig = new MatDialogConfig();
 
     const dialogRef = this.dialogDireccion.open(DialogSelectDireccionComponent, {
@@ -296,6 +297,33 @@ export class CategoriasComponent implements OnInit, OnDestroy {
         // this.setDireccion(data);
       }
     );
+  }
+
+
+  openDialogDireccion() {
+    // if ( !this.isClienteLogueado ) {this.registarDirCliente(); return; }
+
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+    _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
+
+    _dialogConfig.data = {
+      idcliente : this.infoClient.idcliente
+    };
+
+    const dialogDireccionCliente = this.dialogDireccion.open(DialogDireccionClienteDeliveryComponent, _dialogConfig);
+    dialogDireccionCliente.afterClosed().subscribe((data: any) => {
+      if ( !data ) { return; }
+        console.log('direcion', data);
+        this.direccionCliente = data;
+        this.verifyClientService.setDireccionDeliverySelected(this.direccionCliente);
+        this.listenService.setChangeDireccionDelivery(this.direccionCliente);
+
+        // this.verifyClientService.setDireccionDeliverySelected(data);
+        // this.setDireccion(data);
+    });
+
   }
 
   aplicarFitroSubCategoria(itemFiltro: any) {

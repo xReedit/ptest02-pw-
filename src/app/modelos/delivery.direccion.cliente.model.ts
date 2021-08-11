@@ -13,4 +13,5 @@ export class DeliveryDireccionCliente {
     codigo: string;
     estado: number;
     options: any;
+    selected: boolean; // si esta seleccionado
 }

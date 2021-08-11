@@ -1,0 +1,25 @@
+<div class="p-4">
+    <div>
+        <p class="fs-18 fw-600"> <i class="fa fa-user mr-2"></i> Ingrese su nombre</p>
+    </div>
+
+    <mat-form-field class="w-100">
+        <input type="text" matInput
+        placeholder="Nombre"
+        (keyup) = "verificarNombre(nombre.value)"          
+        #nombre required>
+    </mat-form-field>
+    <p *ngIf="isNumberSuccess ===2 " class="text-danger">Número no valido.</p>
+    <br>
+    <button 
+        mat-flat-button color="primary"
+        [disabled]="!isValidForm"
+        (click)="cerrarDlg()"        
+    >   
+        Listo
+        
+        <!-- Verificar telefono -->
+    </button>    
+    
+</div>
+<!-- <hr> -->

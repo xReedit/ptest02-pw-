@@ -24,6 +24,8 @@ export class MainComponent implements OnInit {
   isClienteDelivery = false;
   isClienteReserva = false;
   isPagePagarShow = false;
+  loaderPage = false;
+  timeLoader = null;
 
 
   private lastValScrollTop = 0;
@@ -117,12 +119,30 @@ export class MainComponent implements OnInit {
       this.importeTotalProductos = this.miPedidoService.getSubTotalMiPedido();
     });
 
+    this.listenStatusService.isLoaderCarta$.subscribe(res => {
+      this.loaderPage = res;
+      if ( this.loaderPage ) {
+        this.verificarLoaderReload();
+      } else {
+        clearTimeout(this.timeLoader);
+      }
+    });
+
     // this.tooltip.show();
     // setTimeout(() => {
     //   // this._matTooltip.position = 'below';
     //   // this._matTooltip.tooltipClass = 'example-tooltip-red-1';
     //   this._matTooltip.show();
     // }, 1000);
+  }
+
+  // 12 segundos de cargar, reload page
+  private verificarLoaderReload() {
+    this.timeLoader = setTimeout(() => {
+      if ( this.loaderPage ) {
+        window.location.reload();
+      }
+    }, 15000);
   }
 
   onScroll($event: any): void {

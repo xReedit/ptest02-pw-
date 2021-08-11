@@ -1,7 +1,13 @@
 ::ng-deep .mat-checkbox-layout { margin: 0px; width: 100%; position: relative;}
 ::ng-deep .mat-checkbox-inner-container { margin-left: 0px !important; }
-::ng-deep .mat-dialog-container {
-    padding: 0px;
+/* ::ng-deep .mat-dialog-container {
+    padding: 0px !important;
+    min-width: 300px;
+    max-width: 450px !important;
+} */
+
+.custom-dialog-container .mat-dialog-container {
+    padding: 0px !important;
     min-width: 300px;
     max-width: 450px !important;
 }

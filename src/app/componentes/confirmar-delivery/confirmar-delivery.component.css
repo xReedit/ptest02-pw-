@@ -16,3 +16,9 @@
 .img-ico-entrega {
     height: 22px;
 }
+
+.div-info {
+    background: antiquewhite;
+    padding: 5px;
+    border-radius: 5px;
+}

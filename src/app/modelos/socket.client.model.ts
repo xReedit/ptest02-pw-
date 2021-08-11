@@ -14,6 +14,7 @@ export class SocketClientModel {
     isQrSuccess: boolean; // si paso por el lector qr
     isLoginByDNI: boolean; // si el logue fue por dni
     isLoginByInvitado: boolean; // si el logue fue por invitado
+    isLoginByTelefono: boolean; // si el logue fue por telefono
     isSoloLLevar: boolean; // si escanea codigo que sea solo para llevar
     isDelivery: boolean;
     isReserva: boolean; // si es reserva

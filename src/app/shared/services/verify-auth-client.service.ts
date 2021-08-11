@@ -91,6 +91,11 @@ export class VerifyAuthClientService {
     this.setDataClient();
   }
 
+  setIsLoginByTelefono(val: boolean): void {
+    this.clientSocket.isLoginByTelefono = val;
+    this.setDataClient();
+  }
+
   setTelefono(val: string) {
     this.clientSocket.telefono = val;
     this.setDataClient();
@@ -143,11 +148,10 @@ export class VerifyAuthClientService {
   }
 
   verifyClient(): Observable<any> {
-
     this.getDataClient();
 
     // verrifica si esta logueado
-    if ( this.clientSocket.isLoginByDNI ) {
+    if ( this.clientSocket?.isLoginByDNI ) {
       // verifica y registra el cliente en la bd
 
       this.registerCliente();

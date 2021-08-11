@@ -1,5 +1,15 @@
 <div class="text-left h-100">
 
+    <!-- info comercio con repartidores propios -->    
+    <ng-container *ngIf="isComercioRepartidoresPropios && !isComercioPapayaSoloPedidosApp">
+        <div class="border-bottom m-0 p-3">
+            <div class="div-info">
+                <i class="fa fa-motorcycle pr-1" aria-hidden="true"></i>        
+                <span class="fs-11">Comercio cuenta con su propio reparto.</span>
+            </div>
+        </div>
+    </ng-container>
+
     <div *ngIf="isRestaurante" class="border-bottom m-0 p-3">
         <div class="d-flex justify-content-between align-items-center">
             <div>
@@ -16,22 +26,31 @@
         </div>
     </div>
 
-    <div *ngIf="!isRecojoLocalCheked" class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor" (click)="openDialogDireccion()">
-        <span class="fw-100 fs-12 text-secondary">Direccion de entrega:</span>
-        <p class="m-0 fs-14">
-            <!-- <strong>{{direccionCliente.titulo}}</strong> <br> {{direccionCliente.direccion}} -->
-            <strong [ngClass]="{'text-danger': direccionCliente.direccion === ''}">{{direccionCliente.titulo}}</strong> <span *ngIf="direccionCliente.direccion != ''" class="fw-100 text-info pl-2"> {{  dirEstablecimiento.distancia_km }} km </span><br> {{direccionCliente.direccion}}            
-        </p>   
-        <p *ngIf="msjErrorDir.length > 0" class="text-danger fs-12 fw-100 m-0">  {{ msjErrorDir }} </p>
-    </div>
-
-    <!-- recojo en el local -->
-    <div [hidden]="!isAceptaRecojoLocal" matRipple class="border-bottom m-0 p-3" [matRippleColor]="rippleColor">
+     <!-- recojo en el local -->
+     <div [hidden]="!isAceptaRecojoLocal" matRipple class="border-bottom m-0 p-3" [matRippleColor]="rippleColor">
         <mat-checkbox labelPosition="before" [(ngModel)]="isRecojoLocalCheked" (change)="recalcularTotales()">
             <i class="fa fa-home pr-2" aria-hidden="true"></i> 
             <span class="mr-1" [ngClass]="{'fw-600': isRecojoLocalCheked}">Paso a recoger en el Local</span>            
         </mat-checkbox>
     </div>
+
+    <div *ngIf="!isRecojoLocalCheked" class="border-bottom m-0 p-3 d-flex justify-content-between align-items-center" matRipple [matRippleColor]="rippleColor" (click)="openDialogDireccion()">
+        <div>
+            <span class="fw-100 fs-12 text-secondary">Direccion de entrega:</span>
+            <p class="m-0 fs-14">
+                <!-- <strong>{{direccionCliente.titulo}}</strong> <br> {{direccionCliente.direccion}} -->
+                <strong [ngClass]="{'text-danger': direccionCliente.direccion === ''}">{{direccionCliente.titulo}}</strong> <span *ngIf="direccionCliente.direccion != ''" class="fw-100 text-info pl-2"> {{  dirEstablecimiento.distancia_km }} km </span><br> {{direccionCliente.direccion}}            
+            </p>   
+            <p *ngIf="msjErrorDir.length > 0" class="text-danger fs-12 fw-100 m-0">  {{ msjErrorDir }} </p>
+        </div>
+        <div>
+            <button class="btn btn-sm btn-secondary">
+                <span class="fw-100 fs-10">Cambiar</span>
+            </button>
+        </div>
+    </div>
+
+   
 
     <!-- tiempo de entrega -->
     <div class="border-bottom m-0 p-3 d-flex justify-content-between align-items-center" matRipple [matRippleColor]="rippleColor" (click)="openDialogTiempoEntrega()">
@@ -107,13 +126,7 @@
     <br>
     <!-- dato importante o nombre de contacto si es solidaridad -->
 
-    <!-- info comercio con repartidores propios -->    
-    <ng-container *ngIf="isComercioRepartidoresPropios && !isComercioPapayaSoloPedidosApp">
-        <div class="pl-3 pr-3">
-            <span class="text-info fs-12">Comercio con repartidores propios.</span>
-            <i class="fa fa-motorcycle pl-1" aria-hidden="true"></i>        
-        </div>
-    </ng-container>
+    
     
 
     <div class="m-0 p-3">        

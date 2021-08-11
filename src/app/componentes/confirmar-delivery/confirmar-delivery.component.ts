@@ -19,6 +19,7 @@ import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
 import { DialogTiempoEntregaComponent } from '../dialog-tiempo-entrega/dialog-tiempo-entrega.component';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
+import { DialogDireccionClienteDeliveryComponent } from '../dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
 
 
 @Component({
@@ -36,6 +37,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
   tipoComprobanteSelected: TipoComprobanteModel;
   propinaSelected: PropinaModel;
   tiempoEntregaSelected: TiempoEntregaModel;
+
 
   isComercioCerrado = false;
   isComercioAceptaPedidoProgramado = false;
@@ -117,7 +119,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
     private dialogTipoComprobante: MatDialog,
     private dialogDireccion: MatDialog,
     private dialogTiempoEntrega: MatDialog,
-    private utilService: UtilitariosService
+    private utilService: UtilitariosService,
+    private dialogDireccionClienteDelivery: MatDialog,
     // private crudService: CrudHttpService
   ) { }
 
@@ -433,9 +436,52 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
 
 
-
-
   openDialogDireccion() {
+
+
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+    _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
+
+    _dialogConfig.data = {
+      idcliente : this.infoTokenService.infoUsToken.idcliente
+    };
+
+    const dialogDireccionCliente = this.dialogDireccionClienteDelivery.open(DialogDireccionClienteDeliveryComponent, _dialogConfig);
+    dialogDireccionCliente.afterClosed().subscribe((data: any) => {
+      if ( !data ) { return; }
+        console.log('direcion', data);
+        // this.verifyClientService.setDireccionDeliverySelected(data);
+        // this.setDireccion(data);
+
+        this.msjErrorDir = '';
+        this.direccionCliente = <DeliveryDireccionCliente>data;
+
+        // if ( this.direccionCliente.codigo !== this.infoEstablecimiento.codigo_postal ) {
+        if ( this.direccionCliente.ciudad.toLocaleLowerCase() !== this.infoEstablecimiento.ciudad.toLocaleLowerCase() ) {
+          // el servicio no esta disponible en esta ubicacion
+          // this.direccionCliente = this.direccionClienteIni;
+          // this.infoToken.direccionEnvioSelected = null;
+          this.direccionCliente.codigo = null;
+          this.msjErrorDir = 'Servicio no disponible en esta dirección.';
+          this.verificarMontoMinimo();
+          return;
+        }
+
+        this.infoToken.direccionEnvioSelected = this.direccionCliente;
+
+        // esto para poder guardar en el procedure
+        this.direccionCliente.idcliente_pwa_direccion = this.direccionCliente.idcliente_pwa_direccion === null ? 0 : this.direccionCliente.idcliente_pwa_direccion;
+
+
+        this.calcularCostoEntrega(this.direccionCliente);
+    });
+
+  }
+
+  // anterior
+  openDialogDireccion_anterior() {
     const _DdialogConfig = new MatDialogConfig();
     _DdialogConfig.disableClose = true;
     _DdialogConfig.hasBackdrop = true;

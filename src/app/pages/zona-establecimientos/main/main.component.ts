@@ -14,6 +14,7 @@ import { DatosCalificadoModel } from 'src/app/modelos/datos.calificado.model';
 import { DialogCalificacionComponent } from 'src/app/componentes/dialog-calificacion/dialog-calificacion.component';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import { DialogDireccionClienteDeliveryComponent } from 'src/app/componentes/dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
 
 
 
@@ -42,6 +43,7 @@ export class MainComponent implements OnInit {
     private infoTokenService: InfoTockenService,
     private verifyClientService: VerifyAuthClientService,
     private dialogDireccion: MatDialog,
+    private dialogDireccionClienteDelivery: MatDialog,
     private dialog: MatDialog,
     public listenService: ListenStatusService,
     private router: Router,
@@ -69,7 +71,7 @@ export class MainComponent implements OnInit {
       this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
         if ( res ) {
           // this.codigo_postal_actual = res.codigo;
-          this.setDireccion(res);
+          // this.setDireccion(res);
         }
       });
 
@@ -103,7 +105,7 @@ export class MainComponent implements OnInit {
     });
   }
 
-  openDialogDireccion() {
+  openDialogDireccion1() {
 
     if ( !this.isClienteLogueado ) {this.registarDirCliente(); return; }
     // const dialogConfig = new MatDialogConfig();
@@ -123,12 +125,34 @@ export class MainComponent implements OnInit {
     );
   }
 
+  openDialogDireccion() {
+    if ( !this.isClienteLogueado ) {this.registarDirCliente(); return; }
+
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+    _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
+
+    _dialogConfig.data = {
+      idcliente : this.infoClient.idcliente
+    };
+
+    const dialogDireccionCliente = this.dialogDireccionClienteDelivery.open(DialogDireccionClienteDeliveryComponent, _dialogConfig);
+    dialogDireccionCliente.afterClosed().subscribe((data: any) => {
+      if ( !data ) { return; }
+        // console.log('direcion', data);
+        this.verifyClientService.setDireccionDeliverySelected(data);
+        this.setDireccion(data);
+    });
+
+  }
+
   setDireccion(direccion: DeliveryDireccionCliente) {
-    if ( direccion ) {
+    if ( direccion?.direccion ) {
       this.isSelectedDireccion = true;
       const _direccion = direccion.direccion.split(',');
-      this.nomDireccionCliente = _direccion[0] + ' ' + _direccion[1];
-      // this.listenService.setChangeDireccionDelivery(direccion);
+      this.nomDireccionCliente = _direccion + ' ' + direccion.ciudad;
+      this.listenService.setChangeDireccionDelivery(direccion);
     }
   }
 

@@ -1,10 +1,10 @@
 <div class="p-4">
     <div>
-        <p class="fs-14 fw-600"><i class="fa fa-arrow-left pr-2" (click)="cerrarDlg()"></i> Numero de telefono:</p>
+        <p class="fs-18 fw-600"><i class="fa fa-arrow-left pr-2" (click)="cerrarDlg()"></i> Número de celular <i class="fa fa-phone ml-2"></i></p>
     </div>
 
     <mat-form-field class="w-100">
-        <input type="number" matInput 
+        <input type="number" matInput
         placeholder="Telefono" 
         (keyup) = "verificarNum(telefono.value)" 
         [value] = "data.numberphone"
@@ -15,7 +15,7 @@
     <button 
         mat-flat-button color="primary"
         [disabled]="!isValidForm || isContandoShow"
-        (click)="sendSMS()"        
+        (click)="enviarCodigoSMS()"        
     >   
         <ng-container *ngIf="isContandoShow; else elseTemplateMsjVerificacion">
             <span class="mr-2" >{{ numSegundosActivarBtn | number: '2.'}}</span>
@@ -23,15 +23,16 @@
         </ng-container>
         <ng-template #elseTemplateMsjVerificacion>
             <ng-container *ngIf="intentoVerificacion === 0; else elseTemplateMsjNuevamente">
-                Enviar mensaje de verificación
+                Enviar código de verificación
             </ng-container>
             <ng-template #elseTemplateMsjNuevamente>
-                Enviar mensaje nuevamente
+                Enviar código nuevamente
             </ng-template>
         </ng-template>
         
         <!-- Verificar telefono -->
     </button>
+    <p class="fs-13 text-secondary mt-1">Recibira el código de verificación por WhatsApp, sino tiene entonces recibira el código por SMS</p>
     
 </div>
 <hr>

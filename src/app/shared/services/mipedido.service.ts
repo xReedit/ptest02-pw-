@@ -332,7 +332,8 @@ export class MipedidoService {
   // idTpcItemResumenSelect tipo consumo del item al modificar desde resumen, si el tpc es diferente al seleccionado en el dialog entonces no suma al item
   addItem2(tipoconsumo: ItemTipoConsumoModel, item: ItemModel, signo: number = 0, idTpcItemResumenSelect: number = null) {
     // let sumTotalTpcSelected = this.totalItemTpcSelected();
-    console.log('add item');
+    console.log('add item', item);
+    console.log('add item tipoconsumo', tipoconsumo);
     // el item que viene es de carta o del resumen
     // buscamos el item en la carta para el stock
     // de esta manera manejamos una sola cantidad

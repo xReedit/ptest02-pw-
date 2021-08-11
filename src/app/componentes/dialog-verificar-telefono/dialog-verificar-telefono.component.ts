@@ -23,6 +23,7 @@ export class DialogVerificarTelefonoComponent implements OnInit {
   conteoInterval: any;
   numSegundosActivarBtn = 15;
   isContandoShow = false;
+  private isClienteNoRegister = false;
 
   constructor(
     private dialogRef: MatDialogRef<DialogVerificarTelefonoComponent>,
@@ -32,18 +33,29 @@ export class DialogVerificarTelefonoComponent implements OnInit {
     private verifyClientService: VerifyAuthClientService
   ) {
     this.data = data;
+
+
+    // cliente aun no definido
+    // busca el cliente por el numero de telefono sino lo encuentra
+    // crea un registro temporal de codigo verificacion
+    if ( this.data?.idcliente === -1 ) {
+      this.isClienteNoRegister = true;
+    }
    }
 
   ngOnInit() {
-    if (!this.socketService.isSocketOpen) {
-      this.infoClient = this.verifyClientService.getDataClient();
-      this.socketService.connect(this.infoClient, 0, false, false);
-    }
+    // setTimeout(() => {
+      if (!this.socketService.isSocketOpen) {
+        this.infoClient = this.verifyClientService.getDataClient();
+        console.log('this.infoClient', this.infoClient);
+        this.socketService.connect(this.infoClient, 0, false, false);
+      }
+    // }, 2000);
 
 
     // respuesta del msj verificacion
     this.socketService.onMsjVerificacionResponse().subscribe((res: any) => {
-      // console.log('repuesta == ', res);
+      console.log('repuesta == ', res);
       if ( res.msj ) { this.intentoVerificacion = 0; } // por si quiere enviar nuevamente
       this.isNumberSuccess = res.msj ? 1 : 2;
       this.isSendSMS = true; // res.msj;
@@ -52,6 +64,15 @@ export class DialogVerificarTelefonoComponent implements OnInit {
 
       this.detenerContadorBtnSend();
     });
+  }
+
+  enviarCodigoSMS() {
+    if ( this.isClienteNoRegister ) {
+      this.buscarClienteTelefono();
+      return;
+    }
+
+    this.sendSMS();
   }
 
   sendSMS() {
@@ -65,9 +86,15 @@ export class DialogVerificarTelefonoComponent implements OnInit {
     // por wsp
     if ( this.intentoVerificacion === 0 ) {
       this.data.idsocket = this.socketService.getIdSocket();
-      // console.log('msj-confirma-telefono', this.data);
 
-      this.socketService.emit('msj-confirma-telefono', this.data);
+      if (!this.socketService.isSocketOpen) {
+        this.socketService.connect(this.infoClient, 0, false, false);
+      }
+
+
+      setTimeout(() => {
+        this.socketService.emit('msj-confirma-telefono', this.data);
+      }, 500);
       this.isContandoShow = true;
       this.contadorActvarBtnSend();
       return;
@@ -75,7 +102,7 @@ export class DialogVerificarTelefonoComponent implements OnInit {
 
     // console.log('enviando por msj texto');
     this.contadorActvarBtnSend();
-    this.crudService.postSMS(this.data, 'delivery', 'send-sms-confirmation', true)
+    this.crudService.postSMS(this.data, 'delivery', 'send-sms-confirmation', false)
       .subscribe(res => {
 
         this.isNumberSuccess = res.msj ? 1 : 2;
@@ -88,8 +115,9 @@ export class DialogVerificarTelefonoComponent implements OnInit {
   verificarCodigoSMS(val: string) {
     this.loader = 1;
     // this.isVerificacionOk = true;
+    // idcliente -2  verifica -1 guarda codigo tmp
     const _dataCod = {
-      idcliente: this.data.idcliente,
+      idcliente: this.isClienteNoRegister ? -2 : this.data.idcliente,
       codigo: val,
       numberphone: this.data.numberphone
     };
@@ -138,6 +166,26 @@ export class DialogVerificarTelefonoComponent implements OnInit {
     this.isSendSMS = true;
     this.isContandoShow = false;
     clearInterval(this.conteoInterval);
+  }
+
+
+  private buscarClienteTelefono() {
+    const _dataSend = {
+      telefono: this.data.numberphone
+    };
+
+     this.crudService.postFree(_dataSend, 'delivery', 'search-cliente-by-phone', false)
+    .subscribe((res: any) => {
+      console.log('cliten con telefono', res);
+      this.data.isClienteTelefono = true;
+      this.data.cliente = res.data.length > 0 ? res.data[0] : null;
+      if ( res.data.length > 0 ) {
+        this.isClienteNoRegister = false;
+        this.data.idcliente = this.data.cliente.idcliente;
+      }
+
+      this.sendSMS();
+    });
   }
 
   cerrarDlg(): void {
