@@ -76,7 +76,7 @@ export class InicioComponent implements OnInit, OnDestroy {
       .subscribe((res: SocketClientModel) => {
         // success => {
           // si es invitado desloguea
-          if ( res.usuario.toLowerCase() === 'invitado' ) {
+          if ( res.usuario.toLowerCase().indexOf('invitado') > -1 ) {
             this.cerrarSession();
             return;
           }

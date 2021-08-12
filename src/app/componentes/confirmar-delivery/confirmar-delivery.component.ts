@@ -108,6 +108,9 @@ export class ConfirmarDeliveryComponent implements OnInit {
   @Output() isReady = new EventEmitter<boolean>();
   @Output() dataDelivery = new EventEmitter<any>();
 
+  nombreClienteValido = false;
+  isShowNombreClienteLoginInvitado = false;
+
   constructor(
     private miPedidoService: MipedidoService,
     private infoTokenService: InfoTockenService,
@@ -136,6 +139,14 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.montoMinimoPedido = _datosEstablecieminto.pwa_delivery_importe_min;
     this.tipoComprobanteSelected = this.infoTokenService.infoUsToken.tipoComprobante;
     this.propinaSelected = this.infoTokenService.infoUsToken.propina;
+
+    this.isShowNombreClienteLoginInvitado = this.verifyClientService.getDataClient().isLoginByInvitado;
+    if ( this.isShowNombreClienteLoginInvitado ) {
+      let nomClienteInvitato = this.infoTokenService.infoUsToken.nombres;
+      nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
+      this.isShowNombreClienteLoginInvitado = nomClienteInvitato === '';
+      this.nombreClienteValido = !this.isShowNombreClienteLoginInvitado;
+    }
 
     this.isComercioSolidaridad = _datosEstablecieminto.pwa_delivery_comercio_solidaridad === 1;
     this.titleInputDatoAdicional = this.isComercioSolidaridad ? 'Contacto' : 'Algún dato importante?';
@@ -248,8 +259,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     if (this.isValidForm) {
       this.resData.nombre = this.infoToken.nombres;
-      this.resData.direccion = this.infoToken.direccionEnvioSelected.direccion;
-      this.resData.referencia = this.utilService.addslashes(this.infoToken.direccionEnvioSelected.referencia);
+      this.resData.direccion = this.infoToken.direccionEnvioSelected?.direccion;
+      this.resData.referencia = this.utilService.addslashes(this.infoToken.direccionEnvioSelected?.referencia);
       this.resData.direccionEnvioSelected = this.infoToken.direccionEnvioSelected;
       this.resData.idcliente = this.infoToken.idcliente.toString();
       this.resData.paga_con = this.metodoPagoSelected.descripcion + '  ' + importeMetodoPago;
@@ -293,8 +304,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     if (this.isValidForm) {
       this.resData.nombre = this.infoToken.nombres;
-      this.resData.direccion = this.infoToken.direccionEnvioSelected.direccion;
-      this.resData.referencia = this.utilService.addslashes(this.infoToken.direccionEnvioSelected.referencia);
+      this.resData.direccion = this.infoToken.direccionEnvioSelected?.direccion;
+      this.resData.referencia = this.utilService.addslashes(this.infoToken.direccionEnvioSelected?.referencia);
       this.resData.direccionEnvioSelected = this.infoToken.direccionEnvioSelected;
       this.resData.idcliente = this.infoToken.idcliente.toString();
       this.resData.paga_con = this.metodoPagoSelected.descripcion + '  ' + importeMetodoPago;
@@ -319,12 +330,14 @@ export class ConfirmarDeliveryComponent implements OnInit {
   }
 
   private verificarFormValid(): void {
+    console.log('this.nombreClienteValido', this.nombreClienteValido);
     this.isValidForm = this.isTiempoEntregaValid;
     this.isValidForm = this.resData.importeTotal >= this.montoMinimoPedido && this.isValidForm ? true : false;
     this.isValidForm = !this.metodoPagoSelected.idtipo_pago ? false : this.isValidForm;
     this.isValidForm = !this.direccionCliente.ciudad && !this.isRecojoLocalCheked ? false : this.isValidForm;
     this.isValidForm = this.resData.telefono.trim().length >= 5 ? this.isValidForm : false;
     this.isValidForm = this.isValidForm && !this.isCalculandoDistanciaA;
+    this.isValidForm = this.isValidForm && this.nombreClienteValido;
     // if ( !this.direccionCliente.codigo && !this.isRecojoLocalCheked ) { this.isValidForm = false; }
     this.isReady.emit(this.isValidForm);
   }

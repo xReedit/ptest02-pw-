@@ -44,6 +44,8 @@ export class LectorSuccessComponent implements OnInit {
       idsede: this.usLog.idsede
     };
 
+    console.log('this.usLog', this.usLog);
+
     this.numMesa = this.usLog.numMesaLector;
 
     this.crudService.postFree(_data, 'ini', 'info-sede', false)
@@ -88,12 +90,31 @@ export class LectorSuccessComponent implements OnInit {
   }
 
   listoEmpezar(): void {
+
+
     if (this.auth.loggedIn || this.verifyClientService.getIsLoginByDNI()) {
       this.router.navigate(['/callback-auth']);
     } else {
       // this.auth.login();
+
+      // si escanea el codigo y no esta registrado entonces va como invitado
+      // y luego le pide sus datos que // telfono y nombre para delivery y nombre para mesa
+      if ( this.usLog.isQrSuccess ) {
+        this.goAutoRegisterByInvitado();
+        return;
+      }
+
       this.router.navigate(['/login-client']);
     }
   }
+
+  private goAutoRegisterByInvitado() {
+    this.verifyClientService.autoRegisterLoginByInvitado();
+
+    setTimeout(() => {
+      this.router.navigate(['/callback-auth']);
+    }, 500);
+  }
+
 
 }

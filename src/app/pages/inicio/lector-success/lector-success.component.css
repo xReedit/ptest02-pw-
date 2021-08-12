@@ -48,3 +48,9 @@
 p {
     margin: 0px;    
 }
+
+.div-reglas {
+    max-width: 450px;
+    text-align: center;
+    display: inline-block;
+}

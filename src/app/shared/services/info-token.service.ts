@@ -212,6 +212,11 @@ export class InfoTockenService {
     this.setTiempoEntrega(tiempoEntregaSelected);
   }
 
+  setNombres( val: any) {
+    this.infoUsToken.nombres = val;
+    this.set();
+  }
+
   setOtro( val: any) {
     this.infoUsToken.otro = val;
     this.set();

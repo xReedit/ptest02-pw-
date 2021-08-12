@@ -31,6 +31,7 @@ import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedid
 import { Router } from '@angular/router';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
+import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
@@ -87,6 +88,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private systemOS = ''; // sistema operativo cliente
 
+  nombreClienteValido = false; // cuando es cliente e ingresa como invitado pide nombre
+  isShowNombreClienteLoginInvitado = false;
+
   constructor(
     private miPedidoService: MipedidoService,
     private reglasCartaService: ReglascartaService,
@@ -101,7 +105,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     private router: Router,
     private registrarPagoService: RegistrarPagoService,
     private establecimientoService: EstablecimientoService,
-    private utilService: UtilitariosService
+    private utilService: UtilitariosService,
+    private verifyClientService: VerifyAuthClientService,
     ) { }
 
   ngOnInit() {
@@ -111,6 +116,15 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this.systemOS = this.utilService.getOS();
 
     this._miPedido = this.miPedidoService.getMiPedido();
+
+
+    this.isShowNombreClienteLoginInvitado = this.verifyClientService.getDataClient().isLoginByInvitado;
+    if ( this.isShowNombreClienteLoginInvitado ) {
+      let nomClienteInvitato = this.infoToken.infoUsToken.nombres;
+      nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
+      this.isShowNombreClienteLoginInvitado = nomClienteInvitato === '';
+      this.nombreClienteValido = !this.isShowNombreClienteLoginInvitado;
+    }
 
     this.reglasCartaService.loadReglasCarta()
       .pipe(takeUntil(this.destroy$))

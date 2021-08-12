@@ -39,7 +39,7 @@
             <div>          
               <div class="border-bottom p-3" style="border-radius: 5px 5px 0px 0px;">            
                 <ng-container *ngIf="isLogin; else elseTemplate">
-                    <span class="fs-18 fw-600">Hola, <strong>{{nombreClientSocket}}</strong></span>        
+                    <span class="fs-18 fw-600">Hola, <strong>{{nombreClientSocket | titlecase}}</strong></span>        
                   
                 </ng-container>
                 <ng-template #elseTemplate>            

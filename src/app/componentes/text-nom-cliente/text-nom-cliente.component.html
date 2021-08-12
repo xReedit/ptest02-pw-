@@ -1,0 +1,12 @@
+<div class="div-text-nombre">
+    <p *ngIf="!isValidNombre" class="text-danger fw-600">Indique su Nombre.</p>
+    <mat-form-field class="w-100">
+        <input [ngClass]="{'text-nom-cliente': sizeTextBg}" 
+            autocomplete="off" 
+            matInput 
+            placeholder="Nombre" 
+            [(ngModel)]="nombreCliente"
+            name="nombreCliente"
+            #nomCliente (keyup)="saveNomCliente(nomCliente.value)">
+    </mat-form-field>    
+</div>

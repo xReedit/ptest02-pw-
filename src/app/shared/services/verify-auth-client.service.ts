@@ -167,7 +167,7 @@ export class VerifyAuthClientService {
           this.subjectClient.next(null);
           // this.subjectClient.complete();
           // this.subjectClient.hasError = true;
-          // return this.subjectClient.asObservable();
+          return this.subjectClient.asObservable();
           // this.returnClientNull();
         } else {
           // this.clientSocket.datalogin = res;
@@ -214,9 +214,18 @@ export class VerifyAuthClientService {
 
       // login en backend
       idClient = rpt.data[0].idcliente;
+      const nombres = rpt.data[0].nombres;
+      localStorage.setItem('sys::idinv', idClient.toString()); // guarda el idivitado}
+
       this.clientSocket.idcliente = idClient;
+
+      if ( this.clientSocket.isLoginByInvitado ) {
+        this.clientSocket.datalogin.name = nombres;
+        this.clientSocket.datalogin.given_name = nombres.split(' ')[0];
+      }
       this.clientSocket.nombres = this.clientSocket.datalogin.name;
       this.clientSocket.usuario = this.clientSocket.datalogin.given_name;
+
       this.clientSocket.isCliente = true;
       this.clientSocket.telefono = rpt.data[0].telefono;
 
@@ -251,9 +260,27 @@ export class VerifyAuthClientService {
     return this.clientSocket;
   }
 
+  autoRegisterLoginByInvitado() {
+    this.clientSocket.datalogin = {
+      name: 'Invitado',
+      given_name: 'Invitado'
+    };
+
+    const _idInvitadoStorage = localStorage.getItem('sys::idinv'); // guarda el idivitado}
+    this.clientSocket.idcliente = _idInvitadoStorage ? parseInt(_idInvitadoStorage, 0) : 0;
+
+    this.setIsLoginByDNI(false);
+    this.setIsLoginByTelefono(false);
+    this.setIsLoginByInvitado(true);
+    this.registerInvitado();
+
+  }
+
 
   loginOut(): void {
-    this.auth.logout();
+    if ( !this.clientSocket.isLoginByInvitado ) {
+      this.auth.logout();
+    }
     localStorage.removeItem('sys::tpm');
   }
 

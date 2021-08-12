@@ -14,7 +14,7 @@
 <div class="btn-detalle btn-postion animated fadeInUp"  [style.zoom]="zoom"  [hidden]="!showDetalle" >
     <!-- {{ cantidad_show }} -->
     <div>
-        <ng-container *ngIf="cantidad === 1; else elseTemplate">
+        <ng-container *ngIf="cantidad_show === 1; else elseTemplate">
             <span class="fa fa-trash" (click)="menos()"></span>
         </ng-container>
         <ng-template #elseTemplate>            

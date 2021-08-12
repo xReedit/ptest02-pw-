@@ -34,6 +34,12 @@
         </mat-checkbox>
     </div>
 
+    <div *ngIf="isShowNombreClienteLoginInvitado" class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor">
+        <app-text-nom-cliente (isNombreValid)="nombreClienteValido = $event; verificarFormValid()" [sizeTextBg]="false"></app-text-nom-cliente>
+    </div>
+
+                                
+
     <div *ngIf="!isRecojoLocalCheked" class="border-bottom m-0 p-3 d-flex justify-content-between align-items-center" matRipple [matRippleColor]="rippleColor" (click)="openDialogDireccion()">
         <div>
             <span class="fw-100 fs-12 text-secondary">Direccion de entrega:</span>

@@ -1,0 +1,10 @@
+.text-nom-cliente {
+    font-size: 20px;
+    text-align: center;
+}
+
+.div-text-nombre {
+    background: antiquewhite;
+    border-radius: 5px;
+    padding: 10px;
+}
