@@ -63,6 +63,7 @@ export class MipedidoService {
   listItemsPedido: ItemModel[] = [];
   miPedido: PedidoModel = new PedidoModel();
 
+  mpObjNewItemTiposConsumo: ItemTipoConsumoModel[] = [];
   mpObjItemTipoConsumoSelected: ItemTipoConsumoModel[];
   mpObjSeccionSelected: SeccionModel = new SeccionModel();
 
@@ -291,6 +292,15 @@ export class MipedidoService {
   setobjItemTipoConsumoSelected(_objItemTipoConsumoSelected: ItemTipoConsumoModel[]) {
     // this.mpObjItemTipoConsumoSelected = JSON.parse(JSON.stringify(_objItemTipoConsumoSelected));
     this.mpObjItemTipoConsumoSelected = _objItemTipoConsumoSelected;
+  }
+
+  // los tipos de consumo
+  setObjNewItemTiposConsumo(val: any) {
+    this.mpObjNewItemTiposConsumo = val;
+  }
+
+  getObjNewItemTiposConsumo() {
+    return this.mpObjNewItemTiposConsumo;
   }
 
   // seteamos seccion seleccionada menos items[]; para que no se forme el bucle

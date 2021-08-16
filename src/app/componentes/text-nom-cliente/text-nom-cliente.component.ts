@@ -27,7 +27,7 @@ export class TextNomClienteComponent implements OnInit {
 
     // this.isValidNombre = this.nombreCliente !== '';
     // this.isNombreValid.emit(this.isValidNombre);
-    console.log('this.infoCliente txt nombre', this.infoCliente);
+    // console.log('this.infoCliente txt nombre', this.infoCliente);
   }
 
   saveNomCliente(value: string) {
@@ -37,7 +37,7 @@ export class TextNomClienteComponent implements OnInit {
     this.nombreCliente = this.infoCliente.nombres;
     this.isValidNombre = this.nombreCliente !== '';
     this.isNombreValid.emit(this.isValidNombre);
-    console.log('this.infoCliente txt nombre', this.infoCliente);
+    // console.log('this.infoCliente txt nombre', this.infoCliente);
   }
 
 }

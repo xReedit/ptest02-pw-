@@ -272,6 +272,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
           // }
         });
 
+        this.miPedidoService.setObjNewItemTiposConsumo(this.objNewItemTiposConsumo);
+
         this.navigatorService.addLink('carta-i-');
 
         // console.log('this.objNewItemTiposConsumo', this.objNewItemTiposConsumo);
@@ -572,7 +574,6 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   resultCantItemMercado(_selectedItem: any) {
     // solo para delivery
-    console.log('_selectedItem carta', _selectedItem);
 
     this.itemSelected = _selectedItem;
     const _objNewItemTiposConsumo = JSON.parse(JSON.stringify(this.objNewItemTiposConsumo));
@@ -586,7 +587,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     const tpcSelect = this.objItemTipoConsumoSelected[0];
     const _isSuma = _selectedItem.isSuma_selected ? 0 : 1;
 
-    console.log('_selectedItem carta', this.itemSelected);
+    // console.log('_selectedItem carta', _selectedItem);
 
 
     this.miPedidoService.addItem2(tpcSelect, this.itemSelected, _isSuma);

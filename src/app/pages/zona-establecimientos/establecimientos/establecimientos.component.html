@@ -4,7 +4,7 @@
         <span class="pt-2">Obteniendo datos...</span>
     </div>    
 </div>
-<div class="animated fadeInUp">    
+<div class="animated fadeInUp div-content-all">    
 
 
 
@@ -26,41 +26,256 @@
         </div>
     </div> -->
 
+    
+
     <!-- otras categorias -->
-    <div class="pt-5">
-    <div class="div-otros d-flex justify-content-center">
-        <div class="div-categorias mb-3 fs-13 text-dark text-left bg-white">            
-            <div *ngIf="vistaInicio === 0" class="div-content-ico">
-                <div matRipple (click)="goComercioCategoria(item.idsede_categoria)" class="div-ico-circle" *ngFor="let item of listIcoCategoria">
-                    <ng-container *ngIf="item.visible">
-                        <div class="img-ico-circle-border" [style.background] ="item.color_fondo">
-                            <img src="{{imgIcoCategoria}}{{item.img}}" alt="">
+<div *ngIf="vistaInicio === 0">
+
+    <!-- vista sin direccion definida -->
+    <ng-container *ngIf="isNullselectedDireccion; else elseTemplateDireccionSet">
+        
+        <div class="pt-5">
+            <div class="div-otros-a d-flex justify-content-center">
+                <div class="div-categorias-a mb-3 fs-13 text-dark text-left bg-white">
+    
+                    <div class="div-content-ico-a">
+                        <div matRipple (click)="goComercioCategoria(item.idsede_categoria)" class="div-ico-circle" *ngFor="let item of listIcoCategoria">
+                            <ng-container *ngIf="item.visible">
+                                <div class="img-ico-circle-border" [style.background] ="item.color_fondo">
+                                    <img src="{{imgIcoCategoria}}{{item.img}}" alt="">
+                                </div>
+                                <p class="fs-11 fw-600">{{ item.descripcion }}</p>
+                            </ng-container>    
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Otras opciones -->            
+            <div class="div-otros-a d-flex justify-content-center ">
+                <div class="div-categorias-a mb-3 fs-13 text-dark text-left bg-white d-flex justify-content-around w-100">
+                    <div matRipple class="div-ico-circle" (click)="checkOut(0)">
+                        <div class="img-ico-circle-border" style="background: #cdecfc;">
+                            <img src="assets/images/icon-app/icon-p-5c.png" alt="loquesea">
                         </div>
-                        <p class="fs-11 fw-600">{{ item.descripcion }}</p>
-                    </ng-container>
-                    
+                        <p class="fs-12 fw-600">Lo que quieras</p>
+                    </div>
+
+                    <div matRipple class="div-ico-circle" (click)="checkOut(1)">
+                        <div class="img-ico-circle-border" style="background: #cdecfc;">
+                            <img src="assets/images/icon-app/icon-p-6c.png" alt="loquesea">
+                        </div>
+                        <p class="fs-12 fw-600">Envios Express</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- de frente comercios -->
-            <div *ngIf="vistaInicio === 1" class="div-content-ico">
-                <div class="text-center">
-                    <img src="assets/images/delivery-man-1.jpg" alt="icon-man">
-                    <p class="fw-600 text-secondary">
-                        Pedir en Papaya Express no solo es pedir lo mejor de la ciudad, sino también apoyar a los negocios locales.
-                    </p>
-                    <p class="fw-100">Pide seguro, pide Papaya Express! Te lo llevamos al toque!</p>
+
+            <!-- consejos -->            
+            <div class="div-otros-a d-flex justify-content-center">
+                <div class="div-categorias-a mb-3 fs-13 text-dark text-left bg-aviso">
+                    <div class="text-center">
+                        <p class="fw-600">Importante</p>
+                    </div>
+                    <hr>
+                    <div class="fs-12 fw-100 p-1">
+                        <div class="d-flex align-items-center">
+                            <div class="pr-4">
+                                <img src="assets/images/001-bio-5.png" alt="bio-1">
+                            </div>
+                            <div class="w-80">
+                                Al recibir su pedido verifique que el repartidor tenga los implementos de bioseguridad.
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="d-flex align-items-center">
+                            <div class="pr-4">
+                                <img src="assets/images/001-bio-2.png" alt="bio-2">
+                            </div>
+                            <div class="w-80">
+                                El repartidor desinfectara el pedido antes de entregarlo. Si su pedido es comida tendrá un precinto de seguridad.
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="d-flex align-items-center">
+                            <div class="pr-4">
+                                <img src="assets/images/001-bio-1.png" alt="bio-3">
+                            </div>
+                            <div class="w-80">
+                                Para recibir su pedido tendrá que utilizar mascarilla.                    
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="d-flex align-items-center">
+                            <div class="pr-4">                    
+                                <img src="assets/images/001-bio-3.png" alt="bio-4">                                            
+                            </div>
+                            <div class="w-80">
+                                Entrega sin contacto: Cuando sea posible utiliza el pago con tarjeta o Yape en tu pedido.                    
+                            </div>
+                            <div class="pl-4">                    
+                                <img src="assets/images/0001-bio-6.png" alt="bio-5">  
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <hr>
-                <button class="btn btn-success" (click)="goComercios()">Pedir ahora <i class="pl-2 fa fa-arrow-right"></i></button>
+            </div>
+            
+        </div>
+
+    </ng-container>
+
+    <!-- vista con direccion definida -->
+    <ng-template #elseTemplateDireccionSet>
+        
+        <div class="pt-5">
+        <div class="div-otros d-flex justify-content-center">
+            <div class="div-categorias mb-3 fs-13 text-dark text-left bg-white">
+                
+                
+
+                <div class="div-content-ico">
+                    <div matRipple (click)="goComercioCategoria(item.idsede_categoria)" class="div-ico-circle" *ngFor="let item of listIcoCategoria">
+                        <ng-container *ngIf="item.visible">
+                            <div class="img-ico-circle-border" [style.background] ="item.color_fondo">
+                                <img src="{{imgIcoCategoria}}{{item.img}}" alt="">
+                            </div>
+                            <p class="fs-11 fw-600">{{ item.descripcion }}</p>
+                        </ng-container>    
+                    </div>
+
+                    <!-- Otras opciones -->
+                    <div matRipple class="div-ico-circle" (click)="checkOut(0)">
+                        <div class="img-ico-circle-border" style="background: #cdecfc;">
+                            <img src="assets/images/icon-app/icon-p-5c.png" alt="loquesea">
+                        </div>
+                        <p class="fs-12 fw-600">Lo que quieras</p>
+                    </div>
+        
+                    <div matRipple class="div-ico-circle pr-3" (click)="checkOut(1)">
+                        <div class="img-ico-circle-border" style="background: #cdecfc;">
+                            <img src="assets/images/icon-app/icon-p-6c.png" alt="loquesea">
+                        </div>
+                        <p class="fs-12 fw-600">Envios Express</p>
+                    </div>
+
+                </div>           
+                
+            </div>
+            
+        </div>
+        </div>
+
+
+        <!-- vista 0821 -->
+        <!-- restaurantes -->
+        <div class="div-otros-padding">
+            
+            <div *ngFor="let itemCategoria of listEstablecimientos">
+                <div class="div-fondo-list-comercios" [ngStyle]="{'background': itemCategoria.color_fondo}">  
+                    <div class="d-flex justify-content-between">
+                        <p class="fw-600 fs-18">{{ itemCategoria.nom_categoria }}</p>
+                        <!-- <button mat-raised-button color="primary">Ver Todos</button> -->
+                        <!-- <mat-button-toggle color="primary">Ver Todos</mat-button-toggle> -->
+                    </div>
+
+                    <div class="div-ico-comercio-item">
+                        <div matRipple class="div-ico-circle" *ngFor="let itemComercio of itemCategoria.comercios;" (click)="itemSelected(itemComercio)">
+                            <div class="div-ico-border-img">                                
+                                <div *ngIf="itemComercio.calificacion > 0" class="div-start-comercio text-warning fw-600">
+                                    <span class="pr-1">5</span>
+                                    <i class="fa fa-star"></i>
+                                </div>
+                                <div *ngIf="itemComercio.cerrado === 1" class="div-cerrado-comercio fw-600">
+                                    Cerrado
+                                </div>
+                                <img src="{{itemComercio.img_mini}}" alt="loquesea">
+                            </div>                            
+                            <p class="fs-12 fw-600 m-0"> {{ itemComercio.nombre | titlecase}} </p>
+                            <p class="fs-11 m-0"> {{ itemComercio.tiempo_aprox_entrega | titlecase}}</p>
+                        </div>
+                    </div>
+
+
+                    <div class="text-center mt-4">
+                        <button mat-raised-button color="primary" (click)="goComercioCategoria(itemCategoria.idsede_categoria)">Ver Todos</button>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="div-fondo-list-comercios">
+                <div class="d-flex justify-content-between">
+                    <p class="fw-600 fs-18">Restaurantes</p>
+                    <p class="text-info xCursor">Ver todos</p>
+                </div>
+
+                <div class="div-ico-comercio-item">
+
+
+                    <div matRipple class="div-ico-circle">
+                        <div class="div-ico-border-img">
+                            <img src="{{imgComercio}}/logo-1.jpg" alt="loquesea">
+                        </div>
+                        <p class="fs-12 fw-600">Lo que quieras</p>
+                    </div>
+                    <div matRipple class="div-ico-circle">
+                        <div class="div-ico-border-img">
+                            <img src="{{imgComercio}}/logo-1.jpg" alt="loquesea">
+                        </div>
+                        <p class="fs-12 fw-600">Lo que quieras</p>
+                    </div>
+                    <div matRipple class="div-ico-circle">
+                        <div class="div-ico-border-img">
+                            <img src="{{imgComercio}}/logo-2.jpg" alt="loquesea">
+                        </div>
+                        <p class="fs-12 fw-600">Lo que quieras</p>
+                    </div>
+                    <div matRipple class="div-ico-circle" (click)="checkOut(0)">
+                        <div class="div-ico-border-img">
+                            <img src="{{imgComercio}}/logo-3.jpg" alt="loquesea">
+                        </div>
+                        <p class="fs-12 fw-600">Lo que quieras</p>
+                    </div>
+                    <div matRipple class="div-ico-circle" (click)="checkOut(0)">
+                        <div class="div-ico-border-img">
+                            <img src="{{imgComercio}}/logo-4.PNG" alt="loquesea">
+                        </div>
+                        <p class="fs-12 fw-600">Lo que quieras</p>
+                    </div>                
+                </div>
+            </div>
+        </div>
+
+    </ng-template>
+
+</div>
+
+
+
+    <!-- de frente comercios -->
+<div *ngIf="vistaInicio === 1">
+    <div class="pt-5">
+        <div class="div-otros d-flex justify-content-center">
+            <div class="div-categorias mb-3 fs-13 text-dark text-left bg-white">
+                <div  class="div-content-ico">
+                    <div class="text-center">
+                        <img src="assets/images/delivery-man-1.jpg" alt="icon-man">
+                        <p class="fw-600 text-secondary">
+                            Pedir en Papaya Express no solo es pedir lo mejor de la ciudad, sino también apoyar a los negocios locales.
+                        </p>
+                        <p class="fw-100">Pide seguro, pide Papaya Express! Te lo llevamos al toque!</p>
+                    </div>
+                    <hr>
+                    <button class="btn btn-success" (click)="goComercios()">Pedir ahora <i class="pl-2 fa fa-arrow-right"></i></button>
+                </div>
             </div>
         </div>
     </div>
-    </div>
-
+</div>
 
     <!-- Otras opciones -->
-    <div class="div-otros d-flex justify-content-center">
+    <!-- <div class="div-otros d-flex justify-content-center">
         <div class="div-categorias mb-3 fs-13 text-dark text-left bg-white d-flex justify-content-around w-100">
             <div matRipple class="div-ico-circle" (click)="checkOut(0)">
                 <div class="img-ico-circle-border" style="background: #cdecfc;">
@@ -76,7 +291,7 @@
                 <p class="fs-12 fw-600">Envios Express</p>
             </div>
         </div>
-    </div>
+    </div> -->
 
 
     <!-- donacion -->
@@ -103,7 +318,7 @@
 
     <!-- consejos -->
 
-    <div class="div-otros d-flex justify-content-center">
+    <!-- <div class="div-otros d-flex justify-content-center">
         <div class="div-categorias mb-3 fs-13 text-dark text-left bg-aviso">
             <div class="text-center">
                 <p class="fw-600">Importante</p>
@@ -150,6 +365,11 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
+
+
+
+    
+
 
 </div>

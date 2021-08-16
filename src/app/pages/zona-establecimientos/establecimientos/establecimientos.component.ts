@@ -10,6 +10,11 @@ import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cli
 // import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 // import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 
+import { URL_IMG_COMERCIO } from 'src/app/shared/config/config.const';
+import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimiento';
+import { SocketService } from 'src/app/shared/services/socket.service';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 
 @Component({
   selector: 'app-establecimientos',
@@ -23,6 +28,13 @@ export class EstablecimientosComponent implements OnInit {
   vistaInicio = 0;
   timeLoader = null;
 
+  imgComercio = URL_IMG_COMERCIO;
+
+  listEstablecimientos: DeliveryEstablecimiento[];
+  ciudad_actual: string; // ciudad de direccion seleccionada
+  codigo_postal_actual: string; // codigo postal de direccion seleccionada
+  isNullselectedDireccion = true; // para mostrar comercios segun ciudad desde el inicio
+
   private isClienteLogueado = false;
   constructor(
     private crudService: CrudHttpService,
@@ -30,6 +42,9 @@ export class EstablecimientosComponent implements OnInit {
     private router: Router,
     private verifyClientService: VerifyAuthClientService,
     private listenService: ListenStatusService,
+    private socketService: SocketService,
+    private establecimientoService: EstablecimientoService,
+    private pedidoService: MipedidoService
     // private pushNotificationSerice: NotificacionPushService,
     // private dialog: MatDialog
   ) { }
@@ -53,6 +68,12 @@ export class EstablecimientosComponent implements OnInit {
     this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
       if ( res ) {
         this.vistaInicio = res?.options?.vista ? res.options.vista : 0 ;
+        this.ciudad_actual = res.ciudad;
+        this.isNullselectedDireccion = false;
+
+        console.log('this.ciudad_actual === >', this.ciudad_actual );
+
+        this.loadEstablecimientos();
 
         // this.goComercios();
       }
@@ -133,6 +154,86 @@ export class EstablecimientosComponent implements OnInit {
           break;
       }
     }, 300);
+  }
+
+  loadEstablecimientos() {
+    const _data = {
+      idsede_categoria: -1,
+      codigo_postal: this.ciudad_actual // this.codigo_postal_actual, cambiamos el 310720
+    };
+
+    this.listEstablecimientos = [];
+
+    this.crudService.postFree(_data, 'delivery', 'get-establecimientos', false)
+      .subscribe( (res: any) => {
+        // setTimeout(() => {
+          this.listEstablecimientos = res.data;
+          this.listEstablecimientos.map((dirEstablecimiento: DeliveryEstablecimiento) => {
+            dirEstablecimiento.visible = true;
+            dirEstablecimiento.img_mini = `${this.imgComercio}/${dirEstablecimiento.img_mini}`;
+            // this.calcDistancia(x);
+            // this.calcDistanceService.calculateRoute(this.direccionCliente, dirEstablecimiento);
+            // dirEstablecimiento.c_servicio = _c_servicio;
+
+          });
+
+
+          this.listEstablecimientos = this.listEstablecimientos.reduce((results: any, org: any) => {
+            if (!results.length) {
+              results = [];
+            }
+
+            const _buscarCat = results.filter(x => x.idsede_categoria === org.idsede_categoria)[0];
+            if (_buscarCat) {
+               if (_buscarCat.comercios.length < 10) {
+                 _buscarCat.comercios.push(org);
+              }
+            } else {
+              const _new_categoria = {
+                idsede_categoria: org.idsede_categoria,
+                nom_categoria: org.nom_categoria,
+                color_fondo: org.color_fondo,
+                orden: org.orden,
+                comercios: [org]
+              };
+
+              results.push(_new_categoria);
+            }
+            // (results[org.idsede_categoria] = results[org.idsede_categoria] || []).push(org);
+            return results;
+        }, {});
+
+        this.listEstablecimientos.sort((a: any, b: any) => a.orden - b.orden);
+
+        console.log('resultado agruption', this.listEstablecimientos);
+      });
+  }
+
+
+  itemSelected($event: DeliveryEstablecimiento) {
+    // console.log('establecimiento seleccionada', $event);
+
+    // busca en el cache si ya calculo la distancia con la api de google
+    // const _establecimientoCache = this.establecimientoService.getFindDirClienteCacheEstableciemto(this.direccionCliente, $event);
+    // if ( _establecimientoCache.calcApiGoogle ) {
+    //    this.calcDistanceService.calculateRoute(this.direccionCliente, $event, false);
+    // }
+
+    if ( $event.cerrado === 1 ) {return; }
+    this.socketService.closeConnection();
+
+    this.verifyClientService.setIdSede($event.idsede);
+    this.verifyClientService.setIdOrg($event.idorg);
+    this.verifyClientService.setIsDelivery(true);
+
+    // console.log('establecimiento selected', $event);
+    this.establecimientoService.set($event);
+
+    // restcarta
+    this.pedidoService.resetAllNewPedido();
+
+    this.router.navigate(['/callback-auth']);
+
   }
 
   // private lanzarPermisoNotificationPush() {

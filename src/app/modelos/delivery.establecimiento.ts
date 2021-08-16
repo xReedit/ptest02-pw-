@@ -52,4 +52,5 @@ export class DeliveryEstablecimiento {
     pwa_pedido_programado_solo_del_dia: number; // pedidos programados solo del dia
     pwa_acepta_reservas: number; // 1 acepta recervas
     pwa_acepta_reserva_desde: string; // hora desde que acepta reserva
+    img_mini: string; // logo mini
 }

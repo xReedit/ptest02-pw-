@@ -337,6 +337,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   openDlgItemToResumen(_seccion: SeccionModel, _item: ItemModel): void {
+
+    if ( this.isHayCuentaBusqueda ) { return; }
+
     const dialogConfig = new MatDialogConfig();
     const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
 

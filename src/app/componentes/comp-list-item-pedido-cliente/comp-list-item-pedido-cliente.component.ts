@@ -24,10 +24,11 @@ export class CompListItemPedidoClienteComponent implements OnInit, AfterViewInit
   @Input() arrSubtotales: any;
 
   miPedido: PedidoModule;
-  private itemSelected: ItemModel;
+  // private itemSelected: ItemModel;
   private objItemTipoConsumoSelected: ItemTipoConsumoModel[];
   private objNewItemTiposConsumo: ItemTipoConsumoModel[] = [];
   private destroy$: Subject<boolean> = new Subject<boolean>();
+  item: ItemModel;
 
 
   isDeliveryCliente: boolean;
@@ -70,24 +71,63 @@ export class CompListItemPedidoClienteComponent implements OnInit, AfterViewInit
 
 
     // solo para delivery
+    this.objNewItemTiposConsumo = [];
     console.log('tpc', tpc);
     console.log('_selectedItem', _selectedItem);
 
+    // const _tpc = <ItemTipoConsumoModel>{
+    //   cantidad_seleccionada: tpc.cantidad_seleccionada,
+    //   descripcion: tpc.descripcion,
+    //   idtipo_consumo: tpc.idtipo_consumo,
+    //   titulo: tpc.titulo
+    // };
+
+    // this.objNewItemTiposConsumo.push(_tpc);
+
+    // const _itemFromCarta = this.miPedidoService.findItemCarta(_selectedItem);
+    // this.objItemTipoConsumoSelected = _itemFromCarta.itemtiposconsumo;
+    // _selectedItem.cantidad = this.getCantidadItemCarta(_selectedItem); // trae el stock del item carta
+    // this.objItemTipoConsumoSelected = <ItemTipoConsumoModel[]>this.objItemTipoConsumoSelected;
+    // // this.objNewItemTiposConsumo = _itemFromCarta.itemtiposconsumo;
+    // // const tpcSelect = this.objNewItemTiposConsumo[0];
+    // const tpcSelect = tpc;
+
+    // this.miPedidoService.setObjSeccionSeleced(_seccion);
+    // this.miPedidoService.setobjItemTipoConsumoSelected(this.objNewItemTiposConsumo);
+
+    // const _isSuma = _selectedItem.isSuma_selected ? 0 : 1;
+
+    // // console.log('_selectedItem carta', this.itemSelected);
+
+    // _selectedItem.cantidad = _selectedItem.cantidad ? _selectedItem.cantidad : NaN;
+    // _selectedItem.cantidad_seleccionada = _selectedItem.cantidad_selected;
+
+
+    // this.miPedidoService.addItem2(tpcSelect, <ItemModel>_selectedItem, _isSuma);
+
+
+    // 2
     const _itemFromCarta = this.miPedidoService.findItemCarta(_selectedItem);
-    this.objNewItemTiposConsumo = _itemFromCarta.itemtiposconsumo;
+    this.objItemTipoConsumoSelected = <ItemTipoConsumoModel[]>_itemFromCarta.itemtiposconsumo;
 
-    const tpcSelect = this.objNewItemTiposConsumo[0];
     this.miPedidoService.setObjSeccionSeleced(_seccion);
-    this.miPedidoService.setobjItemTipoConsumoSelected(this.objNewItemTiposConsumo);
+    this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
 
+    _selectedItem.itemtiposconsumo = this.objItemTipoConsumoSelected;
+
+
+    const tpcSelect = this.objItemTipoConsumoSelected.filter(x => x.idtipo_consumo === tpc.idtipo_consumo)[0];
     const _isSuma = _selectedItem.isSuma_selected ? 0 : 1;
 
-    console.log('_selectedItem carta', this.itemSelected);
-
     _selectedItem.cantidad = _selectedItem.cantidad ? _selectedItem.cantidad : NaN;
+    _itemFromCarta.cantidad = this.getCantidadItemCarta(_selectedItem);
 
 
-    this.miPedidoService.addItem2(tpcSelect, _selectedItem, _isSuma);
+
+
+    // tpcSelect = al de la carta = tpc seleccionado por
+    // item = _itemFromCarta de la carta
+    this.miPedidoService.addItem2(tpcSelect, _itemFromCarta, _isSuma);
 
   }
 
@@ -116,6 +156,10 @@ export class CompListItemPedidoClienteComponent implements OnInit, AfterViewInit
         }
     );
 
+  }
+
+  getCantidadItemCarta(item: any): number {
+    return parseInt(this.miPedidoService.findItemCarta(item).cantidad.toString(), 0);
   }
 
   goBackCarta(): void {

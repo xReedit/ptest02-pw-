@@ -59,6 +59,8 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     this.item.cantidad = this.getCantidadItemCarta(); // trae el stock del item carta
     this.objItemTipoConsumoSelected = <ItemTipoConsumoModel[]>data.objItemTipoConsumoSelected;
 
+    // console.log('set this.objItemTipoConsumoSelected', this.objItemTipoConsumoSelected);
+
     this.miPedidoService.setObjSeccionSeleced(data.seccion);
     this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
 
