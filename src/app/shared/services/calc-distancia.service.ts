@@ -334,6 +334,8 @@ export class CalcDistanciaService {
 
   // calcula la distanca del establecimiento al ingresar a la carta para asegurar lo cacula con api google
   calcCostoEntregaApiGoogleRain(direccionCliente: DeliveryDireccionCliente, dirEstablecimiento: DeliveryEstablecimiento) {
+
+    if ( !direccionCliente ) {return; }
     // buscamos en cache
     const _establecimientoCache = this.estableciminetoService.getFindDirClienteCacheEstableciemto(direccionCliente, dirEstablecimiento);
     if ( _establecimientoCache ) {

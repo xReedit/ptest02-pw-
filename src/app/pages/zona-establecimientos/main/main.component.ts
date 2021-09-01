@@ -69,8 +69,10 @@ export class MainComponent implements OnInit {
       this.socketService.connect(this.infoClient, 0, true);
 
       this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
-        if ( res ) {
+        if ( res) {
           // this.codigo_postal_actual = res.codigo;
+          this.nomDireccionCliente = res.direccion + ' ' + res.ciudad;
+          this.verifyClientService.setDireccionDeliverySelected(res);
           // this.setDireccion(res);
         }
       });

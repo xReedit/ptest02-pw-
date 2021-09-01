@@ -141,6 +141,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     if ( this.infoToken.getInfoUs().isCliente &&  !this.infoToken.getInfoUs().isReserva) {
+      // console.log('calcula distancia desde carta');
       this.calcDistanciaService.calcCostoEntregaApiGoogleRain(this.infoToken.getInfoUs().direccionEnvioSelected, this.establecimientoService.get());
     }
   }

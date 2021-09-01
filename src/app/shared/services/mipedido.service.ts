@@ -342,8 +342,8 @@ export class MipedidoService {
   // idTpcItemResumenSelect tipo consumo del item al modificar desde resumen, si el tpc es diferente al seleccionado en el dialog entonces no suma al item
   addItem2(tipoconsumo: ItemTipoConsumoModel, item: ItemModel, signo: number = 0, idTpcItemResumenSelect: number = null) {
     // let sumTotalTpcSelected = this.totalItemTpcSelected();
-    console.log('add item', item);
-    console.log('add item tipoconsumo', tipoconsumo);
+    // console.log('add item', item);
+    // console.log('add item tipoconsumo', tipoconsumo);
     // el item que viene es de carta o del resumen
     // buscamos el item en la carta para el stock
     // de esta manera manejamos una sola cantidad
@@ -1794,6 +1794,7 @@ export class MipedidoService {
       localStorage.setItem('sys::s', this.objDatosSede.datossede[0].nombre + '|' + this.objDatosSede.datossede[0].ciudad);
       // console.log('datos de la sede ps', this.objDatosSede);
 
+      this.establecimientoService.setImpresoras(this.objDatosSede.impresoras);
 
       this.max_minute_order = res[0].datossede[0].pwa_time_limit;
       // this.pwa_delivery_importe_min = res[0].datossede[0].pwa_delivery_importe_min;

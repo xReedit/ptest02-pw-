@@ -132,20 +132,23 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     this.loadData();
 
-
-
-
     const _datosEstablecieminto = this.establecimientoService.get();
     this.montoMinimoPedido = _datosEstablecieminto.pwa_delivery_importe_min;
     this.tipoComprobanteSelected = this.infoTokenService.infoUsToken.tipoComprobante;
     this.propinaSelected = this.infoTokenService.infoUsToken.propina;
 
-    this.isShowNombreClienteLoginInvitado = this.verifyClientService.getDataClient().isLoginByInvitado;
+    this.isShowNombreClienteLoginInvitado = this.verifyClientService.getDataClient().isLoginByInvitado || false;
     if ( this.isShowNombreClienteLoginInvitado ) {
       let nomClienteInvitato = this.infoTokenService.infoUsToken.nombres;
       nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
       this.isShowNombreClienteLoginInvitado = nomClienteInvitato === '';
       this.nombreClienteValido = !this.isShowNombreClienteLoginInvitado;
+    } else {
+      // this.nombreClienteValido = true;
+
+      let nomClienteInvitato = this.infoTokenService.infoUsToken.nombres;
+      nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
+      this.nombreClienteValido = nomClienteInvitato !== '';
     }
 
     this.isComercioSolidaridad = _datosEstablecieminto.pwa_delivery_comercio_solidaridad === 1;
@@ -330,7 +333,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
   }
 
   private verificarFormValid(): void {
-    console.log('this.nombreClienteValido', this.nombreClienteValido);
+    // console.log('this.nombreClienteValido', this.nombreClienteValido);
     this.isValidForm = this.isTiempoEntregaValid;
     this.isValidForm = this.resData.importeTotal >= this.montoMinimoPedido && this.isValidForm ? true : false;
     this.isValidForm = !this.metodoPagoSelected.idtipo_pago ? false : this.isValidForm;
@@ -464,7 +467,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     const dialogDireccionCliente = this.dialogDireccionClienteDelivery.open(DialogDireccionClienteDeliveryComponent, _dialogConfig);
     dialogDireccionCliente.afterClosed().subscribe((data: any) => {
       if ( !data ) { return; }
-        console.log('direcion', data);
+        // console.log('direcion', data);
         // this.verifyClientService.setDireccionDeliverySelected(data);
         // this.setDireccion(data);
 

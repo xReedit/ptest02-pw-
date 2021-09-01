@@ -15,6 +15,7 @@ import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimient
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
+import { SedeDeliveryService } from 'src/app/shared/services/sede-delivery.service';
 
 @Component({
   selector: 'app-establecimientos',
@@ -44,7 +45,8 @@ export class EstablecimientosComponent implements OnInit {
     private listenService: ListenStatusService,
     private socketService: SocketService,
     private establecimientoService: EstablecimientoService,
-    private pedidoService: MipedidoService
+    private pedidoService: MipedidoService,
+    private plazaDelivery: SedeDeliveryService
     // private pushNotificationSerice: NotificacionPushService,
     // private dialog: MatDialog
   ) { }
@@ -53,8 +55,22 @@ export class EstablecimientosComponent implements OnInit {
 
     // console.log('this.verifyClientService.getDataClient()', this.verifyClientService.getDataClient());
     const _dataDir = this.verifyClientService.getDataClient();
-    this.isClienteLogueado = _dataDir.isCliente;
+    this.isClienteLogueado = _dataDir.isCliente || false;
+
+
     this.vistaInicio = !_dataDir.direccionEnvioSelected ? 0 : _dataDir.direccionEnvioSelected.options ? _dataDir.direccionEnvioSelected.options.vista : 0;
+
+    if ( this.vistaInicio === 0 && _dataDir.direccionEnvioSelected ) {
+      if ( !_dataDir.direccionEnvioSelected?.options ) {
+        this.plazaDelivery.loadDatosPlazaByCiudad(_dataDir.direccionEnvioSelected.ciudad)
+        .subscribe((resPlaza: any) => {
+          this.vistaInicio = resPlaza ? resPlaza.options.vista : 0;
+        });
+      }
+    }
+
+    // console.log('_dataDir.direccionEnvioSelected', _dataDir.direccionEnvioSelected);
+    // console.log('_dataDir', _dataDir);
     // this.goComercios();
     // console.log('establecimiento');
     this.xLoadCategoria();
@@ -65,13 +81,16 @@ export class EstablecimientosComponent implements OnInit {
     // };
     // window.history.forward();
 
+    localStorage.setItem('sys:city', '');
+
+
     this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
-      if ( res ) {
+      if ( res && this.isClienteLogueado ) {
         this.vistaInicio = res?.options?.vista ? res.options.vista : 0 ;
         this.ciudad_actual = res.ciudad;
         this.isNullselectedDireccion = false;
 
-        console.log('this.ciudad_actual === >', this.ciudad_actual );
+        // console.log('this.ciudad_actual === >', this.ciudad_actual );
 
         this.loadEstablecimientos();
 
@@ -157,6 +176,11 @@ export class EstablecimientosComponent implements OnInit {
   }
 
   loadEstablecimientos() {
+
+    const _lastCiudadSearch = localStorage.getItem('sys:city') || '';
+
+    if ( _lastCiudadSearch.toLowerCase() === this.ciudad_actual.toLowerCase()) { return; }
+
     const _data = {
       idsede_categoria: -1,
       codigo_postal: this.ciudad_actual // this.codigo_postal_actual, cambiamos el 310720
@@ -167,7 +191,10 @@ export class EstablecimientosComponent implements OnInit {
     this.crudService.postFree(_data, 'delivery', 'get-establecimientos', false)
       .subscribe( (res: any) => {
         // setTimeout(() => {
+          // console.log('_data get establecimientos', res);
+          if ( res.data.length === 0 ) {return; }
           this.listEstablecimientos = res.data;
+
           this.listEstablecimientos.map((dirEstablecimiento: DeliveryEstablecimiento) => {
             dirEstablecimiento.visible = true;
             dirEstablecimiento.img_mini = `${this.imgComercio}/${dirEstablecimiento.img_mini}`;
@@ -199,13 +226,34 @@ export class EstablecimientosComponent implements OnInit {
 
               results.push(_new_categoria);
             }
+
+            // si es nuevo ingreso
+            if ( org.nuevo_ingreso === 1 ) {
+              const _newsIngresos = results.filter(x => x.idsede_categoria === -1)[0];
+              if ( _newsIngresos ) {
+                _newsIngresos.comercios.push(org);
+              } else {
+                const _new_categoria_in = {
+                  idsede_categoria: -1,
+                  nom_categoria: 'Nuevos Ingresos',
+                  color_fondo: '#fff7dd',
+                  orden: -1,
+                  comercios: [org]
+                };
+
+                results.push(_new_categoria_in);
+              }
+            }
+
             // (results[org.idsede_categoria] = results[org.idsede_categoria] || []).push(org);
             return results;
         }, {});
 
         this.listEstablecimientos.sort((a: any, b: any) => a.orden - b.orden);
 
-        console.log('resultado agruption', this.listEstablecimientos);
+
+        // guardamos ciudad_actual
+        localStorage.setItem('sys:city', this.ciudad_actual);
       });
   }
 
@@ -231,6 +279,9 @@ export class EstablecimientosComponent implements OnInit {
 
     // restcarta
     this.pedidoService.resetAllNewPedido();
+
+    // al regresar para que vuelva a los datos
+    localStorage.setItem('sys:city', '');
 
     this.router.navigate(['/callback-auth']);
 

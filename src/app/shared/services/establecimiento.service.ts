@@ -38,6 +38,17 @@ export class EstablecimientoService {
     this.set(this.establecimiento);
   }
 
+  setImpresoras(val: any) {
+    this.establecimiento = this.get();
+    this.establecimiento.impresoras = val;
+    this.set(this.establecimiento);
+  }
+
+  getImpresoras() {
+    this.establecimiento = this.get();
+    return this.establecimiento.impresoras;
+  }
+
 
   // al iniciar el usuario
   loadEstablecimientoById(id: number) {

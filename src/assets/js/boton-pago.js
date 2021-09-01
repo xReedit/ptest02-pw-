@@ -5,27 +5,27 @@ var dataCliente;
 
 // 240120 - last update.
 // DESARROLLO
-var user = "integraciones.visanet@necomplus.com";
-var password = "d5e7nk$M";
-var merchantId = '522591303';
-var urlApiSeguridad = "https://apitestenv.vnforapps.com/api.security/v1/security";
-var urlApiSesion = "https://apitestenv.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/";
-var urlApiAutorization =  "https://apitestenv.vnforapps.com/api.authorization/v3/authorization/ecommerce/";
-var urlJs = "https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true";
-var logo = 'http://web-p.test:8080/images/l-pay-2.png';
+// var user = "integraciones.visanet@necomplus.com";
+// var password = "d5e7nk$M";
+// var merchantId = '522591303';
+// var urlApiSeguridad = "https://apitestenv.vnforapps.com/api.security/v1/security";
+// var urlApiSesion = "https://apitestenv.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/";
+// var urlApiAutorization =  "https://apitestenv.vnforapps.com/api.authorization/v3/authorization/ecommerce/";
+// var urlJs = "https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true";
+// var logo = 'http://web-p.test:8080/images/l-pay-2.png';
 
 // aW50ZWdyYWNpb25lcy52aXNhbmV0QG5lY29tcGx1cy5jb206ZDVlN25rJE0=
 
 
 // PROD
-// var user = "macraze.info@gmail.com";
-// var password = "j34Oz!nB";
-// var merchantId = '650149801';
-// var urlApiSeguridad = "https://apiprod.vnforapps.com/api.security/v1/security";
-// var urlApiSesion = "https://apiprod.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/";
-// var urlApiAutorization =  "https://apiprod.vnforapps.com/api.authorization/v3/authorization/ecommerce/";
-// var urlJs = "https://static-content.vnforapps.com/v2/js/checkout.js"; 
-// var logo = 'https://papaya.com.pe/images/l-pay-2.png';
+var user = "macraze.info@gmail.com";
+var password = "j34Oz!nB";
+var merchantId = '650149801';
+var urlApiSeguridad = "https://apiprod.vnforapps.com/api.security/v1/security";
+var urlApiSesion = "https://apiprod.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/";
+var urlApiAutorization =  "https://apiprod.vnforapps.com/api.authorization/v3/authorization/ecommerce/";
+var urlJs = "https://static-content.vnforapps.com/v2/js/checkout.js"; 
+var logo = 'https://papaya.com.pe/images/l-pay-2.png';
 
 // bWFjcmF6ZS5pbmZvQGdtYWlsLmNvbTpqMzRPeiFuQg==
 
@@ -68,7 +68,7 @@ function generarToken() {
     "url": urlApiSeguridad,
     "method": "POST",
     "headers": {
-      "Authorization": "Basic aW50ZWdyYWNpb25lcy52aXNhbmV0QG5lY29tcGx1cy5jb206ZDVlN25rJE0=",
+      "Authorization": "Basic bWFjcmF6ZS5pbmZvQGdtYWlsLmNvbTpqMzRPeiFuQg==",
       "Accept": "*/*"
     }
   };

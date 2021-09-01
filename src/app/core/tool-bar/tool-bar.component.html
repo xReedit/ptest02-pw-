@@ -5,6 +5,12 @@
      <!-- <i *ngIf="isClienteDelivery" class="fa fa-arrow-left pr-2" (click)="goBackOutEstablecimiento()"></i>   -->
     <span class="nom-comercio">{{ nomSede | titlecase }}</span>
     <span class="example-spacer"></span>
+
+    <!-- boton configuracion punto de autopedido -->
+    <!-- <div *ngIf="!isCliente" class="example-ripple-container fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor"
+     (click)="configPunto()">
+          <i title="Configuracion" class="fa fa-wrench" aria-hidden="true"></i>     
+    </div> -->
     
     <div class="example-ripple-container fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor"
      (click)="sharedCarta()"

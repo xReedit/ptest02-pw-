@@ -175,9 +175,9 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     this.crudService.postFree(dataClient, 'transaction', 'get-email-client', false).subscribe((res: any) => {
       this.dataClientePago.email = res.data[0].correo ? res.data[0].correo : '';
 
-      this.dataClientePago.email = 'integraciones.visanet@necomplus.com'; // desarrollo
+      // this.dataClientePago.email = 'integraciones.visanet@necomplus.com'; // desarrollo
       // // this.dataClientePago.email = 'review@cybersource.com';
-      this.dataClientePago.isSaveEmail = false; // desarrollo
+      // this.dataClientePago.isSaveEmail = false; // desarrollo
 
       // email // comentar si es review@cybersource.com
       this.isRequiredEmail = this.dataClientePago.email === '' ?  true : false;
@@ -279,16 +279,24 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   }
 
+
   private listenResponse() {
-    this.timeListenerKeys = setTimeout(() => {
+    // this.timeListenerKeys = setTimeout(() => {
+
+    this.timeListenerKeys = setInterval(() => {
+
+    // }, 500);
 
       const dataResponse = localStorage.getItem(this.listenKeyData);
+      // console.log('dataResponse', dataResponse);
       this.isLoaderTransaction = localStorage.getItem(this.listenKeyLoader) === '0' ? false : true;
 
 
       let _dataTransactionRegister;
 
       if ( dataResponse !== 'null' ) {
+        clearInterval(this.timeListenerKeys);
+
         this.isLoadBtnPago = false;
 
         this.dataResTransaction = JSON.parse(dataResponse);
@@ -399,10 +407,13 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
         // }
 
         localStorage.removeItem(this.listenKeyData);
-      } else {
-        this.listenResponse();
       }
-    }, 100);
+
+      // else {
+      //   this.listenResponse();
+      // }
+
+    }, 900);
   }
 
   verificarCheckTerminos() {

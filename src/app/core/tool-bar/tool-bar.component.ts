@@ -11,6 +11,7 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import {MAT_TOOLTIP_DEFAULT_OPTIONS, MatTooltipDefaultOptions} from '@angular/material/tooltip';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
+import { DialogConfigPuntoComponent } from 'src/app/componentes/dialog-config-punto/dialog-config-punto.component';
 
 export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
   showDelay: 500,
@@ -35,6 +36,7 @@ export class ToolBarComponent implements OnInit {
   rippleColorBusqueda = 'rgba(238,238,238,0.9)';
   rippleColorPlomo = 'rgba(158,158,158,0.5)';
   isClienteDelivery = false;
+  isCliente = false;
 
   nomSede = '';
   idSedeCartaVirtual: number;
@@ -67,6 +69,7 @@ export class ToolBarComponent implements OnInit {
     });
 
     this.isClienteDelivery = this.infoTokenService.isDelivery();
+    this.isCliente = this.infoTokenService.isCliente();
     this.idSedeCartaVirtual = this.infoTokenService.infoUsToken.idsede;
 
     this.getLinkSharedCarta();
@@ -158,6 +161,10 @@ goBackOutEstablecimiento() {
 
 sharedCarta() {
   this.utilitariosSerivce.sharedNative(this.urlSharedCartaVirtual, this.nomSede);
+}
+
+configPunto() {
+  this.dialog.open(DialogConfigPuntoComponent);
 }
 
 

@@ -183,7 +183,7 @@
                         <div matRipple class="div-ico-circle" *ngFor="let itemComercio of itemCategoria.comercios;" (click)="itemSelected(itemComercio)">
                             <div class="div-ico-border-img">                                
                                 <div *ngIf="itemComercio.calificacion > 0" class="div-start-comercio text-warning fw-600">
-                                    <span class="pr-1">5</span>
+                                    <span class="pr-1"> {{ itemComercio.calificacion | number: '.1' }} </span>
                                     <i class="fa fa-star"></i>
                                 </div>
                                 <div *ngIf="itemComercio.cerrado === 1" class="div-cerrado-comercio fw-600">
@@ -197,54 +197,13 @@
                     </div>
 
 
-                    <div class="text-center mt-4">
+                    <div class="text-center mt-4" *ngIf="itemCategoria.idsede_categoria !== -1 && itemCategoria.comercios.length > 4">
                         <button mat-raised-button color="primary" (click)="goComercioCategoria(itemCategoria.idsede_categoria)">Ver Todos</button>
                     </div>
 
                 </div>
             </div>
-
-            <div class="div-fondo-list-comercios">
-                <div class="d-flex justify-content-between">
-                    <p class="fw-600 fs-18">Restaurantes</p>
-                    <p class="text-info xCursor">Ver todos</p>
-                </div>
-
-                <div class="div-ico-comercio-item">
-
-
-                    <div matRipple class="div-ico-circle">
-                        <div class="div-ico-border-img">
-                            <img src="{{imgComercio}}/logo-1.jpg" alt="loquesea">
-                        </div>
-                        <p class="fs-12 fw-600">Lo que quieras</p>
-                    </div>
-                    <div matRipple class="div-ico-circle">
-                        <div class="div-ico-border-img">
-                            <img src="{{imgComercio}}/logo-1.jpg" alt="loquesea">
-                        </div>
-                        <p class="fs-12 fw-600">Lo que quieras</p>
-                    </div>
-                    <div matRipple class="div-ico-circle">
-                        <div class="div-ico-border-img">
-                            <img src="{{imgComercio}}/logo-2.jpg" alt="loquesea">
-                        </div>
-                        <p class="fs-12 fw-600">Lo que quieras</p>
-                    </div>
-                    <div matRipple class="div-ico-circle" (click)="checkOut(0)">
-                        <div class="div-ico-border-img">
-                            <img src="{{imgComercio}}/logo-3.jpg" alt="loquesea">
-                        </div>
-                        <p class="fs-12 fw-600">Lo que quieras</p>
-                    </div>
-                    <div matRipple class="div-ico-circle" (click)="checkOut(0)">
-                        <div class="div-ico-border-img">
-                            <img src="{{imgComercio}}/logo-4.PNG" alt="loquesea">
-                        </div>
-                        <p class="fs-12 fw-600">Lo que quieras</p>
-                    </div>                
-                </div>
-            </div>
+            
         </div>
 
     </ng-template>

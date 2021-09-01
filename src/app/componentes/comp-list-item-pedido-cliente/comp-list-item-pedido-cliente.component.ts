@@ -52,14 +52,14 @@ export class CompListItemPedidoClienteComponent implements OnInit, AfterViewInit
       // this._miPedido = this.miPedidoService.getMiPedido();
       this.miPedido = <PedidoModel>res;
       // this.pintarSubTotales();
-      console.log('miPedido', this.miPedido);
+      // console.log('miPedido', this.miPedido);
     });
   }
 
   ngAfterViewInit() {
     setTimeout(() => {
       // const res = this.reglasCartaService.getObjReglasCarta();
-      console.log('this.arrSubtotales', this.arrSubtotales);
+      // console.log('this.arrSubtotales', this.arrSubtotales);
 
       // this.rulesCarta = res[0] ? res[0].reglas ? res[0].reglas : [] : res.reglas ? res.reglas : [];
       // this.rulesSubtoTales = res.subtotales || res[0].subtotales;
@@ -72,8 +72,8 @@ export class CompListItemPedidoClienteComponent implements OnInit, AfterViewInit
 
     // solo para delivery
     this.objNewItemTiposConsumo = [];
-    console.log('tpc', tpc);
-    console.log('_selectedItem', _selectedItem);
+    // console.log('tpc', tpc);
+    // console.log('_selectedItem', _selectedItem);
 
     // const _tpc = <ItemTipoConsumoModel>{
     //   cantidad_seleccionada: tpc.cantidad_seleccionada,

@@ -17,7 +17,10 @@ export class JsonPrintService {
   private impresoras: any = [];
 
 
-  constructor(private socketService: SocketService, private pedidoService: MipedidoService) {
+  constructor(
+    private socketService: SocketService,
+    private pedidoService: MipedidoService
+    ) {
 
 
 

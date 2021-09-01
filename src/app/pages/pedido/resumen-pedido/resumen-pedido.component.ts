@@ -118,12 +118,17 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this._miPedido = this.miPedidoService.getMiPedido();
 
 
+    console.log('si es invitado');
     this.isShowNombreClienteLoginInvitado = this.verifyClientService.getDataClient().isLoginByInvitado;
     if ( this.isShowNombreClienteLoginInvitado ) {
       let nomClienteInvitato = this.infoToken.infoUsToken.nombres;
       nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
       this.isShowNombreClienteLoginInvitado = nomClienteInvitato === '';
       this.nombreClienteValido = !this.isShowNombreClienteLoginInvitado;
+    } else {
+      let nomClienteInvitato = this.infoToken.infoUsToken.nombres;
+      nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
+      this.nombreClienteValido = nomClienteInvitato !== '';
     }
 
     this.reglasCartaService.loadReglasCarta()
@@ -575,7 +580,14 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
     const isClienteBuscaRepartidores = this.frmDelivery.buscarRepartidor ? this.frmDelivery.buscarRepartidor : this.isDeliveryCliente || false;
     // const _subTotalesSave = _p_header.delivery === 1 ? this.frmDelivery.subTotales : this._arrSubtotales;
-    const _subTotalesSave = this._arrSubtotales;
+    let _subTotalesSave = this._arrSubtotales;
+
+    // si el importe total es igual a cero hay un error, entonces toma los subtotales de frmDelivery
+    if (parseFloat(_subTotalesSave[_subTotalesSave.length - 1].importe) === 0) {
+      _subTotalesSave = this.frmDelivery.subTotales;
+      this._arrSubtotales = _subTotalesSave;
+      localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
+    }
 
     const dataPedido = {
       p_header: _p_header,

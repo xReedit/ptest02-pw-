@@ -49,6 +49,7 @@ import { DialogNombreClienteComponent } from './dialog-nombre-cliente/dialog-nom
 import { DialogDireccionClienteDeliveryComponent } from './dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
 import { CompListItemPedidoClienteComponent } from './comp-list-item-pedido-cliente/comp-list-item-pedido-cliente.component';
 import { TextNomClienteComponent } from './text-nom-cliente/text-nom-cliente.component';
+import { DialogConfigPuntoComponent } from './dialog-config-punto/dialog-config-punto.component';
 
 @NgModule({
   declarations: [
@@ -89,6 +90,7 @@ import { TextNomClienteComponent } from './text-nom-cliente/text-nom-cliente.com
     DialogDireccionClienteDeliveryComponent,
     CompListItemPedidoClienteComponent,
     TextNomClienteComponent,
+    DialogConfigPuntoComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
@@ -136,7 +138,8 @@ import { TextNomClienteComponent } from './text-nom-cliente/text-nom-cliente.com
     CompGetHoraComponent,
     DialogCalificacionSedeComponent,
     CompListItemPedidoClienteComponent,
-    TextNomClienteComponent
+    TextNomClienteComponent,
+    DialogConfigPuntoComponent
     // DialogDesicionComponent
   ],
 

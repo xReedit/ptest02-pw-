@@ -6,6 +6,7 @@ import { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChang
 import { Subject } from 'rxjs/internal/Subject';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
+import { SedeDeliveryService } from 'src/app/shared/services/sede-delivery.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 
@@ -56,6 +57,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     private crudService: CrudHttpService,
     private verifyClientService: VerifyAuthClientService,
     private utilService: UtilitariosService,
+    private plazaDelivery: SedeDeliveryService
   ) {
     this.idClienteBuscar = data.idcliente;
 
@@ -131,7 +133,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   }
 
   goDireccionGuardada(item: DeliveryDireccionCliente) {
-    // console.log('item', item);
+    // console.log('item DeliveryDireccionCliente', item);
     this.dataCliente = item;
     this.cerrarDlg();
   }
@@ -304,11 +306,24 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
 
   cerrarDlg(): void {
     // guarda direccion en el storage direccion seleccionada
-    console.log('this.dataCliente', this.dataCliente);
+    // console.log('this.dataCliente', this.dataCliente);
     const rpt_dir = this.dataCliente.direccion ? this.dataCliente : null;
-    // this.dataCliente = null;
-    this.setDireccionStorage();
-    this.dialogRef.close(rpt_dir);
+
+    if ( rpt_dir && this.dataCliente?.options ) {
+      this.plazaDelivery.loadDatosPlazaByCiudad(this.dataCliente.ciudad)
+      .subscribe((resPlaza: any) => {
+        this.dataCliente.options = resPlaza ? resPlaza.options : null;
+
+        this.setDireccionStorage();
+        this.dialogRef.close(rpt_dir);
+      });
+    } else {
+      // const rpt_dir = this.dataCliente.direccion ? this.dataCliente : null;
+      // this.dataCliente = null;
+      this.setDireccionStorage();
+      this.dialogRef.close(rpt_dir);
+    }
+
   }
 
 }

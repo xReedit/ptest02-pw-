@@ -53,4 +53,5 @@ export class DeliveryEstablecimiento {
     pwa_acepta_reservas: number; // 1 acepta recervas
     pwa_acepta_reserva_desde: string; // hora desde que acepta reserva
     img_mini: string; // logo mini
+    impresoras: []; // impresoras de la sede
 }
