@@ -24,6 +24,7 @@ export class MainComponent implements OnInit {
   isClienteDelivery = false;
   isClienteReserva = false;
   isPagePagarShow = false;
+  isPuntoAutoPedido = false;
   loaderPage = false;
   timeLoader = null;
 
@@ -61,8 +62,10 @@ export class MainComponent implements OnInit {
     this.navigatorService.setPageActive('carta');
 
     this.infoTokenService.getInfoUs();
+    this.isPuntoAutoPedido = this.infoTokenService.isPuntoAutoPedido();
     // this.navigatorService.addLink('carta');
 
+    // console.log('this.infoTokenService.infoUsToken', this.infoTokenService.infoUsToken);
     // console.log('pedido main verifyClient');
     this.verifyClientService.verifyClient().subscribe((res: SocketClientModel) => {
       // console.log('desde incio', res);
@@ -158,7 +161,7 @@ export class MainComponent implements OnInit {
 
 
 
-    console.log('event tab', $event);
+    // console.log('event tab', $event);
     this.selectedTab = $event.index;
 
     // if ( this.selectedTab === 1 && !this.isScreenIsMobile ) {return false; }

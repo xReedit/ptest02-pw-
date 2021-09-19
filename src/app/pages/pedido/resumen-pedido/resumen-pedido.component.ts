@@ -81,6 +81,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   isReadyClienteDelivery = false; // si el formulario(confirmacion) clienteDelivery esta listo
   isReadyClienteReserva = false; // si el formulario(confirmacion) reserva esta listo
   isReloadListPedidos = false;
+  isPuntoAuntoPedido: boolean; // si es cliente quien hace el pedido
 
   private isFirstLoadListen = false; // si es la primera vez que se carga, para no volver a cargar los observables
 
@@ -117,19 +118,26 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     this._miPedido = this.miPedidoService.getMiPedido();
 
+    this.isPuntoAuntoPedido = this.infoToken.isPuntoAutoPedido();
 
-    console.log('si es invitado');
-    this.isShowNombreClienteLoginInvitado = this.verifyClientService.getDataClient().isLoginByInvitado;
-    if ( this.isShowNombreClienteLoginInvitado ) {
-      let nomClienteInvitato = this.infoToken.infoUsToken.nombres;
-      nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
-      this.isShowNombreClienteLoginInvitado = nomClienteInvitato === '';
-      this.nombreClienteValido = !this.isShowNombreClienteLoginInvitado;
-    } else {
-      let nomClienteInvitato = this.infoToken.infoUsToken.nombres;
-      nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
-      this.nombreClienteValido = nomClienteInvitato !== '';
-    }
+    this.validarNomhbreCliente();
+    // console.log('si es invitado');
+    // this.isShowNombreClienteLoginInvitado = this.verifyClientService.getDataClient().isLoginByInvitado;
+    // if ( this.isShowNombreClienteLoginInvitado || this.isPuntoAuntoPedido ) {
+    //   let nomClienteInvitato = this.infoToken.infoUsToken.nombres;
+
+    //   if ( this.isPuntoAuntoPedido ) {
+    //     nomClienteInvitato = '';
+    //   }
+
+    //   nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
+    //   this.isShowNombreClienteLoginInvitado = nomClienteInvitato === '';
+    //   this.nombreClienteValido = !this.isShowNombreClienteLoginInvitado;
+    // } else {
+    //   let nomClienteInvitato = this.infoToken.infoUsToken.nombres;
+    //   nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
+    //   this.nombreClienteValido = nomClienteInvitato !== '';
+    // }
 
     this.reglasCartaService.loadReglasCarta()
       .pipe(takeUntil(this.destroy$))
@@ -144,7 +152,6 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
       this.newFomrConfirma();
 
-
       // this.frmDelivery = new DatosDeliveryModel();
     });
 
@@ -154,6 +161,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
           if (res.pageActive === 'mipedido') {
             if (res.url.indexOf('confirma') > 0) {
               // this.confirmarPeiddo();
+
             } else {
               // this.backConfirmacion();
             }
@@ -188,6 +196,27 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     }
   }
 
+  private validarNomhbreCliente(): void {
+    this.isShowNombreClienteLoginInvitado = this.verifyClientService.getDataClient().isLoginByInvitado;
+    if ( this.isShowNombreClienteLoginInvitado || this.isPuntoAuntoPedido ) {
+      let nomClienteInvitato = this.infoToken.infoUsToken.nombres;
+
+      if ( this.isPuntoAuntoPedido ) {
+        nomClienteInvitato = '';
+        this.infoToken.infoUsToken.nombres = '';
+        this.infoToken.set();
+      }
+
+      nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
+      this.isShowNombreClienteLoginInvitado = nomClienteInvitato === '';
+      this.nombreClienteValido = !this.isShowNombreClienteLoginInvitado;
+    } else {
+      let nomClienteInvitato = this.infoToken.infoUsToken.nombres;
+      nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
+      this.nombreClienteValido = nomClienteInvitato !== '';
+    }
+  }
+
   ngOnDestroy(): void {
     // this.unsubscribe$.next();
     // this.unsubscribe$.complete();
@@ -209,6 +238,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // traer los ultimos datos de comisiones
     this.establecimientoService.getComsionEntrega();
+
+    if ( this.isPuntoAuntoPedido ) {
+      // se coloca vacio para asignar nuevo nombre
+      this.validarNomhbreCliente();
+    }
   }
 
   pintarMiPedido() {
@@ -431,7 +465,6 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private confirmarPeiddo(): void {
-
     if (this.isVisibleConfirmarAnimated ) { // enviar pedido
       if (this.isRequiereMesa || !this.isDeliveryValid ) {
 
@@ -529,19 +562,19 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // const dataUsuario = this.infoToken.infoUsToken;
 
     const dataFrmConfirma: any = {};
-    if ( this.isCliente && !this.isReservaCliente ) {
+    if ( this.isCliente || this.isPuntoAuntoPedido && !this.isReservaCliente) {
       this.frmConfirma.solo_llevar = this.isSoloLLevar ? true : this.frmConfirma.solo_llevar;
       dataFrmConfirma.m = this.isSoloLLevar ? '' : dataUsuario.numMesaLector;
       dataFrmConfirma.m = this.isDeliveryCliente ? '' : dataUsuario.numMesaLector;
-      dataFrmConfirma.r = this.infoToken.getInfoUs().nombres.toUpperCase();
-      dataFrmConfirma.nom_us = this.infoToken.getInfoUs().nombres.toLowerCase();
+      dataFrmConfirma.r = dataUsuario.nombres.toUpperCase();
+      dataFrmConfirma.nom_us = dataUsuario.nombres.toLowerCase();
       dataFrmConfirma.m_respaldo = dataFrmConfirma.m;
     } else {
       // dataFrmConfirma.m = this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00';
       dataFrmConfirma.m_respaldo = this.frmConfirma.nummesa_resplado;
       dataFrmConfirma.m = this.frmConfirma.nummesa ? this.frmConfirma.nummesa : this.arrReqFrm.isRequiereMesa ? this.frmConfirma.nummesa_resplado : '00';
       dataFrmConfirma.r = this.frmConfirma.delivery ? this.frmDelivery.nombre : this.utilService.addslashes(this.frmConfirma.referencia) || '';
-      dataFrmConfirma.nom_us = this.infoToken.getInfoUs().nombres.split(' ')[0].toLowerCase();
+      dataFrmConfirma.nom_us = dataUsuario.nombres.split(' ')[0].toLowerCase();
     }
 
 
@@ -574,7 +607,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       idregistra_scan_qr: this.establecimientoService.getLocalIdScanQr(), // el id del scan register
       is_print_subtotales: this.miPedidoService.objDatosSede.datossede[0].is_print_subtotales,
       isprint_copy_short: this.miPedidoService.objDatosSede.datossede[0].isprint_copy_short,
-      isprint_all_short: this.miPedidoService.objDatosSede.datossede[0].isprint_all_short
+      isprint_all_short: this.miPedidoService.objDatosSede.datossede[0].isprint_all_short,
+      appv: 'v.2v'
     };
 
     // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
@@ -1042,7 +1076,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this._miPedido = this.miPedidoService.getMiPedido();
 
     // para notificar antes del pago
-    console.log('bbbbbbbbbbbbbbbbbbb');
+    // console.log('bbbbbbbbbbbbbbbbbbb');
     this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
 

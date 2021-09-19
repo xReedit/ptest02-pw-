@@ -58,7 +58,7 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.verifyClientService.setDireccionDeliverySelected(null);
 
     this.isLogin = this.verifyClientService.isLogin();
-    console.log('desde incio', this.isLogin);
+    // console.log('desde incio', this.isLogin);
 
     this.verifyClientService.setMesa(null);
     this.verifyClientService.setIdOrg(null);
@@ -75,10 +75,15 @@ export class InicioComponent implements OnInit, OnDestroy {
       // .pipe(finalize(() => localStorage.clear())) // si esta mal elimina todo
       .subscribe((res: SocketClientModel) => {
         // success => {
+
+          if ( !res ) { return; }
+
           // si es invitado desloguea
-          if ( res.usuario.toLowerCase().indexOf('invitado') > -1 ) {
-            this.cerrarSession();
-            return;
+          if ( res.usuario ) {
+            if ( res?.usuario.toLowerCase().indexOf('invitado') > -1 ) {
+              this.cerrarSession();
+              return;
+            }
           }
 
           this.isCliente = true;
@@ -124,6 +129,7 @@ export class InicioComponent implements OnInit, OnDestroy {
 
   showScanCodeQr() {
     // return false;
+    localStorage.removeItem('sys::punto');
     this.verifyClientService.setIsDelivery(false);
     this.verifyClientService.setIsReserva(false);
     this.verifyClientService.setIsReserva(false);
@@ -133,6 +139,7 @@ export class InicioComponent implements OnInit, OnDestroy {
 
   showDelivery() {
     // return false;
+    localStorage.removeItem('sys::punto');
     this.verifyClientService.setIsDelivery(true);
     this.verifyClientService.setIsReserva(false);
     this.verifyClientService.setDataClient();
@@ -141,6 +148,7 @@ export class InicioComponent implements OnInit, OnDestroy {
 
   showAtm() {
     // return false;
+    localStorage.removeItem('sys::punto');
     if ( this.isLogin && this.isCliente ) {
       this.router.navigate(['./cash-atm']);
     } else {
@@ -155,6 +163,7 @@ export class InicioComponent implements OnInit, OnDestroy {
 
   showReserva() {
     // return false;
+    localStorage.removeItem('sys::punto');
     if ( this.isLogin && this.isCliente ) {
       this.router.navigate(['./reservar-mesa']);
     } else {
@@ -168,6 +177,7 @@ export class InicioComponent implements OnInit, OnDestroy {
 
   // solo dev
   goDev(op: number) {
+    localStorage.removeItem('sys::punto');
     this.countLogo += op === 1 ? 1 : 0;
     this.countnDev += op === 2 ? 1 : 0;
 

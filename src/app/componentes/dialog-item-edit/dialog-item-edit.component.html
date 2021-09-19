@@ -102,7 +102,7 @@
             </ng-container>
 
             <!-- especificaciones -->
-            <div class="mb-3">
+            <div class="mb-3" [ngClass]="{'div-tpc-one-option-buttom': isOneTipoConsumo}">
                 <!-- <span class="text-bold">Instrucciones adicionales</span> -->
                 <mat-form-field class="w-100">
                     <!-- [(ngModel)]="item.indicaciones" -->
@@ -118,7 +118,7 @@
 
             <!-- tipos de consumo -->
             <!-- <div *ngIf="!isOneTipoConsumo">             -->
-            <div class="p-3 w-100" [ngClass]="{'div-tpc': isOneTipoConsumo}">   
+            <div class="p-3 w-100" [ngClass]="{'div-tpc': isOneTipoConsumo, 'div-tpc-one-option': isOneTipoConsumo}">   
                 <span class="fs-12 text-danger" [hidden]="isOptionRequeridosComplet">Hay opciones obligatorias por marcar</span>
                 <div class="mb-2" id="tpc_content" [attr.disabled]="!isOptionRequeridosComplet ? true : null">
                     <table width="100%" class="tb-tpc">

@@ -16,6 +16,10 @@
                 <p>Obteniendo datos ...</p>
                 <mat-progress-bar mode="indeterminate"></mat-progress-bar>            
             </div>
+            <div class="p-3" *ngIf="timeBtnReset">
+                <p class="text-danger">Paso un problema al validar su usuario, vuelva a ingresar por favor.</p>
+                <button mat-flat-button color="accent" (click)="loginOut()">Volver</button>                    
+            </div>
         </div>
     </ng-template>
     

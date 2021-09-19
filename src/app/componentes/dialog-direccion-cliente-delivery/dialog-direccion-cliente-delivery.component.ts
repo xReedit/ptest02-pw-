@@ -309,14 +309,19 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     // console.log('this.dataCliente', this.dataCliente);
     const rpt_dir = this.dataCliente.direccion ? this.dataCliente : null;
 
-    if ( rpt_dir && this.dataCliente?.options ) {
-      this.plazaDelivery.loadDatosPlazaByCiudad(this.dataCliente.ciudad)
-      .subscribe((resPlaza: any) => {
-        this.dataCliente.options = resPlaza ? resPlaza.options : null;
+    if ( rpt_dir && this.dataCliente ) {
+      if ( !this.dataCliente?.options ) {
+        this.plazaDelivery.loadDatosPlazaByCiudad(this.dataCliente.ciudad)
+        .subscribe((resPlaza: any) => {
+          this.dataCliente.options = resPlaza ? resPlaza.options : null;
 
+          this.setDireccionStorage();
+          this.dialogRef.close(rpt_dir);
+        });
+      } else {
         this.setDireccionStorage();
         this.dialogRef.close(rpt_dir);
-      });
+      }
     } else {
       // const rpt_dir = this.dataCliente.direccion ? this.dataCliente : null;
       // this.dataCliente = null;

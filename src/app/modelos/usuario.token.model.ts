@@ -22,6 +22,7 @@ export class UsuarioTokenModel {
     usuario: string;
     idcliente: number;
     isCliente: boolean;
+    isUsuarioAutorizado: boolean;
     isHayDescuento: boolean;
     email: string;
     numMesaLector: number; // numero de mesa del lector qr
@@ -30,6 +31,8 @@ export class UsuarioTokenModel {
     isDelivery: boolean; // si es delivery
     isReserva: boolean; // si es delivery
     isRetiroCash: boolean; // si es delivery
+    isPuntoAutoPedido: boolean; // si es punto de autopedido
+    isTomaPedidoRapido: boolean; // si es se toma pedido rapido se muestra como punto de autopedido
     direccionEnvioSelected: DeliveryDireccionCliente;
     tiempoEntrega: TiempoEntregaModel;
     telefono: string;

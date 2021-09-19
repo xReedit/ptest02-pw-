@@ -70,6 +70,21 @@ export class InfoTockenService {
     return this.infoUsToken.isReserva;
   }
 
+  isPuntoAutoPedido(): boolean {
+    // this.verificarContunuarSession();
+    return this.infoUsToken.isPuntoAutoPedido;
+  }
+
+  isTomaPedidoRapido(): boolean {
+    // this.verificarContunuarSession();
+    return this.infoUsToken.isTomaPedidoRapido || false;
+  }
+
+  isUsuarioAutorizado(): boolean {
+    // this.verificarContunuarSession();
+    return this.infoUsToken?.isUsuarioAutorizado || false;
+  }
+
   getLocalIpCliente(): string {
     this.verificarContunuarSession();
     if ( this.infoUsToken ) {
@@ -228,6 +243,16 @@ export class InfoTockenService {
     localStorage.setItem('sys::ic-orden', btoa(id.toString()));
   }
 
+  setIsPuntoAutoPedido( val: boolean) {
+    this.infoUsToken.isPuntoAutoPedido = val;
+    this.set();
+  }
+
+  setIsTomaPedidoRapido( val: boolean) {
+    this.infoUsToken.isTomaPedidoRapido = val;
+    this.set();
+  }
+
   // id cliente del ultimo
   getIdCliente(): any {
     const _id = localStorage.getItem('sys::ic-orden');
@@ -276,6 +301,7 @@ export class InfoTockenService {
         _newUs.socketId = _token.socketId;
         _newUs.otro = _token.otro;
         _newUs.pasoRecoger = _token.pasoRecoger;
+        // _newUs.isUsuarioAutorizado = false;
         this.infoUsToken = _newUs;
 
         // agregar el metodo pago prederteminado tarjeta // valores iniciales
@@ -291,6 +317,8 @@ export class InfoTockenService {
         this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); this.setPasoRecoger(false); // this.setIniTiempoEntrega();
 
         this.infoUsToken.isCliente = false;
+        this.infoUsToken.isUsuarioAutorizado = true;
+
       }
     } else {
       this.infoUsToken = null;

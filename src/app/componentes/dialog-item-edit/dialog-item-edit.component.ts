@@ -382,6 +382,8 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     if ( _itemFromPedido && !isItemSubISelected ) {
       _itemFromPedido.indicaciones = val;
     }
+
+    this.miPedidoService.setLocalStoragePedido();
   }
 
 

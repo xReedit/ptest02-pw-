@@ -13,6 +13,7 @@ export class CompCtrlAddFastComponent implements OnInit {
   public cantidad = 0;
   public showDetalle = false;
   public showAnimateStop = false;
+  public isShowVisible = true;
 
   private timerViewAfter = 0; // para volver la vista orginal
   private countSegundos = 10;
@@ -20,10 +21,12 @@ export class CompCtrlAddFastComponent implements OnInit {
   private isSuma = true;
 
 
+
   @Input() stopAdd: boolean; // si se detiene la adicion
   @Input() limitAdd: number; // si se detiene la adicion
   @Input() zoom: number; // tamaño del control
   @Input() comprimir: boolean; // tamaño del control
+  @Input() quitarFadeUp: boolean; // tamaño del control
   @Output() objResponse = new EventEmitter<any>();
   @Input() cantidad_show: number;
 
@@ -114,10 +117,15 @@ export class CompCtrlAddFastComponent implements OnInit {
   }
 
   menos() {
+    console.log('menosss');
     this.cantidad = this.cantidad_show !== this.cantidad ? this.cantidad_show : this.cantidad;
     this.timerViewAfter = this.countSegundos;
     this.cantidad--;
     this.isSuma = false;
+
+    if ( this.cantidad < 0) {this.showAnimateStop = true; return; }
+    this.showAnimateStop = false;
+
     if ( this.cantidad === 0) {
       // this.showDetalle = false;
       this.showViewComprimir();

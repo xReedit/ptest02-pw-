@@ -81,7 +81,12 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   isViewMercado = false;
   isShowCalificacion = false;
   isCliente = false;
+  isPuntoAutoPedido = false;
+  isTomaPedidoRapido = false;
+  canalConsumoTomaPedidoRapido: any;
   dataCalificacion: any;
+
+  isCantidadCero = true;
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
@@ -114,10 +119,20 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.detectScreenSize();
-    this.initCarta();
+    // this.initCarta();
+
+    const _configPunto = JSON.parse(localStorage.getItem('sys::punto')) || {};
 
     this.isViewMercado = this.establecimientoService.get().pwa_show_item_view_mercado === 1;
     this.isCliente = this.infoToken.infoUsToken.isCliente;
+    this.isPuntoAutoPedido = _configPunto.ispunto_autopedido || false;
+    this.isTomaPedidoRapido = _configPunto.istoma_pedido_rapido || false;
+
+    if ( this.isTomaPedidoRapido ) {
+      this.canalConsumoTomaPedidoRapido = _configPunto?.canal_consumo;
+    }
+
+    this.initCarta();
     // console.log('this.establecimientoService.get()', this.establecimientoService.get());
 
     // calificacion y comentarios
@@ -266,12 +281,19 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
             }
           }
 
+          if ( this.infoToken.isPuntoAutoPedido()  ) {
+            // solo para llevar
+            if ( t.descripcion.indexOf('LLEVAR') === -1 ) { return; }
+          }
+
           // if ( this.infoToken.isCliente() && t.descripcion === 'DELIVERY' ) {
 
           // } else {
             this.objNewItemTiposConsumo.push(_objTpcAdd);
           // }
         });
+
+        // console.log('this.objNewItemTiposConsumo', this.objNewItemTiposConsumo);
 
         this.miPedidoService.setObjNewItemTiposConsumo(this.objNewItemTiposConsumo);
 
@@ -442,12 +464,19 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  selectedItem(_selectedItem: ItemModel) {
+  selectedItem(_selectedItem: ItemModel, openDetalle = false) {
     // if (!this.isBusqueda) {
     //   this.objItems.map(x => x.selected = false);
     // } else {
     //   this.objCartaBus.map(x => x.selected = false);
     // }
+
+    // console.log('_selectedItem', _selectedItem);
+
+    if ( (this.isPuntoAutoPedido || this.isTomaPedidoRapido || this.isCliente) && !openDetalle && _selectedItem?.count_subitems === 0 ) {
+      this.resultCantItemMercado(_selectedItem, true);
+      return;
+    }
 
     if ( _selectedItem.cantidad.toString() === '0' && !_selectedItem.cantidad_seleccionada ) { return; }
 
@@ -460,6 +489,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     if ( !_selectedItem.itemtiposconsumo ) {
       _selectedItem.itemtiposconsumo = this.objItemTipoConsumoSelected;
     }
+
+
 
     this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
 
@@ -573,25 +604,34 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     return resp.slice(0, -2);
   }
 
-  resultCantItemMercado(_selectedItem: any) {
+  resultCantItemMercado(_selectedItem: any, isSuma_selected = false) {
     // solo para delivery
-
+    // isSuma_selected viene de agregar al clic
     this.itemSelected = _selectedItem;
-    const _objNewItemTiposConsumo = JSON.parse(JSON.stringify(this.objNewItemTiposConsumo));
-    this.objItemTipoConsumoSelected = _selectedItem.itemtiposconsumo ? _selectedItem.itemtiposconsumo : _objNewItemTiposConsumo;
+
+    // busca el canal consumo predeteminado
+    // if ( this.isTomaPedidoRapido ) {
+    //   this.objItemTipoConsumoSelected = this.canalConsumoTomaPedidoRapido;
+    // } else {
+      const _objNewItemTiposConsumo = JSON.parse(JSON.stringify(this.objNewItemTiposConsumo));
+      this.objItemTipoConsumoSelected = _selectedItem.itemtiposconsumo ? _selectedItem.itemtiposconsumo : _objNewItemTiposConsumo;
+    // }
 
     if ( !_selectedItem.itemtiposconsumo ) {
       _selectedItem.itemtiposconsumo = this.objItemTipoConsumoSelected;
     }
 
     this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
-    const tpcSelect = this.objItemTipoConsumoSelected[0];
-    const _isSuma = _selectedItem.isSuma_selected ? 0 : 1;
+    let tpcSelect =  this.objItemTipoConsumoSelected[0];
+    if ( this.isTomaPedidoRapido ) {
+      tpcSelect = this.objItemTipoConsumoSelected.filter(x => x.descripcion.toLocaleLowerCase() === this.canalConsumoTomaPedidoRapido.descripcion.toLocaleLowerCase())[0];
+    }
+    const _isSuma = isSuma_selected ? 0 : _selectedItem.isSuma_selected ? 0 : 1;
 
     // console.log('_selectedItem carta', _selectedItem);
-
-
     this.miPedidoService.addItem2(tpcSelect, this.itemSelected, _isSuma);
+
+    _selectedItem.is_visible_control_last_add = _selectedItem.cantidad_seleccionada !== 0;
   }
 
   // addSubItem(subitem: SubItem): void {

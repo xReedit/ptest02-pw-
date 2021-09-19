@@ -52,7 +52,7 @@
             <br>
 
             <!-- footer boton ir a mi pedido -->
-            <div class="footer-btn-go-lista animated fadeIn" [ngClass]="{'fadeInUp':  countTotalItems > 0,'fadeOutDown': countTotalItems <= 0}" *ngIf="isUsuarioCliente && isScreenIsMobile">
+            <div class="footer-btn-go-lista animated fadeIn" [ngClass]="{'fadeInUp':  countTotalItems > 0,'fadeOutDown': countTotalItems <= 0}" *ngIf="isUsuarioCliente || isPuntoAutoPedido && isScreenIsMobile">
               <div class="content" (click)="goListaProductos()">
                 <p class="badge badge-light">{{ countTotalItems }}</p>
                 <p>Ver pedido</p>
@@ -73,7 +73,7 @@
                 </div>
               </div>              
           </ng-template>
-          <div class="x100-toolbar-hidden" style="background: #eeeeee;" (scroll)="onScroll($event)">
+          <div class="x100-toolbar-hidden" [ngClass]="{'fondo-gris': isUsuarioCliente}" (scroll)="onScroll($event)">
             <ng-container *ngIf="isScreenIsMobile">              
               <app-resumen-pedido></app-resumen-pedido>
             </ng-container>

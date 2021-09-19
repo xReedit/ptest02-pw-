@@ -1,4 +1,4 @@
-<div *ngIf="isCliente" class="animated fadeIn transicion" [ngClass]="[!isVisibleConfirmarAnimated ? 'fadeInLeft' : 'fadeOutLeft d-none']">
+<div *ngIf="isCliente || isPuntoAuntoPedido" class="animated fadeIn transicion" [ngClass]="[!isVisibleConfirmarAnimated ? 'fadeInLeft' : 'fadeOutLeft d-none']">
     <app-comp-list-item-pedido-cliente        
         [arrSubtotales]="_arrSubtotales"
     ></app-comp-list-item-pedido-cliente>
@@ -12,7 +12,7 @@
     [ngClass]="{'xh-100': isVisibleConfirmarAnimated}"
     *ngIf="hayItems " id="cardcontentall">
     <!-- <div class="w-100"> -->
-        <div *ngIf="!isCliente" class="w-100 div-resumen-pedido transicion"
+        <div *ngIf="!isCliente && !isPuntoAuntoPedido" class="w-100 div-resumen-pedido transicion"
         [ngClass]="[!isVisibleConfirmarAnimated ? 'd-inline' : 'd-none']">
             <div *ngFor="let tpc of _miPedido.tipoconsumo" class="xCursor">
                 <ng-container *ngIf="tpc.count_items_seccion > 0">
@@ -99,7 +99,7 @@
     <div class="div-resumen-pre-pago w-100" [hidden]="!isVisibleConfirmar">
         <div class="xcontent div-confirma-pedido w-100 p-3 transicion animated fadeInRight"
           [ngClass]="[isVisibleConfirmarAnimated ? 'show' : 'hide', isVisibleConfirmarAnimated ? 'fadeInRight' : 'fadeInLeft', !isDeliveryCliente ? 'bg-1': 'bg-2']">
-            <div class="text-center d-flex justify-content-center">
+            <div class="text-center d-flex justify-content-center" style="max-width: 500px;">
 
                 <!-- cuando es usuario cliente y escaneo codigo solo para llevar -->
                 <!-- <ng-container *ngIf="isCliente && isSoloLLevar">
@@ -129,12 +129,10 @@
                         </div>
                     </div>
                 </ng-container> -->
-
-
+                
                 <!-- cuando es usuario cliente -->                                
-                <ng-container *ngIf="isCliente">
-
-                    <ng-container *ngIf="isReservaCliente; else elseTemplateDelivery">
+                <ng-container *ngIf="isCliente || isPuntoAuntoPedido">
+                    <ng-container *ngIf="isReservaCliente; else elseTemplateDelivery">                        
 
                         <div class="w-100 p-2" style="max-width: 500px;">
                             <app-comp-datos-reserva 
@@ -151,8 +149,7 @@
                         
                     </ng-container>
                     <ng-template #elseTemplateDelivery>
-                        
-                        <ng-container *ngIf="!isDeliveryCliente; else templateDelivery" class="w-100">
+                        <ng-container *ngIf="!isDeliveryCliente || isPuntoAuntoPedido; else templateDelivery" class="w-100">
     
                             <div class="text-center">
                                 <br><br>             
@@ -204,8 +201,7 @@
                 </ng-container>
 
                 <!-- cuando es personal autorizado -->
-                <ng-container *ngIf="!isCliente" #divUsuarioAutorizado>
-
+                <ng-container *ngIf="!isCliente && !isPuntoAuntoPedido" #divUsuarioAutorizado>
                     <!-- datos del pedido -->
                     <div [hidden]="isDelivery" class="div-confirma-pedido-mesa w-100">
                         <form #frmconfirma="ngForm">
@@ -274,7 +270,7 @@
 </div>
 
 <!-- ver la cuenta solo personal autorizado -->
-<div class="text-center" *ngIf="!hayItems && !isCliente">
+<div class="text-center" *ngIf="!hayItems && !isCliente && !isPuntoAuntoPedido">
     <br>    
     <img class="img-cuenta" src="./assets/images/icon_1.gif" width="300px" alt="..">
     <br>
@@ -339,7 +335,7 @@
         </ng-template>
         <ng-template #divBtnEnviar>
             <ng-container *ngIf="!isDelivery; else elseTemplate">
-              <div *ngIf="!isCliente" class="btn-footer-next transicion" matRipple (click)="prepararEnvio()"
+              <div *ngIf="!isCliente && !isPuntoAuntoPedido" class="btn-footer-next transicion" matRipple (click)="prepararEnvio()"
                 [ngClass]="{'xdisabled': isRequiereMesa}">
                 <div>
                   <span class="animated fadeInLeft">Enviar Pedido</span>

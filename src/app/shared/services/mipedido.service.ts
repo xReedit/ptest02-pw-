@@ -725,6 +725,8 @@ export class MipedidoService {
   findItemCartaAndClearIndicaciones() {
     this.objCarta.carta.map((cat: CategoriaModel) => {
       cat.secciones.map((sec: SeccionModel) => {
+        sec.items.map( x => x.is_visible_control_last_add = false );
+
         sec.items.filter((x: ItemModel) => x.indicaciones )
               .map((x: ItemModel) => x.indicaciones = '');
 
@@ -1066,6 +1068,7 @@ export class MipedidoService {
   }
 
   setLocalStoragePedido() {
+    // console.log('local storage pedido');
     this.storageService.set('sys::order', btoa(JSON.stringify(this.listItemsPedido)));
     this.storageService.set('sys::order::all', btoa(JSON.stringify(this.miPedido)));
   }
@@ -1144,6 +1147,7 @@ export class MipedidoService {
         _item.itemtiposconsumo = null;
         // _item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
         //   tpc.cantidad_seleccionada = 0;
+        _item.is_visible_control_last_add = false;
         // });
       });
     } catch (error) {
@@ -1159,6 +1163,7 @@ export class MipedidoService {
 
   updatePedidoFromStrorage() {
 
+    // console.log('update local storage');
     this.listenStatusService.setHayPedidoPendiente(false);
 
     if (!this.storageService.isExistKey('sys::order')) { return; }

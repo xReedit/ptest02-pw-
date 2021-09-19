@@ -164,7 +164,13 @@ sharedCarta() {
 }
 
 configPunto() {
-  this.dialog.open(DialogConfigPuntoComponent);
+
+  const dialogConfig = new MatDialogConfig();
+
+  // dialogConfig.panelClass = 'dialog-item-edit';
+  dialogConfig.panelClass =  ['my-dialog-orden-detalle', 'my-dialog-scrool'];
+
+  this.dialog.open(DialogConfigPuntoComponent, dialogConfig);
 }
 
 

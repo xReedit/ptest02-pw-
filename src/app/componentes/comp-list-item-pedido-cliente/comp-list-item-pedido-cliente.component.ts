@@ -23,7 +23,7 @@ export class CompListItemPedidoClienteComponent implements OnInit, AfterViewInit
 
   @Input() arrSubtotales: any;
 
-  miPedido: PedidoModule;
+  miPedido: PedidoModel = new PedidoModel();
   // private itemSelected: ItemModel;
   private objItemTipoConsumoSelected: ItemTipoConsumoModel[];
   private objNewItemTiposConsumo: ItemTipoConsumoModel[] = [];

@@ -62,6 +62,8 @@ export class MainComponent implements OnInit {
     this.infoClient = this.verifyClientService.getDataClient();
     this.isClienteLogueado = this.infoClient.isCliente;
 
+    // console.log('this.infoClient main', this.infoClient);
+
     // si cliente esta logueado
     if ( this.isClienteLogueado ) {
       this.setDireccion(this.infoClient.direccionEnvioSelected);

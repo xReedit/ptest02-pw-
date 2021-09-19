@@ -1,16 +1,23 @@
 ::ng-deep .mat-checkbox-layout { margin: 0px; width: 100%; position: relative;}
 ::ng-deep .mat-checkbox-inner-container { margin-left: 0px !important; }
+/* quitar mas adelante cuando actualize css */
 /* ::ng-deep .mat-dialog-container {
-    padding: 0px !important;
+    padding: 0px;
     min-width: 300px;
     max-width: 450px !important;
 } */
 
-.custom-dialog-container .mat-dialog-container {
+/* .custom-dialog-container .mat-dialog-container {
     padding: 0px !important;
     min-width: 300px;
     max-width: 450px !important;
 }
+
+.my-dialog-orden-detalle.margen-0 .mat-dialog-container {
+    padding: 0px !important;
+    min-width: 300px;
+    max-width: 450px !important;
+  } */
 
 ::ng-deep .cdk-overlay-dark-backdrop {
     background: rgba(0,0,0,.52);
@@ -213,6 +220,10 @@
     border-top: 1px solid #bdbdbd;
 }
 
+
+
+
+
 /* @media only screen and (max-width: 600px) {
     .i-body {
         height: auto;
@@ -241,4 +252,14 @@
         position: relative;
         bottom: 0;
     }
+    .div-tpc-one-option {
+        bottom: 50px;
+        position: absolute;
+    }
+
+    .div-tpc-one-option-buttom {
+        padding-bottom: 80px;
+    }
+    
+    
 }

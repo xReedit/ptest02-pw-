@@ -315,7 +315,7 @@ export class CategoriasComponent implements OnInit, OnDestroy {
     const dialogDireccionCliente = this.dialogDireccion.open(DialogDireccionClienteDeliveryComponent, _dialogConfig);
     dialogDireccionCliente.afterClosed().subscribe((data: any) => {
       if ( !data ) { return; }
-        console.log('direcion', data);
+        // console.log('direcion', data);
         this.direccionCliente = data;
         this.verifyClientService.setDireccionDeliverySelected(this.direccionCliente);
         this.listenService.setChangeDireccionDelivery(this.direccionCliente);

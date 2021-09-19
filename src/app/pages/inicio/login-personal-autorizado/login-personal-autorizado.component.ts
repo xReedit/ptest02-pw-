@@ -20,7 +20,16 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
   constructor(private socketService: SocketService, private router: Router, private authService: AuthService, private infoToken: InfoTockenService, private establecimientoService: EstablecimientoService) { }
 
   ngOnInit() {
+
+    // salvar configpunto
+    const configPunto = localStorage.getItem('sys::punto');
     localStorage.clear();
+
+    if ( configPunto ) {
+      localStorage.setItem('sys::punto', configPunto);
+    }
+
+
     this.usuario = new UsuarioAutorizadoModel();
 
     // cerramos socket para que cargue carta nuevamente

@@ -98,15 +98,15 @@
           
           <ul class="ul-items">
             <li *ngFor="let item of objItems" class="li-item">
-              <div class="xcontent child-item border-left-item-{{getEstadoStockItem(item.cantidad)}}"> 
-                <div class="m1 d-flex xtitulo" matRipple [matRippleColor]="rippleColor" [ngClass]="{'li-tachado': item.cantidad < 1, 'p-titulo-item-sin-detalle': item.detalles.length === 0}" (click)="selectedItem(item)">                                
+              <div class="border-bottom-li xcontent child-item border-left-item-{{getEstadoStockItem(item.cantidad)}}" matRipple [matRippleColor]="rippleColor"> 
+                <div class="m1 d-flex xtitulo"  [ngClass]="{'li-tachado': item.cantidad < 1, 'p-titulo-item-sin-detalle': item.detalles.length === 0}" (click)="selectedItem(item)">                                
                   <!-- style 2.0 200720 -->
                   <div class="content-titulo-item w-100 d-flex align-items-center justify-content-between w-100">
                       <ng-container *ngIf="item.img === ''; else elseConImagen">
                         <!-- sin imagen -->                      
                           <div class="d-flex justify-content-between w-100">
                             <div>
-                              <span class="fw-600 fs-11 item-titulo">{{item.des}}</span>
+                              <span class="fw-600 fs-12 item-titulo">{{item.des}}</span>
                               
                               <ng-container *ngIf="item.detalles.length > 0">
                                 <p class="titlo-detalle mb-1" >{{item.detalles}}</p>                    
@@ -126,7 +126,7 @@
                         <!-- con imagen -->
                         <div class="d-flex justify-content-between w-100 align-items-center">
                           <div>
-                            <span class="fw-600 fs-11 item-titulo">{{item.des}}</span>
+                            <span class="fw-600 fs-12 item-titulo">{{item.des}}</span>
                             
                             <ng-container>
                               <p *ngIf="item.detalles.length > 0" class="titlo-detalle mb-1" >{{item.detalles}}</p>                    
@@ -147,11 +147,30 @@
                         </div>
                       </ng-template>
                       
-                      
+                    </div>
+
+                    
                   </div>
-  
-                </div>
-                
+                  
+                  <!-- control para aumentar con un clic  - para una sola opcion de consumo | delivery o autopedido (llevar) -->
+                  <ng-container *ngIf="isPuntoAutoPedido || isTomaPedidoRapido || isCliente">
+                    <div class="control-more-clic animated fadeInUp" *ngIf="item.is_visible_control_last_add || item.cantidad_seleccionada > 0">                    
+                      <app-comp-ctrl-add-fast class="float-left mr-1"
+                          (objResponse)="resultCantItemMercado($event)" 
+                          [cantidad_show] = "item.cantidad_seleccionada"
+                          [objItem]="item"
+                          [comprimir] = "false"
+                          [quitarFadeUp] = "true"
+                          [limitAdd]="item.cantidad">
+                      </app-comp-ctrl-add-fast>
+                      <div class="btn-indicacion-last-control" (click)="selectedItem(item, true)">
+                        <i class="fa fa-pencil pr-1"></i>
+                        <span class="fs-11">Indicaciones</span>
+                      </div>
+                    </div>
+                  </ng-container>
+                  
+
               </div>            
             </li>          
           </ul> 

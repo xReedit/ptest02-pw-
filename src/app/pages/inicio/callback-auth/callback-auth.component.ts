@@ -15,6 +15,7 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 export class CallbackAuthComponent implements OnInit, OnDestroy {
   isProcesando = true;
   showErrornweVersion = false;
+  timeBtnReset = false;
   private timerizador: any;
   private dataTpm: any;
 
@@ -34,11 +35,19 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
     // if ( this.showErrornweVersion ) {return; }
     try {
 
-      console.log('callbak verifyClient');
+      let secondTimeReset = 0;
+      const timeReset = setInterval(() => {
+        secondTimeReset++;
+        if ( secondTimeReset > 8) {
+          this.timeBtnReset = true;
+          clearInterval(timeReset);
+        }
+      }, 1000);
 
       this.veryfyClient = this.verifyClientService.verifyClient()
-        .subscribe(res => {
-          if ( !res ) {return; }
+        .subscribe((res: any) => {
+          if ( !res ) { return; }
+          clearInterval(timeReset);
           this.isProcesando = false;
           // console.log('res idcliente', res);
           this.setInfoToken(res);
@@ -91,7 +100,7 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
   }
 
   // para las versiones anteriores, si hay algun error, que se logueen nuevamente
-  private errorShowVersion(error: any) {
+  errorShowVersion(error: any) {
     this.showErrornweVersion = true;
 
     // guarda el error

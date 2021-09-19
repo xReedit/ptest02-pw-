@@ -111,7 +111,13 @@
   align-items: center;
 }
 
+.fondo-gris {
+  background: #eeeeee;
+}
+
 ::ng-deep.header-less-tabs.mat-tab-group .mat-tab-header { display: none; }
+
+
 
 /* #loader-wrapper .loader-msj {
   color: #e0e0e0;

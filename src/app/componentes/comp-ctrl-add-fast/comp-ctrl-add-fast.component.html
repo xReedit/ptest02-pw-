@@ -1,29 +1,31 @@
 <!-- inicio -->
-<div [hidden]="showDetalle" class="animated fadeIn">
-    <div class="btn-circle-add btn-postion animated" [ngClass]="{'headShake': showAnimateStop, 'cantidad': cantidad > 0 }" (click)="showCantDetalle()" >
-        <ng-container *ngIf="cantidad === 0; else elseTemplateCant">
-            <span class="fa fa-plus fw-600"></span>
-        </ng-container>
-        <ng-template #elseTemplateCant>
-            <span class="fw-600"> {{ cantidad}}  </span>
-        </ng-template>        
+<div>
+    <div [hidden]="showDetalle" class="animated fadeIn">
+        <div class="btn-circle-add btn-postion animated" [ngClass]="{'headShake': showAnimateStop, 'cantidad': cantidad > 0 }" (click)="showCantDetalle()" >
+            <ng-container *ngIf="cantidad === 0; else elseTemplateCant">
+                <span class="fa fa-plus fw-600"></span>
+            </ng-container>
+            <ng-template #elseTemplateCant>
+                <span class="fw-600"> {{ cantidad}}  </span>
+            </ng-template>        
+        </div>
     </div>
-</div>
-
-<!-- con catnidad -->
-<div class="btn-detalle btn-postion animated fadeInUp"  [style.zoom]="zoom"  [hidden]="!showDetalle" >
-    <!-- {{ cantidad_show }} -->
-    <div>
-        <ng-container *ngIf="cantidad_show === 1; else elseTemplate">
-            <span class="fa fa-trash" (click)="menos()"></span>
-        </ng-container>
-        <ng-template #elseTemplate>            
-            <span class="fa fa-minus" (click)="menos()"></span>
-        </ng-template>
-        
-    </div>
-    <div class="fw-600">{{ cantidad_show }}</div>
-    <div>
-        <span class="fa fa-plus animated" [ngClass]="{'headShake': showAnimateStop}" (click)="add()"></span>
+    
+    <!-- con catnidad -->
+    <div class="btn-detalle btn-postion animated" [ngClass]="{'fadeInUp': !quitarFadeUp}"  [style.zoom]="zoom"  [hidden]="!showDetalle" >
+        <!-- {{ cantidad_show }} -->
+        <div>
+            <ng-container *ngIf="cantidad_show === 1; else elseTemplate">
+                <span class="fa fa-trash" (click)="menos()"></span>
+            </ng-container>
+            <ng-template #elseTemplate>            
+                <span class="fa fa-minus" (click)="menos()"></span>
+            </ng-template>
+            
+        </div>
+        <div class="fw-600">{{ cantidad_show }}</div>
+        <div>
+            <span class="fa fa-plus animated" [ngClass]="{'headShake': showAnimateStop}" (click)="add()"></span>
+        </div>
     </div>
 </div>

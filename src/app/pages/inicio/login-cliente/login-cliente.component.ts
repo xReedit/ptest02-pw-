@@ -87,7 +87,7 @@ constructor(
 
   goCelular() {
 
-    console.log('this.dataClienteSend', this.dataClienteSend);
+    // console.log('this.dataClienteSend', this.dataClienteSend);
 
     const _dialogConfig = new MatDialogConfig();
     _dialogConfig.disableClose = true;
@@ -115,6 +115,8 @@ constructor(
             name: result.cliente.nombres,
             given_name: result.cliente.nombres.split(' ')[0]
           };
+
+          this.verifyClientService.clientSocket.isCliente = true;
 
           this.loginByTelefono();
 
@@ -381,6 +383,7 @@ constructor(
           this.dataCliente.name ? this.dataCliente.name.indexOf(' ') > 0 ? this.dataCliente.name.split(' ')[0] : this.dataCliente.name : this.dataCliente.name;
       // }
       this.verifyClientService.clientSocket.idcliente = this.dataCliente.idcliente;
+      this.verifyClientService.clientSocket.isCliente = true;
       this.verifyClientService.setDataClient();
       this.verifyClientService.setIsLoginByDNI(true);
       this.auth.loggedIn = true;
@@ -400,9 +403,12 @@ constructor(
       name: 'Invitado',
       given_name: 'Invitado'
     };
+
+    this.verifyClientService.clientSocket.isCliente = true;
     this.verifyClientService.setIsLoginByDNI(false);
     this.verifyClientService.setIsLoginByTelefono(false);
     this.verifyClientService.setIsLoginByInvitado(true);
+    this.verifyClientService.setDataClient();
     this.verifyClientService.registerInvitado();
     setTimeout(() => {
       this.router.navigate(['/callback-auth']);

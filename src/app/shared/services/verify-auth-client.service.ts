@@ -9,6 +9,9 @@ import { Observable } from 'rxjs';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 import { UtilitariosService } from './utilitarios.service';
+// import { Router } from '@angular/router';
+// import { AuthService } from './auth.service';
+import { InfoTockenService } from './info-token.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +27,9 @@ export class VerifyAuthClientService {
   constructor(
     private auth: Auth0Service,
     private crudService: CrudHttpService,
-    private utilService: UtilitariosService
+    private utilService: UtilitariosService,
+    private infoToken: InfoTockenService
+    // private router: Router
   ) { }
 
   isLogin(): boolean {
@@ -148,29 +153,67 @@ export class VerifyAuthClientService {
   }
 
   verifyClient(): Observable<any> {
+    return new Observable(observer => {
+
+    const _infoTokenIsUsuarioAutorizado = this.infoToken.isUsuarioAutorizado();
+    // console.log('_infoTokenIsUsuarioAutorizado', _infoTokenIsUsuarioAutorizado);
+
+    // let resObservable = null;
     this.getDataClient();
 
+    if ( _infoTokenIsUsuarioAutorizado ) {
+      observer.next(this.clientSocket);
+      return;
+    }
+
+
+    // if ( this.clientSocket.idcliente ) {
+
+      this.clientSocket.isCliente = true;
+      this.setDataClient();
+    // }
+
+    // resObservable = this.clientSocket;
     // verrifica si esta logueado
     if ( this.clientSocket?.isLoginByDNI ) {
       // verifica y registra el cliente en la bd
 
       this.registerCliente();
-      return this.subjectClient.asObservable();
+      // this.subjectClient.asObservable();
+      // this.subjectClient.complete();
+      // return this.subjectClient.asObservable();
+      setTimeout(() => {
+        observer.next(this.clientSocket);
+      }, 200);
+      return;
     }
 
-    this.auth.userProfile$.subscribe(res => {
-      if ( !res ) {
+    this.auth.userProfile$.subscribe(resp => {
+      if ( !resp ) {
         // this.clientSocket = new SocketClientModel();
         // this.setDataClient();
 
         if (!this.clientSocket.datalogin) {
-          this.subjectClient.next(null);
-          // this.subjectClient.complete();
+          // this.subjectClient.thrownError = true;
           // this.subjectClient.hasError = true;
-          return this.subjectClient.asObservable();
+          // this.errorShowVersion('login null');
+          // throw this.subjectClient.asObservable();
+
+          // this.subjectClient.hasError = true;
+          // this.subjectClient.complete();
+          // this.subjectClient.next(null);
+          // resObservable = null;
+          // this.clientSocket = null;
+          observer.next(null);
+          return;
+          // return this.subjectClient.asObservable();
+          // this.exitNotLoguerValido();
           // this.returnClientNull();
         } else {
           // this.clientSocket.datalogin = res;
+          // if ( this.clientSocket.idcliente ) {
+            this.clientSocket.isCliente = true;
+          // }
           this.setDataClient();
 
           // verifica y registra el cliente en la bd
@@ -179,11 +222,16 @@ export class VerifyAuthClientService {
 
       } else {
 
-        this.clientSocket.datalogin = res;
+        this.clientSocket.datalogin = resp;
+        // if ( this.clientSocket.idcliente ) {
+          this.clientSocket.isCliente = true;
+        // }
         this.setDataClient();
 
         // verifica y registra el cliente en la bd
         this.registerCliente();
+
+        // resObservable = this.clientSocket;
       }
 
 
@@ -195,8 +243,13 @@ export class VerifyAuthClientService {
     }, () => { console.log('complete'); });
 
     // this.subjectClient.next(this.clientSocket);
-    return this.subjectClient.asObservable();
+    // this.subjectClient.complete();
+    // return this.subjectClient.asObservable();
+    setTimeout(() => {
+      observer.next(this.clientSocket);
+    }, 200);
 
+    });
   }
 
   registerInvitado() {
@@ -229,6 +282,8 @@ export class VerifyAuthClientService {
       this.clientSocket.isCliente = true;
       this.clientSocket.telefono = rpt.data[0].telefono;
 
+      // console.log('this.clientSocke', this.clientSocket);
+
       // guarda en el usuario temporal
 
       this.setDataClient();
@@ -256,7 +311,19 @@ export class VerifyAuthClientService {
 
   getDataClient(): SocketClientModel {
     const dataClie = localStorage.getItem('sys::tpm');
-    if ( !dataClie ) { this.clientSocket = new SocketClientModel(); } else { this.clientSocket = JSON.parse(atob(dataClie)); }
+    if ( !dataClie ) { this.clientSocket = new SocketClientModel(); } else {
+      try {
+        this.clientSocket = JSON.parse(atob(dataClie));
+      } catch (error) {
+        if ( this.clientSocket ) {
+          if ( !this.clientSocket.datalogin ) {
+            this.clientSocket = new SocketClientModel();
+          }
+        } else {
+          this.clientSocket = new SocketClientModel();
+        }
+      }
+    }
     return this.clientSocket;
   }
 
@@ -287,4 +354,12 @@ export class VerifyAuthClientService {
   unsubscribeClient(): void {
     this.subjectClient.unsubscribe();
   }
+
+  // exitNotLoguerValido() {
+  //   this.loginOut();
+  //   localStorage.clear();
+  //   this.router.navigate(['../']);
+  // }
+
+
 }
