@@ -50,6 +50,9 @@ import { DialogDireccionClienteDeliveryComponent } from './dialog-direccion-clie
 import { CompListItemPedidoClienteComponent } from './comp-list-item-pedido-cliente/comp-list-item-pedido-cliente.component';
 import { TextNomClienteComponent } from './text-nom-cliente/text-nom-cliente.component';
 import { DialogConfigPuntoComponent } from './dialog-config-punto/dialog-config-punto.component';
+import { MozoVirtualOnSpeechComponent } from './mozo-virtual/mozo-virtual-on-speech/mozo-virtual-on-speech.component';
+import { MozoShowTraduceTextComponent } from './mozo-virtual/mozo-show-traduce-text/mozo-show-traduce-text.component';
+import { ItemPromocionComponent } from './item-promocion/item-promocion.component';
 
 @NgModule({
   declarations: [
@@ -91,6 +94,9 @@ import { DialogConfigPuntoComponent } from './dialog-config-punto/dialog-config-
     CompListItemPedidoClienteComponent,
     TextNomClienteComponent,
     DialogConfigPuntoComponent,
+    MozoVirtualOnSpeechComponent,
+    MozoShowTraduceTextComponent,
+    ItemPromocionComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
@@ -139,7 +145,10 @@ import { DialogConfigPuntoComponent } from './dialog-config-punto/dialog-config-
     DialogCalificacionSedeComponent,
     CompListItemPedidoClienteComponent,
     TextNomClienteComponent,
-    DialogConfigPuntoComponent
+    DialogConfigPuntoComponent,
+    MozoVirtualOnSpeechComponent,
+    MozoShowTraduceTextComponent,
+    ItemPromocionComponent
     // DialogDesicionComponent
   ],
 

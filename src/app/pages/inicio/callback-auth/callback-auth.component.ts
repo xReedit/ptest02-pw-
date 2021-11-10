@@ -16,6 +16,7 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
   isProcesando = true;
   showErrornweVersion = false;
   timeBtnReset = false;
+  isResponseLogin = false;
   private timerizador: any;
   private dataTpm: any;
 
@@ -47,10 +48,16 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
       this.veryfyClient = this.verifyClientService.verifyClient()
         .subscribe((res: any) => {
           if ( !res ) { return; }
+          if ( this.isResponseLogin ) {return; }
+          this.isResponseLogin = true;
           clearInterval(timeReset);
           this.isProcesando = false;
           // console.log('res idcliente', res);
           this.setInfoToken(res);
+
+          setTimeout(() => {
+            this.isResponseLogin = false;
+          }, 500);
         });
     } catch (error) {
       this.errorShowVersion(error);

@@ -4,6 +4,9 @@ import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-cli
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { Router } from '@angular/router';
 import { VIEW_APP_MOZO } from 'src/app/shared/config/config.const';
+import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+// import { SpechTotextService } from 'src/app/shared/services/speech/spech-totext.service';
+// import { SpechTTSService } from 'src/app/shared/services/speech/spech-tts.service';
 // import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 // import { finalize } from 'rxjs/internal/operators/finalize';
 // import { take } from 'rxjs/internal/operators/take';
@@ -28,6 +31,7 @@ export class InicioComponent implements OnInit, OnDestroy {
   constructor(
     private verifyClientService: VerifyAuthClientService,
     private router: Router,
+    private infoToken: InfoTockenService
     // private webSocketService: WebsocketService
     ) { }
 
@@ -42,6 +46,12 @@ export class InicioComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this.loadAll = true;
+
+      const _infotoken = this.infoToken.getInfoUs();
+
+      if ( _infotoken ) {
+        this.infoToken.setIsUsuarioAutorizacion(false);
+      }
 
       // document.body.style.backgroundColor = '#fff';
       // document.body.style.background = '#fff';

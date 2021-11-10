@@ -1,0 +1,9 @@
+.content-btn {
+    border-radius: 50%;
+    background: #5363bf;
+}
+
+.content-btn.on {
+    background: #2a3785;
+    font-size: 20px;
+}

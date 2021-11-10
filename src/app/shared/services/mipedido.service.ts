@@ -29,6 +29,8 @@ import { EstablecimientoService } from './establecimiento.service';
 import { CrudHttpService } from './crud-http.service';
 import { match } from 'minimatch';
 import { InfoTockenService } from './info-token.service';
+import { CocinarDescuentosPromoService } from './promo/cocinar-descuentos-promo.service';
+
 
 // import { distinctUntilChanged } from 'rxjs/internal/operators/distinctUntilChanged';
 // import { takeUntil } from 'rxjs/internal/operators/takeUntil';
@@ -91,7 +93,8 @@ export class MipedidoService {
     private listenStatusService: ListenStatusService,
     private establecimientoService: EstablecimientoService, // datos del estableciento // clienteSelivery
     private crudService: CrudHttpService,
-    private infoTokenService: InfoTockenService
+    private infoTokenService: InfoTockenService,
+    private cocinarDescuentosPromoService: CocinarDescuentosPromoService
     ) {
 
     }
@@ -116,18 +119,20 @@ export class MipedidoService {
   }
 
   setObjCarta(res: any) {
-
+    console.log('carta', res);
     // esto lo manda desde carta component
     this.objCarta = {};
 
     // setTimeout(() => {
       this.objCarta = {
         'carta': null,
-        'bodega': null
+        'bodega': null,
+        'promociones': null
       };
 
       this.objCarta.carta = <CartaModel[]>res[0].carta;
       this.objCarta.bodega = <SeccionModel[]>res[0].bodega;
+      this.objCarta.promociones = <any[]>res[0].promociones;
 
       // colocamos la bodega en todas las cartas
       let _carta = this.objCarta.carta;
@@ -350,6 +355,9 @@ export class MipedidoService {
     // idTpcItemResumenSelect si viene del resumen dialog
     // let cantItem = idTpcItemResumenSelect ? parseInt(this.findItemCarta(item).cantidad.toString(), 0) : parseInt(item.cantidad.toString(), 0);
 
+
+
+
     let cantItem = parseInt(item.cantidad.toString(), 0);
     const sumar = signo === 0 ? true : false;
 
@@ -474,6 +482,10 @@ export class MipedidoService {
     // elItem.precio_total = precioTotal + totalSubItems;
     // elItem.precio_print = precioTotal + totalSubItems;
 
+    // revisa si aplica promo a este item
+    if ( elItem.ispromo ) {
+      precioTotal = this.cocinarDescuentosPromoService.reviewPromoApplyItem(elItem, precioTotal) || precioTotal;
+    }
     elItem.precio_total = precioTotal;
     elItem.precio_print = precioTotal;
     // elItem.precio_total_calc = precioTotal;
@@ -484,6 +496,12 @@ export class MipedidoService {
     const totalSubItems = elItem.subitems_view ? elItem.subitems_view.map((subIt: SubItemsView) => subIt.precio).reduce((a, b) => a + b , 0) : 0;
     let precioTotal = elItem.cantidad_seleccionada * parseFloat(elItem.precio_unitario);
     precioTotal += totalSubItems;
+
+    // revisa si aplica promo a este item
+    if ( elItem.ispromo ) {
+      precioTotal = this.cocinarDescuentosPromoService.reviewPromoApplyItem(elItem, precioTotal) || precioTotal;
+    }
+
     elItem.precio_total = precioTotal;
     elItem.precio_print = precioTotal;
   }
@@ -827,14 +845,17 @@ export class MipedidoService {
 
   // bucar item en Mi pedido, update indicaciones
   findOnlyItemMiPedido(itemSearch: ItemModel): ItemModel {
-    let rpt: ItemModel;
-    this.miPedido.tipoconsumo
-      .map((tpc: TipoConsumoModel) => {
-        tpc.secciones.map((sec: SeccionModel) => {
-          rpt = sec.items.filter((i: ItemModel) => i.idcarta_lista.toString() === itemSearch.idcarta_lista.toString())[0];
-        });
-      });
-    return rpt;
+    // let rpt: ItemModel;
+    // this.miPedido.tipoconsumo
+    //   .map((tpc: TipoConsumoModel) => {
+    //     tpc.secciones.map((sec: SeccionModel) => {
+    //       rpt = sec.items.filter(i => i.idcarta_lista.toString() === itemSearch.idcarta_lista.toString())[0];
+    //       if ( rpt ) { return; }
+    //     });
+    //   });
+    // return rpt;
+
+    return <ItemModel>this.miPedido.tipoconsumo.map(c => c.secciones.map(s => s.items.find(i => i.idcarta_lista.toString() === itemSearch.idcarta_lista.toString())))[0].find(x => x);
   }
 
   // buscar o agregar item en miPedido
@@ -1856,7 +1877,8 @@ export class MipedidoService {
 
       res.subitems.map((subitemOp: SubItemContent) => {
         subitemOp.opciones.map((subitem: SubItem) => {
-          _itemInCarta.subitems.map((s: SubItemContent) => {
+          if (!_itemInCarta.subitems) { return; }
+          _itemInCarta?.subitems.map((s: SubItemContent) => {
             const itemFind = s.opciones.filter((_subItem: SubItem) => _subItem.iditem_subitem === parseInt(subitem.iditem_subitem.toString(), 0))[0];
             if ( itemFind ) {
               if ( itemFind.cantidad !== 'ND' ) {

@@ -17,12 +17,19 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
   loading = false;
   msjErr = false;
 
-  constructor(private socketService: SocketService, private router: Router, private authService: AuthService, private infoToken: InfoTockenService, private establecimientoService: EstablecimientoService) { }
+  constructor(
+    private socketService: SocketService,
+    private router: Router,
+    private authService: AuthService,
+    private infoToken: InfoTockenService,
+    private establecimientoService: EstablecimientoService) { }
 
   ngOnInit() {
 
+    // console.log('aaaaaaaaaaaaaaaaaaaaa');
     // salvar configpunto
     const configPunto = localStorage.getItem('sys::punto');
+    // this.authService.loggedOutUser(false);
     localStorage.clear();
 
     if ( configPunto ) {
@@ -49,6 +56,8 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
           this.authService.setLocalTokenAuth(res.token);
           this.authService.setLoggedStatus(true);
           this.authService.setLocalUsuario(this.usuario);
+          this.infoToken.converToJSON();
+          this.infoToken.setIsUsuarioAutorizacion(true);
           this.infoToken.converToJSON();
           this.loadDataEstablecimiento(res.usuario.idsede);
           this.router.navigate(['./pedido']);

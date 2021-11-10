@@ -102,7 +102,7 @@ constructor(
 
     dialogRefTelefono.afterClosed().subscribe((result: any) => {
       if ( result.verificado ) {
-        console.log('result.numberphone', result);
+        // console.log('result.numberphone', result);
 
         if ( !result.cliente ) {
           // perdir nombre

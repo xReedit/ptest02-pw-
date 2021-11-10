@@ -1,0 +1,8 @@
+<div class="content-btn" [ngClass]="{'on': isGrabando}" (click)="goClickBtn()">
+    <ng-container *ngIf="isGrabando; else elseTemplateNoGraba">
+        <i class="fa fa-microphone text-danger animated infinite bounceIn" aria-hidden="true"></i>
+    </ng-container>
+    <ng-template #elseTemplateNoGraba>
+        <i class="fa fa-microphone-slash" aria-hidden="true"></i>    
+    </ng-template>
+</div>

@@ -39,10 +39,11 @@
 <div class="h-100 overflow-hidden" >  
     <app-progress-time-limit></app-progress-time-limit>
     <div class="toolbar-main" [ngClass]="{'fadeInTool': isVisibleToolBar, 'fadeOutTool': !isVisibleToolBar}">
-      <app-tool-bar></app-tool-bar>
+      <app-tool-bar></app-tool-bar>      
     </div>        
 
     <div>      
+      
       <mat-tab-group (selectedTabChange)="clickTab($event)" backgroundColor="primary" color="accent"
         class="main-contemt transicion xanimated xfadeIn" [selectedIndex]="selectedTab"
         [ngClass]="{'header-less-tabs pt-0': isBusqueda}">
@@ -52,7 +53,9 @@
             <br>
 
             <!-- footer boton ir a mi pedido -->
-            <div class="footer-btn-go-lista animated fadeIn" [ngClass]="{'fadeInUp':  countTotalItems > 0,'fadeOutDown': countTotalItems <= 0}" *ngIf="isUsuarioCliente || isPuntoAutoPedido && isScreenIsMobile">
+            <div class="footer-btn-go-lista animated fadeIn" 
+              [ngClass]="{'fadeInUp':  countTotalItems > 0,'fadeOutDown': countTotalItems <= 0}" 
+              *ngIf="(isUsuarioCliente || isPuntoAutoPedido) && isScreenIsMobile">
               <div class="content" (click)="goListaProductos()">
                 <p class="badge badge-light">{{ countTotalItems }}</p>
                 <p>Ver pedido</p>
@@ -93,7 +96,9 @@
         </mat-tab>
       </mat-tab-group>
     </div>    
-
+    
+    
+    <app-mozo-show-traduce-text></app-mozo-show-traduce-text>
    
 
 </div>

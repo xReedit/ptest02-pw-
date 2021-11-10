@@ -282,6 +282,17 @@ export class SocketService {
     });
   }
 
+  // fecha ahora
+  onGetInfoDateNow() {
+    // if ( this.isSocketOpen ) { return new Observable(observer => {observer.next(null); }); }
+    return new Observable(observer => {
+      this.socket.on('date-now-info', (res: any) => {
+        // this.resTipoConsumo = res;
+        observer.next(res);
+      });
+    });
+  }
+
   // onDeliveryGetLastIdPedido() {
   //   return new Observable(observer => {
   //     this.socket.on('get-lastid-pedido', (res: any) => {

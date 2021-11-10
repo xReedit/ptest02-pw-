@@ -6,6 +6,11 @@
     <span class="nom-comercio">{{ nomSede | titlecase }}</span>
     <span class="example-spacer"></span>
 
+    <!-- microfono mozo virtual -->
+    <div class="example-ripple-container fs-15" *ngIf="isSpeechVoiceAcivado && isCliente && !isClienteDelivery">         
+         <app-mozo-virtual-on-speech></app-mozo-virtual-on-speech>
+    </div>
+
     <!-- boton configuracion punto de autopedido -->
     <div *ngIf="!isCliente" class="example-ripple-container fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor"
      (click)="configPunto()">

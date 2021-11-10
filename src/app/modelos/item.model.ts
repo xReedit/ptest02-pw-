@@ -41,5 +41,8 @@ export class ItemModel {
     iddescuento: number;
     is_visible_cliente: number; // 1 no visible para el cliente
     is_search_subitems: boolean; // si ya hizo la busqueda de sus subitems
-    is_visible_control_last_add: false;
+    is_visible_control_last_add: boolean;
+    ispromo: any;
+    ispromo_aplica: boolean;
+    is_recomendacion: string;
 }

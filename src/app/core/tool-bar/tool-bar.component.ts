@@ -12,6 +12,7 @@ import { UtilitariosService } from 'src/app/shared/services/utilitarios.service'
 import {MAT_TOOLTIP_DEFAULT_OPTIONS, MatTooltipDefaultOptions} from '@angular/material/tooltip';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DialogConfigPuntoComponent } from 'src/app/componentes/dialog-config-punto/dialog-config-punto.component';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 
 export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
   showDelay: 500,
@@ -37,6 +38,7 @@ export class ToolBarComponent implements OnInit {
   rippleColorPlomo = 'rgba(158,158,158,0.5)';
   isClienteDelivery = false;
   isCliente = false;
+  isSpeechVoiceAcivado = false;
 
   nomSede = '';
   idSedeCartaVirtual: number;
@@ -56,9 +58,14 @@ export class ToolBarComponent implements OnInit {
     private infoTokenService: InfoTockenService,
     private utilitariosSerivce: UtilitariosService,
     private crudService: CrudHttpService,
+    private establecimientoService: EstablecimientoService,
     ) { }
 
   ngOnInit() {
+
+    // console.log('establecimientoService', this.establecimientoService.get());
+    this.isSpeechVoiceAcivado = this.establecimientoService.get().speech_disabled === 1;
+
     this.listenStatusService.isBusqueda$.subscribe(res => {
       this.isBusqueda = res;
       // console.log('liste isBusqueda', res);

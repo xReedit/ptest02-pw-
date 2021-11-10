@@ -10,6 +10,7 @@ import { MaterialModule } from './material/material.module';
 import { ToolBarComponent } from './tool-bar/tool-bar.component';
 import { ProgressTimeLimitComponent } from './progress-time-limit/progress-time-limit.component';
 import { HttpConfigInterceptorService } from '../shared/services/http-config-interceptor.service';
+import { ComponentesModule } from '../componentes/componentes.module';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { HttpConfigInterceptorService } from '../shared/services/http-config-int
     CommonModule,
     RouterModule,
     HttpClientModule,
-    MaterialModule
+    MaterialModule,
+    ComponentesModule
   ],
   exports: [
     MaterialModule,

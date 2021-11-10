@@ -23,6 +23,8 @@ import { EstablecimientoService } from 'src/app/shared/services/establecimiento.
 import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DialogCalificacionSedeComponent } from 'src/app/componentes/dialog-calificacion-sede/dialog-calificacion-sede.component';
+import { SpeechDataProviderService } from 'src/app/shared/services/speech/speech-data-provider.service';
+import { CocinarPromoShowService } from 'src/app/shared/services/promo/cocinar-promo-show.service';
 
 
 
@@ -56,6 +58,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   objSecciones: SeccionModel[] = [];
   objItems: ItemModel[] = [];
+  objPromociones: any = null;
+  private categoriaSeleted: CategoriaModel;
 
   // objSelectedItem: ItemModel;
   // objSeccionSelected: SeccionModel = new SeccionModel();
@@ -69,6 +73,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   private itemSelected: ItemModel;
   private seccionSelected: SeccionModel;
   private countSeeBack = 2; // primera vista al dar goback
+  private nomCategoriaSeleted = '';
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -106,7 +111,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       private dialog: MatDialog,
       private establecimientoService: EstablecimientoService,
       private calcDistanciaService: CalcDistanciaService,
-      private crudService: CrudHttpService
+      private crudService: CrudHttpService,
+      private speechDataProviderService: SpeechDataProviderService,
+      private cocinarPromoShowService: CocinarPromoShowService,
       ) {
 
   }
@@ -229,6 +236,18 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
         //
         this.miPedidoService.setObjCarta(res);
 
+        if ( this.miPedidoService.objCarta.promociones.lista_promociones ) {
+          // if (this.miPedidoService.objCarta.promociones[0].idpromocion) {
+            this.objPromociones = this.miPedidoService.objCarta.promociones.lista_promociones;
+            // filtramos si hay solo app
+            if (!this.isCliente) {
+              this.objPromociones = this.objPromociones.filter(p => p.parametros.body.solo_app === 0);
+            }
+            this.cocinarPromoShowService.iniReloadOpenPromo(this.objPromociones);
+          // }
+        }
+        console.log('this.objPromociones', this.objPromociones);
+
         this.resetParamsCarta();
 
         // this.isCargado = false;
@@ -328,7 +347,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // si la carta solo tiene un categoria ( cena almuerzo entra de frente)
   private initFirtsCategoria() {
-    if ( this.isScreenIsMobile ) {return; }
+    // if ( this.isScreenIsMobile ) {return; }
     if ( this.miPedidoService.objCarta.carta.length === 1 ) {
       this.objSecciones = this.miPedidoService.objCarta.carta[0].secciones;
       this.tituloToolBar = this.miPedidoService.objCarta.carta[0].des;
@@ -336,11 +355,19 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.showCategoria = false;
       this.showToolBar = true;
 
+      if ( this.isScreenIsMobile ) {
+        this.getSecciones(this.miPedidoService.objCarta.carta[0]);
+        return; }
+
       this.getItems(this.objSecciones[0]);
 
       // seleciona la primera seccion
       this.objItems = this.objSecciones[0].items;
     }
+
+    // if ( this.miPedidoService.objCarta.promociones.length !== 0 ) {
+    //   this.objPromociones = this.miPedidoService.objCarta.promociones;
+    // }
     // console.log('this.miPedidoService.objCarta.carta;', this.miPedidoService.objCarta.carta);
   }
 
@@ -350,7 +377,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isCargado = false;
     this.objSecciones = [];
     this.objItems = [];
-    this.showCategoria = false;
+    // this.showCategoria = false;
     this.showSecciones = false;
     this.showItems = false;
     this.showToolBar = false;
@@ -367,6 +394,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getSecciones(categoria: CategoriaModel) {
+    this.categoriaSeleted = categoria;
     setTimeout(() => {
       this.objSecciones = categoria.secciones;
       this.showSecciones = true;
@@ -377,6 +405,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       localStorage.setItem('sys::cat', categoria.idcategoria.toString());
 
       this.tituloToolBar = categoria.des;
+      this.nomCategoriaSeleted = categoria.des;
       this.navigatorService.addLink('carta-i-secciones');
     }, 250);
   }
@@ -389,7 +418,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.showSecciones = false;
       this.showItems = true;
       if ( this.isScreenIsMobile ) {
-        this.tituloToolBar += ' / ' + seccion.des;
+        // if ( this.tituloToolBar.indexOf(seccion.des) === -1) {
+          this.tituloToolBar = this.nomCategoriaSeleted + ' / ' + seccion.des;
+        // }
       }
 
       // console.log('this.objItems', this.objItems);
@@ -397,6 +428,15 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.navigatorService.addLink('carta-i-secciones-items');
     }, 150);
 
+  }
+
+  getItemsPromo(items: ItemModel[]) {
+    setTimeout(() => {
+      this.objItems = items;
+      this.showSecciones = false;
+      this.showItems = true;
+      this.navigatorService.addLink('carta-i-secciones-items');
+    }, 150);
   }
 
   private getItems_seccion_from_busqueda(_itemBus: any): any {
@@ -490,6 +530,13 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       _selectedItem.itemtiposconsumo = this.objItemTipoConsumoSelected;
     }
 
+    // confirma que la seccion del item sea igual a la seccion del // si viene x ej de promo
+    const idSeccionSelected = this.seccionSelected?.idseccion || 0;
+    if ( this.itemSelected.idseccion !== idSeccionSelected) {
+      this.seccionSelected = this.miPedidoService.findItemSeccionCarta(this.itemSelected.idseccion);
+      this.miPedidoService.setObjSeccionSeleced(this.seccionSelected);
+    }
+
 
 
     this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
@@ -500,7 +547,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   // abrir el dialog item
   private openDlgItem(_item: ItemModel): void {
     const dialogConfig = new MatDialogConfig();
-    const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
+    const _itemFromCarta = _item.ispromo ? _item : this.miPedidoService.findItemCarta(_item);
     if ( !_itemFromCarta.itemtiposconsumo ) {
       _itemFromCarta.itemtiposconsumo = _item.itemtiposconsumo;
     }
@@ -580,6 +627,37 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
         this.unsubscribeCarta.unsubscribe();
       }
     });
+
+
+    // ===== COMANDOS DE VOZ =========== //
+    // listen comando voz navegacion;
+    this.speechDataProviderService.commandNavegacionSeccion$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((rpt_seccion: SeccionModel) => {
+      if (rpt_seccion) {
+        // if (this.showCategoria ) {
+          const _categoria = this.miPedidoService.objCarta.carta[0];
+          this.getSecciones(_categoria);
+          setTimeout(() => {
+            this.getItems(rpt_seccion);
+          }, 100);
+        // } else {
+        //   this.getItems(rpt_seccion);
+        // }
+      }
+    });
+
+    // escuhar si se aumenta pedido
+    this.speechDataProviderService.commandAddItem$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((itemVoz: any) => {
+      if (itemVoz) {
+        this.resultCantItemMercado(itemVoz.item, itemVoz.isSuma);
+      }
+    });
+
+
+    // ===== COMANDOS DE VOZ =========== //
   }
 
   private isBusquedaFindNow(charFind: string): void {
@@ -628,6 +706,14 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     const _isSuma = isSuma_selected ? 0 : _selectedItem.isSuma_selected ? 0 : 1;
 
+
+    // confirma que la seccion del item sea igual a la seccion del
+    const idSeccionSelected = this.seccionSelected?.idseccion || 0;
+    if ( this.itemSelected.idseccion !== idSeccionSelected) {
+      this.seccionSelected = this.miPedidoService.findItemSeccionCarta(this.itemSelected.idseccion);
+      this.miPedidoService.setObjSeccionSeleced(this.seccionSelected);
+    }
+
     // console.log('_selectedItem carta', _selectedItem);
     this.miPedidoService.addItem2(tpcSelect, this.itemSelected, _isSuma);
 
@@ -675,6 +761,17 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
         }
     );
+  }
+
+
+  showItemsPromo(promo: any) {
+    // if ( this.cocinarPromoShowService.consultarPromoAbierto(promo) ) {
+      const itemsPromo = this.cocinarPromoShowService.promoFilterShow(promo, this.categoriaSeleted);
+      this.getItemsPromo(itemsPromo);
+    // } else {
+    //   promo.abierto = 0;
+    //   console.log('aaaaaaaaaaaaaa');
+    // }
   }
 
 }

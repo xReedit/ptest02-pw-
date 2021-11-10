@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
+import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 
 @Component({
   selector: 'app-confirmado',
@@ -27,7 +28,8 @@ export class ConfirmadoComponent implements OnInit {
     private socketService: SocketService,
     private miPedidoService: MipedidoService,
     private dialog: MatDialog,
-    private pushNotificationSerice: NotificacionPushService
+    private pushNotificationSerice: NotificacionPushService,
+    private utilitariosSerivce: UtilitariosService
   ) { }
 
   ngOnInit(): void {
@@ -45,7 +47,9 @@ export class ConfirmadoComponent implements OnInit {
 
   finDeliveryAvisoMsj() {
 
-    this.lanzarPermisoNotificationPush(0);
+    if ( this.utilitariosSerivce.getOS() !== 'iOS' ) {
+      this.lanzarPermisoNotificationPush(0);
+    }
 
     // limpiar storage transaccion
     this.miPedidoService.prepareNewPedido();

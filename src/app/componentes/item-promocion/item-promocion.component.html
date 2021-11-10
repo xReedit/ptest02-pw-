@@ -1,0 +1,36 @@
+<div class="w-100" (click)="clickPromo()" [ngClass]="{'bg-confetti-animated': promo.abierto === 1}">
+    <!-- <div class="label-promo">.</div> -->
+    <div class="div-promo w-100">        
+        <div class="d-flex align-items-center">
+            <div class="img-promo">
+                <img src="{{iconGifPromo}}" alt="ico_promo">
+            </div>
+            <div class="info-promo animated fadeIn" *ngIf="!showInfoPromo">
+                <p class="fw-600 fs-15">{{ ItemPromoheader.titulo }}</p>
+                <p class="fw-600 fs-12 text-secondary">{{ ItemPromoheader.descripcion }}</p>
+                <p class="fw-100 fs-12 text-secondary">Abierto de: {{ ItemPromoBody.h_inicio }} a {{ ItemPromoBody.h_fin }}</p>        
+                <p class="fw-100 fs-12 text-secondary">{{ diasActivo }}</p>
+            </div>
+            <div class="info-promo animated" *ngIf="showInfoPromo" [ngClass]="{'fadeInDown': showInfoPromo, 'fadeOutDown': !showInfoPromo}">
+                <p class="fw-600 fs-13 text-danger">Acceda con un consumo mínimo de S/{{ItemPromoBody.importe_consumo_min}} en otros productos.</p>
+            </div>
+        </div>
+
+        <ng-container *ngIf="promo.abierto === 0; else elseTemplateGo">
+            <img src="assets/images/002-lock.png" alt="bloqueado" class="animated" [ngClass]="{'wobble': animateBloqueo}">
+        </ng-container>
+        <ng-template #elseTemplateGo>
+            <div *ngIf="ItemPromoBody.importe_consumo_min" class="content-importe-minimo animated" [ngClass]="{'wobble': animateBloqueo}">                
+                <div class="importe-minimo">
+                    <span class="fs-10">S/.</span>
+                    <p class="fs-18 fw-600">
+                        {{ ItemPromoBody.importe_consumo_min }}
+                    </p>
+                </div>
+                <div class="text-center">
+                    <p class="fs-9 text-secondary">Consumo mínimo</p>
+                </div>                
+            </div>
+        </ng-template>        
+    </div>
+</div>

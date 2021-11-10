@@ -7,6 +7,7 @@ import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-cli
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+import { ComandAnalizerService } from 'src/app/shared/services/speech/comand-analizer.service';
 
 @Component({
   selector: 'app-main',
@@ -46,8 +47,10 @@ export class MainComponent implements OnInit {
     public listenStatusService: ListenStatusService,
     public socketService: SocketService,
     private verifyClientService: VerifyAuthClientService,
-    private infoTokenService: InfoTockenService
+    private infoTokenService: InfoTockenService,
+    private comandAnalizerService: ComandAnalizerService,
     ) {
+      // this.comandAnalizerService.getComands();
     }
 
   private detectScreenSize() {
@@ -137,6 +140,12 @@ export class MainComponent implements OnInit {
     //   // this._matTooltip.tooltipClass = 'example-tooltip-red-1';
     //   this._matTooltip.show();
     // }, 1000);
+
+
+    setTimeout(() => {
+      this.comandAnalizerService.cocinarComand('bienvenido');
+    }, 500);
+
   }
 
   // 12 segundos de cargar, reload page

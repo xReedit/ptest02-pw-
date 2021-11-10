@@ -253,6 +253,11 @@ export class InfoTockenService {
     this.set();
   }
 
+  setIsUsuarioAutorizacion( val: boolean) {
+    this.infoUsToken.isUsuarioAutorizado = val;
+    this.set();
+  }
+
   // id cliente del ultimo
   getIdCliente(): any {
     const _id = localStorage.getItem('sys::ic-orden');
@@ -316,8 +321,8 @@ export class InfoTockenService {
         // inicializa valores
         this.setIniMetodoPago(); this.setIniTipoComprobante(); this.setIniPropina(); this.setPasoRecoger(false); // this.setIniTiempoEntrega();
 
-        this.infoUsToken.isCliente = false;
-        this.infoUsToken.isUsuarioAutorizado = true;
+        // this.infoUsToken.isCliente = false;
+        // this.infoUsToken.isUsuarioAutorizado = true;
 
       }
     } else {

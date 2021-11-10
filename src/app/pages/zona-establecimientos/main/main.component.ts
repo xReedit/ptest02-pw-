@@ -251,7 +251,10 @@ export class MainComponent implements OnInit {
 
   cerrarAllSession() {
     localStorage.clear();
+    this.authService.loggedOutUser();
     this.authService.setLocalToken('');
+
+    this.router.navigate(['../']);
   }
 
 }

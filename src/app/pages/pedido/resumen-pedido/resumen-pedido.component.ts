@@ -32,6 +32,7 @@ import { Router } from '@angular/router';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
+import { SpeechDataProviderService } from 'src/app/shared/services/speech/speech-data-provider.service';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
@@ -108,6 +109,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     private establecimientoService: EstablecimientoService,
     private utilService: UtilitariosService,
     private verifyClientService: VerifyAuthClientService,
+    private speechDataProviderService: SpeechDataProviderService
     ) { }
 
   ngOnInit() {
@@ -155,18 +157,18 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       // this.frmDelivery = new DatosDeliveryModel();
     });
 
-    this.navigatorService.resNavigatorSourceObserve$
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((res: any) => {
-          if (res.pageActive === 'mipedido') {
-            if (res.url.indexOf('confirma') > 0) {
-              // this.confirmarPeiddo();
+    // this.navigatorService.resNavigatorSourceObserve$
+    // .pipe(takeUntil(this.destroy$))
+    // .subscribe((res: any) => {
+    //       if (res.pageActive === 'mipedido') {
+    //         if (res.url.indexOf('confirma') > 0) {
+    //           // this.confirmarPeiddo();
 
-            } else {
-              // this.backConfirmacion();
-            }
-          }
-        });
+    //         } else {
+    //           // this.backConfirmacion();
+    //         }
+    //       }
+    //     });
 
     this.listenStatusService.isBtnPagoShow$
         .pipe(takeUntil(this.destroy$))
@@ -180,6 +182,42 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
           }
         });
 
+    // speech data finaliza pedido
+    this.speechDataProviderService.commandFinalizarPedido$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((res: boolean) => {
+      if (res) {
+        // this.confirmarPeiddo();
+        this.isVisibleConfirmarAnimated = true;
+
+        setTimeout(() => {
+          this.isVisibleConfirmar = true;
+        }, 300);
+
+        this.checkTiposDeConsumo();
+        this.checkIsRequierMesa();
+        this.checkIsDelivery();
+
+        this.navigatorService.addLink('mipedido-confirma');
+
+        this.isClienteSetValues();
+      }
+    });
+
+    // speech show pedido
+    this.speechDataProviderService.commandIsShowPedido$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((res: boolean) => {
+      if (res) {
+        // this.backConfirmacion();
+        this.isVisibleConfirmarAnimated = false;
+        this.isRequiereMesa = false;
+        setTimeout(() => {
+          this.isVisibleConfirmar = false;
+        }, 300);
+      }
+    });
+
 
     // si es cliente
     this.isCliente = this.infoToken.isCliente();
@@ -187,6 +225,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this.isDeliveryCliente = this.infoToken.isDelivery();
     this.isReservaCliente = this.infoToken.isReserva();
     this.isClienteSetValues();
+
+
   }
 
   // si es cliente asigna mesa
@@ -381,6 +421,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     const dialogConfig = new MatDialogConfig();
     const _itemFromCarta = this.miPedidoService.findItemCarta(_item);
+    _itemFromCarta.indicaciones = _itemFromCarta.indicaciones ? _itemFromCarta.indicaciones :  _item.indicaciones || '';
 
     // dialogConfig.panelClass = 'dialog-item-edit';
     dialogConfig.autoFocus = false;
@@ -567,14 +608,14 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       dataFrmConfirma.m = this.isSoloLLevar ? '' : dataUsuario.numMesaLector;
       dataFrmConfirma.m = this.isDeliveryCliente ? '' : dataUsuario.numMesaLector;
       dataFrmConfirma.r = dataUsuario.nombres.toUpperCase();
-      dataFrmConfirma.nom_us = dataUsuario.nombres.toLowerCase();
+      dataFrmConfirma.nom_us = dataUsuario.nombres.toUpperCase();
       dataFrmConfirma.m_respaldo = dataFrmConfirma.m;
     } else {
       // dataFrmConfirma.m = this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00';
       dataFrmConfirma.m_respaldo = this.frmConfirma.nummesa_resplado;
       dataFrmConfirma.m = this.frmConfirma.nummesa ? this.frmConfirma.nummesa : this.arrReqFrm.isRequiereMesa ? this.frmConfirma.nummesa_resplado : '00';
       dataFrmConfirma.r = this.frmConfirma.delivery ? this.frmDelivery.nombre : this.utilService.addslashes(this.frmConfirma.referencia) || '';
-      dataFrmConfirma.nom_us = dataUsuario.nombres.split(' ')[0].toLowerCase();
+      dataFrmConfirma.nom_us = dataUsuario.nombres.split(' ')[0].toUpperCase();
     }
 
 
@@ -1142,6 +1183,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private savePedidoSocket(dataSend: any, isPagoConTarjeta: boolean, _subTotalesSave: any) {
+    this.speechDataProviderService.setIsPedidoConfirmado();
     this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => {
         if ( resSocket === false ) {
           alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');

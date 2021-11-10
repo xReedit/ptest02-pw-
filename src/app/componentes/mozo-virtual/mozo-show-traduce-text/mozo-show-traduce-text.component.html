@@ -1,0 +1,7 @@
+<div class="bg-voz footer-btn-go-lista animated fadeIn"
+    [ngClass]="{'fadeInUp': 'isShowTxtTraduce', 'fadeOutDown': !isShowTxtTraduce}">
+    <div class="text-center">
+        <span class="mr-2" [ngClass]="{'text-success': isShowCheck, 'fw-600': isShowCheck}">{{ textTranscript }}</span>
+        <span *ngIf="isShowCheck"><i class="fa fa-check text-success"></i></span>
+    </div>
+</div>

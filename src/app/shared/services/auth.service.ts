@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UsuarioAutorizadoModel } from 'src/app/modelos/usuario-autorizado.model';
+import { Auth0Service } from './auth0.service';
 import { CrudHttpService } from './crud-http.service';
 
 @Injectable({
@@ -8,7 +9,10 @@ import { CrudHttpService } from './crud-http.service';
 export class AuthService {
     private isLoggedStatus = false;
 
-    constructor(private crudService: CrudHttpService) {
+    constructor(
+        private crudService: CrudHttpService,
+        private auth: Auth0Service,
+        ) {
 
     }
 
@@ -54,6 +58,7 @@ export class AuthService {
     loggedOutUser() {
         localStorage.removeItem('::token');
         localStorage.removeItem('::us');
+        this.auth.logout();
         // localStorage.clear();
         this.setLoggedStatus(false);
     }

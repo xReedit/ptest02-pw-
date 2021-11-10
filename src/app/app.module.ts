@@ -10,6 +10,7 @@ import { CoreModule } from './core/core.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { GlobalErrorHandler } from './shared/services/error.global.handler';
 import { environment } from '../environments/environment';
+import { SocketIoModule } from 'ngx-socket-io';
 // import { DirectionsMapDirectiveDirective } from './shared/directivas/directions-map-directive.directive';
 
 
@@ -27,6 +28,7 @@ import { environment } from '../environments/environment';
     FormsModule,
     AppRoutingModule,
     CoreModule,
+    SocketIoModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     // ServiceWorkerModule.register('assets/js/custom-service-worker.js', { enabled: environment.production })
   ],

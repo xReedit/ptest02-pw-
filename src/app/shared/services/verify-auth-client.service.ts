@@ -155,6 +155,7 @@ export class VerifyAuthClientService {
   verifyClient(): Observable<any> {
     return new Observable(observer => {
 
+    let _dataClientReurn = null;
     const _infoTokenIsUsuarioAutorizado = this.infoToken.isUsuarioAutorizado();
     // console.log('_infoTokenIsUsuarioAutorizado', _infoTokenIsUsuarioAutorizado);
 
@@ -169,48 +170,71 @@ export class VerifyAuthClientService {
 
     // if ( this.clientSocket.idcliente ) {
 
-      this.clientSocket.isCliente = true;
-      this.setDataClient();
+      // this.clientSocket.isCliente = true;
+      // this.setDataClient();
     // }
 
     // resObservable = this.clientSocket;
     // verrifica si esta logueado
-    if ( this.clientSocket?.isLoginByDNI ) {
+    if ( this.clientSocket?.isLoginByDNI || this.clientSocket?.isLoginByTelefono ) {
       // verifica y registra el cliente en la bd
 
       this.registerCliente();
+      _dataClientReurn = this.clientSocket;
       // this.subjectClient.asObservable();
       // this.subjectClient.complete();
       // return this.subjectClient.asObservable();
       setTimeout(() => {
-        observer.next(this.clientSocket);
+        observer.next(_dataClientReurn);
       }, 200);
       return;
     }
 
-    this.auth.userProfile$.subscribe(resp => {
-      if ( !resp ) {
-        // this.clientSocket = new SocketClientModel();
-        // this.setDataClient();
+    // setTimeout(() => {
+      this.auth.userProfile$.subscribe(resp => {
+        if ( !resp ) {
+          // this.clientSocket = new SocketClientModel();
+          // this.setDataClient();
 
-        if (!this.clientSocket.datalogin) {
-          // this.subjectClient.thrownError = true;
-          // this.subjectClient.hasError = true;
-          // this.errorShowVersion('login null');
-          // throw this.subjectClient.asObservable();
+          if (!this.clientSocket.datalogin) {
+            // this.subjectClient.thrownError = true;
+            // this.subjectClient.hasError = true;
+            // this.errorShowVersion('login null');
+            // throw this.subjectClient.asObservable();
 
-          // this.subjectClient.hasError = true;
-          // this.subjectClient.complete();
-          // this.subjectClient.next(null);
-          // resObservable = null;
-          // this.clientSocket = null;
-          observer.next(null);
-          return;
-          // return this.subjectClient.asObservable();
-          // this.exitNotLoguerValido();
-          // this.returnClientNull();
+            // this.subjectClient.hasError = true;
+            // this.subjectClient.complete();
+            // this.subjectClient.next(null);
+            // resObservable = null;
+            // this.clientSocket = null;
+            // observer.next(null);
+            _dataClientReurn = null;
+            observer.next(_dataClientReurn);
+            // return;
+            // return this.subjectClient.asObservable();
+            // this.exitNotLoguerValido();
+            // this.returnClientNull();
+          } else {
+            // this.clientSocket.datalogin = res;
+            // if ( this.clientSocket.idcliente ) {
+              this.clientSocket.isCliente = true;
+            // }
+            this.setDataClient();
+
+            // verifica y registra el cliente en la bd
+            this.registerCliente();
+
+            _dataClientReurn = this.clientSocket;
+
+            // console.log('aaaaa');
+            setTimeout(() => {
+              observer.next(_dataClientReurn);
+            }, 500);
+          }
+
         } else {
-          // this.clientSocket.datalogin = res;
+
+          this.clientSocket.datalogin = resp;
           // if ( this.clientSocket.idcliente ) {
             this.clientSocket.isCliente = true;
           // }
@@ -218,36 +242,34 @@ export class VerifyAuthClientService {
 
           // verifica y registra el cliente en la bd
           this.registerCliente();
+
+          _dataClientReurn = this.clientSocket;
+
+          setTimeout(() => {
+            observer.next(_dataClientReurn);
+          }, 500);
+          // console.log('bbbb');
+          // observer.next(_dataClientReurn);
+          // observer.next(this.clientSocket);
+          // resObservable = this.clientSocket;
         }
 
-      } else {
 
-        this.clientSocket.datalogin = resp;
-        // if ( this.clientSocket.idcliente ) {
-          this.clientSocket.isCliente = true;
-        // }
-        this.setDataClient();
+        // guarda vista demostracion para no cargar nuevamente
 
-        // verifica y registra el cliente en la bd
-        this.registerCliente();
+        //
+      }, (error) => {
+        console.log(error);
+      }, () => { console.log('complete aaaaaaaaaaaaaaa'); });
 
-        // resObservable = this.clientSocket;
-      }
+      // this.subjectClient.next(this.clientSocket);
+      // this.subjectClient.complete();
+      // return this.subjectClient.asObservable();
+      // setTimeout(() => {
+        // observer.next(_dataClientReurn);
+      // }, 200);
+    // }, 1000);
 
-
-      // guarda vista demostracion para no cargar nuevamente
-
-      //
-    }, (error) => {
-      console.log(error);
-    }, () => { console.log('complete'); });
-
-    // this.subjectClient.next(this.clientSocket);
-    // this.subjectClient.complete();
-    // return this.subjectClient.asObservable();
-    setTimeout(() => {
-      observer.next(this.clientSocket);
-    }, 200);
 
     });
   }
