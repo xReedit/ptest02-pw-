@@ -51,7 +51,7 @@ export class CocinarPromoShowService {
         const idItem = item.iditem.toString();
         const porc_descuento =  parseFloat(item.porc_descuento);
         const _item = categoria.secciones.map(s => s.items.find(i => i.iditem.toString() === idItem)).find(x => x);
-        console.log('item promo', item);
+        // console.log('item promo', item);
         // const _items = categoria.secciones.find(s => s.idseccion.toString() === idItem);
         if ( _item ) {
             const __item = {... _item};

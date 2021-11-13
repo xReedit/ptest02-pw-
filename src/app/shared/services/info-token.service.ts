@@ -258,6 +258,15 @@ export class InfoTockenService {
     this.set();
   }
 
+  setIsAvtiveMozoVoz( val: boolean) {
+    this.infoUsToken.isActiveMozoVoz = val;
+    this.set();
+  }
+
+  getIsAvtiveMozoVoz(): boolean {
+    return this.infoUsToken.isActiveMozoVoz;
+  }
+
   // id cliente del ultimo
   getIdCliente(): any {
     const _id = localStorage.getItem('sys::ic-orden');

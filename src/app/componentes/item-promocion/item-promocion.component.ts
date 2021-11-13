@@ -24,7 +24,7 @@ export class ItemPromocionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('promo', this.promo);
+    // console.log('promo', this.promo);
     this.isAbierto = this.promo.abierto === 1;
     this.ItemPromoheader = this.promo.parametros.header;
     this.ItemPromoBody = this.promo.parametros.body;
@@ -52,7 +52,7 @@ export class ItemPromocionComponent implements OnInit {
       importeMinimoPromo = this.ItemPromoBody.importe_consumo_min;
       if ( importeMinimoPromo ) {
         const importePedido = this.cocinarPromocionService.getImportePedido();
-        console.log('importePedido', importePedido);
+        // console.log('importePedido', importePedido);
         if ( importePedido >=  importeMinimoPromo) {
           paseAbierto = true;
         } else {

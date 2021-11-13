@@ -246,7 +246,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
             this.cocinarPromoShowService.iniReloadOpenPromo(this.objPromociones);
           // }
         }
-        console.log('this.objPromociones', this.objPromociones);
+        // console.log('this.objPromociones', this.objPromociones);
 
         this.resetParamsCarta();
 
@@ -355,9 +355,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.showCategoria = false;
       this.showToolBar = true;
 
-      if ( this.isScreenIsMobile ) {
+      // if ( this.isScreenIsMobile ) {
         this.getSecciones(this.miPedidoService.objCarta.carta[0]);
-        return; }
+        // return; }
 
       this.getItems(this.objSecciones[0]);
 
@@ -514,8 +514,10 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     // console.log('_selectedItem', _selectedItem);
 
     if ( (this.isPuntoAutoPedido || this.isTomaPedidoRapido || this.isCliente) && !openDetalle && _selectedItem?.count_subitems === 0 ) {
-      this.resultCantItemMercado(_selectedItem, true);
-      return;
+      if ( !this.isViewMercado ) {
+        this.resultCantItemMercado(_selectedItem, true);
+        return;
+      }
     }
 
     if ( _selectedItem.cantidad.toString() === '0' && !_selectedItem.cantidad_seleccionada ) { return; }

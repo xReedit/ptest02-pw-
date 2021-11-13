@@ -1,0 +1,9 @@
+.content-btn {
+    border-radius: 50%;
+    background: #302855;
+    width: 30px;
+    line-height: 30px;
+    color: white;
+    text-align: center;
+    margin: auto;
+}

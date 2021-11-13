@@ -46,4 +46,5 @@ export class UsuarioTokenModel {
     socketId: string;
     otro: any;
     pasoRecoger: boolean; // si el cliente pasa a recoger
+    isActiveMozoVoz: boolean;
 }

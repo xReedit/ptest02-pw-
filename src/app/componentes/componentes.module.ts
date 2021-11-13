@@ -53,6 +53,7 @@ import { DialogConfigPuntoComponent } from './dialog-config-punto/dialog-config-
 import { MozoVirtualOnSpeechComponent } from './mozo-virtual/mozo-virtual-on-speech/mozo-virtual-on-speech.component';
 import { MozoShowTraduceTextComponent } from './mozo-virtual/mozo-show-traduce-text/mozo-show-traduce-text.component';
 import { ItemPromocionComponent } from './item-promocion/item-promocion.component';
+import { MozoDialogComponent } from './mozo-virtual/mozo-dialog/mozo-dialog.component';
 
 @NgModule({
   declarations: [
@@ -97,6 +98,7 @@ import { ItemPromocionComponent } from './item-promocion/item-promocion.componen
     MozoVirtualOnSpeechComponent,
     MozoShowTraduceTextComponent,
     ItemPromocionComponent,
+    MozoDialogComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
@@ -148,7 +150,8 @@ import { ItemPromocionComponent } from './item-promocion/item-promocion.componen
     DialogConfigPuntoComponent,
     MozoVirtualOnSpeechComponent,
     MozoShowTraduceTextComponent,
-    ItemPromocionComponent
+    ItemPromocionComponent,
+    MozoDialogComponent
     // DialogDesicionComponent
   ],
 

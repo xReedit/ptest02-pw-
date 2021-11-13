@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MozoDialogComponent } from 'src/app/componentes/mozo-virtual/mozo-dialog/mozo-dialog.component';
 import { SendDataTTS } from 'src/app/modelos/send.data.tts';
 import { CrudHttpService } from '../crud-http.service';
 import { InfoTockenService } from '../info-token.service';
@@ -16,6 +18,7 @@ export class ComandAnalizerService {
   lastCommnad = null;
   lastComandOk = '';
   isTalking = false;
+  isActive = false;
 
 
   private keySotrageCommand = 'sys::cmdv';
@@ -26,6 +29,7 @@ export class ComandAnalizerService {
     private spechTotextService: SpechTotextService,
     private speechDataProviderService: SpeechDataProviderService,
     private infoTokenService: InfoTockenService,
+    private dialog: MatDialog,
     // private spechProviderConnectService: SpechProviderConnectService,
   ) {
     // this.getComands();
@@ -61,6 +65,14 @@ export class ComandAnalizerService {
       }
     });
 
+  }
+
+  getIsActive(): boolean {
+    return this.isActive;
+  }
+
+  setIsActive(val: boolean) {
+    this.isActive = val;
   }
 
   getComands() {
@@ -203,16 +215,25 @@ export class ComandAnalizerService {
           if ( _isCommandStorage.isTimePlay ) {
             command.text = command.texto_default.text2;
             command.text = command.text.replace('?nomcliente', '');
+
+            // mostrar dialog info
+            // this.dialog.open(MozoDialogComponent);
           } else {
             return;
           }
         } else {
           command.text = command.texto_default.text1;
-          command.text = command.text.replace('?nomsede', nomSede); }
+          command.text = command.text.replace('?nomsede', nomSede);
+        }
 
         command.idsede = this.speechDataProviderService.getIdSede();
         // console.log('mensaje de bienvenido', command);
         this.speechVoice(command);
+
+        // mostrar dialog info
+        this.dialog.open(MozoDialogComponent);
+
+
         break;
     }
   }

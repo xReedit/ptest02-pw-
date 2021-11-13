@@ -6,11 +6,13 @@ import { URL_SERVER_SOCKET_SPEECH } from '../../config/config.const';
   providedIn: 'root'
 })
 export class SpechProviderConnectService extends Socket {
+  // export class SpechProviderConnectService  {
 
   @Output() speechDataEvent: EventEmitter<any> = new EventEmitter();
   @Output() ttsDataEvent: EventEmitter<any> = new EventEmitter();
 
   constructor() {
+
     super({ url: URL_SERVER_SOCKET_SPEECH, options: {} });
 
     this.ioSocket.on('speechData', (data) => {
@@ -35,4 +37,9 @@ export class SpechProviderConnectService extends Socket {
   emitEvent = (event = 'default', payload = {}) => {
     this.ioSocket.emit(event, payload);
   }
+
+  // temporal
+  // emit(a: string, payload: any) {
+
+  // }
 }

@@ -28,6 +28,7 @@ export class MainComponent implements OnInit {
   isPuntoAutoPedido = false;
   loaderPage = false;
   timeLoader = null;
+  isSpeechVoiceAcivado = false;
 
 
   private lastValScrollTop = 0;
@@ -49,7 +50,10 @@ export class MainComponent implements OnInit {
     private verifyClientService: VerifyAuthClientService,
     private infoTokenService: InfoTockenService,
     private comandAnalizerService: ComandAnalizerService,
+    private establecimientoService: EstablecimientoService,
     ) {
+      // console.log('verifyClientService', this.verifyClientService.get);
+      // this.comandAnalizerService.getIsActive();
       // this.comandAnalizerService.getComands();
     }
 
@@ -66,6 +70,7 @@ export class MainComponent implements OnInit {
 
     this.infoTokenService.getInfoUs();
     this.isPuntoAutoPedido = this.infoTokenService.isPuntoAutoPedido();
+    this.isSpeechVoiceAcivado = this.establecimientoService.get().speech_disabled === 1;
     // this.navigatorService.addLink('carta');
 
     // console.log('this.infoTokenService.infoUsToken', this.infoTokenService.infoUsToken);
@@ -78,6 +83,18 @@ export class MainComponent implements OnInit {
       this.listenStatusService.setIsUsuarioCliente(this.isUsuarioCliente);
       this.isClienteDelivery = res?.isDelivery;
       this.isClienteReserva = res?.isReserva;
+
+      // -----------------> ACTIVAR MOZO VIRTUAL
+      const _isActiveMozoVoz =  this.isSpeechVoiceAcivado && this.isUsuarioCliente && !this.isClienteDelivery;
+      console.log('_isActiveMozoVoz', _isActiveMozoVoz);
+      this.infoTokenService.setIsAvtiveMozoVoz(_isActiveMozoVoz);
+      if ( _isActiveMozoVoz ) {
+        this.comandAnalizerService.getComands();
+        setTimeout(() => {
+          this.comandAnalizerService.cocinarComand('bienvenido');
+        }, 700);
+      }
+      // -----------------> ACTIVAR MOZO VIRTUAL
 
       // para que reconecte, porque al iniciar no conecta si viene delivery codigo qr
       if (this.verifyClientService.getIsDelivery() && this.verifyClientService.getIsQrSuccess()) {
@@ -142,9 +159,9 @@ export class MainComponent implements OnInit {
     // }, 1000);
 
 
-    setTimeout(() => {
-      this.comandAnalizerService.cocinarComand('bienvenido');
-    }, 500);
+    // setTimeout(() => {
+    //   this.comandAnalizerService.cocinarComand('bienvenido');
+    // }, 500);
 
   }
 

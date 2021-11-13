@@ -39,6 +39,8 @@ export class ToolBarComponent implements OnInit {
   isClienteDelivery = false;
   isCliente = false;
   isSpeechVoiceAcivado = false;
+  isActiveMozoVoz = false;
+
 
   nomSede = '';
   idSedeCartaVirtual: number;
@@ -78,6 +80,9 @@ export class ToolBarComponent implements OnInit {
     this.isClienteDelivery = this.infoTokenService.isDelivery();
     this.isCliente = this.infoTokenService.isCliente();
     this.idSedeCartaVirtual = this.infoTokenService.infoUsToken.idsede;
+
+
+    this.isActiveMozoVoz = this.isSpeechVoiceAcivado && this.isCliente && !this.isClienteDelivery;
 
     this.getLinkSharedCarta();
   }

@@ -119,7 +119,7 @@ export class MipedidoService {
   }
 
   setObjCarta(res: any) {
-    console.log('carta', res);
+    // console.log('carta', res);
     // esto lo manda desde carta component
     this.objCarta = {};
 

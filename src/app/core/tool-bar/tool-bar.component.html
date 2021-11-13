@@ -7,7 +7,8 @@
     <span class="example-spacer"></span>
 
     <!-- microfono mozo virtual -->
-    <div class="example-ripple-container fs-15" *ngIf="isSpeechVoiceAcivado && isCliente && !isClienteDelivery">         
+    <!-- <div class="example-ripple-container fs-15" *ngIf="isSpeechVoiceAcivado && isCliente && !isClienteDelivery">          -->
+     <div class="example-ripple-container fs-15" *ngIf="isActiveMozoVoz"> 
          <app-mozo-virtual-on-speech></app-mozo-virtual-on-speech>
     </div>
 
