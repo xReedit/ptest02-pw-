@@ -17,6 +17,7 @@ export class ComandAnalizerService {
   isMicrophoneOn = false;
   lastCommnad = null;
   lastComandOk = '';
+  isProcessTalking = false;
   isTalking = false;
   isActive = false;
 
@@ -104,7 +105,7 @@ export class ComandAnalizerService {
   cocinarComand(comand: string) {
     const _command = this.searchComandList(comand);
     if ( _command ) {
-      this.lastCommnad = _command.seccion !== 'inicio' && _command.seccion !== 'finalizar_pedido' ? _command : null;
+      this.lastCommnad = _command.seccion !== 'inicio' && _command.seccion !== 'finalizar_pedido' && _command.seccion !== 'carta_recomendacion' ? _command : null;
       this.analizeCommand(_command);
     }
   }
@@ -168,7 +169,12 @@ export class ComandAnalizerService {
 
 
   private analizeCommand(comand: SendDataTTS) {
-    if ( this.lastComandOk.toLowerCase() === comand.texto_recibido.toLowerCase() ) {return; }
+    if ( this.lastComandOk.toLowerCase().trim() === comand.texto_recibido.toLowerCase().trim() ) {return; }
+    // this.isProcessTalking = true;
+
+
+    // console.log('comand recibido', comand);
+    console.log('this.lastComandOk', this.lastComandOk);
 
     // si se esta ejecuntando un comando return;
     if ( this.isTalking ) {return; }
@@ -179,6 +185,9 @@ export class ComandAnalizerService {
         break;
       case 'carta':
         this.commandCarta(comand);
+        break;
+      case 'carta_recomendacion':
+        this.commandCartaRecomendacion(comand);
         break;
       case 'navegacion':
         this.commandNavegacion(comand);
@@ -257,6 +266,22 @@ export class ComandAnalizerService {
     }
 
     this.speechDataProviderService.getCarta();
+  }
+
+  private commandCartaRecomendacion(command: SendDataTTS) {
+    const _itemsStr =  this.speechDataProviderService.getItemsRecomendadosStr();
+    if (!_itemsStr ) { // si no existe recomendados
+      this.isCommandOk(command.texto_recibido, 1);
+      this.sendTxtToVoice(command, command.texto_default.text1);
+      return;
+    }
+
+    this.isCommandOk(command.texto_recibido, 1);
+
+    const textSend = `Le recomendamos: ${_itemsStr}`;
+    this.sendTxtToVoice(command, textSend);
+
+    this.speechDataProviderService.goNavegacionItemRecomendados();
   }
 
   // CARTA CONTENIDO // lee contenido o detalle de los platos
@@ -480,11 +505,18 @@ export class ComandAnalizerService {
   }
 
   private sendTxtToVoice(commandSend: SendDataTTS, text: string) {
+
+
+    if ( this.isProcessTalking ) { return; }
+    this.isProcessTalking = true;
+
     commandSend.idsede = 1;
     commandSend.text = text;
 
     // console.log('commandSend', commandSend);
     this.speechTTService.convertTxtToVoice(commandSend);
+
+    setTimeout(() => { this.isProcessTalking = false; }, 1000);
   }
 
 

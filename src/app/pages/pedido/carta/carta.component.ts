@@ -129,7 +129,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     // this.initCarta();
 
     const _configPunto = JSON.parse(localStorage.getItem('sys::punto')) || {};
-
+    // console.log('this.establecimientoService.get()', this.establecimientoService.get());
     this.isViewMercado = this.establecimientoService.get().pwa_show_item_view_mercado === 1;
     this.isCliente = this.infoToken.infoUsToken.isCliente;
     this.isPuntoAutoPedido = _configPunto.ispunto_autopedido || false;
@@ -236,7 +236,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
         //
         this.miPedidoService.setObjCarta(res);
 
-        if ( this.miPedidoService.objCarta.promociones.lista_promociones ) {
+        if ( this.miPedidoService.objCarta.promociones ) {
+          if ( this.miPedidoService.objCarta.promociones.lista_promociones ) {
           // if (this.miPedidoService.objCarta.promociones[0].idpromocion) {
             this.objPromociones = this.miPedidoService.objCarta.promociones.lista_promociones;
             // filtramos si hay solo app
@@ -244,6 +245,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
               this.objPromociones = this.objPromociones.filter(p => p.parametros.body.solo_app === 0);
             }
             this.cocinarPromoShowService.iniReloadOpenPromo(this.objPromociones);
+          }
           // }
         }
         // console.log('this.objPromociones', this.objPromociones);
@@ -359,7 +361,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
         this.getSecciones(this.miPedidoService.objCarta.carta[0]);
         // return; }
 
-      this.getItems(this.objSecciones[0]);
+      if ( !this.isScreenIsMobile ) {
+        this.getItems(this.objSecciones[0]);
+      }
 
       // seleciona la primera seccion
       this.objItems = this.objSecciones[0].items;
@@ -534,7 +538,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // confirma que la seccion del item sea igual a la seccion del // si viene x ej de promo
     const idSeccionSelected = this.seccionSelected?.idseccion || 0;
-    if ( this.itemSelected.idseccion !== idSeccionSelected) {
+    const _lastSeccionObjSeleted = this.miPedidoService.getObjSeccionSeleced();
+    const _reasignarSeccion = _lastSeccionObjSeleted.idseccion !== idSeccionSelected;
+    if ( this.itemSelected.idseccion !== idSeccionSelected || _reasignarSeccion) {
       this.seccionSelected = this.miPedidoService.findItemSeccionCarta(this.itemSelected.idseccion);
       this.miPedidoService.setObjSeccionSeleced(this.seccionSelected);
     }
@@ -649,6 +655,15 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
 
+    // listen comando voz navegacion;
+    this.speechDataProviderService.commandNavegacionRecomendado$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((itemsRecomendados: any) => {
+      if (itemsRecomendados.length > 0) {
+          this.getItemsPromo(itemsRecomendados);
+      }
+    });
+
     // escuhar si se aumenta pedido
     this.speechDataProviderService.commandAddItem$
     .pipe(takeUntil(this.destroy$))
@@ -711,7 +726,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // confirma que la seccion del item sea igual a la seccion del
     const idSeccionSelected = this.seccionSelected?.idseccion || 0;
-    if ( this.itemSelected.idseccion !== idSeccionSelected) {
+    const _lastSeccionObjSeleted = this.miPedidoService.getObjSeccionSeleced();
+    const _reasignarSeccion = _lastSeccionObjSeleted.idseccion !== idSeccionSelected;
+    if ( this.itemSelected.idseccion !== idSeccionSelected || _reasignarSeccion) {
       this.seccionSelected = this.miPedidoService.findItemSeccionCarta(this.itemSelected.idseccion);
       this.miPedidoService.setObjSeccionSeleced(this.seccionSelected);
     }

@@ -14,6 +14,7 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 // import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 // import { type } from 'os';
 import { SocketService } from 'src/app/shared/services/socket.service';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 
 @Component({
   selector: 'app-dialog-item-edit',
@@ -41,6 +42,8 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   private destroyDlg$: Subject<boolean> = new Subject<boolean>();
   private isFirstOpen = true; // controla los observables // el observable de cantidad no se ejecuta en la primera interaccion
 
+  simbolo_moneda: string;
+
   constructor(
     public miPedidoService: MipedidoService,
     private uttilService: UtilitariosService,
@@ -48,7 +51,8 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     private dialogRef: MatDialogRef<DialogItemEditComponent>,
     //  private crudService: CrudHttpService,
     private socketService: SocketService,
-    @Inject(MAT_DIALOG_DATA) data: any
+    @Inject(MAT_DIALOG_DATA) data: any,
+    private establecimientoService: EstablecimientoService
   ) {
 
     // this.idTpcItemResumenSelect = data.idTpcItemResumenSelect;
@@ -99,6 +103,8 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
 
     // this.compItemSumImporte();
     // this.item.subitems.map((sub: SubItem) => sub.selected = false);
+
+    this.simbolo_moneda = this.establecimientoService.getSimboloMoneda();
 
   }
 

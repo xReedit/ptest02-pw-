@@ -1,4 +1,4 @@
-<div *ngIf="isCliente || isPuntoAuntoPedido" class="animated fadeIn transicion" [ngClass]="[!isVisibleConfirmarAnimated ? 'fadeInLeft' : 'fadeOutLeft d-none']">
+<div *ngIf="!isHayCuentaBusqueda && isCliente || isPuntoAuntoPedido" class="animated fadeIn transicion" [ngClass]="[!isVisibleConfirmarAnimated ? 'fadeInLeft' : 'fadeOutLeft d-none']">
     <app-comp-list-item-pedido-cliente        
         [arrSubtotales]="_arrSubtotales"
     ></app-comp-list-item-pedido-cliente>
@@ -12,7 +12,7 @@
     [ngClass]="{'xh-100': isVisibleConfirmarAnimated}"
     *ngIf="hayItems " id="cardcontentall">
     <!-- <div class="w-100"> -->
-        <div *ngIf="!isCliente && !isPuntoAuntoPedido" class="w-100 div-resumen-pedido transicion"
+        <div *ngIf="!isCliente && !isPuntoAuntoPedido || isHayCuentaBusqueda" class="w-100 div-resumen-pedido transicion"
         [ngClass]="[!isVisibleConfirmarAnimated ? 'd-inline' : 'd-none']">
             <div *ngFor="let tpc of _miPedido.tipoconsumo" class="xCursor">
                 <ng-container *ngIf="tpc.count_items_seccion > 0">

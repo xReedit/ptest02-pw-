@@ -51,7 +51,7 @@ export class MozoShowTraduceTextComponent implements OnInit {
     this.speechDataProviderService.commandAceptado$
     .pipe(takeUntil(this.destroy$))
     .subscribe((codAceptado: number) => {
-      console.log('codAceptado', codAceptado);
+      // console.log('codAceptado', codAceptado);
       if ( codAceptado > 0) {
          setTimeout(() => {
            this.isShowCheck = true;

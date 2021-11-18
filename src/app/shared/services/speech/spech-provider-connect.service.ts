@@ -13,7 +13,7 @@ export class SpechProviderConnectService extends Socket {
 
   constructor() {
 
-    super({ url: URL_SERVER_SOCKET_SPEECH, options: {} });
+    super({ url: URL_SERVER_SOCKET_SPEECH, options: {path: '/socket.io.speech'} });
 
     this.ioSocket.on('speechData', (data) => {
       this.speechDataEvent.emit(data);

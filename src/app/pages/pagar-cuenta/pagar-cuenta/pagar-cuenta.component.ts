@@ -18,10 +18,12 @@ import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dia
 import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 import { Subscription } from 'rxjs';
 import { MetodoPagoModel } from 'src/app/modelos/metodo.pago.model';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 
 // import * as botonPago from 'src/assets/js/boton-pago.js';
 
 declare var pagar: any;
+
 
 @Component({
   selector: 'app-pagar-cuenta',
@@ -59,6 +61,8 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   private dataClientePago: ClientePagoModel = new ClientePagoModel();
 
+  simbolo_moneda: string;
+
   constructor(
     private infoTokenService: InfoTockenService,
     private navigatorService: NavigatorLinkService,
@@ -70,7 +74,8 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     private utilService: UtilitariosService,
     private miPedidoService: MipedidoService,
     private dialog: MatDialog,
-    private pushNotificationSerice: NotificacionPushService
+    private pushNotificationSerice: NotificacionPushService,
+    private establecimientoServices: EstablecimientoService
     // private verifyClientService: VerifyAuthClientService,
   ) { }
 
@@ -88,6 +93,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     // }
 
 
+    this.simbolo_moneda = this.establecimientoServices.getSimboloMoneda();
 
 
     this.infoToken.metodoPagoSelected = !this.infoToken.metodoPagoSelected ? this.infoToken.metodoPago : this.infoToken.metodoPagoSelected;

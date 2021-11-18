@@ -1,4 +1,6 @@
+import { StringMap } from '@angular/compiler/src/compiler_facade_interface';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { CocinarPromoShowService } from 'src/app/shared/services/promo/cocinar-promo-show.service';
 
 @Component({
@@ -17,9 +19,11 @@ export class ItemPromocionComponent implements OnInit {
   animateBloqueo = false;
   iconGifPromo = '';
   showInfoPromo = false;
+  simbolo_moneda: string;
 
   constructor(
-    private cocinarPromocionService: CocinarPromoShowService
+    private cocinarPromocionService: CocinarPromoShowService,
+    private establecimientoService: EstablecimientoService
   ) {
   }
 
@@ -32,6 +36,7 @@ export class ItemPromocionComponent implements OnInit {
     this.iconGifPromo = `assets/images/${this.ItemPromoheader.icon}`;
 
     this.isAbierto = this.promo.abierto === 1;
+    this.simbolo_moneda = this.establecimientoService.getSimboloMoneda();
   }
 
   clickPromo() {

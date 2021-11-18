@@ -22,7 +22,7 @@
         <ng-template #elseTemplateGo>
             <div *ngIf="ItemPromoBody.importe_consumo_min" class="content-importe-minimo animated" [ngClass]="{'wobble': animateBloqueo}">                
                 <div class="importe-minimo">
-                    <span class="fs-10">S/.</span>
+                    <span class="fs-10">{{simbolo_moneda}}</span>
                     <p class="fs-18 fw-600">
                         {{ ItemPromoBody.importe_consumo_min }}
                     </p>

@@ -55,4 +55,5 @@ export class DeliveryEstablecimiento {
     img_mini: string; // logo mini
     impresoras: []; // impresoras de la sede
     speech_disabled: number; // mozo virtual voz
+    simbolo_moneda: string;
 }

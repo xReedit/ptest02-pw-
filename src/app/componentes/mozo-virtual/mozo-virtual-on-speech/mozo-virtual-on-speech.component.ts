@@ -20,7 +20,6 @@ export class MozoVirtualOnSpeechComponent implements OnInit {
     // si no esta habilitado
     if ( this.establecimientoService.get().speech_disabled === 0 ) {return; }
 
-    console.log('aaaaaaaaaaaaa');
     this.comandAnalizerService.getComands();
   }
 

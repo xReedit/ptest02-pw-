@@ -111,6 +111,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
   nombreClienteValido = false;
   isShowNombreClienteLoginInvitado = false;
 
+  simbolo_moneda: string;
+
   constructor(
     private miPedidoService: MipedidoService,
     private infoTokenService: InfoTockenService,
@@ -168,6 +170,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
     if ( !this.dirEstablecimiento.distancia_km ) {
       this.calcularCostoEntrega(this.direccionCliente);
     }
+
+    this.simbolo_moneda = this.establecimientoService.getSimboloMoneda();
   }
 
   private getTiempoEntrega() {
@@ -413,7 +417,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     // this._listSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
     if ( this.isRecojoLocalCheked ) {
       // propina se vielve 0
-      this.propinaSelected = {'idpropina': 1, 'value': 0 , 'descripcion': 'S/. 0', 'checked': true};
+      this.propinaSelected = {'idpropina': 1, 'value': 0 , 'descripcion': this.simbolo_moneda + ' 0', 'checked': true};
       this.infoTokenService.setPropina(this.propinaSelected);
 
       // recalcular subtotales

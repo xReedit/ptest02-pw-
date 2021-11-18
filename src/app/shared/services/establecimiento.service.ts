@@ -49,6 +49,11 @@ export class EstablecimientoService {
     return this.establecimiento.impresoras;
   }
 
+  getSimboloMoneda() {
+    this.establecimiento = this.get();
+    return this.establecimiento.simbolo_moneda;
+  }
+
 
   // al iniciar el usuario
   loadEstablecimientoById(id: number) {

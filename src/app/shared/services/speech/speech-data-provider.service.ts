@@ -15,6 +15,9 @@ export class SpeechDataProviderService {
   private commandNavegacionSeccionSource = new BehaviorSubject<SeccionModel>(null);
   public commandNavegacionSeccion$ = this.commandNavegacionSeccionSource.asObservable();
 
+  private commandNavegacionRecomendadoSource = new BehaviorSubject<any>([]);
+  public commandNavegacionRecomendado$ = this.commandNavegacionRecomendadoSource.asObservable();
+
   private commandAddItemSource = new BehaviorSubject<any>(null);
   public commandAddItem$ = this.commandAddItemSource.asObservable();
 
@@ -100,6 +103,11 @@ export class SpeechDataProviderService {
     return seccion.items.map(s => s.des).join(',');
   }
 
+  getItemsRecomendadosStr(): string {
+    if ( !this.laCarta ) {this.getCarta(); }
+    return  this.laCarta.recomendados ? this.laCarta.recomendados.map(i => i.des).join(',') : null;
+  }
+
   getISeccionSelected(nameSeccion: string): any {
     // let isSeccionBodega = true;
     nameSeccion = nameSeccion.toLowerCase();
@@ -146,6 +154,12 @@ export class SpeechDataProviderService {
     this.goNavigacionShowCarta();
   }
 
+  goNavegacionItemRecomendados() {
+    const _recomendados = this.laCarta.recomendados;
+    this.commandNavegacionRecomendadoSource.next(_recomendados);
+    this.goNavigacionShowCarta();
+  }
+
   goNavigacionShowMiPedido() {
     this.navigatorLinkService.setPageActive('mipedido');
     this.commandIsShowPedidoSource.next(true);
@@ -166,7 +180,6 @@ export class SpeechDataProviderService {
   }
 
   setIsCommandAceptado(val: number) {
-    console.log('setIsCommandAceptado');
     this.commandAceptadoSource.next(val);
   }
 

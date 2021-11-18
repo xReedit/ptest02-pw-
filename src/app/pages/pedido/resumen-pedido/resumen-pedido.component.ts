@@ -92,6 +92,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   nombreClienteValido = false; // cuando es cliente e ingresa como invitado pide nombre
   isShowNombreClienteLoginInvitado = false;
+  showCuentaCliente = false;
 
   constructor(
     private miPedidoService: MipedidoService,
@@ -123,6 +124,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this.isPuntoAuntoPedido = this.infoToken.isPuntoAutoPedido();
 
     this.validarNomhbreCliente();
+
     // console.log('si es invitado');
     // this.isShowNombreClienteLoginInvitado = this.verifyClientService.getDataClient().isLoginByInvitado;
     // if ( this.isShowNombreClienteLoginInvitado || this.isPuntoAuntoPedido ) {
@@ -383,6 +385,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     .subscribe((res: any) => {
       if ( res ) {
 
+        this.showCuentaCliente = true;
         this.xLoadCuentaMesa('', res);
       }
     });

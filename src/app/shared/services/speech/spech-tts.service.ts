@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { SpechProviderConnectService } from './spech-provider-connect.service';
 import { SendDataTTS } from 'src/app/modelos/send.data.tts';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { URL_SERVER_FILE_AUDIO_SPEECH } from '../../config/config.const';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,7 @@ export class SpechTTSService {
 
 
     this.speechProviverConnet.ttsDataEvent.subscribe(async (data) => {
-      console.log('respuesta audio', data);
+      // console.log('respuesta audio', data);
 
       // const context = new AudioContext();
       // const buffer = await context.decodeAudioData(data);
@@ -28,13 +29,13 @@ export class SpechTTSService {
       // source.connect(context.destination);
       // source.start();
 
-      const _urlAudio = `http://localhost:1337/resources/${data}`;
+      const _urlAudio = `${URL_SERVER_FILE_AUDIO_SPEECH}${data}`;
       const audio = new Audio(_urlAudio);
       audio.play();
       this.isTalkingSource.next(true);
 
       audio.addEventListener('ended', () => {
-        console.log('finalizo hablar');
+        // console.log('finalizo hablar');
         this.isTalkingSource.next(false);
       });
     });

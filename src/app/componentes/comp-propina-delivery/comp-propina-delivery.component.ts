@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { PropinaModel } from 'src/app/modelos/propina.model';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 
 @Component({
@@ -12,6 +13,7 @@ export class CompPropinaDeliveryComponent implements OnInit {
   propinaSelected: PropinaModel;
   listPropina: any;
   arrTotales: any;
+  simbolo_moneda: string;
 
   _listSubtotales: any;
 
@@ -24,20 +26,22 @@ export class CompPropinaDeliveryComponent implements OnInit {
 
   constructor(
     private infoTokenService: InfoTockenService,
+    private establecimientoService: EstablecimientoService
   ) { }
 
   ngOnInit() {
     this.loadPropina();
     this.propinaSelected = this.infoTokenService.infoUsToken.propina;
+    this.simbolo_moneda = this.establecimientoService.getSimboloMoneda();
   }
 
   private loadPropina(): void {
     this.listPropina = [];
-    this.listPropina.push(<PropinaModel>{'idpropina': 1, 'value': 0 , 'descripcion': 'S/. 0', 'checked': true});
-    this.listPropina.push(<PropinaModel>{'idpropina': 2, 'value': 1 , 'descripcion': 'S/. 1', 'checked': false});
-    this.listPropina.push(<PropinaModel>{'idpropina': 3, 'value': 2 , 'descripcion': 'S/. 2', 'checked': false});
-    this.listPropina.push(<PropinaModel>{'idpropina': 4, 'value': 3 , 'descripcion': 'S/. 3', 'checked': false});
-    this.listPropina.push(<PropinaModel>{'idpropina': 5, 'value': 5 , 'descripcion': 'S/. 5', 'checked': false});
+    this.listPropina.push(<PropinaModel>{'idpropina': 1, 'value': 0 , 'descripcion': this.simbolo_moneda + ' 0', 'checked': true});
+    this.listPropina.push(<PropinaModel>{'idpropina': 2, 'value': 1 , 'descripcion': this.simbolo_moneda + ' 1', 'checked': false});
+    this.listPropina.push(<PropinaModel>{'idpropina': 3, 'value': 2 , 'descripcion': this.simbolo_moneda + ' 2', 'checked': false});
+    this.listPropina.push(<PropinaModel>{'idpropina': 4, 'value': 3 , 'descripcion': this.simbolo_moneda + ' 3', 'checked': false});
+    this.listPropina.push(<PropinaModel>{'idpropina': 5, 'value': 5 , 'descripcion': this.simbolo_moneda + ' 5', 'checked': false});
 
 
     this.selectedPropina.emit(this.propinaSelected);

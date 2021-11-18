@@ -10,6 +10,7 @@ import { SocketService } from 'src/app/shared/services/socket.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/operators';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 // import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 
 @Component({
@@ -32,6 +33,8 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
   // private unsubscribeEstado = new Subscription();
   private destroyEstado$: Subject<boolean> = new Subject<boolean>();
 
+  simbolo_moneda: string;
+
 
 
   constructor(
@@ -40,7 +43,8 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     private infoTokenService: InfoTockenService,
     private navigatorService: NavigatorLinkService,
     private socketService: SocketService,
-    private router: Router
+    private router: Router,
+    private establecimientoService: EstablecimientoService
   ) { }
 
   ngOnInit() {
@@ -50,6 +54,8 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     this.isDeliveryCliente = this.infoToken.isDelivery;
 
     // this.estadoPedidoClienteService.get();
+
+    this.simbolo_moneda = this.establecimientoService.getSimboloMoneda();
 
 
     // escuchar cambios

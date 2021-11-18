@@ -127,7 +127,8 @@ export class MipedidoService {
       this.objCarta = {
         'carta': null,
         'bodega': null,
-        'promociones': null
+        'promociones': null,
+        'recomendados': null
       };
 
       this.objCarta.carta = <CartaModel[]>res[0].carta;
@@ -170,6 +171,23 @@ export class MipedidoService {
           });
         });
       }
+
+      const _itemsRecomendacion = [];
+      _carta.map((c: CategoriaModel) => {
+        c.secciones.map((s: SeccionModel) => {
+          const _itemsSeccionRecomendados = s.items.filter(x => x.is_recomendacion === '1');
+          if ( _itemsSeccionRecomendados ) {
+            _itemsSeccionRecomendados.map(i => _itemsRecomendacion.push(i));
+          }
+        });
+      });
+
+      if ( _itemsRecomendacion.length > 0 ) {
+        this.objCarta.recomendados =  _itemsRecomendacion;
+      }
+
+
+      // chequear si hay recomendaciones
 
       // this.laCartaObjSource.next(this.objCarta);
       // console.log('objCartaCarta', this.objCarta);
@@ -319,6 +337,10 @@ export class MipedidoService {
     this.mpObjSeccionSelected.ver_stock_cero = seccion.ver_stock_cero;
     this.mpObjSeccionSelected.iddescuento = seccion.iddescuento;
     this.mpObjSeccionSelected.descuento = seccion.descuento;
+  }
+
+  getObjSeccionSeleced() {
+    return this.mpObjSeccionSelected;
   }
 
   // obtener el DELIVERY_CANTIDAD_ITEMS_ESCALA // solo si es cliente delivery

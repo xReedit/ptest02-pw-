@@ -10,8 +10,8 @@
     background: #3f51b5;    
 }
 .content-num-mesa  {
-    border: solid 1px white;
-    border-radius: 50%;
+    border: solid 1px #c9dfff;
+    border-radius: 10px;
     overflow: hidden;
     display: table-cell;
     text-align: center;

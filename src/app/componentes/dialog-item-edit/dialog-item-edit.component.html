@@ -82,7 +82,7 @@
                                             <span>{{subitem.des }} </span>
                                             <span class="xprecio pl-1" [hidden]="!subitem.cantidad_visible"> | {{subitem.cantidad}}</span>
                                             <span *ngIf="subitem.precio != 0" class="ml-2 fs-11 fw-600"> 
-                                                + S/. {{subitem.precio | number:'0.2'}}
+                                                + {{simbolo_moneda}} {{subitem.precio | number:'0.2'}}
                                             </span>
                                         </div>
                                         <div class="xprecio aling-derecha">
@@ -170,6 +170,6 @@
             <button mat-flat-button color="primary" (click)="cerrarDlg()">Listo, continuar</button>
         </div>
         
-        <div class="i-precio">S/. {{precioProducto | number:'0.2'}}</div>
+        <div class="i-precio">{{simbolo_moneda}} {{precioProducto | number:'0.2'}}</div>
     </div>
 </div>

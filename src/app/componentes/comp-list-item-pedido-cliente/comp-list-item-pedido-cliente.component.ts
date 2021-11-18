@@ -8,6 +8,7 @@ import { PedidoModel } from 'src/app/modelos/pedido.model';
 import { SeccionModel } from 'src/app/modelos/seccion.model';
 import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
 import { PedidoModule } from 'src/app/pages/pedido/pedido.module';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
@@ -32,16 +33,21 @@ export class CompListItemPedidoClienteComponent implements OnInit, AfterViewInit
 
 
   isDeliveryCliente: boolean;
+
+  simbolo_moneda: string;
+
   constructor(
     private miPedidoService: MipedidoService,
     private infoToken: InfoTockenService,
     private dialog: MatDialog,
-    private navigatorService: NavigatorLinkService
+    private navigatorService: NavigatorLinkService,
+    private establecimientoService: EstablecimientoService
   ) { }
 
   ngOnInit(): void {
     this.isDeliveryCliente = this.infoToken.isDelivery();
     this.miPedido = this.miPedidoService.getMiPedido();
+    this.simbolo_moneda = this.establecimientoService.getSimboloMoneda();
     // console.log('miPedido', this.miPedido);
 
 
