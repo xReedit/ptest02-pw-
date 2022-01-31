@@ -33,6 +33,7 @@ export class ItemComercioComponent implements OnInit {
     this.isCerrado = this.itemEstablecimiento.cerrado === 1 ? true : false;
 
 
+
     // this.isComercioAceptaPedidoProgramado = this.reserva ? this.reserva : this.isComercioAceptaPedidoProgramado; // si es reserva nada
 
     this.amPm = this.itemEstablecimiento.hora_ini ? parseInt(this.itemEstablecimiento.hora_ini.split(':')[0], 0) > 12 ? 'PM' : 'AM' : '';

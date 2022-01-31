@@ -77,7 +77,19 @@
     <div class="div-tp-consumo mt-3 mb-5">        
         <ul class="w-100 ul-total">
             <li class="d-flex div-plr li-item" *ngFor="let item of arrSubtotales">
-                <div class="w-100">{{item.descripcion | titlecase}}</div>
+                <div class="w-100">
+                
+                    {{item.descripcion | titlecase}}
+
+                    <!-- si lluvia -->
+                    <ng-container *ngIf="item.isDeliveryApp" class="d-flex">
+                        <div *ngFor="let itemIcon of listIconsEntrega" class="d-inline">
+                            <img *ngIf="itemIcon.visible" class="img-ico-entrega pl-2 text-secondary" src="../assets/images/{{itemIcon.icon}}" alt="itemIcon.motivo" matTooltip="{{ itemIcon.motivo }}">
+                        </div>                                    
+                        <!-- <i *ngIf="isCalculandoDistanciaA" class="fa fa-spinner fa-spin fa-fw ml-3"></i> -->
+                    </ng-container>   
+                </div>
+
                 <div>{{item.importe | number:'0.2' }}</div>
             </li>
         </ul>

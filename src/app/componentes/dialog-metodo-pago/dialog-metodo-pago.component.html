@@ -1,8 +1,8 @@
-<div class="p-4">
+<div class="p-2">
     <p class="fs-18 fw- m-0">Metodo de pago</p>
-    <span class="fs-11 text-info">Por favor, en cuanto sea posible seleccione un metodo de pago sin contacto (Tarjeta o Yape).</span>
+    <p class="fs-11 text-info">Por favor, en cuanto sea posible seleccione un metodo de pago sin contacto (Tarjeta o Yape).</p>
     <hr>
-    <div class="xoption w-100" matRipple *ngFor="let subitem of listMetodoPago">
+    <!-- <div class="xoption w-100" matRipple *ngFor="let subitem of listMetodoPago">
         <mat-checkbox 
             class="w-100"
             (change)="chageItem(subitem)" 
@@ -11,8 +11,25 @@
             <div class="w-100 d-flex">
                 <span>{{subitem.descripcion}} </span>                
             </div>
-        </mat-checkbox>                        
-    </div>    
+        </mat-checkbox>                               
+    </div>     -->
+
+    <div class="div-list-icon">
+        <div *ngFor="let item of listMetodoPago" 
+        matRipple class="item-option-pago"        
+        [ngClass]="{'item-option-pago-selected': item.checked}"
+        (click)="selectedItemOptionPago(item)">
+                <img src="../assets/images/icon-app/{{item.img}}" alt="{{item.img}}">
+                <p>{{ item.descripcion }}</p>            
+        </div>
+        
+    </div>
+    <div *ngIf="itemSelected.info != ''" class="animated flash">
+        <hr>
+        <p class="fs-12 fw-600">
+            <i class="fa fa-info pr-1 text-warning"></i>
+            {{ itemSelected.info }}</p>
+    </div>
     <ng-container *ngIf="isMontoVisible">
         <hr>
         <span class="text-danger fs-12 fw-100">indique con cuanto pagara:</span>        

@@ -125,6 +125,7 @@ export class EstablecimientoService {
       };
       this.crudService.postFree(_dataSend, 'pedido', 'get-last-comsion-entrega-sede', false)
       .subscribe(res => {
+        if ( res.data.length === 0 ) { return; }
         const _data = res.data[0];
         _dirEstablecimineto.c_minimo = _data.c_minimo;
         _dirEstablecimineto.c_km = _data.c_km;

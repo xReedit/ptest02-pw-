@@ -416,6 +416,7 @@ export class DatosDeliveryComponent implements OnInit {
     _dialogConfig.width = '380px';
     _dialogConfig.disableClose = true;
     _dialogConfig.hasBackdrop = true;
+    _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
 
     _dialogConfig.data = {
       importeTotalPagar: this._listSubtotales[this._listSubtotales.length - 1].importe,

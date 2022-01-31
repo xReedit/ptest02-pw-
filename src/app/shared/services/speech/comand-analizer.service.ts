@@ -4,6 +4,7 @@ import { MozoDialogComponent } from 'src/app/componentes/mozo-virtual/mozo-dialo
 import { SendDataTTS } from 'src/app/modelos/send.data.tts';
 import { CrudHttpService } from '../crud-http.service';
 import { InfoTockenService } from '../info-token.service';
+import { UtilitariosService } from '../utilitarios.service';
 import { SpechTotextService } from './spech-totext.service';
 import { SpechTTSService } from './spech-tts.service';
 import { SpeechDataProviderService } from './speech-data-provider.service';
@@ -16,6 +17,7 @@ export class ComandAnalizerService {
   dataListComand: any;
   isMicrophoneOn = false;
   lastCommnad = null;
+  lastTextoRecibido = '';
   lastComandOk = '';
   isProcessTalking = false;
   isTalking = false;
@@ -31,6 +33,7 @@ export class ComandAnalizerService {
     private speechDataProviderService: SpeechDataProviderService,
     private infoTokenService: InfoTockenService,
     private dialog: MatDialog,
+    private utilitariosService: UtilitariosService
     // private spechProviderConnectService: SpechProviderConnectService,
   ) {
     // this.getComands();
@@ -41,7 +44,15 @@ export class ComandAnalizerService {
 
       // if (data[0].isFinal) {
         // console.log('response', data[0].alternatives[0].transcript);
-        this.cocinarComand(data[0].alternatives[0].transcript);
+        const _transcript = data[0].alternatives[0].transcript;
+        if ( this.lastComandOk !== '' ) {
+          const _compareSimlary = this.utilitariosService.compareSimilaryText(this.lastComandOk, _transcript);
+          if ( _compareSimlary >= 0.79 ) {
+            return; }
+        }
+
+        // console.log('data[0].alternatives[0].transcript', _transcript);
+        this.cocinarComand(_transcript);
       // }
     });
 
@@ -96,6 +107,7 @@ export class ComandAnalizerService {
   }
 
   stopRecording() {
+    if ( !this.isMicrophoneOn ) { return; }
     this.isMicrophoneOn = false;
     this.spechTotextService.stopRecording();
   }
@@ -106,6 +118,7 @@ export class ComandAnalizerService {
     const _command = this.searchComandList(comand);
     if ( _command ) {
       this.lastCommnad = _command.seccion !== 'inicio' && _command.seccion !== 'finalizar_pedido' && _command.seccion !== 'carta_recomendacion' ? _command : null;
+      _command.texto_recibido = comand.replace(this.lastTextoRecibido, '');
       this.analizeCommand(_command);
     }
   }
@@ -147,34 +160,45 @@ export class ComandAnalizerService {
     let commandSelected = '';
 
     // descomponer para hacer singular // quitamos las 's'
-    const strSingular = text_command.split(' ').map(x => x.replace(/s$/, '')).join(' ');
+    // const strSingular = text_command.split(' ').map(x => x.replace(/s$/, '')).join(' ');
 
     searchIn.map((s: string) => {
-      const regexp = s + '?';
-      let arrayChar = [...text_command.matchAll(regexp) || []];
-      // console.log(regexp, array);
-      if ( arrayChar.length > 0 ) {
-        commandSelected = s.length > commandSelected.length ? s : commandSelected;
-      } else {
-        // busca en singular
-        arrayChar = [...strSingular.matchAll(regexp) || []];
-        if ( arrayChar.length > 0 ) {
-          commandSelected = s.length > commandSelected.length ? s : commandSelected;
-        }
+
+      const _similitudCompare = this.utilitariosService.compareSimilaryText(text_command.trim(), s.trim());
+      if (_similitudCompare > 0.78) {
+        commandSelected = s;
       }
+      // console.log('_similitudCompare', _similitudCompare);
+      // const regexp = s + '?';
+      // let arrayChar = [...text_command.matchAll(regexp) || []];
+      // // console.log(regexp, array);
+      // if ( arrayChar.length > 0 ) {
+      //   commandSelected = s.length > commandSelected.length ? s : commandSelected;
+      // } else {
+      //   // busca en singular
+      //   arrayChar = [...strSingular.matchAll(regexp) || []];
+      //   if ( arrayChar.length > 0 ) {
+      //     commandSelected = s.length > commandSelected.length ? s : commandSelected;
+      //   }
+      // }
     });
 
     return commandSelected;
   }
 
 
-  private analizeCommand(comand: SendDataTTS) {
+  private async analizeCommand(comand: SendDataTTS) {
+    // let _strComandEqual = this.lastComandOk.toLowerCase().trim();
+    // _strComandEqual = _strComandEqual.replace(comand.texto_recibido.toLowerCase().trim(), '');
+    // if ( _strComandEqual.trim() === '' ) {return; }
     if ( this.lastComandOk.toLowerCase().trim() === comand.texto_recibido.toLowerCase().trim() ) {return; }
     // this.isProcessTalking = true;
 
+    // await this.utilitariosService.delay(1000);
+
 
     // console.log('comand recibido', comand);
-    console.log('this.lastComandOk', this.lastComandOk);
+    // console.log('this.lastComandOk', this.lastComandOk);
 
     // si se esta ejecuntando un comando return;
     if ( this.isTalking ) {return; }
@@ -299,14 +323,22 @@ export class ComandAnalizerService {
 
   // CARTA SUMA SUMA
   private commandCartaItemSuma(command: SendDataTTS) {
-    const _command = command.texto_recibido.replace(command.comando_recibido, '');
+    // let _command = command.texto_recibido.toLowerCase().replace(command.comando_recibido.toLowerCase(), '');
+    // const sa1 = command.texto_recibido.toLowerCase();
+    // const sa2 = command.comando_recibido.toLowerCase();
+    let _command = this.replaceTextRecibidoComand(command.texto_recibido, command.comando_recibido);
 
-    const numCantidad = this.convertTxtToNum(_command);
+    const rptCant = this.convertTxtToNum(_command);
+    // const numCantidad = rptCant?.num || null;
+    // _command = _command.replace(rptCant.numStr || '', '').trim();
     // console.log('numCantidad', numCantidad);
     // identifica numero
 
-    if ( numCantidad ) {
-      const _itemSeleted = <any>this.getItemCarta(command);
+    if ( rptCant ) {
+      const numCantidad = rptCant?.num || null;
+      _command = _command.replace(rptCant.numStr || '', '').trim();
+
+      const _itemSeleted = <any>this.getItemCarta(command, _command);
       this.sendItemToPedido(_itemSeleted, numCantidad, true, command);
       // console.log('commandCartaItemSuma', _itemSeleted);
       // this.speechDataProviderService.setIsCommandAceptado(2);
@@ -321,12 +353,20 @@ export class ComandAnalizerService {
 
   // CARTA RESTA
   private commandCartaItemResta(command: SendDataTTS) {
-    const _command = command.texto_recibido.replace(command.comando_recibido, '');
+    // let _command = command.texto_recibido.toLowerCase().replace(command.comando_recibido.toLowerCase(), '');
+    // const sa1 = command.texto_recibido.toLowerCase();
+    // const sa2 = command.comando_recibido.toLowerCase();
+    let _command = this.replaceTextRecibidoComand(command.texto_recibido, command.comando_recibido);
 
-    let numCantidad = this.convertTxtToNum(_command);
+    const rptCant = this.convertTxtToNum(_command);
+
+    if ( !rptCant ) { return; }
+    let numCantidad = rptCant?.num || null;
+    _command = _command.replace(rptCant.numStr || '', '');
+    // let numCantidad = this.convertTxtToNum(_command);
     // console.log('numCantidad', numCantidad);
     // identifica numero
-    const _itemSeleted = <any>this.getItemCarta(command);
+    const _itemSeleted = <any>this.getItemCarta(command, _command);
 
     if (!_itemSeleted.item) {return; }
     // si no hay cantidad quita todo
@@ -340,12 +380,20 @@ export class ComandAnalizerService {
 
   // CARTA RESETEA
   private commandCartaItemResetea(command: SendDataTTS) {
-    const _command = command.texto_recibido.replace(command.comando_recibido, '');
+    // let _command = command.texto_recibido.toLowerCase().replace(command.comando_recibido.toLowerCase(), '');
+    // const sa1 = command.texto_recibido.toLowerCase();
+    // const sa2 = command.comando_recibido.toLowerCase();
+    let _command = this.replaceTextRecibidoComand(command.texto_recibido, command.comando_recibido);
 
-    const numCantidad = this.convertTxtToNum(_command);
+    const rptCant = this.convertTxtToNum(_command);
+    if ( !rptCant ) { return; }
+
+    const numCantidad = rptCant?.num || null;
+    _command = _command.replace(rptCant.numStr || '', '');
+    // const numCantidad = this.convertTxtToNum(_command);
     // console.log('numCantidad', numCantidad);
     // identifica numero
-    const _itemSeleted = <any>this.getItemCarta(command);
+    const _itemSeleted = <any>this.getItemCarta(command, _command);
 
     if (!_itemSeleted.item || !numCantidad) {return; }
 
@@ -448,7 +496,10 @@ export class ComandAnalizerService {
 
 
   private getSeccionCarta(command: SendDataTTS): any {
-    const _command = command.texto_recibido.replace(command.comando_recibido, '');
+    // const _command = command.texto_recibido.toLowerCase().replace(command.comando_recibido.toLowerCase(), '');
+    // const sa1 = command.texto_recibido.toLowerCase();
+    // const sa2 = command.comando_recibido.toLowerCase();
+    const _command = this.replaceTextRecibidoComand(command.texto_recibido, command.comando_recibido);
     // buscamos seccion en carta
     const arrSecciones = this.speechDataProviderService.getSeccionesCarta().toLowerCase().split(',');
     const _seccionCarta = this.searchCommandStr(_command, arrSecciones);
@@ -460,8 +511,9 @@ export class ComandAnalizerService {
     };
   }
 
-  private getItemCarta(command: SendDataTTS) {
-    const _command = command.texto_recibido.replace(command.comando_recibido, '');
+  private getItemCarta(command: SendDataTTS, _itemDes: string = null) {
+    // const _command = command.texto_recibido.replace(command.comando_recibido, '');
+    const _command = _itemDes ? _itemDes : this.replaceTextRecibidoComand(command.texto_recibido, command.comando_recibido);
     const arrItems = this.speechDataProviderService.getItemsCarta().toLowerCase().split(',');
     const _ItemCarta = this.searchCommandStr(_command, arrItems);
     const item = _ItemCarta !== '' ? this.speechDataProviderService.getIItemsSelected(_ItemCarta) : null;
@@ -476,6 +528,7 @@ export class ComandAnalizerService {
     const _strNum = 'uno,dos,tres,cuatro,cinco,seis,siete,ocho,nueve,diez,once,doce,trece,catorce,quince,dieciseis,diecisiete,diecisiete,dieciocho,diecinueve,veinte,veintiuno,veintidos,veintitres,veinticuatro,veinticinco';
     const _strOtherOne = 'otro,un,una';
     const _intNum = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30';
+    let numStr = '';
 
     command = ' ' + command;
 
@@ -486,22 +539,31 @@ export class ComandAnalizerService {
 
       // 2) busca descripcion del numero en cadena
       num = _strNum.split(',').findIndex(c => command.match(' ' + c + ' ')) + 1;
+      numStr = _strNum.split(',')[num - 1];
 
       if ( num === 0 ) { // no encontro
         // 3) buscamos en _strOtherOne
-        num = _strOtherOne.split(',').find(c => command.match(' ' + c + ' '));
+        num = _strOtherOne.split(',').findIndex(c => command.match(' ' + c + ' '));
+        numStr = _strOtherOne.split(',')[num];
         num = num ? 1 : null;
       }
 
       // console.log('num1', num);
     }
 
+    return num ? {num: num, numStr: numStr} : null;
 
-    return num ? num : null;
+    // return num ? num : null;
 
 
     // const patt = new RegExp(_strNum);
     // numRpt = patt.test(command);
+  }
+
+  private replaceTextRecibidoComand(texto_recibido: string, comando_recibido: string): string {
+    const sa1 = texto_recibido.toLowerCase();
+    const sa2 = comando_recibido.toLowerCase();
+    return sa1.replace(sa2, '').trim();
   }
 
   private sendTxtToVoice(commandSend: SendDataTTS, text: string) {
@@ -523,6 +585,8 @@ export class ComandAnalizerService {
   private isCommandOk(command: string, numberBeep: number) {
     this.lastComandOk = command;
     this.speechDataProviderService.setIsCommandAceptado(numberBeep);
+
+    setTimeout(() => { this.lastComandOk = ''; }, 1000);
   }
 
 

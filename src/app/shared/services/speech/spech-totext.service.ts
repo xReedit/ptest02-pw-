@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { delay } from 'rxjs/internal/operators/delay';
 import { SpechProviderConnectService } from './spech-provider-connect.service';
 
 @Injectable({
@@ -9,7 +10,7 @@ export class SpechTotextService {
 
   // @Output() speechTexResponse: EventEmitter<any> = new EventEmitter();
   private speechTexResponseSource = new BehaviorSubject<any>(null);
-  public speechTexResponse$ = this.speechTexResponseSource.asObservable();
+  public speechTexResponse$ = this.speechTexResponseSource.asObservable().pipe(delay(400));
 
   // si esta recibiendo traducciones
   private listenOnTraduceSource = new BehaviorSubject<boolean>(false);
@@ -147,15 +148,18 @@ export class SpechTotextService {
   }
 
   private speechData(data) {
-    const dataFinal = undefined || data.results[0].isFinal;
+    // const dataFinal = undefined || data.results[0].isFinal;
     // console.log('api speech response from speech to text', data.results);
-    // console.log(data.results[0].alternatives[0].transcript);
+    // console.log(data.results);
     // this.speechTexResponse.emit(data.results);
+    // if ( !dataFinal ) { return; }
+    if ( data.results.length === 0 ) { return; }
     if ( this.lastTranscript ===  data.results[0].alternatives[0].transcript.toLowerCase()) { return; }
+    // data.results[0].alternatives[0].transcript = data.results[0].alternatives[0].transcript.replace(this.lastTranscript, '').trim();
     this.speechTexResponseSource.next(data.results);
     this.lastTranscript = data.results[0].alternatives[0].transcript.toLowerCase();
 
-    if (dataFinal === false) {}
+    // if (dataFinal === false) {}
     // console.log('Google Speech sent final Sentence.');
     this.finalWord = true;
   }

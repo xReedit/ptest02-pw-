@@ -81,7 +81,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   }
 
   scanSuccessHandler($event: any) {
-    // console.log($event);
+    console.log($event);
     this.codQR = $event;
     this.isProcesando = true;
     this.leerDatosQR();
@@ -164,6 +164,14 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
 
     // console.log('this.codQR', this.codQR);
 
+    // 310122 carta/nomsede  carta virtual delivery
+    if ( this.codQR.indexOf('carta/') > -1 ) {
+      const posCarta = this.codQR.indexOf('carta/') + 6;
+      const nomSedeCV = this.codQR.slice(posCarta);
+      this.verificarCartaSedeParam(nomSedeCV);
+      return;
+    }
+
     // 140820 -> con este cambio el codigo es leido desde cualquier lector,
     // enviandolo a ala web o si lo scanean desde papaya lo envian a la carta
     // si el codigo viene con la pagina
@@ -174,6 +182,8 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
       // quita la parte del url
       this.codQR = _partUrl[1];
     }
+
+
 
     try {
       _codQr = atob(this.codQR).split('::');
@@ -264,7 +274,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   }
 
   // al scanear codigo qr DELIVERY para ir directo al establecimiento
-  private getInfoEstablecimiento(_id) {
+  private getInfoEstablecimiento(_id, isLinkCartaVirtual = false) {
     const _dataEstablecimiento = {
       idsede: _id
     };
@@ -272,6 +282,10 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     .subscribe( (res: any) => {
       const _e = res.data[0];
       this.establecimientoService.set(_e);
+
+      if ( isLinkCartaVirtual ) {
+        this.router.navigate(['/lector-success']);
+      }
     });
   }
 
@@ -325,6 +339,34 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   volverALeer(): void {
     this.isProcesando = false;
     this.isCodigoQrValido = true;
+  }
+
+
+
+  private verificarCartaSedeParam(_nomsede: string) {
+    // setear idsede en clienteSOcket
+    this.verifyClientService.getDataClient();
+
+    const _dataSend = { nomsede: _nomsede };
+    this.crudService.postFree(_dataSend, 'ini', 'carta-virtual', false)
+    .subscribe((res: any) => {
+      if (res.success && res.data.length > 0) {
+        const s = res.data[0].idsede;
+        const o = res.data[0].idorg;
+
+        this.verifyClientService.setQrSuccess(true);
+        this.verifyClientService.setIsDelivery(true);
+        this.verifyClientService.setMesa(0);
+        this.verifyClientService.setIdSede(s);
+        this.verifyClientService.setIdOrg(o);
+        this.getInfoEstablecimiento(s, true);
+        // registra scaneo
+        this.establecimientoService.setRegisterScanQr(s, 'Delivery');
+      } else {
+        this.router.navigate(['/inicio']);
+      }
+      // console.log('res', res);
+    });
   }
 
 }

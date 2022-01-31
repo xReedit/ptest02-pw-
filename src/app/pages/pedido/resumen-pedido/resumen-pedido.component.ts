@@ -125,6 +125,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     this.validarNomhbreCliente();
 
+    // this.verificarConexionSocket();
+
     // console.log('si es invitado');
     // this.isShowNombreClienteLoginInvitado = this.verifyClientService.getDataClient().isLoginByInvitado;
     // if ( this.isShowNombreClienteLoginInvitado || this.isPuntoAuntoPedido ) {
@@ -581,7 +583,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private enviarPedido(): void {
 
-    this.verificarConexionSocket();
+    // this.verificarConexionSocket();
 
     // para asegurar que marque delivery si es
     const isPagoConTarjeta = this.infoToken.getInfoUs().metodoPago.idtipo_pago === 2;
@@ -605,6 +607,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     const dataUsuario = this.infoToken.getInfoUs();
     // const dataUsuario = this.infoToken.infoUsToken;
 
+    console.log('aaaaaaaaaaaa');
+
     const dataFrmConfirma: any = {};
     if ( this.isCliente || this.isPuntoAuntoPedido && !this.isReservaCliente) {
       this.frmConfirma.solo_llevar = this.isSoloLLevar ? true : this.frmConfirma.solo_llevar;
@@ -621,6 +625,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       dataFrmConfirma.nom_us = dataUsuario.nombres.split(' ')[0].toUpperCase();
     }
 
+
+    console.log('bbbbbbbbbbbbbb');
 
     // header //
 
@@ -655,6 +661,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       appv: 'v.2v'
     };
 
+    console.log('cccccccccccccc');
     // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
     const isClienteBuscaRepartidores = this.frmDelivery.buscarRepartidor ? this.frmDelivery.buscarRepartidor : this.isDeliveryCliente || false;
     // const _subTotalesSave = _p_header.delivery === 1 ? this.frmDelivery.subTotales : this._arrSubtotales;
@@ -674,6 +681,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       idpedido: 0 // setea despues de guardar el pedido para enviarlo al socket
     };
 
+    console.log('ddddddddddd');
     // console.log('_p_header', _p_header);
 
     // enviar a print_server_detalle // para imprimir
@@ -710,6 +718,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       listPrinters: arrPrint.listPrinters
     };
 
+
+    console.log('eeeeeeeeeeeeeeeeeeeee');
     // ya no lo envio
     // quitamos el order delivery de los datos del usuario para que no sea mucho el json
     // dataSend.dataUsuario.orderDelivery = '';
@@ -741,7 +751,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       this.infoToken.setIdCliente();
     }
 
-    // console.log('aaaaaaaaaaaaaaa');
+    console.log('ffffffffffffffffffff');
 
     // enviar a guardar // guarda pedido e imprime comanda
 
@@ -1180,14 +1190,19 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private verificarConexionSocket() {
+    console.log('this.socketService.isSocketOpen',  this.socketService.isSocketOpen);
     if (!this.socketService.isSocketOpen) {
         this.socketService.connect();
     }
   }
 
   private savePedidoSocket(dataSend: any, isPagoConTarjeta: boolean, _subTotalesSave: any) {
-    this.speechDataProviderService.setIsPedidoConfirmado();
+    // this.speechDataProviderService.setIsPedidoConfirmado();
+    console.log('111111111111');
+
+
     this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => {
+      console.log('222222', resSocket);
         if ( resSocket === false ) {
           alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');
           // guardamos el error

@@ -44,7 +44,7 @@ export class LectorSuccessComponent implements OnInit {
       idsede: this.usLog.idsede
     };
 
-    console.log('this.usLog', this.usLog);
+    // console.log('this.usLog', this.usLog);
 
     this.numMesa = this.usLog.numMesaLector;
 

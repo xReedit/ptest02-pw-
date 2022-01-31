@@ -1,12 +1,12 @@
-<div class="text-center animated fadeIn">
+<div class="text-center div-main animated fadeIn">
     <br>
-    <img src="assets/images/login-user.gif" alt=".." style="max-width: 360px;">
-    <div class="text-center ml-5 mr-5">
+    <img src="assets/images/login-user.png" alt=".." style="max-width: 260px;">
+    <div class="text-center ml-5 mr-5" style="max-width: 500px">
       <img src="assets/images/papaya_text-2.png" width="190px">
       <p class="fs-16 fw-100 text-secondary">Personal Autorizado</p>            
 
       <form class="content-login-us" (ngSubmit)="logear()" #frmpass="ngForm">
-        <div class="row ">
+        <div class="row">
           <div class="col-sm-6">
             <mat-form-field class="w-100">
               <input matInput placeholder="Usuario" [(ngModel)]="usuario.nomusuario" name="nomusuario" required>

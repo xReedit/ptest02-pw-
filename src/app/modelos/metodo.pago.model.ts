@@ -4,4 +4,6 @@ export class MetodoPagoModel {
     importe: string;
     checked: boolean;
     visible: boolean;
+    img: string;
+    info: string;
 }

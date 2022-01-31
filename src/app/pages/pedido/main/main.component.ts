@@ -49,7 +49,7 @@ export class MainComponent implements OnInit {
     public socketService: SocketService,
     private verifyClientService: VerifyAuthClientService,
     private infoTokenService: InfoTockenService,
-    private comandAnalizerService: ComandAnalizerService,
+    // private comandAnalizerService: ComandAnalizerService,
     private establecimientoService: EstablecimientoService,
     ) {
       // console.log('verifyClientService', this.verifyClientService.get);
@@ -85,15 +85,17 @@ export class MainComponent implements OnInit {
       this.isClienteReserva = res?.isReserva;
 
       // -----------------> ACTIVAR MOZO VIRTUAL
-      const _isActiveMozoVoz =  this.isSpeechVoiceAcivado && this.isUsuarioCliente && !this.isClienteDelivery;
-      console.log('_isActiveMozoVoz', _isActiveMozoVoz);
-      this.infoTokenService.setIsAvtiveMozoVoz(_isActiveMozoVoz);
-      if ( _isActiveMozoVoz ) {
-        this.comandAnalizerService.getComands();
-        setTimeout(() => {
-          this.comandAnalizerService.cocinarComand('bienvenido');
-        }, 700);
-      }
+      // 250122 quitamos speech x mejorar
+      // const _isActiveMozoVoz =  this.isSpeechVoiceAcivado && this.isUsuarioCliente && !this.isClienteDelivery;
+      // console.log('_isActiveMozoVoz', _isActiveMozoVoz);
+      // this.infoTokenService.setIsAvtiveMozoVoz(_isActiveMozoVoz);
+
+      // if ( _isActiveMozoVoz ) {
+      //   this.comandAnalizerService.getComands();
+      //   setTimeout(() => {
+      //     this.comandAnalizerService.cocinarComand('bienvenido');
+      //   }, 700);
+      // }
       // -----------------> ACTIVAR MOZO VIRTUAL
 
       // para que reconecte, porque al iniciar no conecta si viene delivery codigo qr

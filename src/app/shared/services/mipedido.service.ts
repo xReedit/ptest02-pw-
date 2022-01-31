@@ -99,13 +99,6 @@ export class MipedidoService {
 
     }
 
-  getObjCarta() {
-    return this.objCarta;
-  }
-
-  getObjCartaLibery() {
-    return JSON.parse(JSON.stringify(this.objCarta));
-  }
 
   // cuando obtenemos la cuenta
   setObjMiPedido(obj: any): void {
@@ -192,6 +185,14 @@ export class MipedidoService {
       // this.laCartaObjSource.next(this.objCarta);
       // console.log('objCartaCarta', this.objCarta);
     // }, 1000);
+  }
+
+  getObjCarta() {
+    return this.objCarta;
+  }
+
+  getObjCartaLibery() {
+    return JSON.parse(JSON.stringify(this.objCarta));
   }
 
   // aplicar descuentos a la carta

@@ -49,17 +49,21 @@ export class DialogMetodoPagoComponent implements OnInit {
 
     this.loadMetodoPago();
     this.itemSelected = this.infoTokenService.infoUsToken.metodoPago;
+    this.itemSelected.info = this.itemSelected.info ? this.itemSelected.info : '';
     this.verificarMetodoInit();
   }
 
   private loadMetodoPago() {
     this.listMetodoPago = [];
 
-    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 2, 'descripcion': 'Tarjeta', 'checked': true, visible: this.isHabilitadoTarjeta, importe: ''});
-    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 3, 'descripcion': 'Yape', 'checked': false, visible: this.isHabilitadoYape, importe: ''});
-    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 1, 'descripcion': 'Efectivo', 'checked': false, visible: true});
-    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 4, 'descripcion': 'POS', 'checked': false, visible: !this.isClientePedido, importe: ''});
-    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 5, 'descripcion': 'Trasferencia', 'checked': false, visible: !this.isClientePedido, importe: ''});
+    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 2, 'descripcion': 'Tarjeta', 'checked': true, visible: this.isHabilitadoTarjeta, importe: '', img: '_tp_tarjeta.png', info: ''});
+    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 3, 'descripcion': 'Yape', 'checked': false, visible: this.isHabilitadoYape, importe: '', img: '_tp_yape.png',
+      info: 'El Yapeo debe realizarle al repartidor al momento de recibir su pedido.'});
+    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 6, 'descripcion': 'Plin', 'checked': false, visible: this.isHabilitadoYape, importe: '', img: '_tp_plin.png',
+      info: 'El Plineo debe realizarle al repartidor al momento de recibir su pedido.'});
+    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 1, 'descripcion': 'Efectivo', 'checked': false, visible: true, importe: '', img: '_tp_efectivo.png', info: ''});
+    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 4, 'descripcion': 'POS', 'checked': false, visible: !this.isClientePedido, importe: '', img: '_tp_pos.png', info: ''});
+    this.listMetodoPago.push(<MetodoPagoModel>{'idtipo_pago': 5, 'descripcion': 'Trasferencia', 'checked': false, visible: !this.isClientePedido, importe: '', img: '_tp_transferencia.png', info: ''});
 
     this.validaCociones();
 
@@ -129,5 +133,27 @@ export class DialogMetodoPagoComponent implements OnInit {
     this.infoTokenService.setMetodoPago( this.itemSelected );
     this.dialogRef.close(this.itemSelected);
   }
+
+  selectedItemOptionPago(item: MetodoPagoModel) {
+    this.listMetodoPago.map(x => x.checked = false);
+    this.isMontoVisible = false;
+    this.importeValid = false;
+    this.importeIndicado = '';
+    item.checked = true;
+    this.itemSelected = item;
+
+    if ( item.idtipo_pago === 1 ) {
+      this.isMontoVisible = true;
+    }
+
+    this.verificarValidForm();
+
+
+    // this.listOpciones.map(x => x.selected = false);
+    // item.selected = true;
+    // this.itemSelected = item;
+    // this.optionSelected.emit(this.itemSelected);
+  }
+
 
 }

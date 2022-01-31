@@ -133,8 +133,7 @@
     <!-- dato importante o nombre de contacto si es solidaridad -->
 
     
-    
-
+        
     <div class="m-0 p-3">        
         <!-- <div class="row"> -->
             <!-- subtotales -->    
@@ -148,7 +147,7 @@
                         <!-- si lluvia -->
                         <ng-container *ngIf="item.isDeliveryApp" class="d-flex">
                             <div *ngFor="let itemIcon of listIconsEntrega" class="d-inline">
-                                <img *ngIf="itemIcon.visible" class="img-ico-entrega pl-2 text-secondary" src="../assets/images/{{itemIcon.icon}}" alt="is_rain" matTooltip="{{ itemIcon.motivo }}">
+                                <img *ngIf="itemIcon.visible" class="img-ico-entrega pl-2 text-secondary" src="../assets/images/{{itemIcon.icon}}" alt="itemIcon.motivo" matTooltip="{{ itemIcon.motivo }}">
                             </div>
                             <!-- <img *ngIf="isRain" class="img-ico-entrega pl-2 text-secondary" src="../assets/images/x_is_rain.png" alt="is_rain" matTooltip="Lluvia">
                             <img *ngIf="isRain" class="img-ico-entrega pl-3 text-secondary" src="../assets/images/x_is_nigth.png" alt="is_all_demand" matTooltip="Alta demanda">

@@ -183,6 +183,7 @@ export class CompPideLoQueQuierasComponent implements OnInit  {
     _dialogConfig.width = '380px';
     _dialogConfig.disableClose = true;
     _dialogConfig.hasBackdrop = true;
+    _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
 
     _dialogConfig.data = {
       importeTotalPagar: 3

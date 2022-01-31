@@ -36,6 +36,8 @@ export class CompListItemPedidoClienteComponent implements OnInit, AfterViewInit
 
   simbolo_moneda: string;
 
+  listIconsEntrega = [];
+
   constructor(
     private miPedidoService: MipedidoService,
     private infoToken: InfoTockenService,
@@ -49,6 +51,14 @@ export class CompListItemPedidoClienteComponent implements OnInit, AfterViewInit
     this.miPedido = this.miPedidoService.getMiPedido();
     this.simbolo_moneda = this.establecimientoService.getSimboloMoneda();
     // console.log('miPedido', this.miPedido);
+    const _datosEstablecieminto = this.establecimientoService.get();
+    // console.log('_datosEstablecieminto', _datosEstablecieminto);
+    // console.log('arrSubtotales', this.arrSubtotales);
+    try {
+      this.listIconsEntrega = JSON.parse(JSON.stringify(_datosEstablecieminto.icons_entrega));
+    } catch (error) {
+      this.listIconsEntrega = [];
+    }
 
 
     this.miPedidoService.miPedidoObserver$

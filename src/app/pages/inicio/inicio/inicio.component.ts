@@ -36,7 +36,9 @@ export class InicioComponent implements OnInit, OnDestroy {
     ) { }
 
   ngOnInit() {
-    // console.log('aaa');
+    // console.log('llego a inicio');
+    // this.router.navigate(['/lector-qr']);
+
     this.nombreClientSocket = '';
     // screen.orientation.unlock();
 

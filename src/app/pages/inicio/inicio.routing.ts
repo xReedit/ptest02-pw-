@@ -10,6 +10,7 @@ import { CallbackAuthComponent } from './callback-auth/callback-auth.component';
 import { CodigoQrGuard } from 'src/app/shared/guards/codigo-qr.guard';
 import { LoginClienteComponent } from './login-cliente/login-cliente.component';
 import { SeleccionarUbicacionDeliveryComponent } from './seleccionar-ubicacion-delivery/seleccionar-ubicacion-delivery.component';
+import { RedirecLectorComponent } from './redirec-lector/redirec-lector.component';
 
 const routes: Routes = [{
     path: '', component: MainComponent,
@@ -17,6 +18,21 @@ const routes: Routes = [{
     children: [
         {
             path: '', redirectTo: 'inicio'
+        },
+        {
+            path: '#',
+            component: MainComponent,
+            data: { titulo: 'Login Personal Autorizado' }
+        },
+        {
+            path: 'carta/:nomsede',
+            component: MainComponent,
+            data: { titulo: 'Login Personal Autorizado' }
+        },
+        {
+            path: 'redirec/:nomsede',
+            component: RedirecLectorComponent,
+            data: { titulo: 'Login Personal Autorizado' }
         },
         {
             path: 'inicio',
@@ -33,6 +49,11 @@ const routes: Routes = [{
             component: LectorCodigoQrComponent,
             data: { titulo: 'Lector QR' }
         },
+        // {
+        //     path: 'lector-qr/:co',
+        //     component: LectorCodigoQrComponent,
+        //     data: { titulo: 'Lector QR' }
+        // },
         {
             path: 'lector-success',
             component: LectorSuccessComponent,

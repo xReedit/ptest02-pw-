@@ -18,6 +18,7 @@ import { DialogUbicacionComponent } from 'src/app/componentes/dialog-ubicacion/d
 import { SeleccionarUbicacionDeliveryComponent } from './seleccionar-ubicacion-delivery/seleccionar-ubicacion-delivery.component';
 import { ComponentesModule } from 'src/app/componentes/componentes.module';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { RedirecLectorComponent } from './redirec-lector/redirec-lector.component';
 // import { CallbackAuth0Component } from './callback-auth0/callback-auth0.component';
 
 
@@ -31,7 +32,8 @@ import { SharedModule } from 'src/app/shared/shared.module';
     CallbackAuthComponent,
     LoginClienteComponent,
     DialogUbicacionComponent,
-    SeleccionarUbicacionDeliveryComponent
+    SeleccionarUbicacionDeliveryComponent,
+    RedirecLectorComponent,
   ],
   imports: [
     CommonModule,

@@ -160,6 +160,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.isComercioPapayaSoloPedidosApp = _datosEstablecieminto.pwa_delivery_reparto_solo_app === 1;
 
     // this.isRain = _datosEstablecieminto.is_rain === 1 ? true : false;
+    // console.log('_datosEstablecieminto', _datosEstablecieminto);
     try {
       this.listIconsEntrega = JSON.parse(JSON.stringify(_datosEstablecieminto.icons_entrega));
     } catch (error) {
@@ -354,6 +355,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     _dialogConfig.width = '380px';
     _dialogConfig.disableClose = true;
     _dialogConfig.hasBackdrop = true;
+    _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
 
     _dialogConfig.data = {
       importeTotalPagar: this._listSubtotales[this._listSubtotales.length - 1].importe

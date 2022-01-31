@@ -30,9 +30,9 @@ export class CompPropinaDeliveryComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.loadPropina();
     this.propinaSelected = this.infoTokenService.infoUsToken.propina;
     this.simbolo_moneda = this.establecimientoService.getSimboloMoneda();
+    this.loadPropina();
   }
 
   private loadPropina(): void {

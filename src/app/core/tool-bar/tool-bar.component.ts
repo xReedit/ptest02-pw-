@@ -13,6 +13,7 @@ import {MAT_TOOLTIP_DEFAULT_OPTIONS, MatTooltipDefaultOptions} from '@angular/ma
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DialogConfigPuntoComponent } from 'src/app/componentes/dialog-config-punto/dialog-config-punto.component';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { ComandAnalizerService } from 'src/app/shared/services/speech/comand-analizer.service';
 
 export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
   showDelay: 500,
@@ -61,6 +62,7 @@ export class ToolBarComponent implements OnInit {
     private utilitariosSerivce: UtilitariosService,
     private crudService: CrudHttpService,
     private establecimientoService: EstablecimientoService,
+    private comandAnalizerService: ComandAnalizerService
     ) { }
 
   ngOnInit() {
@@ -144,11 +146,14 @@ export class ToolBarComponent implements OnInit {
     const dialogReset = this.dialog.open(DialogResetComponent, dialogConfig);
     dialogReset.afterClosed().subscribe(result => {
       if (result ) {
+        this.stopRecordingToolbar();
         this.miPedidoService.resetAllNewPedido();
         this.miPedidoService.cerrarSession();
         // this.socketService.closeConnection();
         // this.navigatorService.cerrarSession();
         this.infoTokenService.cerrarSession();
+
+
       }
   });
 }
@@ -172,6 +177,7 @@ goBackOutEstablecimiento() {
 }
 
 sharedCarta() {
+  console.log('this.urlSharedCartaVirtual', this.urlSharedCartaVirtual);
   this.utilitariosSerivce.sharedNative(this.urlSharedCartaVirtual, this.nomSede);
 }
 
@@ -183,6 +189,10 @@ configPunto() {
   dialogConfig.panelClass =  ['my-dialog-orden-detalle', 'my-dialog-scrool'];
 
   this.dialog.open(DialogConfigPuntoComponent, dialogConfig);
+}
+
+stopRecordingToolbar(): void {
+  this.comandAnalizerService.stopRecording();
 }
 
 

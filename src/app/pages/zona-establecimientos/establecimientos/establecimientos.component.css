@@ -38,7 +38,12 @@
 .div-otros-a {
     margin-top: -50px;    
     padding: 1.4rem;    
+    background: #eeeeee;    
 }
+
+/* .div-otros-a:first-child {
+    padding-top: 5px;
+} */
 
 
 .bg-transparente {

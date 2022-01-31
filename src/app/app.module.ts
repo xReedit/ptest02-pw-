@@ -11,6 +11,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { GlobalErrorHandler } from './shared/services/error.global.handler';
 import { environment } from '../environments/environment';
 import { SocketIoModule } from 'ngx-socket-io';
+import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 // import { DirectionsMapDirectiveDirective } from './shared/directivas/directions-map-directive.directive';
 
 
@@ -32,7 +33,10 @@ import { SocketIoModule } from 'ngx-socket-io';
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     // ServiceWorkerModule.register('assets/js/custom-service-worker.js', { enabled: environment.production })
   ],
-  providers: [{provide: ErrorHandler, useClass: GlobalErrorHandler}],
+  providers: [
+    // {provide: ErrorHandler, useClass: GlobalErrorHandler},
+    Location, {provide: LocationStrategy, useClass: PathLocationStrategy} // 22012022 eliminar el #
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
