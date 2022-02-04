@@ -17,6 +17,15 @@
         <p class="pt-2">El servicio aún no esta disponible en este lugar.</p>
     </div>
     
+
+
+    <!-- PROMOCIONES -->    
+    <div class="p-2 div-promo-content border-bottom" *ngIf="listPromociones.length > 0">
+        <p class="fw-600 pl-2 m-0">Promociones</p>
+        <app-comp-view-promo [list]="listPromociones" (itemSelected)="itemSelected($event)"></app-comp-view-promo>
+    </div>    
+    <!-- PROMOCIONES -->
+
     <div class="p-2 content-master-establecimiento" *ngIf="listEstablecimientos">
 
         <!-- filtro de categorias -->
@@ -25,9 +34,9 @@
             <div class="btn-link-cat-filtro" *ngFor="let item of listSubCatFiltros" [ngClass]="{'active': item.selected}" (click)="aplicarFitroSubCategoria(item)">
                 <span class="text-secondary">{{item.descripcion}}</span>                
             </div>
-        </div>        
+        </div>                
 
-        <div class="content-all-comercio">
+        <div class="content-all-comercio">            
             <div *ngFor="let item of listEstablecimientos">
                 <app-item-comercio *ngIf="item.visible" [itemEstablecimiento] = "item"  (itemSelected) = "itemSelected($event)"></app-item-comercio>
             </div>

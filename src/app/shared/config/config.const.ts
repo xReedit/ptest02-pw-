@@ -4,6 +4,7 @@
 // export const URL_SERVER_SOCKET_SPEECH = 'http://localhost:1337'; //
 // export const URL_SERVER_FILE_AUDIO_SPEECH = 'http://localhost:1337/resources/'; //
 // export const URL_IMG_CARTA = 'http://192.168.1.64/restobar/file/'; // imagenes de la carta
+// export const URL_IMG_PROMO = 'http://192.168.1.64/restobar/repositorio/img_promo'; // imagenes de promosiones
 // export const URL_IMG_COMERCIO = 'http://192.168.1.64/restobar/print/logo/';
 // export const VAPID_PUBLIC = 'BC7ietauZE99Hx9HkPyuGVr8jaYETyEJgH-gLaYIsbORYobppt9dX49_K_wubDqphu1afi7XrM6x1zAp4kJh_wU';
 
@@ -20,6 +21,7 @@ export const URL_SERVER_SOCKET = 'https://app.restobar.papaya.com.pe/'; // produ
 export const URL_SERVER_SOCKET_SPEECH = 'https://app.restobar.papaya.com.pe/';
 export const URL_SERVER_FILE_AUDIO_SPEECH = 'https://app.restobar.papaya.com.pe/speech/resources/'; //
 export const URL_IMG_CARTA = '//restobar.papaya.com.pe/file/'; // web
+export const URL_IMG_PROMO = '//restobar.papaya.com.pe/repositorio/img_promo'; // imagenes de promosiones
 // export const URL_IMG_CARTA = 'https://restobar.papaya.com.pe/file/'; // capacitor
 export const URL_IMG_COMERCIO = '//restobar.papaya.com.pe/print/logo/';
 export const VAPID_PUBLIC = 'BOiwO8PftVFo8MrQfp3oAv4KbVtFdZAQojGKgzyxMCPgiNhg8PySbOSlkxDqd3iKA4J1GhzwFiCIGKmXRiKZM_0';

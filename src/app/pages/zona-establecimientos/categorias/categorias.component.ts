@@ -33,6 +33,7 @@ export class CategoriasComponent implements OnInit, OnDestroy {
   // rippleColor = 'rgb(255,238,88, 0.2)';
   loaderPage = true;
   listEstablecimientos: DeliveryEstablecimiento[];
+  listPromociones = [];
 
   codigo_postal_actual: string; // codigo postal de direccion seleccionada
   ciudad_actual: string; // ciudad de direccion seleccionada
@@ -138,6 +139,7 @@ export class CategoriasComponent implements OnInit, OnDestroy {
 
         this.infoClient.direccionEnvioSelected = this.direccionCliente;
         this.loadEstablecimientos();
+        this.loadEstablecimientosPromos();
       } else {
 
       }
@@ -347,6 +349,20 @@ export class CategoriasComponent implements OnInit, OnDestroy {
       })
       .filter((e: DeliveryEstablecimiento) => e.idsede_subcategoria_filtro.indexOf('.' + itemFiltro.id + '.') > -1  )
       .map((e: DeliveryEstablecimiento) => e.visible = true);
+  }
+
+
+  loadEstablecimientosPromos() {
+    const _data = {
+      ciudad: this.ciudad_actual // this.codigo_postal_actual, cambiamos el 310720
+    };
+
+    this.listPromociones = [];
+
+    this.crudService.postFree(_data, 'delivery', 'get-establecimientos-promos', false)
+    .subscribe( (res: any) => {
+      this.listPromociones = res.data.length > 0 ? res.data.filter(x => x.idpromocion) : [];
+      });
   }
 
 }

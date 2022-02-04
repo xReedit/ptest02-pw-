@@ -54,6 +54,7 @@ import { MozoVirtualOnSpeechComponent } from './mozo-virtual/mozo-virtual-on-spe
 import { MozoShowTraduceTextComponent } from './mozo-virtual/mozo-show-traduce-text/mozo-show-traduce-text.component';
 import { ItemPromocionComponent } from './item-promocion/item-promocion.component';
 import { MozoDialogComponent } from './mozo-virtual/mozo-dialog/mozo-dialog.component';
+import { CompViewPromoComponent } from './comp-view-promo/comp-view-promo.component';
 
 @NgModule({
   declarations: [
@@ -99,6 +100,7 @@ import { MozoDialogComponent } from './mozo-virtual/mozo-dialog/mozo-dialog.comp
     MozoShowTraduceTextComponent,
     ItemPromocionComponent,
     MozoDialogComponent,
+    CompViewPromoComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
@@ -151,7 +153,8 @@ import { MozoDialogComponent } from './mozo-virtual/mozo-dialog/mozo-dialog.comp
     MozoVirtualOnSpeechComponent,
     MozoShowTraduceTextComponent,
     ItemPromocionComponent,
-    MozoDialogComponent
+    MozoDialogComponent,
+    CompViewPromoComponent
     // DialogDesicionComponent
   ],
 

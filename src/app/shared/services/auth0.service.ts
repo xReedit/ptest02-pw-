@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import createAuth0Client from '@auth0/auth0-spa-js';
 import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
 import { from, of, Observable, BehaviorSubject, combineLatest, throwError } from 'rxjs';
-import { tap, catchError, concatMap, shareReplay, delay, switchMap } from 'rxjs/operators';
+import { tap, catchError, concatMap, shareReplay, delay, switchMap, share } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -14,10 +14,10 @@ export class Auth0Service {
     createAuth0Client({
       domain: 'dev-m48s1pe2.auth0.com',
       client_id: 'kSs64dcx34Fo7HpDLYkE3gQH0v2MtcdR',
-      redirect_uri: `${window.location.origin}/#/callback-auth`
+      redirect_uri: `${window.location.origin}/callback-auth`
     })
   ) as Observable<Auth0Client>).pipe(
-    shareReplay(1), // Every subscription receives the same shared value
+    share(), // Every subscription receives the same shared value
     catchError(err => throwError(err))
   );
   // Define observables for SDK methods that return promises by default
@@ -52,6 +52,10 @@ export class Auth0Service {
   private userProfileSubject$ = new BehaviorSubject<any>(null);
   userProfile$ = this.userProfileSubject$.asObservable();
 
+  // 01022022 avisar al callback-auth
+  userProfileChangeSubject$ = new BehaviorSubject<any>(null);
+  userProfileChange$ = this.userProfileChangeSubject$.asObservable();
+
 
   constructor(private router: Router) {
     // On initial load, check authentication state with authorization server
@@ -64,6 +68,7 @@ export class Auth0Service {
   // When calling, options can be passed if desired
   // https://auth0.github.io/auth0-spa-js/classes/auth0client.html#getuser
   getUser$(options?): Observable<any> {
+    // console.log('change userProfileSubject');
     return this.auth0Client$.pipe(
       concatMap((client: Auth0Client) => from(client.getUser(options))),
       tap(user => this.userProfileSubject$.next(user))
@@ -95,7 +100,7 @@ export class Auth0Service {
       // Call method to log in
       client.loginWithRedirect({
         connection: proveedor,
-        redirect_uri: `${window.location.origin}/#/callback-auth`,
+        redirect_uri: `${window.location.origin}/callback-auth`,
         appState: { target: redirectPath }
       });
     });
@@ -125,6 +130,7 @@ export class Auth0Service {
       // Response will be an array of user and login status
       authComplete$.subscribe(([user, loggedIn]) => {
         // Redirect to target route after callback processing
+        // console.log('targetRoute', targetRoute);
         this.router.navigate([targetRoute]);
       });
     }

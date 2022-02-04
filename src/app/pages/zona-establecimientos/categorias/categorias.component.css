@@ -63,6 +63,10 @@
     background: #81d4fa;
 }
 
+.div-promo-content {
+    background: papayawhip;
+}
+
 @media only screen and (min-width: 600px) {
     .scrolling-wrapper {
         width: 300px;

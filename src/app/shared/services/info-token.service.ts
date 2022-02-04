@@ -232,6 +232,11 @@ export class InfoTockenService {
     this.set();
   }
 
+  setIsUsLoggedIn( val: any) {
+    this.infoUsToken.isUsLoggedIn = val;
+    this.set();
+  }
+
   setOtro( val: any) {
     this.infoUsToken.otro = val;
     this.set();
@@ -315,6 +320,7 @@ export class InfoTockenService {
         _newUs.socketId = _token.socketId;
         _newUs.otro = _token.otro;
         _newUs.pasoRecoger = _token.pasoRecoger;
+        _newUs.isUsLoggedIn = false;
         // _newUs.isUsuarioAutorizado = false;
         this.infoUsToken = _newUs;
 

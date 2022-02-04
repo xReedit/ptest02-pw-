@@ -5,13 +5,16 @@ import { CrudHttpService } from './crud-http.service';
 // import { Observable } from 'rxjs/internal/Observable';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Subject } from 'rxjs/internal/Subject';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 import { UtilitariosService } from './utilitarios.service';
 // import { Router } from '@angular/router';
 // import { AuthService } from './auth.service';
 import { InfoTockenService } from './info-token.service';
+import { shareReplay } from 'rxjs/internal/operators/shareReplay';
+import { catchError } from 'rxjs/internal/operators/catchError';
+import { share } from 'rxjs/internal/operators/share';
 
 @Injectable({
   providedIn: 'root'
@@ -153,7 +156,28 @@ export class VerifyAuthClientService {
   }
 
   verifyClient(): Observable<any> {
-    return new Observable(observer => {
+    return new Observable<any>(observerVerify => {
+      // console.log('this.clientSocket verifyClient', this.clientSocket);
+      const _infoTokenIsUsuarioAutorizado = this.infoToken.isUsuarioAutorizado();
+      this.getDataClient();
+
+      if ( _infoTokenIsUsuarioAutorizado ) {
+        observerVerify.next(this.clientSocket);
+        return;
+      }
+
+      this.registerCliente();
+      // observerVerify.next(this.clientSocket);
+      setTimeout(() => {
+        observerVerify.next(this.clientSocket);
+      }, 300);
+    }).pipe(shareReplay(1));
+  }
+
+
+  // solo al loguear
+  verifyClientLogin(): Observable<any> {
+    return new Observable<any>(observer => {
 
     let _dataClientReurn = null;
     const _infoTokenIsUsuarioAutorizado = this.infoToken.isUsuarioAutorizado();
@@ -167,13 +191,6 @@ export class VerifyAuthClientService {
       return;
     }
 
-
-    // if ( this.clientSocket.idcliente ) {
-
-      // this.clientSocket.isCliente = true;
-      // this.setDataClient();
-    // }
-
     // resObservable = this.clientSocket;
     // verrifica si esta logueado
     if ( this.clientSocket?.isLoginByDNI || this.clientSocket?.isLoginByTelefono ) {
@@ -181,9 +198,7 @@ export class VerifyAuthClientService {
 
       this.registerCliente();
       _dataClientReurn = this.clientSocket;
-      // this.subjectClient.asObservable();
-      // this.subjectClient.complete();
-      // return this.subjectClient.asObservable();
+
       setTimeout(() => {
         observer.next(_dataClientReurn);
       }, 200);
@@ -191,34 +206,17 @@ export class VerifyAuthClientService {
     }
 
     // setTimeout(() => {
+      // this.auth.getUser$();
       this.auth.userProfile$.subscribe(resp => {
         if ( !resp ) {
-          // this.clientSocket = new SocketClientModel();
-          // this.setDataClient();
+
 
           if (!this.clientSocket.datalogin) {
-            // this.subjectClient.thrownError = true;
-            // this.subjectClient.hasError = true;
-            // this.errorShowVersion('login null');
-            // throw this.subjectClient.asObservable();
-
-            // this.subjectClient.hasError = true;
-            // this.subjectClient.complete();
-            // this.subjectClient.next(null);
-            // resObservable = null;
-            // this.clientSocket = null;
-            // observer.next(null);
             _dataClientReurn = null;
             observer.next(_dataClientReurn);
-            // return;
-            // return this.subjectClient.asObservable();
-            // this.exitNotLoguerValido();
-            // this.returnClientNull();
+
           } else {
-            // this.clientSocket.datalogin = res;
-            // if ( this.clientSocket.idcliente ) {
               this.clientSocket.isCliente = true;
-            // }
             this.setDataClient();
 
             // verifica y registra el cliente en la bd
@@ -228,6 +226,7 @@ export class VerifyAuthClientService {
 
             // console.log('aaaaa');
             setTimeout(() => {
+              // console.log('responde');
               observer.next(_dataClientReurn);
             }, 500);
           }
@@ -248,10 +247,6 @@ export class VerifyAuthClientService {
           setTimeout(() => {
             observer.next(_dataClientReurn);
           }, 500);
-          // console.log('bbbb');
-          // observer.next(_dataClientReurn);
-          // observer.next(this.clientSocket);
-          // resObservable = this.clientSocket;
         }
 
 
@@ -260,18 +255,14 @@ export class VerifyAuthClientService {
         //
       }, (error) => {
         console.log(error);
-      }, () => { console.log('complete aaaaaaaaaaaaaaa'); });
-
-      // this.subjectClient.next(this.clientSocket);
-      // this.subjectClient.complete();
-      // return this.subjectClient.asObservable();
-      // setTimeout(() => {
-        // observer.next(_dataClientReurn);
-      // }, 200);
-    // }, 1000);
+      }, () => { console.log('complete'); });
 
 
-    });
+    }).pipe(
+      // shareReplay(1),
+      share(),
+      catchError(err => throwError(err))
+    );
   }
 
   registerInvitado() {
@@ -286,6 +277,8 @@ export class VerifyAuthClientService {
     let idClient = 0;
     this.clientSocket.systemOS = this.utilService.getOS();
     this.crudService.postFree(this.clientSocket, 'ini', 'register-cliente-login', false).subscribe((rpt: any) => {
+
+      if ( !rpt.success ) {return; }
 
       // login en backend
       idClient = rpt.data[0].idcliente;

@@ -256,7 +256,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       this.nombreClienteValido = !this.isShowNombreClienteLoginInvitado;
     } else {
       let nomClienteInvitato = this.infoToken.infoUsToken.nombres;
-      nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
+      nomClienteInvitato = nomClienteInvitato ? nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato : '';
       this.nombreClienteValido = nomClienteInvitato !== '';
     }
   }
@@ -607,7 +607,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     const dataUsuario = this.infoToken.getInfoUs();
     // const dataUsuario = this.infoToken.infoUsToken;
 
-    console.log('aaaaaaaaaaaa');
+    // console.log('aaaaaaaaaaaa');
 
     const dataFrmConfirma: any = {};
     if ( this.isCliente || this.isPuntoAuntoPedido && !this.isReservaCliente) {
@@ -626,7 +626,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     }
 
 
-    console.log('bbbbbbbbbbbbbb');
+    // console.log('bbbbbbbbbbbbbb');
 
     // header //
 
@@ -658,10 +658,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       is_print_subtotales: this.miPedidoService.objDatosSede.datossede[0].is_print_subtotales,
       isprint_copy_short: this.miPedidoService.objDatosSede.datossede[0].isprint_copy_short,
       isprint_all_short: this.miPedidoService.objDatosSede.datossede[0].isprint_all_short,
-      appv: 'v.2v'
+      appv: 'v.2z'
     };
 
-    console.log('cccccccccccccc');
+    // console.log('cccccccccccccc');
     // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
     const isClienteBuscaRepartidores = this.frmDelivery.buscarRepartidor ? this.frmDelivery.buscarRepartidor : this.isDeliveryCliente || false;
     // const _subTotalesSave = _p_header.delivery === 1 ? this.frmDelivery.subTotales : this._arrSubtotales;
@@ -681,7 +681,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       idpedido: 0 // setea despues de guardar el pedido para enviarlo al socket
     };
 
-    console.log('ddddddddddd');
+    // console.log('ddddddddddd');
     // console.log('_p_header', _p_header);
 
     // enviar a print_server_detalle // para imprimir
@@ -719,7 +719,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     };
 
 
-    console.log('eeeeeeeeeeeeeeeeeeeee');
+    // console.log('eeeeeeeeeeeeeeeeeeeee');
     // ya no lo envio
     // quitamos el order delivery de los datos del usuario para que no sea mucho el json
     // dataSend.dataUsuario.orderDelivery = '';
@@ -751,7 +751,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       this.infoToken.setIdCliente();
     }
 
-    console.log('ffffffffffffffffffff');
+    // console.log('ffffffffffffffffffff');
 
     // enviar a guardar // guarda pedido e imprime comanda
 
@@ -1190,7 +1190,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private verificarConexionSocket() {
-    console.log('this.socketService.isSocketOpen',  this.socketService.isSocketOpen);
+    // console.log('this.socketService.isSocketOpen',  this.socketService.isSocketOpen);
     if (!this.socketService.isSocketOpen) {
         this.socketService.connect();
     }
@@ -1198,11 +1198,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private savePedidoSocket(dataSend: any, isPagoConTarjeta: boolean, _subTotalesSave: any) {
     // this.speechDataProviderService.setIsPedidoConfirmado();
-    console.log('111111111111');
+    // console.log('111111111111');
 
 
     this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => {
-      console.log('222222', resSocket);
+      // console.log('222222', resSocket);
         if ( resSocket === false ) {
           alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');
           // guardamos el error

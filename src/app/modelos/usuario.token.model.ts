@@ -47,4 +47,5 @@ export class UsuarioTokenModel {
     otro: any;
     pasoRecoger: boolean; // si el cliente pasa a recoger
     isActiveMozoVoz: boolean;
+    isUsLoggedIn: boolean; // si viene a loguearse es decir si viene de login fb gmail telefono dni
 }

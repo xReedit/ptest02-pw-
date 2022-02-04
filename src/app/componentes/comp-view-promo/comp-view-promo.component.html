@@ -1,0 +1,34 @@
+<!-- <div class="div-content-promo">
+    <div class="div-promo" matRipple>
+        <img src="{{ imgdemo }}" alt="aa">
+    </div>
+
+    <div class="div-promo" matRipple>
+        <img src="{{ imgdemo }}" alt="aa">
+    </div>
+
+    <div class="div-promo" matRipple>
+        <img src="{{ imgdemo }}" alt="aa">
+    </div>
+    <div class="div-promo" matRipple>
+        <img src="{{ imgdemo }}" alt="aa">
+    </div>
+    <div class="div-promo" matRipple>
+        <img src="{{ imgdemo }}" alt="aa">
+    </div>
+    <div class="div-promo" matRipple>
+        <img src="{{ imgdemo }}" alt="aa">
+    </div>
+</div> -->
+
+
+<div class="div-content-promo">
+    
+    <div class="div-promo" matRipple *ngFor="let item of _listPromo" (click)="_itemSelected(item)">
+        <img src="{{ imgdemo }}/{{item.img}}" alt="aa">
+        <div *ngIf="item.cerrado === 1" class="div-cerrado-comercio fw-600">
+            Cerrado
+        </div>
+    </div>
+    
+</div>

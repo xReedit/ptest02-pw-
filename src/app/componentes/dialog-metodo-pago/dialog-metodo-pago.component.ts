@@ -23,7 +23,7 @@ export class DialogMetodoPagoComponent implements OnInit {
   isHabilitadoTarjeta = true; // comercios no afiliado no se acepta tarjeta por la comision que cobran, algunos comercios tambien pueden especificar que no desean pagos con tarjeta
   private isComercioSolidaridad = false;
 
-  private itemSelected: MetodoPagoModel;
+  itemSelected: MetodoPagoModel;
   private importeTotal: number;
   private importeValid = false;
 

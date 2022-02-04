@@ -225,6 +225,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     // direccion de entrega
     this.infoToken = this.infoTokenService.getInfoUs();
+    // console.log('this.infoToken', this.infoToken);
 
     // que tenga la posibilidad de cambiar de direccion
     this.direccionCliente = this.infoToken.direccionEnvioSelected ? this.infoToken.direccionEnvioSelected : this.direccionClienteIni;

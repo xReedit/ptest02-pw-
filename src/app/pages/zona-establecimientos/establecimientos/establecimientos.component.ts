@@ -26,6 +26,7 @@ export class EstablecimientosComponent implements OnInit {
   loaderPage = true;
   imgIcoCategoria = 'assets/images/icon-app/';
   listIcoCategoria: any;
+  listPromociones = [];
   vistaInicio = 0;
   timeLoader = null;
 
@@ -93,6 +94,7 @@ export class EstablecimientosComponent implements OnInit {
         // console.log('this.ciudad_actual === >', this.ciudad_actual );
 
         this.loadEstablecimientos();
+        this.loadEstablecimientosPromos();
 
         // this.goComercios();
       }
@@ -285,6 +287,19 @@ export class EstablecimientosComponent implements OnInit {
 
     this.router.navigate(['/callback-auth']);
 
+  }
+
+  loadEstablecimientosPromos() {
+    const _data = {
+      ciudad: this.ciudad_actual // this.codigo_postal_actual, cambiamos el 310720
+    };
+
+    this.listPromociones = [];
+
+    this.crudService.postFree(_data, 'delivery', 'get-establecimientos-promos', false)
+    .subscribe( (res: any) => {
+      this.listPromociones = res.data.length > 0 ? res.data.filter(x => x.idpromocion) : [];
+      });
   }
 
   // private lanzarPermisoNotificationPush() {
