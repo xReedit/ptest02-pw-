@@ -55,7 +55,9 @@ export class JsonPrintService {
     const var_size_font_tall_comanda = this.datosSede.datossede[0].var_size_font_tall_comanda; // tamañao de letras
     const pie_pagina = this.datosSede.datossede[0].pie_pagina;
     const pie_pagina_comprobante = this.datosSede.datossede[0].pie_pagina_comprobante;
+    const isPrintPedidoDeliveryCompleto = this.datosSede.datossede[0].isprint_all_delivery.toString() === '1';
     let isHayDatosPrintObj = true; // si hay datos en el obj xArrayBodyPrint para imprimir
+    let isPedidoDelivery = false;
     // let indexP = 0;
 
     // si es cliente asigna impresora a seccion sin impresora // ej delivery por aplicacion
@@ -75,11 +77,29 @@ export class JsonPrintService {
       _objMiPedido.tipoconsumo
         .map((tpc: TipoConsumoModel, indexP: number) => {
           xArrayBodyPrint[indexP] = { 'des': tpc.descripcion, 'id': tpc.idtipo_consumo, 'titlo': tpc.titulo, 'conDatos': false};
+          isPedidoDelivery = tpc.descripcion.toLowerCase() === 'delivery';
 
           tpc.secciones
             .filter((s: SeccionModel) => s.idimpresora === p.idimpresora)
             .map((s: SeccionModel) => {
               printerAsigando = p;
+
+              // imprime todo el pedido en todas las areas si es delivery
+              if (isPedidoDelivery && isPrintPedidoDeliveryCompleto) {
+                tpc.secciones.map((seccion: SeccionModel) => {
+                  seccion.items.map((i: ItemModel) => {
+                    isHayDatosPrintObj = true;
+                    xArrayBodyPrint[indexP].conDatos = true; // si la seccion tiene items
+                    xArrayBodyPrint[indexP][i.iditem] = i;
+                    xArrayBodyPrint[indexP][i.iditem].des_seccion = seccion.des;
+                    xArrayBodyPrint[indexP][i.iditem].cantidad = i.cantidad_seleccionada.toString().padStart(2, '0');
+                    xArrayBodyPrint[indexP][i.iditem].precio_print = parseFloat(i.precio_print.toString()).toFixed(2);
+                    if ( !i.subitems_view ) {
+                      xArrayBodyPrint[indexP][i.iditem].subitems_view = null;
+                    }
+                  });
+                });
+              }
 
               s.items.map((i: ItemModel) => {
                 if (i.imprimir_comanda === 0 && !iscliente) { return; } // no imprimir // productos bodega u otros
@@ -101,6 +121,23 @@ export class JsonPrintService {
             .filter((s: SeccionModel) => s.idimpresora_otro === p.idimpresora)
             .map((s: SeccionModel) => {
               printerAsigando = p;
+
+              // imprime todo el pedido en todas las areas si es delivery
+              if (isPedidoDelivery && isPrintPedidoDeliveryCompleto) {
+                tpc.secciones.map((seccion: SeccionModel) => {
+                  seccion.items.map((i: ItemModel) => {
+                    isHayDatosPrintObj = true;
+                    xArrayBodyPrint[indexP].conDatos = true; // si la seccion tiene items
+                    xArrayBodyPrint[indexP][i.iditem] = i;
+                    xArrayBodyPrint[indexP][i.iditem].des_seccion = seccion.des;
+                    xArrayBodyPrint[indexP][i.iditem].cantidad = i.cantidad_seleccionada.toString().padStart(2, '0');
+                    xArrayBodyPrint[indexP][i.iditem].precio_print = parseFloat(i.precio_print.toString()).toFixed(2);
+                    if ( !i.subitems_view ) {
+                      xArrayBodyPrint[indexP][i.iditem].subitems_view = null;
+                    }
+                  });
+                });
+              }
 
               s.items.map((i: ItemModel) => {
                 if (i.imprimir_comanda === 0 && !iscliente) { return; } // no imprimir // productos bodega u otros

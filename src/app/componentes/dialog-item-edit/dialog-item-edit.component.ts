@@ -7,7 +7,7 @@ import { SubItem } from 'src/app/modelos/subitems.model';
 import { SubItemContent } from 'src/app/modelos/subitem.content.model';
 import { SubItemsView } from 'src/app/modelos/subitems.view.model';
 import { Subject } from 'rxjs/internal/Subject';
-import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { takeUntil } from 'rxjs/internal/operators';
 import { URL_IMG_CARTA } from 'src/app/shared/config/config.const';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';

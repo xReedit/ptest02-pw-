@@ -1562,7 +1562,8 @@ export class MipedidoService {
       if (p.nivel === 0) { // aplica por item
         const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion); // cantidad por seccion
         if ( cantidad === 0 ) { return; } // si no encontro items con esos criterios
-        const _costoXCantItems = this.calcCostoCantItemsDelivery();
+        // const _costoXCantItems = addServicioDeliveryExpress ? this.calcCostoCantItemsDelivery() : 0;
+        const _costoXCantItems = 0;
         importeOtros = (cantidad * parseFloat(p.monto)) + _costoXCantItems;
       }
 

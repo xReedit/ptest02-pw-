@@ -361,7 +361,7 @@ export class CategoriasComponent implements OnInit, OnDestroy {
 
     this.crudService.postFree(_data, 'delivery', 'get-establecimientos-promos', false)
     .subscribe( (res: any) => {
-      this.listPromociones = res.data.length > 0 ? res.data.filter(x => x.idpromocion) : [];
+      this.listPromociones = res.data.length > 0 ? res.data.filter(x => x.idpromocion && x.cerrado === 0) : [];
       });
   }
 

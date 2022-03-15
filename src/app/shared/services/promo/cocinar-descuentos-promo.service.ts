@@ -53,7 +53,7 @@ export class CocinarDescuentosPromoService {
             const cantDescontar = parseInt((cantSeleccionada / numCant).toString(), 0);
             const importeTotalDescuento = difCant * (cantDescontar * (parseFloat(item.precio_unitario) + subItemPrecioUnitario));
             let importeDescontar = importeTotalDescuento;
-            importeDescontar = importeDescontar - (importeDescontar * ( descPromo / 100 ));
+            importeDescontar = (importeDescontar * ( descPromo / 100 ));
             importeDescontar = importeDescontar === 0 ? importeTotalDescuento : importeDescontar;
             _precioTotal = _precioTotal - importeDescontar;
           // }

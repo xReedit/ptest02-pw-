@@ -12,9 +12,9 @@ import { UtilitariosService } from './utilitarios.service';
 // import { Router } from '@angular/router';
 // import { AuthService } from './auth.service';
 import { InfoTockenService } from './info-token.service';
-import { shareReplay } from 'rxjs/internal/operators/shareReplay';
-import { catchError } from 'rxjs/internal/operators/catchError';
-import { share } from 'rxjs/internal/operators/share';
+// import { shareReplay } from 'rxjs/internal/operators';
+import { catchError, shareReplay, share } from 'rxjs/internal/operators';
+// import { share } from 'rxjs/internal/operators/share';
 
 @Injectable({
   providedIn: 'root'

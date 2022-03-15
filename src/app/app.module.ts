@@ -35,7 +35,7 @@ import { LocationStrategy, PathLocationStrategy } from '@angular/common';
   ],
   providers: [
     // {provide: ErrorHandler, useClass: GlobalErrorHandler},
-    Location, {provide: LocationStrategy, useClass: PathLocationStrategy} // 22012022 eliminar el #
+    {provide: LocationStrategy, useClass: PathLocationStrategy} // 22012022 eliminar el #
   ],
   bootstrap: [AppComponent]
 })

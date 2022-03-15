@@ -14,8 +14,10 @@ export class CompViewPromoComponent implements OnInit {
 
   @Input()
   set list(val: any) {
-    this._listPromo = val;
-    console.log('listPromos', this._listPromo);
+    // if ( val.cerrado === 0 ) {
+      this._listPromo = val;
+    // }
+    // console.log('listPromos', this._listPromo);
   }
 
   @Output() itemSelected = new EventEmitter<DeliveryEstablecimiento>();
@@ -27,7 +29,7 @@ export class CompViewPromoComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    console.log('listPromos', this._listPromo);
+    // console.log('listPromos', this._listPromo);
   }
 
   _itemSelected(item: DeliveryEstablecimiento) {

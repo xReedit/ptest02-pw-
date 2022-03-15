@@ -94,6 +94,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   isShowNombreClienteLoginInvitado = false;
   showCuentaCliente = false;
 
+  private isSavingPedido = false;
+
   constructor(
     private miPedidoService: MipedidoService,
     private reglasCartaService: ReglascartaService,
@@ -562,6 +564,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private showLoaderPedido(): void {
     this.listenStatusService.setLoaderSendPedido(true);
+
+    if ( this.isSavingPedido ) { return; }
+    this.isSavingPedido = true;
 
 
     // seteamos el metodo pago que el cliente selecciona
@@ -1215,11 +1220,13 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
           .subscribe(resp => console.log(resp));
 
           this.listenStatusService.setLoaderSendPedido(false);
+          this.isSavingPedido = false;
           return;
         }
 
         setTimeout(() => {
           this.listenStatusService.setLoaderSendPedido(false);
+          this.isSavingPedido = false;
           this.miPedidoService.stopTimerLimit();
           this.miPedidoService.prepareNewPedido();
         }, 600);

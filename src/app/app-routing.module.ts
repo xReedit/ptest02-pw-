@@ -98,7 +98,7 @@ const routes: Routes = [
       useHash: false,
       scrollPositionRestoration: 'top',
       // anchorScrolling: 'enabled',
-      paramsInheritanceStrategy: 'always'
+      // paramsInheritanceStrategy: 'always'
     }
     )],
     providers: [
