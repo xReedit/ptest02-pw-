@@ -45,4 +45,5 @@ export class ItemModel {
     ispromo: any;
     ispromo_aplica: boolean;
     is_recomendacion: string;
+    flag_add_tpc: boolean;
 }

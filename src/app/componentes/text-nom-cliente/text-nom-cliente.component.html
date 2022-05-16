@@ -4,7 +4,7 @@
         <input [ngClass]="{'text-nom-cliente': sizeTextBg}" 
             autocomplete="off" 
             matInput 
-            placeholder="Nombre" 
+            placeholder="Nombre." 
             [(ngModel)]="nombreCliente"
             name="nombreCliente"
             #nomCliente (keyup)="saveNomCliente(nomCliente.value)">

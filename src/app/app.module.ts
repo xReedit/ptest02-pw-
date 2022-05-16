@@ -12,6 +12,7 @@ import { GlobalErrorHandler } from './shared/services/error.global.handler';
 import { environment } from '../environments/environment';
 import { SocketIoModule } from 'ngx-socket-io';
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
+// import { AgmCoreModule } from '@agm/core';
 // import { DirectionsMapDirectiveDirective } from './shared/directivas/directions-map-directive.directive';
 
 
@@ -31,6 +32,10 @@ import { LocationStrategy, PathLocationStrategy } from '@angular/common';
     CoreModule,
     SocketIoModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+    // AgmCoreModule.forRoot({
+    //   apiKey: 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo',
+    //   libraries: ['places']
+    // }),
     // ServiceWorkerModule.register('assets/js/custom-service-worker.js', { enabled: environment.production })
   ],
   providers: [

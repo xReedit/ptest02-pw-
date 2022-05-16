@@ -20,6 +20,7 @@ import { debounceTime, distinctUntilChanged, switchMap, map, startWith } from 'r
 import { EMPTY } from 'rxjs';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { ClienteService } from 'src/app/shared/services/cliente.service';
+import { DialogDireccionClienteDeliveryComponent } from '../dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
 // import { MapsAPILoader } from '@agm/core';
 
 @Component({
@@ -62,6 +63,7 @@ export class DatosDeliveryComponent implements OnInit {
   infoEstablecimiento: DeliveryEstablecimiento;
   tiempoEntregaSelected: TiempoEntregaModel;
   rippleColor = 'rgb(255,238,88, 0.3)';
+  msjErrorDir = ''; //
 
   // latitude: number;
   // longitude: number;
@@ -114,7 +116,8 @@ export class DatosDeliveryComponent implements OnInit {
     private calcDistanceService: CalcDistanciaService,
     private dialogTipoComprobante: MatDialog,
     private utilService: UtilitariosService,
-    private clienteService: ClienteService
+    private clienteService: ClienteService,
+    private dialogDireccionClienteDelivery: MatDialog,
     // private mapsAPILoader: MapsAPILoader,
     // private ngZone: NgZone,
     ) { }
@@ -371,6 +374,78 @@ export class DatosDeliveryComponent implements OnInit {
 
       }
     );
+  }
+
+  openDialogDireccion_new() {
+
+
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+    _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
+
+    this.resData.idcliente =  this.resData.idcliente !== '' ? this.resData.idcliente : this.clienteSelectBusqueda ? this.clienteSelectBusqueda.idcliente : '';
+
+    _dialogConfig.data = {
+      idcliente : this.resData.idcliente,
+      isFromComercio: true
+    };
+
+    const dialogDireccionCliente = this.dialogDireccionClienteDelivery.open(DialogDireccionClienteDeliveryComponent, _dialogConfig);
+    dialogDireccionCliente.afterClosed().subscribe((data: any) => {
+      if ( !data ) { return; }
+        // console.log('direcion', data);
+        // this.verifyClientService.setDireccionDeliverySelected(data);
+        // this.setDireccion(data);
+
+        this.msjErrorDir = '';
+        this.direccionCliente = <DeliveryDireccionCliente>data;
+
+        // if ( this.direccionCliente.codigo !== this.infoEstablecimiento.codigo_postal ) {
+        if ( this.direccionCliente.ciudad.toLocaleLowerCase() !== this.infoEstablecimiento.ciudad.toLocaleLowerCase() ) {
+          // el servicio no esta disponible en esta ubicacion
+          // this.direccionCliente = this.direccionClienteIni;
+          // this.infoToken.direccionEnvioSelected = null;
+          this.direccionCliente.codigo = null;
+          this.msjErrorDir = 'Servicio no disponible en esta dirección.';
+          // this.verificarMontoMinimo();
+          return;
+        }
+
+        // this.infoToken.direccionEnvioSelected = this.direccionCliente;
+
+        // esto para poder guardar en el procedure
+        this.direccionCliente.idcliente_pwa_direccion = this.direccionCliente.idcliente_pwa_direccion === null ? 0 : this.direccionCliente.idcliente_pwa_direccion;
+
+
+        this.calcularCostoEntrega(this.direccionCliente);
+    });
+
+  }
+
+  calcularCostoEntrega(direccionCliente: DeliveryDireccionCliente) {
+
+    // this.isReady.emit(false);
+    // this.isCalculandoDistanciaA = true;
+    this.calcDistanceService.calculateRoute(direccionCliente, this.dirEstablecimiento, false);
+    // .subscribe((res: any) => {
+    setTimeout(() => {
+      // this.dirEstablecimiento = this.dirEstablecimiento;
+      this.establecimientoService.set(this.dirEstablecimiento);
+      this.infoEstablecimiento.c_servicio = this.dirEstablecimiento.c_servicio;
+      this.resData.costoTotalDelivery = this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
+
+      const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
+      localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
+
+      this._listSubtotales = _arrSubtotales;
+      // this.isCalculandoDistanciaA = false;
+
+      // this.verificarMontoMinimo();
+      this.setearData();
+    }, 1500);
+    // });
+
   }
 
 

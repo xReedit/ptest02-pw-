@@ -43,6 +43,7 @@ export class JsonPrintService {
 
 
     const _objMiPedido = this.pedidoService.getMiPedido();
+    const _tpcPrinter = this.pedidoService.getObjNewItemTiposConsumo();
     const xRptPrint: any = []; // respuesta para enviar al backend
     const listOnlyPrinters: any = []; // lista de solo impresoras
     let xImpresoraPrint: any = []; // array de impresoras
@@ -64,6 +65,81 @@ export class JsonPrintService {
     if ( iscliente ) {
       this.setFirstPrinterSeccionCliente( _objMiPedido,  this.impresoras);
     }
+
+    // 041052022
+    // si el tipo de consumo tiene un impresora especifica
+    // ej: todo delivery se imprime en una impresora x
+
+    let isTpcPrinter = false;
+    let listTPCPrinter = _tpcPrinter;
+    listTPCPrinter = listTPCPrinter.filter(p => p.idimpresora !== 0);
+    isTpcPrinter = listTPCPrinter.length > 0;
+    console.log('isTpcPrinter', isTpcPrinter);
+
+    if ( isTpcPrinter ) {
+      listTPCPrinter.map(p => {
+        const _tpcPrint = p.idtipo_consumo;
+        const xIdPrint = p.idimpresora;
+        xArrayBodyPrint = [];
+
+        _objMiPedido.tipoconsumo
+          .filter((tpc: TipoConsumoModel) => tpc.idtipo_consumo === _tpcPrint)
+          .map((tpc: TipoConsumoModel, indexP: number) => {
+            xArrayBodyPrint[indexP] = { 'des': tpc.descripcion, 'id': tpc.idtipo_consumo, 'titlo': tpc.titulo, 'conDatos': false};
+            tpc.secciones
+            // .filter((s: SeccionModel) => s.id === _tpcPrint)
+            .map((s: SeccionModel) => {
+              s.items.map((i: ItemModel) => {
+
+                  isHayDatosPrintObj = true;
+                  xArrayBodyPrint[indexP].conDatos = true; // si la seccion tiene items
+                  xArrayBodyPrint[indexP][i.iditem] = i;
+                  xArrayBodyPrint[indexP][i.iditem].des_seccion = s.des;
+                  xArrayBodyPrint[indexP][i.iditem].sec_orden = s.sec_orden;
+                  xArrayBodyPrint[indexP][i.iditem].cantidad = i.cantidad_seleccionada.toString().padStart(2, '0');
+                  xArrayBodyPrint[indexP][i.iditem].precio_print = parseFloat(i.precio_print.toString()).toFixed(2);
+                  if ( !i.subitems_view ) {
+                    xArrayBodyPrint[indexP][i.iditem].subitems_view = null;
+                  }
+
+                  i.flag_add_tpc = true;
+
+              });
+            });
+
+          });
+
+        if (xArrayBodyPrint.length === 0 || !isHayDatosPrintObj) { return; }
+
+        // buscamos la impresora en xArrayImpresoras;
+        printerAsigando = this.impresoras.filter(pp => pp.idimpresora === xIdPrint)[0];
+
+        xImpresoraPrint = [];
+        const childPrinter: any = {};
+        childPrinter.ip_print = printerAsigando.ip;
+        childPrinter.var_margen_iz = printerAsigando.var_margen_iz;
+        childPrinter.var_size_font = printerAsigando.var_size_font;
+        childPrinter.local = 0;
+        childPrinter.num_copias = printerAsigando.num_copias; // num_copias_all;
+        childPrinter.var_size_font_tall_comanda = var_size_font_tall_comanda;
+        childPrinter.copia_local = 0; // no imprime // solo para impresora local
+        childPrinter.img64 = '';
+        childPrinter.papel_size = printerAsigando.papel_size;
+        childPrinter.pie_pagina = pie_pagina;
+        childPrinter.pie_pagina_comprobante = pie_pagina_comprobante;
+
+        xImpresoraPrint.push(childPrinter);
+
+        xRptPrint.push({
+          arrBodyPrint: xArrayBodyPrint,
+          arrPrinters: xImpresoraPrint
+        });
+
+        listOnlyPrinters.push(childPrinter);
+      });
+    }
+
+
 
     // si es punto auto pedido agregamos la impresora asignada
     const _puntoConfig = JSON.parse(localStorage.getItem('sys::punto')) || {};
@@ -88,10 +164,14 @@ export class JsonPrintService {
               if (isPedidoDelivery && isPrintPedidoDeliveryCompleto) {
                 tpc.secciones.map((seccion: SeccionModel) => {
                   seccion.items.map((i: ItemModel) => {
+
+                    if ( i.flag_add_tpc ) {return; }
+
                     isHayDatosPrintObj = true;
                     xArrayBodyPrint[indexP].conDatos = true; // si la seccion tiene items
                     xArrayBodyPrint[indexP][i.iditem] = i;
                     xArrayBodyPrint[indexP][i.iditem].des_seccion = seccion.des;
+                    xArrayBodyPrint[indexP][i.iditem].sec_orden = seccion.sec_orden;
                     xArrayBodyPrint[indexP][i.iditem].cantidad = i.cantidad_seleccionada.toString().padStart(2, '0');
                     xArrayBodyPrint[indexP][i.iditem].precio_print = parseFloat(i.precio_print.toString()).toFixed(2);
                     if ( !i.subitems_view ) {
@@ -102,12 +182,14 @@ export class JsonPrintService {
               }
 
               s.items.map((i: ItemModel) => {
+                if ( i.flag_add_tpc ) {return; }
                 if (i.imprimir_comanda === 0 && !iscliente) { return; } // no imprimir // productos bodega u otros
                   // xArrayBodyPrint[indexP][i.iditem] = [];
                   isHayDatosPrintObj = true;
                   xArrayBodyPrint[indexP].conDatos = true; // si la seccion tiene items
                   xArrayBodyPrint[indexP][i.iditem] = i;
                   xArrayBodyPrint[indexP][i.iditem].des_seccion = s.des;
+                  xArrayBodyPrint[indexP][i.iditem].sec_orden = s.sec_orden;
                   xArrayBodyPrint[indexP][i.iditem].cantidad = i.cantidad_seleccionada.toString().padStart(2, '0');
                   xArrayBodyPrint[indexP][i.iditem].precio_print = parseFloat(i.precio_print.toString()).toFixed(2);
                   if ( !i.subitems_view ) {
@@ -126,10 +208,14 @@ export class JsonPrintService {
               if (isPedidoDelivery && isPrintPedidoDeliveryCompleto) {
                 tpc.secciones.map((seccion: SeccionModel) => {
                   seccion.items.map((i: ItemModel) => {
+
+                    if ( i.flag_add_tpc ) {return; }
+
                     isHayDatosPrintObj = true;
                     xArrayBodyPrint[indexP].conDatos = true; // si la seccion tiene items
                     xArrayBodyPrint[indexP][i.iditem] = i;
                     xArrayBodyPrint[indexP][i.iditem].des_seccion = seccion.des;
+                    xArrayBodyPrint[indexP][i.iditem].sec_orden = seccion.sec_orden;
                     xArrayBodyPrint[indexP][i.iditem].cantidad = i.cantidad_seleccionada.toString().padStart(2, '0');
                     xArrayBodyPrint[indexP][i.iditem].precio_print = parseFloat(i.precio_print.toString()).toFixed(2);
                     if ( !i.subitems_view ) {
@@ -140,12 +226,14 @@ export class JsonPrintService {
               }
 
               s.items.map((i: ItemModel) => {
+                if ( i.flag_add_tpc ) {return; }
                 if (i.imprimir_comanda === 0 && !iscliente) { return; } // no imprimir // productos bodega u otros
                   // xArrayBodyPrint[indexP][i.iditem] = [];
                   isHayDatosPrintObj = true;
                   xArrayBodyPrint[indexP].conDatos = true; // si la seccion tiene items
                   xArrayBodyPrint[indexP][i.iditem] = i;
                   xArrayBodyPrint[indexP][i.iditem].des_seccion = s.des;
+                  xArrayBodyPrint[indexP][i.iditem].sec_orden = s.sec_orden;
                   xArrayBodyPrint[indexP][i.iditem].cantidad = i.cantidad_seleccionada.toString().padStart(2, '0');
                   xArrayBodyPrint[indexP][i.iditem].precio_print = parseFloat(i.precio_print.toString()).toFixed(2);
                   if ( !i.subitems_view ) {
@@ -174,6 +262,7 @@ export class JsonPrintService {
                       xArrayBodyPrint[indexP].conDatos = true; // si la seccion tiene items
                       xArrayBodyPrint[indexP][i.iditem] = i;
                       xArrayBodyPrint[indexP][i.iditem].des_seccion = s.des;
+                      xArrayBodyPrint[indexP][i.iditem].sec_orden = s.sec_orden;
                       xArrayBodyPrint[indexP][i.iditem].cantidad = i.cantidad_seleccionada.toString().padStart(2, '0');
                       xArrayBodyPrint[indexP][i.iditem].precio_print = parseFloat(i.precio_print.toString()).toFixed(2);
                       if ( !i.subitems_view ) {
@@ -194,7 +283,7 @@ export class JsonPrintService {
       childPrinter.var_margen_iz = printerAsigando.var_margen_iz;
       childPrinter.var_size_font = printerAsigando.var_size_font;
       childPrinter.local = 0;
-      childPrinter.num_copias = num_copias_all;
+      childPrinter.num_copias = printerAsigando.num_copias; // num_copias_all;
       childPrinter.var_size_font_tall_comanda = var_size_font_tall_comanda;
       childPrinter.copia_local = 0; // no imprime // solo para impresora local
       childPrinter.img64 = '';

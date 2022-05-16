@@ -47,7 +47,7 @@ export class DialogVerificarTelefonoComponent implements OnInit {
     // setTimeout(() => {
       if (!this.socketService.isSocketOpen) {
         this.infoClient = this.verifyClientService.getDataClient();
-        console.log('this.infoClient', this.infoClient);
+        // console.log('this.infoClient', this.infoClient);
         this.socketService.connect(this.infoClient, 0, false, false);
       }
     // }, 2000);
@@ -55,27 +55,32 @@ export class DialogVerificarTelefonoComponent implements OnInit {
 
     // respuesta del msj verificacion
     this.socketService.onMsjVerificacionResponse().subscribe((res: any) => {
-      console.log('repuesta == ', res);
-      if ( res.msj ) { this.intentoVerificacion = 0; } // por si quiere enviar nuevamente
+      // console.log('repuesta == ', res);
+      // if ( res.msj ) { this.intentoVerificacion = 0; } // por si quiere enviar nuevamente
       this.isNumberSuccess = res.msj ? 1 : 2;
       this.isSendSMS = true; // res.msj;
-      this.isValidForm = false;
+      // this.isValidForm = false;
       this.isContandoShow = false;
 
       this.detenerContadorBtnSend();
     });
   }
 
-  enviarCodigoSMS() {
+  enviarCodigoSMS(codMedio: number) {
     if ( this.isClienteNoRegister ) {
-      this.buscarClienteTelefono();
+      this.buscarClienteTelefono(codMedio);
       return;
     }
 
-    this.sendSMS();
+    this.sendSMS(codMedio);
   }
 
-  sendSMS() {
+  sendWhatsApp() {
+
+  }
+
+  // codMedio  0 = whatsapp  1= s ms
+  sendSMS(codMedio: number) {
 
     this.isVerificacionOk = false;
     this.isSendSMS = false;
@@ -84,7 +89,9 @@ export class DialogVerificarTelefonoComponent implements OnInit {
     this.numSegundosActivarBtn = 15;
 
     // por wsp
-    if ( this.intentoVerificacion === 0 ) {
+    // if ( this.intentoVerificacion === 0 ) {
+    // this.intentoVerificacion = 1;
+    if ( codMedio === 0 ) {
       this.data.idsocket = this.socketService.getIdSocket();
 
       if (!this.socketService.isSocketOpen) {
@@ -97,18 +104,20 @@ export class DialogVerificarTelefonoComponent implements OnInit {
       }, 500);
       this.isContandoShow = true;
       this.contadorActvarBtnSend();
+      this.intentoVerificacion++; // reintentar
       return;
     }
 
-    // console.log('enviando por msj texto');
+    // por sms
     this.contadorActvarBtnSend();
     this.crudService.postSMS(this.data, 'delivery', 'send-sms-confirmation', false)
       .subscribe(res => {
 
         this.isNumberSuccess = res.msj ? 1 : 2;
         this.isSendSMS = res.msj;
-        this.isValidForm = false;
+        // this.isValidForm = false;
         this.detenerContadorBtnSend();
+        this.intentoVerificacion++; // reintentar
       });
   }
 
@@ -141,7 +150,7 @@ export class DialogVerificarTelefonoComponent implements OnInit {
   }
 
   verificarNum(telefono: string): void {
-    this.isValidForm = telefono.trim().length >= 5 ? true : false;
+    this.isValidForm = telefono.trim().length >= 9 ? true : false;
     this.data.numberphone = telefono;
     this.data.verificado = false;
   }
@@ -156,6 +165,7 @@ export class DialogVerificarTelefonoComponent implements OnInit {
         this.isSendSMS = true;
         this.isContandoShow = false;
         this.intentoVerificacion = 1;
+        // console.log('this.intentoVerificacion', this.intentoVerificacion);
         clearInterval(this.conteoInterval);
       }
     }, 1000);
@@ -169,14 +179,14 @@ export class DialogVerificarTelefonoComponent implements OnInit {
   }
 
 
-  private buscarClienteTelefono() {
+  private buscarClienteTelefono(codMedio: number) {
     const _dataSend = {
       telefono: this.data.numberphone
     };
 
      this.crudService.postFree(_dataSend, 'delivery', 'search-cliente-by-phone', false)
     .subscribe((res: any) => {
-      console.log('cliten con telefono', res);
+      // console.log('cliten con telefono', res);
       this.data.isClienteTelefono = true;
       this.data.cliente = res.data.length > 0 ? res.data[0] : null;
       if ( res.data.length > 0 ) {
@@ -184,7 +194,7 @@ export class DialogVerificarTelefonoComponent implements OnInit {
         this.data.idcliente = this.data.cliente.idcliente;
       }
 
-      this.sendSMS();
+      this.sendSMS(codMedio);
     });
   }
 

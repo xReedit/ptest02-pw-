@@ -72,7 +72,6 @@ export class UtilitariosService {
         title: 'Carta Virutal ' + nomSede,
         url: urlCartaVirtual
       }).then(() => {
-        console.log('Thanks for sharing!');
         return {mensaje: 'Copiado'};
       })
       .catch(console.error);

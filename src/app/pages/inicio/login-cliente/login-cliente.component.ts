@@ -183,7 +183,8 @@ constructor(
     this.crudService.postFree(_dataClienteNum, 'service', 'consulta-dni-ruc-no-tk', false)
     .subscribe((res: any) => {
       // console.log('consulta-dni', res);
-      const _datosBd = res.data;
+      let _datosBd: any;
+      _datosBd = res.data;
       if ( res.success && _datosBd.length > 0 ) {
         this.idClienteBD = _datosBd[0].idcliente;
 

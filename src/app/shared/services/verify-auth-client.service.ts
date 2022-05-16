@@ -278,6 +278,7 @@ export class VerifyAuthClientService {
     this.clientSocket.systemOS = this.utilService.getOS();
     this.crudService.postFree(this.clientSocket, 'ini', 'register-cliente-login', false).subscribe((rpt: any) => {
 
+      // console.log('rpt', rpt);
       if ( !rpt.success ) {return; }
 
       // login en backend

@@ -17,6 +17,8 @@ export class DialogSelectDireccionComponent implements OnInit {
 
   _idClienteBuscar: number; // cuando el pedido delivery lo toma el comercio
 
+  private fromComercio = false;
+
   constructor(
     private dialogRef: MatDialogRef<DialogSelectDireccionComponent>,
     private listenService: ListenStatusService,
@@ -24,6 +26,7 @@ export class DialogSelectDireccionComponent implements OnInit {
   ) {
     this.isGuardarDireccion = data ? data.isGuardar : true;
     this._idClienteBuscar = data ? data.idClienteBuscar : null;
+    this.fromComercio = data ? data?.fromComercio || false : false;
   }
 
   ngOnInit() {

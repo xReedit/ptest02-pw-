@@ -24,7 +24,7 @@
 }
 
 .item-direccion {
-    border-bottom: 1px solid#e4e4e4;
+    border-bottom: 1px solid #e4e4e4;
     display: flex;
     padding: 10px;
     align-items: center;
@@ -98,3 +98,11 @@ agm-map {
 .input-dir {
     font-weight: 600;
   }
+
+
+.btn-seccionar {
+    font-size: 12px;
+    padding: 5px;
+    background-color: #cfcfcf;
+    border-radius: 5px;
+}

@@ -22,6 +22,14 @@
             >
         </div>
         <br>
+
+        <!-- boton de direccion actual -->        
+        <ng-container *ngIf="!isFromComercio && !showBusqueda">            
+            <div class="item-direccion fs-16" matRipple (click)="goUbicacionActual()"l>
+                <i class="fa fa-location-arrow text-success mr-2" aria-hidden="true"></i>
+                <span class="fw-600">Ubicación actual</span>
+            </div>   
+        </ng-container>
     
         <!-- lista de direcciones anteriormente guardadas -->
         <div *ngIf="!showBusqueda">            
@@ -42,21 +50,33 @@
                 </div>
             </div>
         </div>
+
+        
     
     
         <!-- lista de predicciones -->
         <div *ngIf="showBusqueda">
-            <div *ngFor="let item of listPredicciones" class="item-direccion-prediction" matRipple (click)="goDireccion(item)">        
-                <p class="fw-600">{{ item.structured_formatting.main_text }}</p>
-                <p class="text-secondary fs-12">{{ item.structured_formatting.secondary_text }}</p>
+            <div *ngFor="let item of listPredicciones" class="item-direccion-prediction" matRipple>        
+                <div class="d-flex justify-content-between align-items-center">
+                    <div (click)="goDireccion(item)" class="w-100">
+                        <p class="fw-600">{{ item.structured_formatting.main_text }}</p>
+                        <p class="text-secondary fs-12">{{ item.structured_formatting.secondary_text }}</p>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div *ngIf="isFromComercio" matRipple class="btn-seccionar bg-warning mr-1" (click)="goDireccion(item, true)" title="Ver Mapa"><i class="fa fa-street-view p-1"></i></div>
+                        <div class="btn-seccionar" matRipple (click)="goDireccion(item)">Elegir</div>
+                    </div>
+                </div>
             </div>
         </div>
     
-        <!-- boton de direccion actual -->    
-        <div class="item-direccion fs-16" matRipple (click)="goUbicacionActual()"l>
-            <i class="fa fa-location-arrow text-success mr-2" aria-hidden="true"></i>
-            <span class="fw-600">Ubicación actual</span>
-        </div>    
+        
+        
+        
+        <!-- si viene del comercio -->
+        <div *ngIf="isFromComercio" class="text-center pt-3">
+            <button class="btn btn-secondary" (click)="cerrarDlg()">Cerrar</button>
+        </div>
 
 </div>
 

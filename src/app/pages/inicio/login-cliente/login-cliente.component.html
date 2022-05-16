@@ -60,7 +60,7 @@
         <div class="pr-5 pt-2 pl-5 pb-0 max-w">
             <div *ngIf="!isPaseOk">
                 <mat-form-field class="w-100">
-                    <input matInput placeholder="DNI" maxlength="8" type="number" (keyup.enter)="buscarDNI(dni.value)" #dni>
+                    <input matInput placeholder="DNI" maxlength="8" type="number" (keyup.enter)="buscarDNI(dni.value)" autocomplete="off" name="txtDni" #dni>
                     <button mat-flat-button color="primary" matSuffix (click)="buscarDNI(dni.value)">            
                         <i class="fa fa-arrow-right" aria-hidden="true"></i>                        
                     </button>

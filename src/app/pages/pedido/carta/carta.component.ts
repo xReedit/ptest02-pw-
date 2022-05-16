@@ -289,6 +289,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
           _objTpcAdd.descripcion = t.descripcion;
           _objTpcAdd.idtipo_consumo = t.idtipo_consumo;
           _objTpcAdd.titulo = t.titulo;
+          _objTpcAdd.idimpresora = t.idimpresora;
 
           // filtramos los tipos de consumo segun qr escaneado o personal autorizado
 

@@ -7,4 +7,5 @@ export class TipoConsumoModel {
     count_items_seccion: number;
     secciones: SeccionModel[] = [];
     cantidad_seleccionada: number;
+    idimpresora: number;
 }

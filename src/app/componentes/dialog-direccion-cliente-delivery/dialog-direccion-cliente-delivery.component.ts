@@ -1,10 +1,12 @@
 import { AfterViewInit, Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatInput } from '@angular/material/input';
+import { NgxMaterialTimepickerHoursFace } from 'ngx-material-timepicker/src/app/material-timepicker/components/timepicker-hours-face/ngx-material-timepicker-hours-face';
 import { debounceTime, distinctUntilChanged } from 'rxjs/internal/operators';
 import { Subject } from 'rxjs/internal/Subject';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { SedeDeliveryService } from 'src/app/shared/services/sede-delivery.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
@@ -42,10 +44,13 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   isUsCliente = true; // si el usuario es cliente o usuario autorizado
   mapCenter: any = {};
   private isChangeDireccion = true;
+  isFromComercio = false;
 
   // nueva direccion en ingreso
   dataCliente: DeliveryDireccionCliente;
   loader = 0;
+
+  private ciudadComercio = '';
 
 
 
@@ -56,15 +61,19 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     private crudService: CrudHttpService,
     private verifyClientService: VerifyAuthClientService,
     private utilService: UtilitariosService,
-    private plazaDelivery: SedeDeliveryService
+    private plazaDelivery: SedeDeliveryService,
+    private establecimientoService: EstablecimientoService,
   ) {
     this.idClienteBuscar = data.idcliente;
+    this.isFromComercio = data.isFromComercio || false;
+
+    console.log(this.isFromComercio);
 
     this.direccionBuscarUpdate.pipe(
       debounceTime(400),
       distinctUntilChanged())
       .subscribe(value => {
-        if ( value.length > 5 ) {
+        if ( value.length > 4 ) {
           this.showBusqueda = true;
           this.getPlacesPredictionsChange(value);
         }
@@ -74,6 +83,8 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   ngOnInit(): void {
     this.dataCliente = new DeliveryDireccionCliente();
     this.loadDireccionesAgregadas();
+
+    this.ciudadComercio = this.establecimientoService.get().ciudad;
   }
 
   ngAfterViewInit() {
@@ -107,9 +118,11 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   getPlacesPredictionsChange(value: string) {
 
     const sessionToken = new google.maps.places.AutocompleteSessionToken();
+    // si es comercio adjunta la ciudad
+    const _input = this.isFromComercio ? `${value}, ${this.ciudadComercio}` : value;
 
     const options = {
-      input: value,
+      input: _input,
       componentRestrictions: { country: 'pe' },
       sessionToken: sessionToken
     };
@@ -137,10 +150,9 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     this.cerrarDlg();
   }
 
-  goDireccion(prediccionSelected: any) {
+  goDireccion(prediccionSelected: any, showMapComercio = false) {
     // console.log('direccion selected', prediccionSelected);
-
-    this.getDireccionGeocode({ placeId: prediccionSelected.place_id }, prediccionSelected);
+    this.getDireccionGeocode({ placeId: prediccionSelected.place_id }, prediccionSelected, showMapComercio);
   }
 
   goUbicacionActual() {
@@ -154,6 +166,10 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   });
   }
 
+  goMapa() {
+    this.showSelectedDireccion = false;
+  }
+
   getPosition(): Promise<any> {
     return new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resp => {
@@ -165,7 +181,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     });
 }
 
-  private getDireccionGeocode(payload: any, prediccionSelected = null) {
+  private getDireccionGeocode(payload: any, prediccionSelected = null, showMapComercio = false) {
 
     if ( prediccionSelected ) {
       this.dataCliente.direccion = prediccionSelected.structured_formatting.main_text;
@@ -196,6 +212,13 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
         this.mapCenter.lng = this.longitude;
 
         this.countMoveMap = 0;
+
+        // 110422 si viene de comercio no pasa al mapa
+        if ( this.isFromComercio && !showMapComercio ) {
+          this.setDireccionSelected();
+          this.saveDireccion();
+          return;
+        }
 
         this.showSelectedDireccion = false;
 
@@ -284,10 +307,22 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     this.dataCliente.referencia = this.utilService.addslashes(this.dataCliente.referencia);
     this.crudService.postFree(this.dataCliente, 'cliente', 'new-direccion', false)
       .subscribe((res: any) => {
+        if ( this.isFromComercio ) {
+          if ( res.success ) {
+            this.dataCliente.idcliente_pwa_direccion = res.data[0].idcliente_pwa_direccion;
+          }
+          this.countMoveMap = 1;
+          this.cerrarDlg();
+
+          return;
+        }
+
         setTimeout(() => {
           this.loader = 2;
           setTimeout(() => {
-            this.dataCliente.idcliente_pwa_direccion = res.data[0].idcliente_pwa_direccion;
+            if ( res.success ) {
+              this.dataCliente.idcliente_pwa_direccion = res.data[0].idcliente_pwa_direccion;
+            }
             this.countMoveMap = 1;
             this.cerrarDlg();
           }, 500);

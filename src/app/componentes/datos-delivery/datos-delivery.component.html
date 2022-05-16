@@ -87,7 +87,7 @@
 
 
       <!-- direccion -->
-      <ng-container *ngIf="isShowAddDireccionMapa; else elseTemplateNoMapa">
+      <!-- <ng-container *ngIf="isShowAddDireccionMapa; else elseTemplateNoMapa">
         <div *ngIf="!isRecojoLocalCheked" class="border-bottom m-0 pl-0 pr-2 pt-3 pb-3 text-left d-flex justify-content-between align-items-center" matRipple [matRippleColor]="rippleColor" (click)="openDialogDireccion()">
           <div>
             <span class="fw-100 fs-12 text-secondary">Direccion de entrega:</span>
@@ -106,11 +106,35 @@
         <mat-form-field class="w-100">
           <input matInput placeholder="Direccion" (keyup)="setTextDirClienteNoMapa(text_dir_solo.value)"  [required]="!isShowAddDireccionMapa" #text_dir_solo>
         </mat-form-field>
-        <!-- <span class="direccionCliente.direccion === ''" class="fs-14 text-danger">Ingrese direccion</span> -->
         <span></span>
-      </ng-template>                
+      </ng-template>      -->
+      
+      <!-- direccion -->
+      <ng-container *ngIf="isShowAddDireccionMapa; else elseTemplateNoMapa">
+        <div *ngIf="!isRecojoLocalCheked" class="border-bottom m-0 pl-0 pr-2 pt-3 pb-3 text-left d-flex justify-content-between align-items-center" matRipple [matRippleColor]="rippleColor" (click)="openDialogDireccion_new()">
+          <div>
+              <span class="fw-100 fs-12 text-secondary">Direccion de entrega:</span>
+              <p class="m-0 fs-14">
+                  <!-- <strong>{{direccionCliente.titulo}}</strong> <br> {{direccionCliente.direccion}} -->
+                  <strong [ngClass]="{'text-danger': direccionCliente.direccion === ''}">{{direccionCliente.titulo}}</strong> <span *ngIf="direccionCliente.direccion != ''" class="fw-100 text-info pl-2"> {{  dirEstablecimiento.distancia_km }} km </span><br> {{direccionCliente.direccion}}            
+              </p>   
+              <p *ngIf="msjErrorDir.length > 0" class="text-danger fs-12 fw-100 m-0">  {{ msjErrorDir }} </p>
+          </div>
+          <div>
+              <button class="btn btn-sm btn-secondary">
+                  <span class="fw-100 fs-10">Cambiar</span>
+              </button>
+          </div>
+        </div>
+    </ng-container>
+    <ng-template #elseTemplateNoMapa>
+      <mat-form-field class="w-100">
+        <input matInput placeholder="Direccion" (keyup)="setTextDirClienteNoMapa(text_dir_solo.value)"  [required]="!isShowAddDireccionMapa" #text_dir_solo>
+      </mat-form-field>
+      <span></span>
+    </ng-template>
 
-       <!-- tiempo de entrega -->
+    <!-- tiempo de entrega -->
     <div class="border-bottom m-0 pl-0 pr-2 pt-3 pb-3 d-flex justify-content-between align-items-center" matRipple [matRippleColor]="rippleColor" (click)="openDialogTiempoEntrega()">
         <!-- <span class="fw-100 fs-12 text-secondary">Hora de entrega:</span> -->            
         <div>            
