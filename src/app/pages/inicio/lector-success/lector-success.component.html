@@ -51,7 +51,15 @@
         <hr>
         <!-- <button mat-button color="primary">Listo Empezar <i class="fa fa-arrow-right" aria-hidden="true"></i></button> -->
         <div class="animated fadeInUp">
-            <button mat-flat-button color="primary" class="p-1" (click)="listoEmpezar()"><span class="fs-18 p-3">Listo, empezar</span> <i class="fa fa-arrow-right pr-2" aria-hidden="true"></i></button>
+            <ng-container *ngIf="showComercioAbierto; else elseTemplateCerrado">
+                <button mat-flat-button color="primary" class="p-1" (click)="listoEmpezar()"><span class="fs-18 p-3">Listo, empezar</span> <i class="fa fa-arrow-right pr-2" aria-hidden="true"></i></button>                
+            </ng-container>
+            <ng-template #elseTemplateCerrado>                
+                <p class="fw-600 text-danger">{{dataSede.nombre}} en este momento se encuetra cerrado. <span class="text-info fs-14">Le invitamos a ver otras opciones.</span></p>
+                <br>
+                <button mat-flat-button color="primary" class="p-1" (click)="goZonaDelivery()"><span class="fs-18 p-3">Ver otras opciones</span> <i class="fa fa-arrow-right pr-2" aria-hidden="true"></i></button>
+            </ng-template>
+            
         </div>
         
     </div>

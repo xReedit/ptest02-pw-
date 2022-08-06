@@ -9,4 +9,5 @@ export class CategoriaModel {
     des: string;
     detalle: string;
     secciones: SeccionModel[];
+    abierto: boolean;
 }

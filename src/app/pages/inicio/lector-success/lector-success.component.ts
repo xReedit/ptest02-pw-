@@ -17,6 +17,7 @@ export class LectorSuccessComponent implements OnInit {
   listReglas: any;
   numMesa = 0;
   usLog: any;
+  showComercioAbierto = true;
 
   constructor(
     private crudService: CrudHttpService,
@@ -58,6 +59,12 @@ export class LectorSuccessComponent implements OnInit {
         this.verifyClientService.getDataClient();
         this.verifyClientService.setIdOrg(this.dataSede.idorg);
         this.verifyClientService.setIdSede(this.dataSede.idsede);
+
+        this.showComercioAbierto = true;
+
+        if ( this.usLog.isDelivery ) {
+          this.showComercioAbierto = this.dataSede.pwa_delivery_comercio_online === 1;
+        }
 
 
         // setea el establecimiento
@@ -114,6 +121,11 @@ export class LectorSuccessComponent implements OnInit {
     setTimeout(() => {
       this.router.navigate(['/callback-auth']);
     }, 500);
+  }
+
+
+  goZonaDelivery() {
+    this.router.navigate(['/zona-delivery/establecimientos']);
   }
 
 

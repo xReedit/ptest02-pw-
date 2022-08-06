@@ -3,9 +3,12 @@
   <div [hidden]="isBusqueda" class="content-master">
     <!-- toolbar -->
     <ng-container *ngIf="showToolBar isBusqueda">
-      <div matRipple class="text-white bg-primary p-2 m-toolbar-seccion xanimated xfadeInDown text-puntos-suspensivos" (click)="goBack()">
-        <i class="fa fa-arrow-left" aria-hidden="true"></i>
-        <span class="pl-2 font-weight-light fs-13">{{tituloToolBar}}</span>        
+      <div matRipple class="text-white bg-primary p-2 m-toolbar-seccion xanimated xfadeInDown text-puntos-suspensivos d-flex justify-content-between align-items-center" (click)="goBack()">
+        <span class="pl-2 font-weight-light fs-13 text-puntos">{{tituloToolBar}}</span>        
+        <div class="border-1">
+          <i class="fa fa-arrow-left pr-1" aria-hidden="true"></i>
+          <span class="fs-13">Atrás</span>
+        </div>
       </div>
     </ng-container>
 
@@ -31,17 +34,24 @@
                   <li *ngFor="let item of miPedidoService.objCarta.carta" class="xCursor"
                       matRipple [matRippleColor]="rippleColor"
                       (click)="getSecciones(item)">
-                      <div class="m1 seccion">                          
-                        <div class="img mt-2">
-                          <img src="assets/images/048-grill.png" alt="">
-                        </div>                        
-                        <div>
-                          <span class="fw-100 fs-20">{{item.des}}</span><br>                        
-                          <div class="text-secondary">
-                            <span class="mt-2 fs-15">{{ item.detalle | lowercase }}</span><br>
-                            <i class="fa fa-clock-o pr-2" aria-hidden="true"></i>
-                            <span class="mt-2 fs-12">Horario de atencion: de {{item.hora_ini}} a {{item.hora_fin}} </span>
+                      <div class="m1 seccion item-categoria-carta">      
+                        <div class="w-100 d-flex align-items-center">
+                          <div class="img mt-2">
+                            <img src="assets/images/048-grill.png" alt="">
+                          </div>                        
+                          <div>
+                            <span class="fw-100 fs-20">{{item.des}}</span><br>                        
+                            <div class="text-secondary">
+                              <span class="mt-2 fs-15">{{ item.detalle | lowercase }}</span><br>
+                              <i class="fa fa-clock-o pr-2" aria-hidden="true"></i>
+                              <span class="mt-2 fs-12">Horario: {{item.hora_ini}} a {{item.hora_fin}} </span>
+                            </div>
                           </div>
+                        </div>
+                          
+                        <!-- si esta disponible segun hora -->
+                        <div *ngIf="!item.abierto" class="aling-rigth">
+                          <img src="assets/images/002-lock.png" alt="bloqueado" class="animated" [ngClass]="{'wobble': animateBloqueoCategoria}">
                         </div>
                       </div>
                   </li>

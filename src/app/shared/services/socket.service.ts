@@ -229,6 +229,30 @@ export class SocketService {
     });
   }
 
+  onGetClienteLlama() {
+    return new Observable(observer => {
+      this.socket.on('notificar-cliente-llamado', (res: any) => {
+        observer.next(res);
+      });
+    });
+  }
+
+  onRemoveClienteLlama() {
+    return new Observable(observer => {
+      this.socket.on('notificar-cliente-llamado-remove', (res: any) => {
+        observer.next(res);
+      });
+    });
+  }
+
+  onLoadCallClienteLlama() {
+    return new Observable(observer => {
+      this.socket.on('load-list-cliente-llamado', (res: any) => {
+        observer.next(res);
+      });
+    });
+  }
+
   // respuesta de hacer un nuevo pedido
   onGetNuevoPedido() {
     return new Observable(observer => {

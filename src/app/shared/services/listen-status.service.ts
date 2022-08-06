@@ -64,6 +64,9 @@ export class ListenStatusService {
   private isLoaderSendPedidoSource = new BehaviorSubject<boolean>(false);
   public isLoaderSendPedido$ = this.isLoaderSendPedidoSource.asObservable();
 
+  private isFinishLoaderSendPedidoSource = new BehaviorSubject<boolean>(false);
+  public isFinishLoaderSendPedido$ = this.isFinishLoaderSendPedidoSource.asObservable();
+
   private isLoaderCartaSource = new BehaviorSubject<boolean>(false);
   public isLoaderCarta$ = this.isLoaderCartaSource.asObservable();
 
@@ -74,6 +77,10 @@ export class ListenStatusService {
   // observable page show atm
   private numberPageShowAtmSoruce = new BehaviorSubject<number>(0);
   public numberPageShowAtm$ = this.numberPageShowAtmSoruce.asObservable();
+
+  // observable lista cliente solicita atencion
+  // private callClienteSolicitaAtencionSoruce = new BehaviorSubject<string>('');
+  // public callClienteSolicitaAtencion$ = this.callClienteSolicitaAtencionSoruce.asObservable();
 
   // observable atm cash -> pago tarjeta
   // private isDataFromCashAtmSoruce = new BehaviorSubject<any>({});
@@ -140,8 +147,26 @@ export class ListenStatusService {
     this.isShowFooterZonaDeliverySource.next(value);
   }
 
-  setLoaderSendPedido(value: boolean) {
-    this.isLoaderSendPedidoSource.next(value);
+  setLoaderSendPedido(value: boolean, isClienteReadQr: boolean = false) {
+    // if ( isClienteReadQr ) { // si es cliente mozo virtual QR
+      if ( value ) { // open
+        this.isLoaderSendPedidoSource.next(value);
+      } else { // close
+        // aca muestra el mensaje de pedido enviado
+        this.isFinishLoaderSendPedidoSource.next(true);
+      }
+    // } else {
+    //   this.isLoaderSendPedidoSource.next(value);
+    // }
+  }
+
+  setIsFinishLoaderSendPedidoSource(value: boolean) {
+    this.isFinishLoaderSendPedidoSource.next(value);
+  }
+
+  closeFinishLoaderSendPedidoSource() {
+    this.isLoaderSendPedidoSource.next(false);
+    this.isFinishLoaderSendPedidoSource.next(false);
   }
 
   setLoaderCarta(value: boolean) {
@@ -155,6 +180,10 @@ export class ListenStatusService {
   setNumberShowPageAtm(num: number) {
     this.numberPageShowAtmSoruce.next(num);
   }
+
+  // setCallListClienteAtencion(num_mesa: string) {
+  //   this.callClienteSolicitaAtencionSoruce.next(num_mesa);
+  // }
 
   // setDataFromAtmCash (dataAtm: any) {
   //   this.isDataFromCashAtmSoruce.next(dataAtm);

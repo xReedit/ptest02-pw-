@@ -137,7 +137,7 @@ export class EstablecimientoService {
 
 
   getClienteAutocomplete(search: string): Observable<any[]> {
-    const _dataSend = { buscar: search };
+    const _dataSend = { buscar: search, only_sede: true };
     return new Observable(observer => {
       this.crudService.postFree(_dataSend, 'pedido', 'get-find-cliente-by-name', true)
       .subscribe((res: any) => {

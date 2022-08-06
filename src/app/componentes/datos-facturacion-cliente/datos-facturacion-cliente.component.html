@@ -1,0 +1,67 @@
+
+
+    <div class="i-header">
+        <!-- <div class="d-flex"> -->
+            <p class="fw-600 fs-14 m-0 p-1">Indique los datos para su comprobante.</p>            
+            <div class="i-btn-exit" style="width: 30px" matRipple (click)="cerrarDlg()">
+                <i class="fa fa-times" aria-hidden="true"></i>
+            </div>
+        <!-- </div> -->
+    </div>    
+
+
+<div class="w-100 p-4" autocomplete="off">  
+    <!-- <form autocomplete="off"> -->
+    <p>Tipo Comprobante</p>
+    <div class="d-flex">
+        <mat-radio-group
+            aria-labelledby="example-radio-group-label"
+            class="example-radio-group"
+            [(ngModel)]="comprobanteSelected" (change)="changeOptionCPE()">
+            <mat-radio-button class="example-radio-button" *ngFor="let item of listTPC" [value]="item">
+                {{item.descripcion}}
+            </mat-radio-button>
+        </mat-radio-group>
+    </div>
+
+    <div class="w-100">
+
+        <div>
+            <mat-form-field class="w-100">
+                <input type="number" maxlength="11" matInput placeholder="RUC o DNI" name="dni" [(ngModel)]="dataFac.dni" autocomplete="off" (keyup)="changeDNI()" (blur)="comprobarDNI()">
+            </mat-form-field>
+            <p class="p-msj-dni" [ngClass]="[isSuccessDNI ? 'text-success' : 'text-danger']">{{ msjDNI }}</p>
+            <div *ngIf="isShowNombre">
+                <mat-form-field class="w-100">
+                    <input matInput placeholder="Nombre | Razon Social" name="nombre" [(ngModel)]="dataFac.nombre" autocomplete="off" (keyup)="changeName()">
+                </mat-form-field>
+                <p class="p-msj-dni"  [ngClass]="[isSuccessName ? 'text-success' : 'text-danger']">Mínimo 5 digitos</p>
+            </div>
+        </div>
+        
+
+
+        <div>            
+            <mat-form-field class="w-100">
+                <input type="number" maxlength="9" matInput placeholder="Teléfono Whatsapp" name="telefono" [(ngModel)]="dataFac.telefono" autocomplete="off">
+                <mat-icon matSuffix><i class="fa fa-whatsapp text-success"></i></mat-icon>
+            </mat-form-field>
+            <div class="d-flex align-items-center p-msj-dni">
+                <p class="m-0 fs-13"> Teléfono donde se enviará el comprobante.</p>
+            </div>
+        </div>
+    </div>  
+
+    <br>
+    <hr>
+    <p class="fs-14 text-secondary text-center">
+        <i class="fa fa-info-circle text-info"></i>
+        El comprobante será emitido desde caja con los datos que indique al momento de pagar la cuenta.
+    </p>
+    <hr>
+    <div class="text-center p-2">
+        <button class="mr-1" mat-flat-button color="primary" (click)="saveFacturacion()">Listo, continuar</button>
+        <button mat-flat-button color="accent" (click)="cerrarDlg()">Cerrar</button>
+    </div>
+    <!-- </form> -->
+</div>

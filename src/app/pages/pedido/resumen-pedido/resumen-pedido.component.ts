@@ -125,6 +125,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     this.isPuntoAuntoPedido = this.infoToken.isPuntoAutoPedido();
 
+    // console.log('this.infoToken', this.infoToken);
+
     this.validarNomhbreCliente();
 
     // this.verificarConexionSocket();
@@ -261,6 +263,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       nomClienteInvitato = nomClienteInvitato ? nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato : '';
       this.nombreClienteValido = nomClienteInvitato !== '';
     }
+    // console.log('this.nombreClienteValido', this.nombreClienteValido);
   }
 
   ngOnDestroy(): void {
@@ -293,9 +296,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   pintarMiPedido() {
     this.isReloadListPedidos = true;
-    // if (!this.isHayCuentaBusqueda) {
+
+    if (!this.isHayCuentaBusqueda) {
       this.miPedidoService.validarReglasCarta(this.rulesCarta);
-    // }
+    }
+
 
     this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
@@ -304,6 +309,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.isReloadListPedidos = false;
     }, 1000);
+
+    // console.log('_arrSubtotales', this._arrSubtotales);
 
   }
 
@@ -760,6 +767,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // enviar a guardar // guarda pedido e imprime comanda
 
+    // console.log('coonsole.log', dataSend);
     // prioridad socket, por crud demora mucho aveces se queda enviando datos...
     this.savePedidoSocket(dataSend, isPagoConTarjeta, _subTotalesSave);
 
@@ -961,7 +969,15 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   checkIsRequierMesa(num: string = ''): void {
     // console.log('check mesa', num);
-    if ( num !== '' ) {this.frmConfirma.nummesa = num; }
+    if ( num !== '' ) {
+      num = num.replace(/\D/gm, '');
+      this.frmConfirma.nummesa = num;
+
+
+      // revisar si el cliente ya hizo pedido en esta mesa
+      // this.getLatPedidoClienteThisITable(num);
+    }
+
     this.frmConfirma.nummesa_resplado = num;
     // const arrReqFrm = <FormValidRptModel>this.miPedidoService.findEvaluateTPCMiPedido();
     // const isTPCLocal = arrReqFrm.isTpcLocal;
@@ -989,6 +1005,18 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   checkDataDelivery($event: any) {
     this.isDeliveryValid = $event.formIsValid;
     this.frmDelivery = $event.formData;
+  }
+
+  getLatPedidoClienteThisITable(num: string) {
+    const _data = {
+      idsede : this.infoToken.getInfoUs().idsede,
+      nummesa: num
+    };
+
+    this.crudService.postFree(_data, 'pedido', 'get-last-pedido-cliente-this-table', false)
+      .subscribe(res => {
+        console.log(res);
+      });
   }
 
   imprimirPrecuenta() {
@@ -1135,7 +1163,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this._miPedido = this.miPedidoService.getMiPedido();
 
     // para notificar antes del pago
-    // console.log('bbbbbbbbbbbbbbbbbbb');
+    // console.log(_miPedidoCuenta);
+    // console.log(this._miPedido);
     this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
     localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
 
@@ -1219,17 +1248,17 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
           this.crudService.postFree(dataError, 'error', 'set-error', false)
           .subscribe(resp => console.log(resp));
 
-          this.listenStatusService.setLoaderSendPedido(false);
+          this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
           this.isSavingPedido = false;
           return;
         }
 
         setTimeout(() => {
-          this.listenStatusService.setLoaderSendPedido(false);
+          this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
           this.isSavingPedido = false;
           this.miPedidoService.stopTimerLimit();
           this.miPedidoService.prepareNewPedido();
-        }, 600);
+        }, 800);
 
 
         const _res = resSocket[0];

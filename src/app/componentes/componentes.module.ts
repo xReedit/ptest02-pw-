@@ -55,6 +55,8 @@ import { MozoShowTraduceTextComponent } from './mozo-virtual/mozo-show-traduce-t
 import { ItemPromocionComponent } from './item-promocion/item-promocion.component';
 import { MozoDialogComponent } from './mozo-virtual/mozo-dialog/mozo-dialog.component';
 import { CompViewPromoComponent } from './comp-view-promo/comp-view-promo.component';
+import { CompListCallClientComponent } from './comp-list-call-client/comp-list-call-client.component';
+import { DatosFacturacionClienteComponent } from './datos-facturacion-cliente/datos-facturacion-cliente.component';
 
 @NgModule({
   declarations: [
@@ -101,6 +103,8 @@ import { CompViewPromoComponent } from './comp-view-promo/comp-view-promo.compon
     ItemPromocionComponent,
     MozoDialogComponent,
     CompViewPromoComponent,
+    CompListCallClientComponent,
+    DatosFacturacionClienteComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
@@ -154,7 +158,9 @@ import { CompViewPromoComponent } from './comp-view-promo/comp-view-promo.compon
     MozoShowTraduceTextComponent,
     ItemPromocionComponent,
     MozoDialogComponent,
-    CompViewPromoComponent
+    CompViewPromoComponent,
+    CompListCallClientComponent,
+    DatosFacturacionClienteComponent
     // DialogDesicionComponent
   ],
 

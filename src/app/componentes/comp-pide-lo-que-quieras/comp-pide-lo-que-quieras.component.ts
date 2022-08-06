@@ -276,17 +276,18 @@ export class CompPideLoQueQuierasComponent implements OnInit  {
     }
 
 
-    this.calcDistanceService.calculateRoute(this.direccionCliente, this.laPlazaDelivery, false);
-    // .subscribe((res: DeliveryEstablecimiento) => {
-      setTimeout(() => {
+    // this.calcDistanceService.calculateRoute(this.direccionCliente, this.laPlazaDelivery, false);
+    this.calcDistanceService.calculateRouteObserver(this.direccionCliente, this.laPlazaDelivery, false)
+    .subscribe((res: DeliveryEstablecimiento) => {
+      // setTimeout(() => {
         this.isCalculandoDistanciaA = false;
         this.laPlazaDelivery = this.laPlazaDelivery;
         // this.laPlazaDelivery = res;
         // _suscription.unsubscribe();
         this.validFormDos();
         this.calcCostoServicio();
-      }, 1600);
-    // });
+      // }, 1600);
+    });
 
 
   }

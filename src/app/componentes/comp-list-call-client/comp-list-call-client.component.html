@@ -1,0 +1,11 @@
+<!-- notifica llamado cliente mesa -->
+<div *ngIf="!isCliente">
+<div class="content-call-cliente">    
+    <div class="div-call-client animated fadeInRight" *ngFor="let mesa of listCallsClients">
+      <i class="fa fa-hand-paper-o fa-2x animated infinite wobble" aria-hidden="true"></i>
+      <p class="fw-600">Mesa {{mesa}}</p>
+      <p class="fw-100 fs-10">Solicita atención</p>
+      <button class="btn btn-sm btn-secondary" (click)="goCallClient(mesa)">Voy</button>
+    </div>
+</div>
+</div>

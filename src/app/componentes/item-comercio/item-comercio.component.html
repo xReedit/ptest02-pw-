@@ -13,13 +13,7 @@
             </p>
             <p class="fs-13" *ngIf="itemEstablecimiento.eslogan.length > 0">{{itemEstablecimiento.eslogan | titlecase}}</p>
             <p class="fw-100 fs-12">{{itemEstablecimiento.sub_categoria}}</p>
-
-            <!-- si acepta tarjeta -->
-            <div>
-                <span *ngIf="itemEstablecimiento.pwa_delivery_acepta_tarjeta === 1"
-                    class="div-acepta-tarjeta"> 
-                    <i class="fa fa-credit-card mr-1"></i> Acepta Tarjeta</span>
-            </div>
+            
         </div>
         <hr>
         <div class="d-flex div-sub-info-comercio">            
@@ -30,13 +24,20 @@
                         <i class="fa fa-clock-o"></i>
                         {{ itemEstablecimiento.tiempo_aprox_entrega | lowercase }}
                     </div>
-                    <div *ngIf="itemEstablecimiento.c_servicio">
+                    <!-- <div *ngIf="itemEstablecimiento.c_servicio">
                         <i class="fa fa-bicycle"></i>
                         S/.{{ itemEstablecimiento.c_servicio | number: '0.2'}}
-                    </div>
+                    </div> -->
                     <div *ngIf="itemEstablecimiento.calificacion > 3">
                         <i class="fa fa-star text-warning"></i>
                         {{ itemEstablecimiento.calificacion | number:'.0' }}
+                    </div>
+
+                    <!-- si acepta tarjeta -->
+                    <div>
+                        <span *ngIf="itemEstablecimiento.pwa_delivery_acepta_tarjeta === 1"
+                            class="div-acepta-tarjeta"> 
+                            <i class="fa fa-credit-card mr-1"></i> Acepta Tarjeta</span>
                     </div>
                 </div>
 

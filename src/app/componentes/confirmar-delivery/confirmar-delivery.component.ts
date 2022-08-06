@@ -551,9 +551,10 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     this.isReady.emit(false);
     this.isCalculandoDistanciaA = true;
-    this.calcDistanceService.calculateRoute(direccionCliente, this.dirEstablecimiento, false);
-    // .subscribe((res: any) => {
-    setTimeout(() => {
+    // this.calcDistanceService.calculateRoute(direccionCliente, this.dirEstablecimiento, false);
+    this.calcDistanceService.calculateRouteObserver(direccionCliente, this.dirEstablecimiento, false)
+    .subscribe((res: any) => {
+    // setTimeout(() => {
       // this.dirEstablecimiento = this.dirEstablecimiento;
       this.establecimientoService.set(this.dirEstablecimiento);
       this.infoEstablecimiento.c_servicio = this.dirEstablecimiento.c_servicio;
@@ -566,8 +567,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
       this.isCalculandoDistanciaA = false;
 
       this.verificarMontoMinimo();
-    }, 1500);
-    // });
+    // }, 1500);
+    });
 
   }
 

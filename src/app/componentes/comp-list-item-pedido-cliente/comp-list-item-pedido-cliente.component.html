@@ -3,7 +3,10 @@
         <div>
             <span class="fw-600 fs-17">Mi Pedido</span>
         </div>
-        <i class="fa fa-arrow-left mr-2" (click)="goBackCarta()"></i>
+        <div>
+            <i class="fa fa-arrow-left mr-2" (click)="goBackCarta()"></i>
+            <span class="fs-13">Atrás</span>
+        </div>
         <!-- <p class="fw-600 text-info fs-17">BORRAR</p> -->
     </div>
     <div *ngFor="let tpc of miPedido.tipoconsumo">

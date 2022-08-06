@@ -45,7 +45,10 @@
                 <!-- <img src="./assets/images/003-diners-club.png" alt="diners-club"> -->
             </div>
             <div class="col-4 text-right">
-                <button [disabled]="estadoPedido.hayPedidoClientePendiente || estadoPedido.importe == 0" mat-flat-button color="primary" (click)="pagarCuenta()">Pagar</button>
+                <button [disabled]="estadoPedido.hayPedidoClientePendiente || estadoPedido.importe == 0 || !isComercioAceptaTarjeta" mat-flat-button color="primary" (click)="pagarCuenta()">Pagar</button>                
+            </div>
+            <div class="col-12">
+                <p *ngIf="!isComercioAceptaTarjeta" class="fs-11 fw-100 m-0">Comercio solo acepta pagos en caja.</p>
             </div>
         </div>
 
@@ -53,13 +56,24 @@
 
         <div *ngIf="!infoToken.isSoloLLevar" class="row xboder-abajo m-0 p-2 xcontainer-center" matRipple [matRippleColor]="rippleColor" (click)="solicitarAtencion()">
             <div class="col-8 pb-3 pt-3">
-                <span class="fs-13">Solicitar atención del personal.</span>
+                <span class="fs-13 fw-600">Solicitar atención del personal.</span>
                 <span class="fs-13 text-info pl-2 animated flash" [hidden]="!isViewMsjSolicitudPersoanl">Solicitud enviada.</span>
             </div>
             <div class="col-4 text-right">
                 <img src="./assets/images/solicitar-atencion.png" alt="solicitar-atencion">
             </div>
         </div>
+
+        <!-- facturacion -->
+        <!-- <div *ngIf="estadoPedido.importe != 0" class="animated fadeIn row xboder-abajo m-0 p-2 xcontainer-center" matRipple [matRippleColor]="rippleColor" (click)="showDatosFacturacion()">
+            <div class="col-9 pb-3 pt-3">
+                <p class="fs-13 fw-600 m-0">Datos de facturación.</p>
+                <span class="fw-100 text-secondary fs-11">Especifique los datos de su comprobante.</span>
+            </div>
+            <div class="col-3 text-right">
+                <img src="./assets/images/001-bill.png" alt="bill">                
+            </div>
+        </div> -->
 
         <!-- link encuesta -->
         <div class="row xboder-abajo m-0 p-2 xcontainer-center">

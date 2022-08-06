@@ -166,7 +166,19 @@ export class MipedidoService {
       }
 
       const _itemsRecomendacion = [];
+      const countListCarta = _carta.length;
       _carta.map((c: CategoriaModel) => {
+
+        // 020822
+        // si carta > 1 => validar horario de carta
+        c.abierto = true;
+        if ( countListCarta > 1 ) {
+          if (c.hora_ini && c.hora_fin) {
+            const _isShowCarta = this.utilesService.isBetweenHoursNow(c.hora_ini, c.hora_fin);
+            c.abierto = _isShowCarta;
+          }
+        }
+
         c.secciones.map((s: SeccionModel) => {
           const _itemsSeccionRecomendados = s.items.filter(x => x.is_recomendacion === '1');
           if ( _itemsSeccionRecomendados ) {
@@ -178,7 +190,6 @@ export class MipedidoService {
       if ( _itemsRecomendacion.length > 0 ) {
         this.objCarta.recomendados =  _itemsRecomendacion;
       }
-
 
       // chequear si hay recomendaciones
 
@@ -1443,8 +1454,8 @@ export class MipedidoService {
     const comisionFijaComercioNoAfiliado = this.establecimientoService.establecimiento.pwa_delivery_comision_fija_no_afiliado; // comision fija comercio no afiliado (plaza vea cualquier pedido la comision es 2 para la platafoma)
     const is_comercio_paga_entrega = this.establecimientoService.establecimiento.pwa_delivery_comercio_paga_entrega === 1; // si el comercio paga el costo del delivery al repartidor
     this.pwa_delivery_servicio_propio = this.establecimientoService.establecimiento.pwa_delivery_servicio_propio === 1;
-    let isClienteDelivery = this.infoTokenService.infoUsToken.idusuario ? false : true; // this.establecimientoService.get().idsede ? true : false;
-
+    // let isClienteDelivery = this.infoTokenService.infoUsToken.idusuario ? false : true; // this.establecimientoService.get().idsede ? true : false;
+    let isClienteDelivery = this.infoTokenService.infoUsToken?.isDelivery || false;
     // si es cliente delivery
     // si el calculo de entrega es solo para pedidos de clientes desde la aplicacion o para todos
     if ( isClienteDelivery ) {
@@ -1744,8 +1755,18 @@ export class MipedidoService {
     this.socketService.onItemModificado().subscribe((res: any) => {
 
       let _itemInCarta: ItemModel;
+      // const _listSubItemPorcion = res.subitems_selected ? res.subitems_selected.filter(x => x.idporcion > 0) : false;
+
+      // // si solo en subitems si es porcion
+      // if ( _listSubItemPorcion ) {
+      //   _itemInCarta = this.findItemCartaByIdCartaLista(res.idcarta_lista);
+      //   const _cantidadSet = parseInt(res.cantidad, 0);
+      //   _itemInCarta.cantidad = _cantidadSet ? _cantidadSet : parseInt(res.cantidad.toString(), 0);
+      //   this.setCantidadItemModificadoPwa(res, _itemInCarta, parseInt(res.cantidad, 0), true);
+      // }
+
       // tiene lista de items en porciones compartidaas (Ej 1/8 pollo 1/4 pollo)
-      if ( res.listItemPorcion != null ) {
+      if ( res.listItemPorcion != null) {
         res.listItemPorcion.map((x: any) => {
           _itemInCarta = this.findItemCartaByIdCartaLista(x.idcarta_lista);
 
@@ -1897,7 +1918,9 @@ export class MipedidoService {
       //   // _itemInCarta.subitems.filter((bsub: SubItem) => asub.iditem_subitem === bsub.iditem_subitem)[0].cantidad = asub.cantidad;
 
       // });
-      if ( !res.subitems ) { res.subitems = []; }
+      // if ( !res.subitems ) {
+      res.subitems = res.subitems ? typeof res.subitems === 'object' ? res.subitems : [] : [];
+      // }
 
       res.subitems.map((subitemOp: SubItemContent) => {
         subitemOp.opciones.map((subitem: SubItem) => {

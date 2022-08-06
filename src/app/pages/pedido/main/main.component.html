@@ -13,9 +13,39 @@
 
 <!-- loader send pedido or transaction -->
 <div class="animated fadeIn div-loader-2" *ngIf="listenStatusService.isLoaderSendPedido$ | async">
+  <!-- <div class="animated fadeIn div-loader-2"> -->
   <div class="loader">
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-      <span class="pt-2">Enviando pedido...</span>
+      <ng-container *ngIf="listenStatusService.isFinishLoaderSendPedido$ | async; else elseTemplateNoFinish">
+        
+        <ng-container *ngIf="isUsuarioCliente; else elseTemplateIsMozo">
+          <img src="./assets/images/printer_3.gif" alt="send-printer">        
+          <div style="max-width: 220px;">
+            <p class="pt-2 fs-18 fw-600">Pedido Recibido.</p>
+            <hr>
+            <p class="pt-2 fs-15 fw-100">Su pedido fue recibido correctamente en las zonas de producción correspondientes.</p>
+            <hr>
+            <button mat-flat-button color="primary" (click)="closeMsjLoaderPedido()">Listo</button>
+          </div>          
+        </ng-container>
+        <ng-template #elseTemplateIsMozo>
+
+            <img src="./assets/images/success_3.gif" width="130px" alt="send-success">        
+            <p class="pt-2 fs-18 fw-600">Pedido Enviado</p>
+          
+        </ng-template>
+        
+
+                
+      </ng-container>
+      <ng-template #elseTemplateNoFinish>        
+        <img src="./assets/images/plane_3.gif" alt="send">
+        <br><br>
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <span class="pt-2 fs-16 fw-600">Enviando pedido...</span>
+
+        <!-- <button (click)="pruebaMsjs()">ok</button> -->
+      </ng-template>
+      
   </div>    
 </div>
 <!-- loader send pedido or transaction -->
@@ -29,6 +59,9 @@
 </div>
 <!-- loader send pedido or transaction -->
 
+<!-- notifica llamado cliente mesa -->
+<app-comp-list-call-client></app-comp-list-call-client>
+<!-- notifica llamado cliente mesa -->
 
 <!-- <div *ngIf="isPagePagarShow">
   <router-outlet></router-outlet>
@@ -67,7 +100,7 @@
         </mat-tab>
         <mat-tab label="MiPedido" [disabled]="!isScreenIsMobile">
           <ng-template matTabLabel>
-              <span class="fs-11">Mi Pedido </span>
+              <span>Mi Pedido </span>
               <i class="fa fa-shopping-basket pl-2" aria-hidden="true"></i>
               
               <div *ngIf="countTotalItems > 0" class="countItem countTotal animated fadeInUp d-flex">

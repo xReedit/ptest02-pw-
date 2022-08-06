@@ -95,5 +95,19 @@ export class UtilitariosService {
     return compareTwoStrings(s1, s2);
   }
 
+  isBetweenHoursNow(h1: string, h2: string): boolean {
+    const dateNow = new Date();
+    const dIni = new Date();
+    const dFin = new Date();
+    const horaIni = h1.split(':');
+    const horaFin = h2.split(':');
+    dIni.setHours(parseFloat(horaIni[0]));
+    dIni.setMinutes(parseFloat(horaIni[1]));
+
+    dFin.setHours(parseFloat(horaFin[0]));
+    dFin.setMinutes(parseFloat(horaFin[1]));
+    return dateNow.getTime() >= dIni.getTime() && dateNow.getTime() <= dFin.getTime();
+  }
+
 
 }

@@ -116,6 +116,18 @@ export class MainComponent implements OnInit {
       this.isPagePagarShow = res;
     });
 
+    this.listenStatusService.isFinishLoaderSendPedido$.subscribe((isOpen: boolean) => {
+      if ( isOpen === true && !this.isUsuarioCliente ) {
+        setTimeout(() => {
+          this.closeMsjLoaderPedido();
+        }, 1600);
+      }
+    });
+
+    // this.listenStatusService.callClienteSolicitaAtencion$.subscribe(res => {
+
+    // });
+
     this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
       switch (res.pageActive) {
         case 'carta':
@@ -152,6 +164,13 @@ export class MainComponent implements OnInit {
         clearTimeout(this.timeLoader);
       }
     });
+
+    // if ( this.socketService.isSocketOpen ) {
+    //   this.socketService.connect();
+    //   this.socketService.onGetClienteLlama().subscribe(res => {
+    //     console.log('cliente llama', res);
+    //   });
+    // }
 
     // this.tooltip.show();
     // setTimeout(() => {
@@ -219,5 +238,18 @@ export class MainComponent implements OnInit {
     };
 
     this.clickTab(_tabList);
+  }
+
+  pruebaMsjs() {
+
+    this.listenStatusService.setIsFinishLoaderSendPedidoSource(true);
+
+  }
+
+  closeMsjLoaderPedido() {
+    // this.listenStatusService.setIsFinishLoaderSendPedidoSource(false);
+    // this.listenStatusService.setLoaderSendPedido(false);
+
+    this.listenStatusService.closeFinishLoaderSendPedidoSource();
   }
 }

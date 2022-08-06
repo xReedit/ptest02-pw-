@@ -157,7 +157,8 @@ export class CategoriasComponent implements OnInit, OnDestroy {
     this.loaderPage = true;
     const _data = {
       idsede_categoria: this.idcategoria_selected,
-      codigo_postal: this.ciudad_actual // this.codigo_postal_actual, cambiamos el 310720
+      codigo_postal: this.ciudad_actual, // this.codigo_postal_actual, cambiamos el 310720
+      point_client: this.direccionCliente.latitude + ' ' + this.direccionCliente.longitude
     };
 
     this.listEstablecimientos = [];
@@ -166,6 +167,7 @@ export class CategoriasComponent implements OnInit, OnDestroy {
       .subscribe( (res: any) => {
         // setTimeout(() => {
           this.listEstablecimientos = res.data;
+          // console.log('this.listEstablecimientos', this.listEstablecimientos);
           this.listEstablecimientos.map((dirEstablecimiento: DeliveryEstablecimiento) => {
             dirEstablecimiento.visible = true;
             // this.calcDistancia(x);
@@ -174,7 +176,8 @@ export class CategoriasComponent implements OnInit, OnDestroy {
 
           });
 
-          this.setCalcDistanciaComercio();
+          // 250522 calculara la distancia cuando ingresa al comercio
+          // this.setCalcDistanciaComercio();
 
         setTimeout(() => {
           this.loaderPage = false;
@@ -182,6 +185,7 @@ export class CategoriasComponent implements OnInit, OnDestroy {
       });
   }
 
+  // 250522 calculara la distancia cuando ingresa al comercio
   private async setCalcDistanciaComercio() {
     // const listEsblecimientosCache = this.isMismaDireccionSelectd ? this.establecimientoService.getEstableciminetosCache() : [];
     let listEsblecimientosCache = <any>this.establecimientoService.getEstableciminetosCache();

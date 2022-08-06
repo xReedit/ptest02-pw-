@@ -36,7 +36,8 @@ export class EstadoPedidoClienteService {
 
     this.dataPost = {
       idsede: this.infoTokenService.getInfoUs().idsede,
-      idcliente: this.infoTokenService.getInfoUs().idcliente
+      idcliente: this.infoTokenService.getInfoUs().idcliente,
+      num_mesa: this.infoTokenService.getInfoUs().numMesaLector
     };
 
     // this.listenStatusService.hayPedidoPendiente$.subscribe((res: boolean) => {
@@ -56,6 +57,14 @@ export class EstadoPedidoClienteService {
 
   }
 
+  private setDataInfoClient() {
+    this.dataPost = {
+      idsede: this.infoTokenService.getInfoUs().idsede,
+      idcliente: this.infoTokenService.getInfoUs().idcliente,
+      num_mesa: this.infoTokenService.getInfoUs().numMesaLector
+    };
+  }
+
   get() {
     // const _data = localStorage.getItem(this.keyStorage);
     this.deserializar();
@@ -70,6 +79,7 @@ export class EstadoPedidoClienteService {
   getCuentaTotales(): number {
 
     let importeCuenta = 0;
+    this.setDataInfoClient();
     this.crudService.postFree(this.dataPost, 'pedido', 'lacuenta-cliente-totales', false).subscribe( (res: any) => {
       if ( res.data.length === 0 ) { this.estadoPedido.hayPedidoCliente = false; return; } // si no hay cuenta pedido del cliente
       importeCuenta = res.data[0].importe || 0;
@@ -98,6 +108,7 @@ export class EstadoPedidoClienteService {
 
   getCuenta(): any {
     // console.log('pide la cuenta');
+    this.setDataInfoClient();
     this.crudService.postFree(this.dataPost, 'pedido', 'lacuenta-cliente', false).subscribe( (res: any) => {
       if ( res.data.length === 0 ) { this.estadoPedido.hayPedidoCliente = false; return; } // si no hay cuenta pedido del cliente
 
@@ -114,6 +125,8 @@ export class EstadoPedidoClienteService {
   }
 
   getImporteCuenta() {
+    this.setDataInfoClient();
+
     return new Promise(resolve => {
       this.crudService.postFree(this.dataPost, 'pedido', 'lacuenta-cliente-totales', false).subscribe( (res: any) => {
         const _rpt = res.success ? res.data[0].importe : 0;
@@ -176,6 +189,8 @@ export class EstadoPedidoClienteService {
 
   // obtener el tiempo aproximado del pedido
   calcTimeAprox(): void {
+    this.setDataInfoClient();
+
     this.crudService.postFree(this.dataPost, 'pedido', 'calc-time-despacho', false).subscribe( (res: any) => {
       // console.log('calc time despacho', res);
       this.estadoPedido.estado = 0; // en espera

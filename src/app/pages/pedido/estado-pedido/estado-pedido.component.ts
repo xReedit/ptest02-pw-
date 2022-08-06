@@ -11,6 +11,8 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/operators';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { DatosFacturacionClienteComponent } from 'src/app/componentes/datos-facturacion-cliente/datos-facturacion-cliente.component';
 // import { takeUntil } from 'rxjs/internal/operators/takeUntil';
 
 @Component({
@@ -27,6 +29,7 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
 
   isViewMsjSolicitudPersoanl = false;
   isDeliveryCliente: boolean;
+  isComercioAceptaTarjeta = false;
 
   private isBtnPagoShow = false; // si el boton de pago ha sido visible entonces recarga la pagina de pago
 
@@ -44,7 +47,8 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     private navigatorService: NavigatorLinkService,
     private socketService: SocketService,
     private router: Router,
-    private establecimientoService: EstablecimientoService
+    private establecimientoService: EstablecimientoService,
+    private dialogDatosFacturacion: MatDialog,
   ) { }
 
   ngOnInit() {
@@ -57,6 +61,8 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
 
     this.simbolo_moneda = this.establecimientoService.getSimboloMoneda();
 
+    console.log('this.establecimientoService', this.establecimientoService.get() );
+    this.isComercioAceptaTarjeta = this.establecimientoService.get().pwa_delivery_acepta_tarjeta === 1;
 
     // escuchar cambios
     this.listenStatus();
@@ -171,11 +177,19 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
   // el cleinte solicita atencion del personal. -- notifica en caja
   solicitarAtencion() {
     if ( this.isViewMsjSolicitudPersoanl ) { return; }
+    console.log('notificar-cliente-llamado');
     this.socketService.emit('notificar-cliente-llamado', this.infoToken.numMesaLector);
     this.isViewMsjSolicitudPersoanl = true;
     setTimeout(() => {
       this.isViewMsjSolicitudPersoanl = false;
     }, 30000);
+  }
+
+  showDatosFacturacion() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.panelClass =  ['my-dialog-orden-detalle', 'margen-0'];
+
+    this.dialogDatosFacturacion.open(DatosFacturacionClienteComponent, dialogConfig);
   }
 
 }

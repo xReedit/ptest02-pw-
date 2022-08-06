@@ -59,7 +59,7 @@
                  aria-label="Cliene"
                  matInput
                  [formControl]="myControl"
-                 [matAutocomplete]="auto" (keyup)="setNombreControl(valNom.value)" #valNom>
+                 [matAutocomplete]="auto" (keyup)="setNombreControl(valNom.value)" #valNom name="cliente">
           <mat-autocomplete #auto="matAutocomplete" (optionSelected) = "changeCliente($event)" [displayWith]="displayFn">
             <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
               <span class="fs-12"> {{ option.nombres }} </span>

@@ -289,17 +289,17 @@ export class CompPideExpressComponent implements OnInit {
     this.isCalculandoDistancia = true;
     this.validFormDos();
 
-    this.calcDistanceService.calculateRoute(this.direccionA, _dirB, false);
-    // .subscribe((res: any) => {
-      setTimeout(() => {
+    this.calcDistanceService.calculateRouteObserver(this.direccionA, _dirB, false)
+    .subscribe((res: any) => {
+      // setTimeout(() => {
         this.laPlazaDelivery = _dirB;
         this.isCalculandoDistancia = false;
         this.setDiasHoraEstablecimineto();
         this.validFormDos();
         this.calcCostoServicio();
-      }, 1600);
+      // }, 1600);
 
-    // });
+    });
   }
 
 

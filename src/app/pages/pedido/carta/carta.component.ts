@@ -92,6 +92,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   dataCalificacion: any;
 
   isCantidadCero = true;
+  animateBloqueoCategoria = false;
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
@@ -162,7 +163,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     }
 
-    if ( this.infoToken.getInfoUs().isCliente &&  !this.infoToken.getInfoUs().isReserva) {
+    if ( this.infoToken.getInfoUs().isCliente && this.infoToken.getInfoUs().isDelivery &&  !this.infoToken.getInfoUs().isReserva) {
       // console.log('calcula distancia desde carta');
       this.calcDistanciaService.calcCostoEntregaApiGoogleRain(this.infoToken.getInfoUs().direccionEnvioSelected, this.establecimientoService.get());
     }
@@ -235,6 +236,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
         // this.objCartaCarta = res;
         //
         this.miPedidoService.setObjCarta(res);
+        // console.log('this.miPedidoService.objCarta', this.miPedidoService.objCarta);
 
         if ( this.miPedidoService.objCarta.promociones ) {
           if ( this.miPedidoService.objCarta.promociones.lista_promociones ) {
@@ -337,6 +339,12 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
         this.miPedidoService.setObjCartaDescuentos(res);
       });
 
+
+      // this.socketService.onGetClienteLlama().subscribe((res: any) => {
+      //   console.log('cliente llama', res);
+      //   // this.listenStatusService.setCallListClienteAtencion(res);
+      // });
+
     // }
 
     // reglas de la carta y subtotales
@@ -399,6 +407,18 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getSecciones(categoria: CategoriaModel) {
+    // chequea si esta disponible
+    if ( this.infoToken.isCliente() && !categoria.abierto ) {
+      this.animateBloqueoCategoria = true;
+
+      setTimeout(() => {
+        this.animateBloqueoCategoria = false;
+      }, 300);
+
+      return;
+    }
+
+
     this.categoriaSeleted = categoria;
     setTimeout(() => {
       this.objSecciones = categoria.secciones;

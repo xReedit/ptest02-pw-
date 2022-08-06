@@ -182,8 +182,10 @@ export class DatosDeliveryComponent implements OnInit {
 
 
     this.infoEstablecimiento = this.establecimientoService.get();
+    // console.log('this.infoEstablecimiento', this.infoEstablecimiento);
 
     this.isShowAddDireccionMapa = this.infoEstablecimiento.pwa_habilitar_busqueda_mapa === 1;
+    // console.log('this.isShowAddDireccionMapa', this.isShowAddDireccionMapa);
 
     // traer todos los clientes
     // this.getAllClientes();
@@ -256,7 +258,8 @@ export class DatosDeliveryComponent implements OnInit {
     this.errorDni = false;
     if ( this.myForm.controls.dni.value.length < 8 ) { this.errorDni = true; return; }
     const datos = {
-      documento : this.myForm.controls.dni.value
+      documento : this.myForm.controls.dni.value,
+      only_sede: true
     };
 
     this.loadConsulta = true;
@@ -352,13 +355,29 @@ export class DatosDeliveryComponent implements OnInit {
 
 
         // console.log('aaaa calculateRoute');
-        let c_servicio = this.calcDistanceService.calculateRoute(<DeliveryDireccionCliente>data, this.dirEstablecimiento, false);
+        // let c_servicio = this.calcDistanceService.calculateRoute(<DeliveryDireccionCliente>data, this.dirEstablecimiento, false);
+
+        // // recalcular
+        // setTimeout(() => {
+
+        //   c_servicio = this.dirEstablecimiento.c_servicio;
+        //   this.establecimientoService.set(this.dirEstablecimiento);
+        //   this.infoEstablecimiento.c_servicio = c_servicio; // this.dirEstablecimiento.c_servicio;
+        //   this.resData.costoTotalDelivery = c_servicio; // this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
+
+        //   const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
+        //   localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
+
+        //   this._listSubtotales = _arrSubtotales;
 
 
-        // recalcular
-        setTimeout(() => {
+        //   this.setearData();
+        // }, 800);
 
-          c_servicio = this.dirEstablecimiento.c_servicio;
+
+        this.calcDistanceService.calculateRouteObserver(<DeliveryDireccionCliente>data, this.dirEstablecimiento, false)
+        .subscribe((res: any) => {
+          const c_servicio = this.dirEstablecimiento.c_servicio;
           this.establecimientoService.set(this.dirEstablecimiento);
           this.infoEstablecimiento.c_servicio = c_servicio; // this.dirEstablecimiento.c_servicio;
           this.resData.costoTotalDelivery = c_servicio; // this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
@@ -370,7 +389,7 @@ export class DatosDeliveryComponent implements OnInit {
 
 
           this.setearData();
-        }, 800);
+        });
 
       }
     );
@@ -427,9 +446,10 @@ export class DatosDeliveryComponent implements OnInit {
 
     // this.isReady.emit(false);
     // this.isCalculandoDistanciaA = true;
-    this.calcDistanceService.calculateRoute(direccionCliente, this.dirEstablecimiento, false);
-    // .subscribe((res: any) => {
-    setTimeout(() => {
+    // this.calcDistanceService.calculateRoute(direccionCliente, this.dirEstablecimiento, false);
+    this.calcDistanceService.calculateRouteObserver(direccionCliente, this.dirEstablecimiento, false)
+    .subscribe((res: any) => {
+    // setTimeout(() => {
       // this.dirEstablecimiento = this.dirEstablecimiento;
       this.establecimientoService.set(this.dirEstablecimiento);
       this.infoEstablecimiento.c_servicio = this.dirEstablecimiento.c_servicio;
@@ -443,8 +463,8 @@ export class DatosDeliveryComponent implements OnInit {
 
       // this.verificarMontoMinimo();
       this.setearData();
-    }, 1500);
-    // });
+    // }, 1500);
+    });
 
   }
 

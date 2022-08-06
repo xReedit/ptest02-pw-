@@ -1,0 +1,25 @@
+.content-call-cliente {
+    position: absolute;
+    top: 8%;
+    right: 10px;
+    z-index: 100;
+  }
+  
+  .div-call-client {
+    background: #ffeb3b;
+    border-radius: 10px;
+    /* position: absolute; */
+    /* float: right; */
+    /* z-index: 100; */
+    text-align: center;
+    padding: 10px;
+    /* right: 5px; */
+    /* top: 8%; */
+    border: 2px solid #bdbdbd;
+    opacity: 0.9;
+    margin-top: 3px;
+  }
+  
+  .div-call-client p {
+    margin: 0px;
+  }

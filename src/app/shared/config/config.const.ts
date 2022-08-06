@@ -8,11 +8,9 @@
 // export const URL_IMG_COMERCIO = 'http://192.168.1.64/restobar/print/logo/';
 // export const VAPID_PUBLIC = 'BC7ietauZE99Hx9HkPyuGVr8jaYETyEJgH-gLaYIsbORYobppt9dX49_K_wubDqphu1afi7XrM6x1zAp4kJh_wU';
 
-
-
 // export const VAPID_PUBLIC = 'BOiwO8PftVFo8MrQfp3oAv4KbVtFdZAQojGKgzyxMCPgiNhg8PySbOSlkxDqd3iKA4J1GhzwFiCIGKmXRiKZM_0';
-
 // export const URL_CONSULTA_RUC_DNI = 'http://apifacturalo_a.test:8080/api/services/'; // consulta dni o ruc
+
 
 // produccion
 export const URL_SERVER = 'https://app.restobar.papaya.com.pe/api.pwa/v3'; // produccion

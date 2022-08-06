@@ -266,18 +266,19 @@ export class CompGetDatosClienteComponent implements OnInit {
     _dirB.longitude = this.direccionB.longitude;
     this.isCalculandoDistancia = true;
 
-    this.calcDistanceService.calculateRoute(this.direccionA, _dirB, false);
-    // .subscribe((res: any) => {
-      setTimeout(() => {
+    // this.calcDistanceService.calculateRoute(this.direccionA, _dirB, false);
+    this.calcDistanceService.calculateRouteObserver(this.direccionA, _dirB, false)
+    .subscribe((res: any) => {
+      // setTimeout(() => {
         this.laPlazaDelivery = _dirB;
         this.isCalculandoDistancia = false;
         // this.calcCostoServicio();
         // console.log('this.laPlazaDelivery', this.laPlazaDelivery);
         this.isCalculandoDistancia = false; this.isFormValid = true;
         this.validFormDos();
-      }, 1600);
+      // }, 1600);
 
-    // });
+    });
   }
 
 }
