@@ -7,6 +7,7 @@ export class ItemModel {
     iditem: number;
     idseccion: number;
     idcarta_lista: number;
+    idcategoria: number;
     isalmacen: number;
     isporcion: string; // si es SP = porcion
     imprimir_comanda: number;

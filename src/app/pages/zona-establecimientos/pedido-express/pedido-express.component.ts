@@ -5,6 +5,7 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
+import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 
 @Component({
   selector: 'app-pedido-express',
@@ -33,7 +34,8 @@ export class PedidoExpressComponent implements OnInit {
     private crudService: CrudHttpService,
     private router: Router,
     private socketService: SocketService,
-    private verifyClientService: VerifyAuthClientService
+    private verifyClientService: VerifyAuthClientService,
+    private utilService: UtilitariosService,
   ) { }
 
   ngOnInit(): void {
@@ -58,14 +60,14 @@ export class PedidoExpressComponent implements OnInit {
   }
 
   textChanged(val: any) {
-    this.datosFormUno.descripcion_paquete = val;
+    this.datosFormUno.descripcion_paquete = this.utilService.addslashes_space(val);
     this.validFormUno();
   }
 
 
   getDatosCliente(obj: any) {
     // costo total
-    console.log('obj', obj);
+    // console.log('obj', obj);
     this.isCalculandoDistanciaA = obj.ladingCostoServicio;
     this.isFormValidDos = false;
     if ( this.isCalculandoDistanciaA ) {return; }

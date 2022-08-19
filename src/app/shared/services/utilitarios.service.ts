@@ -58,6 +58,19 @@ export class UtilitariosService {
         replace(/"/g, '');
   }
 
+  // remplazar caracteres especiales por ''
+  addslashes_space(_string: string): string {
+    if ( !_string ) {return; }
+    return _string.replace(/\\/g, ' ').
+        replace(/\u0008/g, '\\b').
+        replace(/\t/g, '').
+        replace(/\n/g, ' ').
+        replace(/\f/g, '').
+        replace(/\r/g, ' ').
+        replace(/'/g, '').
+        replace(/"/g, '');
+  }
+
   // compartir data titulo y url
   sharedNative(urlCartaVirtual: string , nomSede: string): any {
     // verificar si es telfono

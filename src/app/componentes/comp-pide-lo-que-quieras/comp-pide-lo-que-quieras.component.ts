@@ -158,7 +158,7 @@ export class CompPideLoQueQuierasComponent implements OnInit  {
   }
 
   textChanged(val: any) {
-    this.datosFormUno.que_compramos = val;
+    this.datosFormUno.que_compramos = this.utilService.addslashes_space(val);
     this.validFormUno();
   }
 

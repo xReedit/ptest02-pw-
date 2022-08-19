@@ -288,7 +288,7 @@ export class CalcDistanciaService {
 
             // this.estableciminetoService.setEstableciminetosCache(establecimientoToCache);
 
-            console.log('calc distancia', dirEstablecimiento);
+            // console.log('calc distancia', dirEstablecimiento);
             observer.next(dirEstablecimiento);
 
           }

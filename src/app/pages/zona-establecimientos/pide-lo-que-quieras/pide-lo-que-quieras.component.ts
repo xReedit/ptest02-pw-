@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
+import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 
 @Component({
   selector: 'app-pide-lo-que-quieras',
@@ -33,7 +34,8 @@ export class PideLoQueQuierasComponent implements OnInit {
     private crudService: CrudHttpService,
     private router: Router,
     private socketService: SocketService,
-    private verifyClientService: VerifyAuthClientService
+    private verifyClientService: VerifyAuthClientService,
+    private utilService: UtilitariosService,
   ) { }
 
   ngOnInit(): void {
@@ -56,7 +58,7 @@ export class PideLoQueQuierasComponent implements OnInit {
   }
 
   textChanged(val: any) {
-    this.datosFormUno.que_compramos = val;
+    this.datosFormUno.que_compramos = this.utilService.addslashes_space(val);
     this.validFormUno();
   }
 
@@ -67,7 +69,7 @@ export class PideLoQueQuierasComponent implements OnInit {
 
   getDatosCliente(obj: any) {
     // costo total
-    console.log('obj', obj);
+    // console.log('obj', obj);
     this.isCalculandoDistanciaA = obj.ladingCostoServicio;
     this.isFormValidDos = false;
     if ( this.isCalculandoDistanciaA ) {return; }

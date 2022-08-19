@@ -162,7 +162,7 @@ export class CompPideExpressComponent implements OnInit {
   }
 
   textChanged(val: any) {
-    this.datosFormUno.descripcion_paquete = val;
+    this.datosFormUno.descripcion_paquete = this.utilService.addslashes_space(val);
     this.validFormUno();
   }
 
