@@ -231,6 +231,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
             this.navigatorService.setPageActive('carta');
           // }
 
+          // para cargar la lista de mesas si se desconecta
+          localStorage.removeItem('sys::time-list-table');
+
           return;
         }
         // this.objCartaCarta = res;

@@ -1,0 +1,56 @@
+<div class="content-master">
+    <div class="d-flex justify-content-between align-items-center p-2 border-bottom" style="background-color: #deeeff;">
+        <span class="fw-100 fs-18">Mesas ocupadas</span>
+        <div class="d-flex">
+            <div class="text-center mr-1 btn-filter personal xCursor" matRipple [matRippleColor]="rippleColor" (click)="orderList(0)">
+                <div>
+                    <img src="assets/images/waiter-table.png" width="18px" alt="mozo pedido">
+                    <span>{{countPersonal}}</span>
+                </div>
+                <p class="fw-100 text-secondary fs-11 m-0">Personal</p>
+            </div>
+            <div class="text-center btn-filter cliente xCursor" matRipple [matRippleColor]="rippleColor" (click)="orderList(1)">
+                <div>
+                    <img src="assets/images/waiter-client.png" width="18px" alt="mozo pedido">
+                    <span>{{countCliente}}</span>
+                </div>
+                <p class="fw-100 text-secondary fs-11 m-0">Cliente</p>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="p-4" *ngIf="showLoaderListMesa">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>        
+    </div>
+    <div class="div-content-mesas">
+        <div class="div-item-mesa xCursor" *ngFor="let item of listMesas" 
+                matRipple [matRippleColor]="rippleColor" 
+                (click)="goCuentaMesa(item)"
+                [ngClass]="{'animated fadeOutLeft': item.remove}">        
+            <div class="num-mesa">
+                <span>{{item.nummesa}}</span>
+            </div>
+            <div class="info-mesa animated fadeInUp" [ngClass]="{'bg-info-mesa-client': item.flag_is_cliente == 1}">
+                <table class="w-100">
+                    <tr>
+                        <ng-container *ngIf="item.flag_is_cliente == 1; else elseTemplateMozo">
+                            <td><img src="assets/images/waiter-client.png" width="15px" alt="mozo pedido"></td>
+                            <td><span class="fs-13">{{ item.referencia | titlecase }}</span></td>
+                        </ng-container>
+                        <ng-template #elseTemplateMozo>                        
+                            <td><img src="assets/images/waiter-table.png" width="15px" alt="mozo pedido"></td>
+                            <td><span class="fs-13">{{ item.nommozo | titlecase }}</span></td>
+                        </ng-template>                    
+                    </tr>
+                    <tr>
+                        <td><img src="assets/images/x_is_all_demand.png" width="15px" alt="tiempo pedido"></td>
+                        <td><span class="fs-13 fw-100">{{ item.min }} min</span></td>
+                    </tr>
+                </table>
+            </div>        
+        </div>
+    </div>
+    <br><br>
+</div>

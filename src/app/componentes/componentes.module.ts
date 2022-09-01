@@ -57,6 +57,7 @@ import { MozoDialogComponent } from './mozo-virtual/mozo-dialog/mozo-dialog.comp
 import { CompViewPromoComponent } from './comp-view-promo/comp-view-promo.component';
 import { CompListCallClientComponent } from './comp-list-call-client/comp-list-call-client.component';
 import { DatosFacturacionClienteComponent } from './datos-facturacion-cliente/datos-facturacion-cliente.component';
+import { CompListMesasComponent } from './comp-list-mesas/comp-list-mesas.component';
 
 @NgModule({
   declarations: [
@@ -105,6 +106,7 @@ import { DatosFacturacionClienteComponent } from './datos-facturacion-cliente/da
     CompViewPromoComponent,
     CompListCallClientComponent,
     DatosFacturacionClienteComponent,
+    CompListMesasComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
@@ -160,7 +162,8 @@ import { DatosFacturacionClienteComponent } from './datos-facturacion-cliente/da
     MozoDialogComponent,
     CompViewPromoComponent,
     CompListCallClientComponent,
-    DatosFacturacionClienteComponent
+    DatosFacturacionClienteComponent,
+    CompListMesasComponent
     // DialogDesicionComponent
   ],
 

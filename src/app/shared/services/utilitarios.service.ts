@@ -110,17 +110,40 @@ export class UtilitariosService {
 
   isBetweenHoursNow(h1: string, h2: string): boolean {
     const dateNow = new Date();
+    // const dNow = new Date();
     const dIni = new Date();
     const dFin = new Date();
     const horaIni = h1.split(':');
     const horaFin = h2.split(':');
+    const isHoursDayAfter = parseFloat(horaIni[0]) > parseFloat(horaFin[0]);
+    // const isHoursDayNow = dateNow.getHours() > parseFloat(horaFin[0]);
+
+
+
     dIni.setHours(parseFloat(horaIni[0]));
     dIni.setMinutes(parseFloat(horaIni[1]));
 
     dFin.setHours(parseFloat(horaFin[0]));
     dFin.setMinutes(parseFloat(horaFin[1]));
+
+    if ( isHoursDayAfter ) { //  si la hora incial es mayor entonces hfinal pasa de las 00 horas
+      // dIni.setDate(dIni.getDate() - 1);
+      if ( dateNow.getHours() >  dFin.getHours() ) {
+        dFin.setDate(dFin.getDate() + 1);
+      } else {
+        dIni.setDate(dIni.getDate() - 1);
+      }
+    }
+
     return dateNow.getTime() >= dIni.getTime() && dateNow.getTime() <= dFin.getTime();
   }
 
+
+  // tiempo transcurrido con la hora actual en minutos
+  getTimeMinutesDiff(_dateCal: string) {
+    const h1: any = new Date(_dateCal);
+    const h2: any = new Date();
+    return new Date(h2 - h1).getMinutes();
+  }
 
 }

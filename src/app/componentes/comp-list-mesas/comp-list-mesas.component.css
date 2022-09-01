@@ -1,0 +1,70 @@
+/* .div-item-mesa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+} */
+
+.content-master {
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+
+.div-content-mesas {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: repeat(auto-fill,minmax(90px, 1fr));
+    justify-items: center;  
+    padding: 10px;  
+    /* margin: 0 auto;
+    max-width: 450px; */
+}
+
+.div-item-mesa {    
+    -webkit-box-align: center;
+    align-items: center;
+    /* padding: 10px; */
+    border: 1px solid #d0d0d0;
+    width: 100px;
+    text-align: center;
+    background-color: #e8e8e8;
+    border-radius: 5px;
+}
+
+
+
+.div-item-mesa .num-mesa {
+    font-size: 25px;
+    border-radius: 8px;
+    text-align: center;
+    padding: 5px;
+}
+
+
+.div-item-mesa .info-mesa {
+    padding: 7px;
+    background: #d4dfe4;
+    border-radius: 0px 0px 5px 5px
+}
+
+
+
+.bg-info-mesa-client {
+    background: #71ffcc !important;
+}
+
+.btn-filter {
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.btn-filter.personal {
+    background: #d4dfe4;
+}
+
+.btn-filter.cliente {
+    background: #71ffcc;
+}

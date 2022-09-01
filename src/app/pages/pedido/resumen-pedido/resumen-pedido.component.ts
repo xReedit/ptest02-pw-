@@ -411,6 +411,15 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
         this.listenStatusService.setIsOutEstablecimientoDelivery(false);
       }
     });
+
+    // ver la cuenta de mesa desde afuera
+    this.listenStatusService.showCuentaMesaNumero$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((numMesa: number) => {
+      if ( numMesa !== 0 ) {
+        this.xLoadCuentaMesa(numMesa.toString());
+      }
+    });
   }
 
   addItemToResumen(_tpc: ItemTipoConsumoModel, _seccion: SeccionModel, _item: ItemModel, _subItems: SubItemsView, suma: number): void {

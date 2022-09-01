@@ -118,6 +118,15 @@
           </div>
         </mat-tab>
 
+        <!-- solo si personal autorizado  -->
+        <mat-tab label="Mesas" *ngIf="!isUsuarioCliente && !isClienteDelivery && !isClienteReserva">
+            <div class="x100-toolbar-hidden" (scroll)="onScroll($event)"> 
+              <!-- <app-estado-pedido></app-estado-pedido> -->
+              <app-comp-list-mesas></app-comp-list-mesas>
+              <br>
+            </div>          
+        </mat-tab>      
+
         <!-- solo si es usuario cliente  -->
         <mat-tab label="Estado" *ngIf="isUsuarioCliente && !isClienteDelivery && !isClienteReserva">
           <!-- <ng-container *ngIf="isUsuarioCliente"> -->

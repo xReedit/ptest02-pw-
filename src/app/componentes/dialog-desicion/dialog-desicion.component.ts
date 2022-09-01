@@ -22,6 +22,9 @@ export class DialogDesicionComponent implements OnInit {
       case 1:
         this.msj = 'Desea saber cuando tenga descuentos y/o ofertas?';
         break;
+      case 2:
+        this.msj = 'Tiene un pedido en curso el cual se cambiara para ver la cuenta. Desea ver la cuenta?';
+        break;
     }
   }
 

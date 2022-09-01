@@ -61,7 +61,7 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
 
     this.simbolo_moneda = this.establecimientoService.getSimboloMoneda();
 
-    console.log('this.establecimientoService', this.establecimientoService.get() );
+    // console.log('this.establecimientoService', this.establecimientoService.get() );
     this.isComercioAceptaTarjeta = this.establecimientoService.get().pwa_delivery_acepta_tarjeta === 1;
 
     // escuchar cambios

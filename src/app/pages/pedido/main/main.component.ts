@@ -77,6 +77,7 @@ export class MainComponent implements OnInit {
     // console.log('pedido main verifyClient');
     this.verifyClientService.verifyClient().subscribe((res: SocketClientModel) => {
       // console.log('desde incio', res);
+      // console.log('this.infoTokenService', this.infoTokenService);
       if ( !res ) { this.isUsuarioCliente = this.infoTokenService.infoUsToken.isCliente; } else {
         this.isUsuarioCliente = res.isCliente || false;
       }
@@ -140,6 +141,11 @@ export class MainComponent implements OnInit {
           break;
         case 'mipedido':
           this.selectedTab = 1;
+          break;
+        case 'mesas':
+          console.log('llegamos a mesas');
+          this.listenStatusService.setshowLoadListMesas();
+          // appListMesas.loadListMesas();
           break;
       }
 

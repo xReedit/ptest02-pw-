@@ -82,7 +82,8 @@ export class SocketService {
       secure: true,
       rejectUnauthorized: false,
       // forceNew: true,
-      query: dataSocket
+      query: dataSocket,
+      transports: ['polling'], upgrade: false
       // forceNew: true
     });
 
@@ -313,6 +314,56 @@ export class SocketService {
       this.socket.on('date-now-info', (res: any) => {
         // this.resTipoConsumo = res;
         observer.next(res);
+      });
+    });
+  }
+
+  // escucha si mesa fue pagada
+  onGetMesaPagada() {
+    return new Observable(observer => {
+      this.socket.on('restobar-notifica-pay-pedido-res', (res: any) => {
+        if ( res.importe_restante === 0 ) { // si es pagado en su totalidad
+          observer.next(res);
+        }
+      });
+    });
+  }
+
+  // escucha si hay nuevo pedido en mesa
+  onGetNewPedidoMesa() {
+    return new Observable(observer => {
+      this.socket.on('nuevoPedido-for-list-mesas', (res: any) => {
+        // normaliza
+        let pase = false;
+        const _rpt = {
+          nummesa: '',
+          nommozo: '',
+          referencia: '',
+          flag_is_cliente: 0,
+          min: 0,
+          remove: false
+        };
+
+        let _item_mesa;
+
+        if ( res.m ) {
+          if ( res.m !== '' ) {
+            _item_mesa = res;
+            pase = true;
+          }
+        } else if ( res.p_header ) {
+          if ( res.p_header.m !== '' ) {
+            _item_mesa = res.p_header;
+            pase = true;
+          }
+        }
+
+        if ( pase ) {
+          _rpt.nummesa = _item_mesa.m;
+          _rpt.nommozo = _item_mesa.nom_us;
+
+          observer.next(_rpt);
+        }
       });
     });
   }

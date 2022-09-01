@@ -78,6 +78,15 @@ export class ListenStatusService {
   private numberPageShowAtmSoruce = new BehaviorSubject<number>(0);
   public numberPageShowAtm$ = this.numberPageShowAtmSoruce.asObservable();
 
+  // observable ver la cuenta de mesa seleccionada desde fuera de mi pedido
+  private showCuentaMesaNumeroSoruce = new BehaviorSubject<number>(0);
+  public showCuentaMesaNumero$ = this.showCuentaMesaNumeroSoruce.asObservable();
+
+
+  // llama a cargar lista de mesas en componente
+  private showLoadListMesasSource = new BehaviorSubject<boolean>(false);
+  public showLoadListMesas$ = this.showLoadListMesasSource.asObservable();
+
   // observable lista cliente solicita atencion
   // private callClienteSolicitaAtencionSoruce = new BehaviorSubject<string>('');
   // public callClienteSolicitaAtencion$ = this.callClienteSolicitaAtencionSoruce.asObservable();
@@ -179,6 +188,14 @@ export class ListenStatusService {
 
   setNumberShowPageAtm(num: number) {
     this.numberPageShowAtmSoruce.next(num);
+  }
+
+  setShowCuentaMesaNumero(num: number) {
+    this.showCuentaMesaNumeroSoruce.next(num);
+  }
+
+  setshowLoadListMesas() {
+    this.showLoadListMesasSource.next(true);
   }
 
   // setCallListClienteAtencion(num_mesa: string) {
