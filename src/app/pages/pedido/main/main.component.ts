@@ -258,4 +258,8 @@ export class MainComponent implements OnInit {
 
     this.listenStatusService.closeFinishLoaderSendPedidoSource();
   }
+
+  goBackCarta() {
+    this.listenStatusService.setListenGoCarta();
+  }
 }

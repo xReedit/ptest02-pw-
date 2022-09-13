@@ -87,6 +87,10 @@ export class ListenStatusService {
   private showLoadListMesasSource = new BehaviorSubject<boolean>(false);
   public showLoadListMesas$ = this.showLoadListMesasSource.asObservable();
 
+  // back carta
+  private listenGoBackCartaSource = new BehaviorSubject<boolean>(false);
+  public listenGoBackCarta$ = this.listenGoBackCartaSource.asObservable();
+
   // observable lista cliente solicita atencion
   // private callClienteSolicitaAtencionSoruce = new BehaviorSubject<string>('');
   // public callClienteSolicitaAtencion$ = this.callClienteSolicitaAtencionSoruce.asObservable();
@@ -196,6 +200,10 @@ export class ListenStatusService {
 
   setshowLoadListMesas() {
     this.showLoadListMesasSource.next(true);
+  }
+
+  setListenGoCarta() {
+    this.listenGoBackCartaSource.next(true);
   }
 
   // setCallListClienteAtencion(num_mesa: string) {

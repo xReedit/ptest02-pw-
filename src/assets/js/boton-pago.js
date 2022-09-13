@@ -1,7 +1,10 @@
+// const { fileURLToPath } = require("url");
+
 var importe;
 var purchasenumber;
 var cargando_transaction = false;
 var dataCliente;
+var tokenGenerate;
 
 // 240120 - last update.
 // DESARROLLO
@@ -13,6 +16,7 @@ var dataCliente;
 // var urlApiAutorization =  "https://apitestenv.vnforapps.com/api.authorization/v3/authorization/ecommerce/";
 // var urlJs = "https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true";
 // var logo = 'http://web-p.test:8080/images/l-pay-2.png';
+// var generarTockenAuthorization = 'Basic aW50ZWdyYWNpb25lcy52aXNhbmV0QG5lY29tcGx1cy5jb206ZDVlN25rJE0=';
 
 // aW50ZWdyYWNpb25lcy52aXNhbmV0QG5lY29tcGx1cy5jb206ZDVlN25rJE0=
 
@@ -26,11 +30,13 @@ var urlApiSesion = "https://apiprod.vnforapps.com/api.ecommerce/v2/ecommerce/tok
 var urlApiAutorization =  "https://apiprod.vnforapps.com/api.authorization/v3/authorization/ecommerce/";
 var urlJs = "https://static-content.vnforapps.com/v2/js/checkout.js"; 
 var logo = 'https://papaya.com.pe/images/l-pay-2.png';
+var generarTockenAuthorization = 'Basic bWFjcmF6ZS5pbmZvQGdtYWlsLmNvbTpqMzRPeiFuQg==';
 
 // bWFjcmF6ZS5pbmZvQGdtYWlsLmNvbTpqMzRPeiFuQg==
 
 
-function pagar(_importe, _purchasenumber, _dataClie) {
+function pagar(_importe, _purchasenumber, _dataClie) {  
+  
   importe = parseFloat(_importe).toFixed(2).toString();  
   purchasenumber = _purchasenumber;
   dataCliente = _dataClie;
@@ -42,6 +48,7 @@ function pagar(_importe, _purchasenumber, _dataClie) {
   getIpCliente();
   // generarToken();
 }
+
 
 function getIpCliente() {
 
@@ -68,13 +75,14 @@ function generarToken() {
     "url": urlApiSeguridad,
     "method": "POST",
     "headers": {
-      "Authorization": "Basic bWFjcmF6ZS5pbmZvQGdtYWlsLmNvbTpqMzRPeiFuQg==",
+      "Authorization": generarTockenAuthorization,
       "Accept": "*/*"
     }
   };
 
   $.ajax(settings).done(function (response) {
-    // console.log(response);
+    console.log(response);
+    tokenGenerate = response;
     generarSesion(response);
     localStorage.setItem("token", response);
   });
@@ -107,6 +115,7 @@ function generarSesion(token) {
   };
 
   $.ajax(settings).done(function (response) {    
+    console.log('response', response);
     generarBoton(response['sessionKey']);
   });
 }
@@ -169,11 +178,14 @@ function generarBoton(sessionKey) {
 
 
 function responseForm(event) {
-  // console.log('respuesta', event.message.args[0]);
+  console.log('respuesta event', event);
+  console.log('respuesta', event.message.args[0]);
   loaderTransaction(1);
 
   var data = this.message.args[0];
   transactionToken  = data.token;
+
+  console.log('transactionToken', transactionToken)
   
   generateAutorizacion(transactionToken);
 
@@ -181,7 +193,7 @@ function responseForm(event) {
 
 function generateAutorizacion(transactionToken) {
   cargando_transaction = true;
-  var token = localStorage.getItem("token");
+  var token = tokenGenerate; // localStorage.getItem("token");
   var  data = { 
         "antifraud" : dataCliente.antifraud,
         "captureType" : "manual",
@@ -197,6 +209,9 @@ function generateAutorizacion(transactionToken) {
 
   var _url = urlApiAutorization + merchantId;
 
+  console.log('data', data);
+  console.log('_url', _url);
+
   fetch(_url, {
       method: 'POST',
       headers: {
@@ -209,17 +224,46 @@ function generateAutorizacion(transactionToken) {
       return response.json();
     })
     .then((res) => {
-      // console.log(res);
+      console.log(res);
       var hayError = res.errorCode ? true : false;
       loaderTransaction(0);            
-      loaderTransactionResponse(res, hayError);
+      loaderTransactionResponse(res, hayError);     
+
+      const _rptPayment = {
+        res: res,
+        error: hayError
+      };
+
+      resPayment(_rptPayment);
+      
+      
+      
     })
-    .catch((error) => {      
+    .catch((error) => {
+      console.log('error', error);      
       loaderTransaction(0);
       loaderTransactionResponse(error, true);
-      // console.log(error);
-    });
 
+      const _rptPayment = {
+        res: error,
+        error: true
+      };
+
+      resPayment(_rptPayment);
+      // console.log(error);
+    });  
+
+}
+
+function resPayment(_rptPayment) {
+  const _event = new CustomEvent("payment.success", 
+  {
+      detail: _rptPayment,
+      bubbles: true,
+      cancelable: true
+  }
+);    
+window.dispatchEvent(_event);
 }
 
 // 0 = false 1 = true;
@@ -227,7 +271,8 @@ function loaderTransaction(val) {
   localStorage.setItem('sys::transaction-load', val);
 }
 
-function loaderTransactionResponse(res, isError) {  
+function loaderTransactionResponse(res, isError) {
+  console.log(res);
   if ( res ) {
     res.error = isError;
 

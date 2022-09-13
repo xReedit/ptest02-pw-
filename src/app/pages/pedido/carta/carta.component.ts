@@ -167,6 +167,13 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       // console.log('calcula distancia desde carta');
       this.calcDistanciaService.calcCostoEntregaApiGoogleRain(this.infoToken.getInfoUs().direccionEnvioSelected, this.establecimientoService.get());
     }
+
+    // listen go back carta
+    this.listenStatusService.listenGoBackCarta$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        if ( res === true ) { this.goBack(); }
+      });
   }
 
   ngAfterViewInit() {

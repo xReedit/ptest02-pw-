@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
@@ -16,13 +16,15 @@ import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { MetodoPagoModel } from 'src/app/modelos/metodo.pago.model';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { PagoTarjetaVisanetService } from 'src/app/shared/services/pago-tarjeta-visanet.service';
 
 // import * as botonPago from 'src/assets/js/boton-pago.js';
 
 declare var pagar: any;
+
 
 
 @Component({
@@ -75,9 +77,11 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     private miPedidoService: MipedidoService,
     private dialog: MatDialog,
     private pushNotificationSerice: NotificacionPushService,
-    private establecimientoServices: EstablecimientoService
+    private establecimientoServices: EstablecimientoService,
+    private pagoTarjetaServices: PagoTarjetaVisanetService
     // private verifyClientService: VerifyAuthClientService,
   ) { }
+
 
   ngOnInit() {
     // console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa pago');
@@ -102,7 +106,6 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
 
     // marcador que ya pago, si actualiza cierra session
-    // console.log('fin pago');
     if ( this.infoTokenService.infoUsToken.isPagoSuccess ) {
       if ( this.infoTokenService.isDelivery() ) {
         // console.log('fin pago delivery');
@@ -160,6 +163,18 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
     // marcar como si se dio btn pago para reload page
     localStorage.setItem('sys::btnP', '0');
+
+
+    this.pagoTarjetaServices.listenPaymetResponse$.subscribe(res => {
+      if (res) {
+        this.listenResponsePayment(res);
+      }
+    });
+
+    this.pagoTarjetaServices.listenPaymetLoader$.subscribe(res => {
+      this.isLoaderTransaction = res;
+    });
+
   }
 
   private cerrarSession(): void {
@@ -181,14 +196,15 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     this.crudService.postFree(dataClient, 'transaction', 'get-email-client', false).subscribe((res: any) => {
       this.dataClientePago.email = res.data[0].correo ? res.data[0].correo : '';
 
-      // this.dataClientePago.email = 'integraciones.visanet@necomplus.com'; // desarrollo
-      // // this.dataClientePago.email = 'review@cybersource.com';
-      // this.dataClientePago.isSaveEmail = false; // desarrollo
+      // desarrollo
+      this.dataClientePago.email = 'integraciones.visanet@necomplus.com';
+      // this.dataClientePago.email = 'review@cybersource.com';
+      this.dataClientePago.isSaveEmail = false; // desarrollo
 
       // email // comentar si es review@cybersource.com
-      this.isRequiredEmail = this.dataClientePago.email === '' ?  true : false;
+      // this.isRequiredEmail = this.dataClientePago.email === '' ?  true : false;
       this.isEmailValid = !this.isRequiredEmail;
-      this.dataClientePago.isSaveEmail = this.isRequiredEmail;
+      // this.dataClientePago.isSaveEmail = this.isRequiredEmail;
 
       this.dataClientePago.idcliente = res.data[0].idcliente_card;
       this.dataClientePago.diasRegistrado = res.data[0].dias_registrado;
@@ -273,8 +289,12 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
       // ('_purchasenumber', _purchasenumber);
 
-      pagar(this.estadoPedido.importe, _purchasenumber, this.dataClientePago);
-      this.listenResponse();
+      // pagar(this.estadoPedido.importe, _purchasenumber, this.dataClientePago);
+
+      this.pagoTarjetaServices.processPayment(this.estadoPedido.importe, _purchasenumber, this.dataClientePago);
+
+
+      // this.listenResponse();
       this.verificarCheckTerminos();
 
       this.listenStatusService.setIsBtnPagoShow(true);
@@ -422,6 +442,92 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     }, 900);
   }
 
+
+  private listenResponsePayment(_dataResTransaction: any) {
+
+    this.dataResTransaction = _dataResTransaction;
+
+    this.isLoaderTransaction = true;
+    let _dataTransactionRegister;
+    this.isTrasctionSuccess = !this.dataResTransaction.error;
+
+
+    if (this.isTrasctionSuccess) {
+      _dataTransactionRegister = {
+        purchaseNumber: this.dataResTransaction.order.purchaseNumber,
+        card: this.dataResTransaction.dataMap.CARD,
+        brand: this.dataResTransaction.dataMap.BRAND,
+        descripcion: this.dataResTransaction.dataMap.ACTION_DESCRIPTION,
+        status: this.dataResTransaction.dataMap.STATUS,
+        error: this.dataResTransaction.error
+      };
+
+      // cuando es Cliente Delivery
+      // guarda primero el pedido
+      if ( this.infoToken.isDelivery ) {
+        this.isLoaderTransaction = true;
+        const _dataSendPedido = JSON.parse(atob(this.infoToken.orderDelivery));
+
+        // _dataSendPedido.sokcetId = this.infoToken.socketId; // para que me notificque el idpedido
+        this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago, true)
+        .subscribe(idPwaPago => {
+          _dataSendPedido.dataPedido.p_header.idregistro_pago = idPwaPago;
+          // this.socketService.emit('nuevoPedido', _dataSendPedido);
+
+          // 050721 // priorizamos socket
+          // 280321
+          // hay algunos pagos que no se registran, si el socket no responde por algun motivio
+          // guarda por post
+          this.socketService.emitRes('nuevoPedido', _dataSendPedido).subscribe(resSocket => {
+            if ( resSocket === false ) {
+              this.crudService.postFree(JSON.stringify(_dataSendPedido), 'pedido', 'registrar-nuevo-pedido', false)
+              .subscribe((res: any) => {
+                console.log('pedido registrado');
+              });
+            }
+          });
+
+          setTimeout(() => {
+            this.isLoaderTransaction = false;
+            // marcador si actualiza la pagina cuando ya pago
+            this.infoTokenService.setIsPagoSuccess(true);
+
+            // 5 segundos lanza a zona delivery
+            setTimeout(() => {
+              this.finDelivery();
+            }, 6000);
+            return;
+          }, 1900);
+        });
+
+      } else {
+        this.infoTokenService.setIsPagoSuccess(true);
+        this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago)
+        .subscribe(idPwaPago => {
+          this.isLoaderTransaction = false;
+          const _idPago = idPwaPago;
+        });
+      }
+
+
+    } else {
+      _dataTransactionRegister = {
+        purchaseNumber: this.el_purchasenumber,
+        card: this.dataResTransaction.data.CARD,
+        brand: this.dataResTransaction.data.BRAND,
+        descripcion: this.dataResTransaction.data.ACTION_DESCRIPTION,
+        status: this.dataResTransaction.data.STATUS,
+        error: this.dataResTransaction.error
+      };
+
+      this.registrarPagoService.registrarPago(this.estadoPedido.importe.toString(), _dataTransactionRegister, this.dataClientePago)
+      .subscribe(idPwaPago => {
+        this.isLoaderTransaction = false;
+        const _idPagoA = idPwaPago;
+      });
+    }
+  }
+
   verificarCheckTerminos() {
     this.isViewAlertTerminos = this.isCheckTerminos ? false : true;
     this.isViewAlertEmail = !this.isEmailValid; // comentar si review@cybersoruce.com
@@ -451,15 +557,17 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   private actionAfterTransaction(): void {
     // this.lanzarPermisoNotificationPush(1);
-    if ( this.dataResTransaction.error ) {
-      this.navigatorService._router('../pedido');
-    } else {
-      if ( this.infoToken.isSoloLLevar ) {
-        this.goBack();
-        // this.navigatorService._router('../pedido');
+    if ( this.dataResTransaction ) {
+      if ( this.dataResTransaction.error ) {
+        this.navigatorService._router('../pedido');
       } else {
-        // verificar si el establecimiento tiene activada la opcion de encuesta
-        this.navigatorService._router('../lanzar-encuesta');
+        if ( this.infoToken.isSoloLLevar ) {
+          this.goBack();
+          // this.navigatorService._router('../pedido');
+        } else {
+          // verificar si el establecimiento tiene activada la opcion de encuesta
+          this.navigatorService._router('../lanzar-encuesta');
+        }
       }
     }
 
@@ -478,7 +586,10 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     this.socketService.isSocketOpenReconect = true;
     this.socketService.closeConnection();
 
+    this.dataResTransaction = null;
+
     this.navigatorService.__router('../zona-delivery');
+
 
   }
 
@@ -503,6 +614,10 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  // responseFormA(e) {
+  //   console.log('llego a pagar-ciuenta-component', e);
+  // }
 
 
 }

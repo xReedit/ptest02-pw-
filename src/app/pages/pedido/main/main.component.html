@@ -89,10 +89,23 @@
             <div class="footer-btn-go-lista animated fadeIn" 
               [ngClass]="{'fadeInUp':  countTotalItems > 0,'fadeOutDown': countTotalItems <= 0}" 
               *ngIf="(isUsuarioCliente || isPuntoAutoPedido) && isScreenIsMobile">
-              <div class="content" (click)="goListaProductos()">
-                <p class="badge badge-light">{{ countTotalItems }}</p>
+              <!-- boton atras -->
+              <div class="content-info text-left">
+                <p class="fw-100 fs-12 m-0">Importe Total</p>
+                <p class="fw-800 fs-20">S/. {{ importeTotalProductos | number: '.2' }}</p>
+              </div>
+
+              <!-- importe total del pedido -->
+              <div class="content-btn"> 
+                <button matRipple class="btn mr-1" style="background: #3f51b5; color: white;" (click)="goListaProductos()">
+                  <span class="fs-15">Ver Pedido</span>
+                </button>
+                <button matRipple class="btn text-center" style="background: #007BFF; color: white;" (click)="goBackCarta()">
+                  <i class="fa fa-arrow-left"></i>
+                </button>
+                <!-- <p class="badge badge-light">{{ countTotalItems }}</p>
                 <p>Ver pedido</p>
-                <p>S/. {{ importeTotalProductos | number: '.2' }}</p>
+                <p>S/. {{ importeTotalProductos | number: '.2' }}</p> -->
               </div>
             </div>
 
