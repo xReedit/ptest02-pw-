@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { IS_NATIVE, VIEW_APP_MOZO } from 'src/app/shared/config/config.const';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { environment } from './../../../../environments/environment';
-import { AuthNativeService } from 'src/app/shared/services/auth-native.service';
+// import { AuthNativeService } from 'src/app/shared/services/auth-native.service';
 // import { SpechTotextService } from 'src/app/shared/services/speech/spech-totext.service';
 // import { SpechTTSService } from 'src/app/shared/services/speech/spech-tts.service';
 // import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
@@ -35,7 +35,7 @@ export class InicioComponent implements OnInit, OnDestroy {
     private verifyClientService: VerifyAuthClientService,
     private router: Router,
     private infoToken: InfoTockenService,
-    private authNativeService: AuthNativeService
+    // private authNativeService: AuthNativeService
     // private webSocketService: WebsocketService
     ) { }
 
@@ -64,12 +64,12 @@ export class InicioComponent implements OnInit, OnDestroy {
     }, 2000);
 
 
-    this.authNativeService.listen();
+    // this.authNativeService.listen();
   }
 
   // test
   IniciarSession() {
-    this.authNativeService.login();
+    // this.authNativeService.login();
   }
 
   private loadInit(): void {
