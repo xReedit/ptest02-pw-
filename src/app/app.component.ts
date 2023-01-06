@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SwUpdate } from '@angular/service-worker';
+// import { SwUpdate } from '@angular/service-worker';
 // import { ActivatedRoute } from '@angular/router';
 // import { App } from '@capacitor/app';
 // import { Auth0Service } from './shared/services/auth0.service';
@@ -14,7 +14,7 @@ export class AppComponent implements OnInit {
 
   suscribe: any;
   constructor(
-    private swUpdate: SwUpdate
+    // private swUpdate: SwUpdate
     // private auth: Auth0Service
     // public plataform: Plataform
     // private activatedRoute: ActivatedRoute
@@ -32,11 +32,11 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.swUpdate.isEnabled) {
-      this.swUpdate.available.subscribe(() => {
-          console.log('nueva version');
-          window.location.reload();
-      });
-    }
+    // if (this.swUpdate.isEnabled) {
+    //   this.swUpdate.available.subscribe(() => {
+    //       console.log('nueva version');
+    //       window.location.reload();
+    //   });
+    // }
   }
 }
