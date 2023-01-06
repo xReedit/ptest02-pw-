@@ -9,6 +9,7 @@ import { SocketService } from 'src/app/shared/services/socket.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 
 @Component({
   selector: 'app-comp-list-mesas',
@@ -36,6 +37,7 @@ export class CompListMesasComponent implements OnInit {
     private listenStatusService: ListenStatusService,
     private utilitariosService: UtilitariosService,
     private dialog: MatDialog,
+    private miPedidoService: MipedidoService
   ) { }
 
   ngOnInit(): void {
@@ -103,6 +105,9 @@ export class CompListMesasComponent implements OnInit {
       const dialogReset = this.dialog.open(DialogDesicionComponent, _dialogConfig);
       dialogReset.afterClosed().subscribe(result => {
         if ( !result ) {return; }
+
+        //resetea pedido pendiente
+        this.miPedidoService.resetAllNewPedido();
         this.showCuentaMesa(item);
       });
     } else {

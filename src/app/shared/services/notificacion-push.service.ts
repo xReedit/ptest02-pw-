@@ -2,7 +2,16 @@ import { Injectable } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
 import { CrudHttpService } from './crud-http.service';
 import { InfoTockenService } from './info-token.service';
-import { VAPID_PUBLIC } from '../config/config.const';
+import { VAPID_PUBLIC, IS_NATIVE } from '../config/config.const';
+
+
+
+import {
+  ActionPerformed,
+  PushNotificationSchema,
+  PushNotifications,
+  Token,
+} from '@capacitor/push-notifications';
 // import { Observable } from 'rxjs/internal/Observable';
 // import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 // import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
@@ -17,7 +26,7 @@ export class NotificacionPushService {
   constructor(
     private swPush: SwPush,
     private crudService: CrudHttpService,
-    private infoTokenService: InfoTockenService,
+    private infoTokenService: InfoTockenService,    
     // private dialog: MatDialog,
   ) {
 
@@ -36,6 +45,22 @@ export class NotificacionPushService {
       // window.location.reload();
       // window.open('reparto.papaya.com.pe');
     });
+
+
+    if (IS_NATIVE) {
+      PushNotifications.addListener('registration',
+        (token: Token) => {
+          console.log('addListener token.value ', token.value);
+          this.saveSuscripcion(token.value);
+        }
+      );
+  
+      PushNotifications.addListener('registrationError',
+        (error: any) => {
+          alert('Error en registrar: ' + JSON.stringify(error));
+        }
+      );
+    }
   }
 
   getIsTienePermiso(): boolean {
@@ -45,14 +70,30 @@ export class NotificacionPushService {
 
   // se suscribe a la notificacion
   suscribirse(): void {
-    console.log('llego a suscribirse estado this.swPush.isEnabled: ', this.swPush.isEnabled);
+    // console.log('llego a suscribirse estado this.swPush.isEnabled: ', this.swPush.isEnabled);
     // if ( this.swPush.isEnabled ) {
       // this.swPush.subscription.subscribe(res => {
         // if (!res) {return; }
         // this.lanzarPermisoNotificationPush(option);
-        this.keySuscribtion();
-      // });
-    // }
+        // });
+        // }
+    
+    //0123 cambiamos
+    if (IS_NATIVE ) {      
+      PushNotifications.requestPermissions().then(result => {
+        console.log('result.receive', result.receive);
+        if (result.receive === 'granted') {
+          // Register with Apple / Google to receive push via APNS/FCM
+          PushNotifications.register()
+        } else {
+          // Show some error
+          console.log('error al registrar');
+        }
+      });
+    } else {
+      this.keySuscribtion();
+    }
+
   }
 
   //  suscriberse

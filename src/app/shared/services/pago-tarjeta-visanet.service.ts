@@ -33,9 +33,9 @@ export class PagoTarjetaVisanetService {
       urlApiSeguridad : 'https://apiprod.vnforapps.com/api.security/v1/security',
       urlApiSesion : 'https://apiprod.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/',
       urlApiAutorization :  'https://apiprod.vnforapps.com/api.authorization/v3/authorization/ecommerce/',
-      urlJs : 'https://static-content.vnforapps.com/v2/js/checkout.js"',
+      urlJs : 'https://static-content.vnforapps.com/v2/js/checkout.js',
       logo : 'https://papaya.com.pe/images/l-pay-2.png',
-      Authorization: 'Basic bWFjcmF6ZS5pbmZvQGdtYWlsLmNvbTpqMzRPeiFuQg=='
+      Authorization : 'Basic bWFjcmF6ZS5pbmZvQGdtYWlsLmNvbTpqMzRPeiFuQg=='
     }
   ];
 
@@ -49,7 +49,7 @@ export class PagoTarjetaVisanetService {
 
   constructor() {
 
-    this.parametrosSelected = this.parametros[0];
+    this.parametrosSelected = this.parametros[1];
 
     window.addEventListener('payment.success', (event: any) => {
       this.generateAutorizacion(event.detail);

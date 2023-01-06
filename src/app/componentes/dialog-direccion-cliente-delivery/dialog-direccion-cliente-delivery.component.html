@@ -83,13 +83,13 @@
 <!-- confirmar direccion / mapa -->
 <div *ngIf="!showSelectedDireccion" class="animated fadeInRight">
 
-    <div  class="animated fadeInDown">
+    <p  class="">
         <i class="fa fa-arrow-left pr-2" (click)="goBackEscogerDireccion()"></i> 
-        <p class="fs-18 fw-600">
-            Confirmar tu dirección </p>
-    </div>
+        <span class="fs-18 fw-600">
+            Confirmar tu dirección </span>
+    </p>
 
-    <!-- mapa -->
+    <!-- mapa -->    
     <div class="border" id="map_canvas">
         <agm-map 
             [latitude]="latitude" 
@@ -104,14 +104,19 @@
         </agm-map>           
         <div class="centerMarker"></div>     
         <div class="centerMarker-fondo"></div>
-        <div class="btn-confirmar-dir" *ngIf="countMoveMap > 1">
+        <div class="btn-confirmar-dir" *ngIf="countMoveMap > 1">            
             <button class="btn btn-success" (click)="confirmarDireccion()">Confirmar</button>
         </div>
     </div>
 
+    <!-- mapa capacitor -->
+    <!-- <div class="border" id="map_canvas">
+        <capacitor-google-map id="map"></capacitor-google-map>
+    </div> -->
+
     <div class="p-2">
         <mat-form-field class="w-100">
-            <input class="input-dir" matInput placeholder="Direccion" (keyup)="goBackEscogerDireccion()" [(ngModel)]="dataCliente.direccion" name="direccion" id="direccion" >
+            <input class="input-dir" matInput placeholder="Direccion" (keyup)="goBackEscogerDireccion()" [(ngModel)]="dataCliente.direccion" name="direccion" id="direccion" readonly>
             <button *ngIf="dataCliente.direccion" matSuffix mat-icon-button aria-label="Clear" (click)="goBackEscogerDireccion()">
                 <mat-icon matSuffix>
                     <i class="fa fa-close"></i>
@@ -123,11 +128,12 @@
         </mat-form-field> 
 
         <mat-form-field class="w-100">
-            <input class="input-dir" matInput placeholder="Referencia" [(ngModel)]="dataCliente.referencia" name="referencia" id="referencia">
+            <input class="input-dir" matInput placeholder="Referencia" [(ngModel)]="dataCliente.referencia" name="referencia" id="referencia" autocomplete="off">
         </mat-form-field> 
 
 
         <div class="text-center pb-3">
+            <!-- <button class="btn btn-secondary mr-1 mb-1" (click)="goBackEscogerDireccion()">Atras</button> -->
             <button mat-flat-button color="primary"  
                 [disabled]="loader > 0"             
                 (click)="saveDireccion()"

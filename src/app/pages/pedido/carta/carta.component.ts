@@ -132,7 +132,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     const _configPunto = JSON.parse(localStorage.getItem('sys::punto')) || {};
     // console.log('this.establecimientoService.get()', this.establecimientoService.get());
     this.isViewMercado = this.establecimientoService.get().pwa_show_item_view_mercado === 1;
-    this.isCliente = this.infoToken.infoUsToken.isCliente;
+    this.isCliente = !!this.infoToken.infoUsToken.isCliente; // this.infoToken.infoUsToken.isCliente;
     this.isPuntoAutoPedido = _configPunto.ispunto_autopedido || false;
     this.isTomaPedidoRapido = _configPunto.istoma_pedido_rapido || false;
 
@@ -416,15 +416,25 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     // this.unsubscribe$.complete();
   }
 
-  getSecciones(categoria: CategoriaModel) {
-    // chequea si esta disponible
-    if ( this.infoToken.isCliente() && !categoria.abierto ) {
-      this.animateBloqueoCategoria = true;
+  private showAnimateBloqueoCategoria(categoria: CategoriaModel) {
+    categoria.animateBloqueoCategoria = true;
 
       setTimeout(() => {
-        this.animateBloqueoCategoria = false;
+        categoria.animateBloqueoCategoria = false;
       }, 300);
+  }
 
+  getSecciones(categoria: CategoriaModel) {
+    // chequea si esta disponible
+    if ( !this.isCliente && !categoria.abierto) { // si es personal autorizado
+      if ( categoria.accesible_mozo === '1' ) {
+        this.showAnimateBloqueoCategoria(categoria);
+        return;
+      }
+    }
+
+    if ( this.isCliente && !categoria.abierto ) {
+      this.showAnimateBloqueoCategoria(categoria);
       return;
     }
 
@@ -449,9 +459,13 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.miPedidoService.setObjSeccionSeleced(seccion);
     setTimeout(() => {
       this.seccionSelected = seccion;
-      this.objItems = seccion.items;
-      this.showSecciones = false;
+      this.objItems = seccion.items;      
       this.showItems = true;
+
+      setTimeout(() => {
+        this.showSecciones = false;
+      }, 200);
+
       if ( this.isScreenIsMobile ) {
         // if ( this.tituloToolBar.indexOf(seccion.des) === -1) {
           this.tituloToolBar = this.nomCategoriaSeleted + ' / ' + seccion.des;
@@ -528,6 +542,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.objItems.map(x => x.selected = false);
     if (this.showItems) {
       this.showItems = false;
+      // setTimeout(() => {
+      //   this.showItems = false;
+      // }, 50);
       this.showSecciones = true;
       this.tituloToolBar = this.tituloToolBar.split(' / ')[0];
       // this.navigatorService.addLink('carta-i-secciones');

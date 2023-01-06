@@ -4,11 +4,13 @@
   "assetGroups": [
     {
       "name": "app",
-      "installMode": "prefetch",
+      "installMode": "lazy",
       "resources": {
         "files": [
           "/favicon.ico",
           "/index.html",
+          "/assets/css/**",
+          "/assets/images/**",
           "/*.css",
           "/*.js"
         ]
@@ -22,7 +24,14 @@
           "/assets/**",
           "/assets/images/**",
           "/assets/images/icon-app/**",
-          "/*.(eot|svg|cur|jpg|jpeg|png|PNG|webp|gif|otf|ttf|woff|woff2|ani)"
+          "/**.(eot|svg|cur|jpg|jpeg|png|PNG|webp|gif|otf|ttf|woff|woff2|ani)"
+        ],
+        "urls": [
+          "**/file/**.jpg",
+          "**/file/**.jpeg",
+          "**/file/**.png",            
+          "**/print/logo/**.jpg",
+          "**/print/logo/**.png"
         ]
       }
     }
@@ -31,16 +40,17 @@
     {
         "name": "dynamicResources",
         "urls": [
-            "**/file/*.jpg",
-            "**/file/*.jpeg",
-            "**/file/*.png",            
-            "**/print/logo/*.jpg",
-            "**/print/logo/*.png"
+            "**/file/**.jpg",
+            "**/file/**.jpeg",
+            "**/file/**.png",            
+            "**/print/logo/**.jpg",
+            "**/print/logo/**.png"
         ],
         "cacheConfig": {
-            "maxSize": 1500,
+            "strategy": "performance",
+            "maxSize": 5500,
             "maxAge": "7d"
-        }
+        }        
     }
 ]
 }

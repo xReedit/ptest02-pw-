@@ -71,7 +71,7 @@ export class ConfirmadoComponent implements OnInit {
   private lanzarPermisoNotificationPush(option: number = 0) {
     // this.pushNotificationSerice.suscribirse(option);
 
-    // console.log('aaaaaaaaaaaaaaaaaaaaaaa');
+    console.log('aaaaaaaaaaaaaaaaaaaaaaa');
     if ( this.pushNotificationSerice.getIsTienePermiso() ) {
       this.pushNotificationSerice.suscribirse();
       return;

@@ -146,4 +146,11 @@ export class UtilitariosService {
     return new Date(h2 - h1).getMinutes();
   }
 
+  arrGroupBy(xs: any, key: string) {
+    return xs.reduce(function(rv, x) {
+      (rv[x[key]] = rv[x[key]] || []).push(x);
+      return rv;
+    }, {});
+  }
+
 }

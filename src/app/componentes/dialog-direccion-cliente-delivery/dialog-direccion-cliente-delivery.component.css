@@ -47,7 +47,7 @@
 
 
 agm-map {
-    height: 200px;
+    height: 245px;
 }
 
 #map_canvas {
@@ -105,4 +105,10 @@ agm-map {
     padding: 5px;
     background-color: #cfcfcf;
     border-radius: 5px;
+}
+
+capacitor-google-map {
+    display: inline-block;
+    width: 275px;
+    height: 400px;
 }

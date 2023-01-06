@@ -353,10 +353,10 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   openDialogMetodoPago(): void {
     const _dialogConfig = new MatDialogConfig();
-    _dialogConfig.width = '380px';
+    // _dialogConfig.width = '380px';
     _dialogConfig.disableClose = true;
     _dialogConfig.hasBackdrop = true;
-    _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
+    _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];    
 
     _dialogConfig.data = {
       importeTotalPagar: this._listSubtotales[this._listSubtotales.length - 1].importe
@@ -553,12 +553,16 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.isCalculandoDistanciaA = true;
     // this.calcDistanceService.calculateRoute(direccionCliente, this.dirEstablecimiento, false);
     this.calcDistanceService.calculateRouteObserver(direccionCliente, this.dirEstablecimiento, false)
-    .subscribe((res: any) => {
+    .subscribe((resEstablecimiento: DeliveryEstablecimiento) => {
     // setTimeout(() => {
       // this.dirEstablecimiento = this.dirEstablecimiento;
-      this.establecimientoService.set(this.dirEstablecimiento);
-      this.infoEstablecimiento.c_servicio = this.dirEstablecimiento.c_servicio;
-      this.resData.costoTotalDelivery = this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
+      // this.establecimientoService.set(this.dirEstablecimiento);
+      // this.infoEstablecimiento.c_servicio = this.dirEstablecimiento.c_servicio;
+      // this.resData.costoTotalDelivery = this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
+      this.dirEstablecimiento = resEstablecimiento;
+      this.establecimientoService.set(resEstablecimiento);
+      this.infoEstablecimiento.c_servicio = resEstablecimiento.c_servicio;
+      this.resData.costoTotalDelivery = resEstablecimiento.c_servicio; // 
 
       const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
       localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));

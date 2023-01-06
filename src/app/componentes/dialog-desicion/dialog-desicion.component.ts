@@ -9,7 +9,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 export class DialogDesicionComponent implements OnInit {
   msj = '';
   titleBtnCancel = 'No';
-  titleBtnSuccess = 'Si, por favor';
+  titleBtnSuccess = 'Si, porsupuesto';
   constructor(
     private dialogRef: MatDialogRef<DialogDesicionComponent>,
     @Inject(MAT_DIALOG_DATA) data: any,

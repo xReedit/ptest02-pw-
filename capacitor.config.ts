@@ -1,10 +1,20 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'papaya.com.pe',
+  appId: 'express.papaya.com.pe',
   appName: 'Papaya Express',
   webDir: 'dist/pwa-app-pedido',
-  bundledWebRuntime: false
+  bundledWebRuntime: false,
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 0
+    },
+    Preferences: {},
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"]
+    }
+  },
+  cordova: {}
 };
 
 export default config;

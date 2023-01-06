@@ -24,13 +24,25 @@
             <br>
             <div>      
               <img src="assets/images/papaya_text-white.png" style="width: 150px; padding-top: 15px;">
-              <p>Express <span class="fs-11">v.3d</span></p>
+              <p>
+                <ng-container *ngIf="isViewOnlyMozo; else elseTemplateExpress">
+                  App Mozo
+                </ng-container>
+                <ng-template #elseTemplateExpress>
+                  Express
+                </ng-template>
+                
+                <span class="fs-11">v.3d</span>
+              </p>
             </div>
           </div>
         </div>
 
         <!-- end header -->
 
+        <!-- test -->
+        <button (click)="IniciarSession()">Iniciar session</button>
+        <!-- test -->
 
         <ng-container *ngIf="!isViewOnlyMozo; else elseTemplateMozo">
           
@@ -70,11 +82,11 @@
                   <p class="fs-11 text-secondary">Tus platos favoritos <br>de tu local favorito.</p>            
                 </div>
   
-                <div class="option-ini"  matRipple (click)="showAtm()">
+                <!-- <div class="option-ini"  matRipple (click)="showAtm()">
                   <img src="assets/images/icon-app/001-money.png" alt="">
                   <p class="titulo">Cash</p>
                   <p class="fs-11 text-secondary">Solicita dinero <br> en efectivo.</p>            
-                </div>
+                </div> -->
   
   
               </div>
@@ -85,8 +97,17 @@
 
         <!-- vista de app solo mozo -->
         <ng-template #elseTemplateMozo>
-          <div class="div-all-options pt-3">          
-            <div class="div-content-option-ini">
+          <div class="bg-content-mozo-img">
+            <img src="assets/images/waiter-ini.jpg" alt="mozo">
+          </div>
+          <div class="bg-msj-mozo">
+            <p>Eres una parte valiosa del equipo y tu trabajo es importante. Esta Aplicación está diseñada para facilitar tu trabajo y hacer que seas más eficiente.</p>
+          </div>
+          
+
+
+          <!-- <div class="div-all-options pt-3">          
+            <div class="div-content-option-ini">              
               
               <div class="option-ini"  matRipple [routerLink]="['/login-personal-autorizado']">
                 <img src="assets/images/icon-app/001-chef.png" alt="">
@@ -95,7 +116,7 @@
               </div>
 
             </div>
-          </div>
+          </div> -->
         </ng-template>
         
 
@@ -188,9 +209,15 @@
 
 
 
-      <div class="xfooter bg-white"> 
+      <div class="xfooter bg-white">         
+        <div *ngIf="!isViewOnlyMozo && !isNativePlataform">          
           <button mat-button color="primary" [routerLink]="['/login-personal-autorizado']">Personal Autorizado</button>      
           <br>        
+        </div>
+
+        <div *ngIf="isViewOnlyMozo">
+          <button class="btn btnng-primary" matRipple [routerLink]="['/login-personal-autorizado']">Empezar</button>
+        </div>
 
         <div class="w-100 text-center" (click)="goDev(2);">
           <p class="pt-1 fw-100 fs-12 text-secondary m-0">papaya.com.pe</p>

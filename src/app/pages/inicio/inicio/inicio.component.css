@@ -150,11 +150,11 @@ body, html {
   }
 
   .div-content-option-ini {
-    display: grid;
+    /* display: grid;
     align-items: center;
     grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
     width: 100%;
-    grid-gap: 0.4rem;
+    grid-gap: 0.4rem; */
   }
 
   .option-ini {
@@ -166,6 +166,7 @@ body, html {
     text-align: center;
     justify-self: center;
     width: 155px;
+    display: inline-block;
   }
 
   .option-ini .titulo {
@@ -176,4 +177,23 @@ body, html {
 
   .option-ini p{
     margin: 0;
+  }
+
+
+  /* mozo */
+  .bg-content-mozo-img {
+    background: #E1F5FE;
+  }
+
+  .bg-content-mozo-img img {
+    max-width: 400px;
+    width: 100%;
+  }
+
+  .bg-msj-mozo {
+    background: #fbfbfb;
+    padding: 15px;
+    font-size: 13px;
+    color: gray;
+    font-weight: 100;
   }

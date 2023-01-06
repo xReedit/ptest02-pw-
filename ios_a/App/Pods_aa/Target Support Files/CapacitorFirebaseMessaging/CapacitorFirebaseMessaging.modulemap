@@ -1,0 +1,6 @@
+framework module CapacitorFirebaseMessaging {
+  umbrella header "CapacitorFirebaseMessaging-umbrella.h"
+
+  export *
+  module * { export * }
+}

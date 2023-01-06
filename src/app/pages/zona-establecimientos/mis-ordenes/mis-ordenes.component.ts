@@ -90,7 +90,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
     this.listMisPedidos = [];
     this.crudService.postFree(_data, 'delivery', 'get-mis-pedidos', false)
       .subscribe( res => {
-        console.log(res);
+        // console.log(res);
         if ( !res.success ) {return; }
         this.listMisPedidos = res.data;
         this.listMisPedidos.map( x => {

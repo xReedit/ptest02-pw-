@@ -10,6 +10,7 @@ declare var google: any;
 import {
   insideCircle, distanceTo
 } from 'geolocation-utils';
+import { MapsServiceService } from './maps-service.service';
 
 
 @Injectable({
@@ -24,7 +25,8 @@ export class CalcDistanciaService {
 
 
   constructor(
-    private estableciminetoService: EstablecimientoService
+    private estableciminetoService: EstablecimientoService,
+    private mapsService: MapsServiceService
   ) { }
 
 
@@ -212,19 +214,43 @@ export class CalcDistanciaService {
 
 
   calculateRouteObserver(dirCliente: DeliveryDireccionCliente, dirEstablecimiento: DeliveryEstablecimiento, buscarEnCache: boolean = true): Observable<DeliveryEstablecimiento> {
-    return new Observable(observer => {
+
+    
+
+      return new Observable(observer => {
         let c_servicio = 0;
 
         c_servicio = dirEstablecimiento.c_minimo;
 
         const c_km = dirEstablecimiento.c_km; // costo x km adicional
 
+        // calcular la distancia
+        const _origen = `${dirEstablecimiento.latitude},${dirEstablecimiento.longitude}`
+        const _destino = `${dirCliente.latitude},${dirCliente.longitude}`
+        this.mapsService.calcularRuta(_origen, _destino).subscribe(reskm => {          
+            dirEstablecimiento.distancia_mt = reskm.toString();
+            dirEstablecimiento.distancia_km = reskm.toString();
+            dirEstablecimiento.isCalcApiGoogle = true;
+            c_servicio = this.calCostoDistancia(dirEstablecimiento, reskm);
+            console.log('reskm', reskm);
+            console.log('c_servicio', c_servicio);
+            dirEstablecimiento.c_servicio = c_servicio;
+            
+            observer.next(dirEstablecimiento);
+            observer.complete();
+        });
+        
 
-        dirEstablecimiento.latitude = typeof dirEstablecimiento.latitude === 'string' ? parseFloat(dirEstablecimiento.latitude) : dirEstablecimiento.latitude;
-        dirEstablecimiento.longitude = typeof dirEstablecimiento.longitude === 'string' ? parseFloat(dirEstablecimiento.longitude) : dirEstablecimiento.longitude;
+        
 
-        dirCliente.latitude = typeof dirCliente.latitude === 'string' ? parseFloat(dirCliente.latitude) : dirCliente.latitude;
-        dirCliente.longitude = typeof dirCliente.longitude === 'string' ? parseFloat(dirCliente.longitude) : dirCliente.longitude;
+
+        // dirEstablecimiento.latitude = typeof dirEstablecimiento.latitude === 'string' ? parseFloat(dirEstablecimiento.latitude) : dirEstablecimiento.latitude;
+        // dirEstablecimiento.longitude = typeof dirEstablecimiento.longitude === 'string' ? parseFloat(dirEstablecimiento.longitude) : dirEstablecimiento.longitude;
+        // dirCliente.latitude = typeof dirCliente.latitude === 'string' ? parseFloat(dirCliente.latitude) : dirCliente.latitude;
+        // dirCliente.longitude = typeof dirCliente.longitude === 'string' ? parseFloat(dirCliente.longitude) : dirCliente.longitude;
+
+
+
 
         // if ( buscarEnCache ) {
         //   const _establecimientoCacheado = <any>this.estableciminetoService.getFindDirClienteCacheEstableciemto(dirCliente, dirEstablecimiento);
@@ -241,58 +267,42 @@ export class CalcDistanciaService {
 
         // // con google // //
         //  // cordenadas
-        this.origin = {
-          lat: dirCliente.latitude, lng: dirCliente.longitude
-        };
+        // this.origin = {
+        //   lat: dirCliente.latitude, lng: dirCliente.longitude
+        // };
 
-        // console.log('this.origin', this.origin);
+        // // console.log('this.origin', this.origin);
 
-        this.destination = {
-          lat: dirEstablecimiento.latitude, lng: dirEstablecimiento.longitude
-        };
+        // this.destination = {
+        //   lat: dirEstablecimiento.latitude, lng: dirEstablecimiento.longitude
+        // };
 
-        const request = {
-          origin: this.origin,
-          destination: this.destination,
-          travelMode: google.maps.TravelMode.DRIVING
-        };
+        // const request = {
+        //   origin: this.origin,
+        //   destination: this.destination,
+        //   travelMode: google.maps.TravelMode.DRIVING
+        // };
 
-        let km = 0;
-        // console.log('calculando.. 1');
-        this.directionsService.route(request, (result: any, status) => {
-          if (status === 'OK') {
-            // this.directionsRenderer.setDirections(result);
-            // console.log('result.routes', result.routes);
-            km = result.routes[0].legs[0].distance.value;
-            const _kmReal =  km / 1000;
-            dirEstablecimiento.distancia_mt = km.toString();
-            dirEstablecimiento.distancia_km = (_kmReal).toFixed(2);
+        // let km = 0;
+        // // console.log('calculando.. 1');
+        // this.directionsService.route(request, (result: any, status) => {
+        //   if (status === 'OK') {
+        //     // this.directionsRenderer.setDirections(result);            
+        //     km = result.routes[0].legs[0].distance.value;
+        //     const _kmReal =  km / 1000;
 
-            dirEstablecimiento.isCalcApiGoogle = true;
+        //     dirEstablecimiento.distancia_mt = km.toString();
+        //     dirEstablecimiento.distancia_km = (_kmReal).toFixed(2);
+        //     dirEstablecimiento.isCalcApiGoogle = true;
 
-            // km = parseInt((km / 1000).toFixed(), 0);
+        //     // km = parseInt((km / 1000).toFixed(), 0);
 
-            c_servicio = this.calCostoDistancia(dirEstablecimiento, _kmReal);
-            dirEstablecimiento.c_servicio = c_servicio;
-            // console.log('calculando.. 3');
+        //     c_servicio = this.calCostoDistancia(dirEstablecimiento, _kmReal);
+        //     dirEstablecimiento.c_servicio = c_servicio;           
+        //     observer.next(dirEstablecimiento);
 
-            // cachear direccion establecimineto
-            // const listCache = [];
-            // listCache.push(dirEstablecimiento);
-
-            // // guardar lista en cache
-            // const establecimientoToCache = {
-            //   idcliente_pwa_direccion: dirCliente.idcliente_pwa_direccion,
-            //   listEstablecimientos: listCache
-            // };
-
-            // this.estableciminetoService.setEstableciminetosCache(establecimientoToCache);
-
-            // console.log('calc distancia', dirEstablecimiento);
-            observer.next(dirEstablecimiento);
-
-          }
-        });
+        //   }
+        // });
 
     });
   }
@@ -350,7 +360,7 @@ export class CalcDistanciaService {
       }
     } else {
       this.calculateRouteObserver(direccionCliente, dirEstablecimiento, false).subscribe(res => {
-        console.log('rpt calc', res);
+        // console.log('rpt calc', res);
       });
     }
 

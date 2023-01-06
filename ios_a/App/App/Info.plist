@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleDisplayName</key>
+        <string>Papaya Express</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<true/>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright © 2022 Papaya.com.pe. All rights reserved.
+	</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Se necesita acceso a la ubicación del dispositivo. Utilizamos la ubicación del usuario para determinar la ruta más eficiente para un repartidor a la hora de entregar un pedido y para notificar al usuario cuando su pedido esté en camino.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Se necesita acceso a la ubicación del dispositivo. Utilizamos la ubicación del usuario para determinar la ruta más eficiente para un repartidor a la hora de entregar un pedido y para notificar al usuario cuando su pedido esté en camino.</string>
+	<key>UIStatusBarHidden</key>
+	<true/>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright © 2022 Papaya.com.pe. All rights reserved.</string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>express.papaya.com.pe</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Para poder escanear códigos de barras</string>
+</dict>
+</plist>

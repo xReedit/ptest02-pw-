@@ -16,6 +16,7 @@ import { SocketService } from 'src/app/shared/services/socket.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { SedeDeliveryService } from 'src/app/shared/services/sede-delivery.service';
+import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 
 @Component({
   selector: 'app-establecimientos',
@@ -38,6 +39,7 @@ export class EstablecimientosComponent implements OnInit {
   isNullselectedDireccion = true; // para mostrar comercios segun ciudad desde el inicio
 
   private isClienteLogueado = false;
+  
   constructor(
     private crudService: CrudHttpService,
     // private navigatorService: NavigatorLinkService,
@@ -47,7 +49,8 @@ export class EstablecimientosComponent implements OnInit {
     private socketService: SocketService,
     private establecimientoService: EstablecimientoService,
     private pedidoService: MipedidoService,
-    private plazaDelivery: SedeDeliveryService
+    private plazaDelivery: SedeDeliveryService,
+    private notificationPushService: NotificacionPushService
     // private pushNotificationSerice: NotificacionPushService,
     // private dialog: MatDialog
   ) { }
@@ -300,6 +303,10 @@ export class EstablecimientosComponent implements OnInit {
     .subscribe( (res: any) => {
       this.listPromociones = res.data.length > 0 ? res.data.filter(x => x.idpromocion) : [];
       });
+  }
+
+  notificationPushTest() {
+    this.notificationPushService.suscribirse()
   }
 
   // private lanzarPermisoNotificationPush() {

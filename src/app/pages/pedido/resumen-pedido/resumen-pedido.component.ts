@@ -195,7 +195,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     .pipe(takeUntil(this.destroy$))
     .subscribe((res: boolean) => {
       if (res) {
-        // this.confirmarPeiddo();
+        // this.confirmarPeiddo();        
         this.isVisibleConfirmarAnimated = true;
 
         setTimeout(() => {

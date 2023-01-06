@@ -116,7 +116,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   // reset control cantidad
   clearSubItemOpcionesCtrlCant(_item: any) {
     if ( !_item.cantidad_seleccionada || _item?.cantidad_seleccionada === 0) {
-      if ( !_item.subitems ) { return; }
+      if ( !_item.subitems ||  _item.subitems == '0') { return; }
       _item.subitems.map((i: any) => {
         if ( i.show_cant_item === 1 ) {
           i.opciones.map((o: any) => {

@@ -165,18 +165,46 @@ export class MipedidoService {
         });
       }
 
+      // console.log('_carta', _carta);
+      // console.log('infoTokenService', this.infoTokenService.getInfoUs());
+      // console.log('isCliente', this.infoTokenService.isCliente());
+
       const _itemsRecomendacion = [];
       const countListCarta = _carta.length;
       _carta.map((c: CategoriaModel) => {
+
 
         // 020822
         // si carta > 1 => validar horario de carta
         c.abierto = true;
         if ( countListCarta > 1 ) {
-          if (c.hora_ini && c.hora_fin) {
-            const _isShowCarta = this.utilesService.isBetweenHoursNow(c.hora_ini, c.hora_fin);
-            c.abierto = _isShowCarta;
+          let open_day = false;
+          let open_hour = false;
+
+          // si esta abierto segun dia
+
+          open_day = c.dia_disponible.indexOf(c.day_of_week) > -1;
+          c.abierto = open_day;
+
+          if ( open_day ) {
+
+            // si esta abierto segun hora
+            if (c.hora_ini && c.hora_fin) {
+              open_hour = this.utilesService.isBetweenHoursNow(c.hora_ini, c.hora_fin);
+              c.abierto = open_hour;
+            }
+
+            // si es cliente
+            // if ( this.infoTokenService.isCliente() ) { // si es cliente
+            //   c.abierto = c.visible_cliente === 1;
+            // }
           }
+
+          // si es mozo y solo si esta disponible segun horario
+          if (c.accesible_mozo === '1' && !this.infoTokenService.isCliente()) {
+            c.abierto = open_day && open_hour;
+          }
+
         }
 
         c.secciones.map((s: SeccionModel) => {

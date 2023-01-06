@@ -376,9 +376,12 @@ export class DatosDeliveryComponent implements OnInit {
 
 
         this.calcDistanceService.calculateRouteObserver(<DeliveryDireccionCliente>data, this.dirEstablecimiento, false)
-        .subscribe((res: any) => {
-          const c_servicio = this.dirEstablecimiento.c_servicio;
-          this.establecimientoService.set(this.dirEstablecimiento);
+        .subscribe((resEstablecimiento: DeliveryEstablecimiento) => {
+          // const c_servicio = this.dirEstablecimiento.c_servicio;
+          // this.establecimientoService.set(this.dirEstablecimiento);
+          this.dirEstablecimiento = resEstablecimiento;
+          const c_servicio = resEstablecimiento.c_servicio;
+          this.establecimientoService.set(resEstablecimiento);
           this.infoEstablecimiento.c_servicio = c_servicio; // this.dirEstablecimiento.c_servicio;
           this.resData.costoTotalDelivery = c_servicio; // this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
 
@@ -448,9 +451,10 @@ export class DatosDeliveryComponent implements OnInit {
     // this.isCalculandoDistanciaA = true;
     // this.calcDistanceService.calculateRoute(direccionCliente, this.dirEstablecimiento, false);
     this.calcDistanceService.calculateRouteObserver(direccionCliente, this.dirEstablecimiento, false)
-    .subscribe((res: any) => {
+    .subscribe((resEstablecimiento: DeliveryEstablecimiento) => {
     // setTimeout(() => {
       // this.dirEstablecimiento = this.dirEstablecimiento;
+      this.dirEstablecimiento = resEstablecimiento;
       this.establecimientoService.set(this.dirEstablecimiento);
       this.infoEstablecimiento.c_servicio = this.dirEstablecimiento.c_servicio;
       this.resData.costoTotalDelivery = this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;

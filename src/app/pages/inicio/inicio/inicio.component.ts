@@ -3,8 +3,10 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { Router } from '@angular/router';
-import { VIEW_APP_MOZO } from 'src/app/shared/config/config.const';
+import { IS_NATIVE, VIEW_APP_MOZO } from 'src/app/shared/config/config.const';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+import { environment } from './../../../../environments/environment';
+import { AuthNativeService } from 'src/app/shared/services/auth-native.service';
 // import { SpechTotextService } from 'src/app/shared/services/speech/spech-totext.service';
 // import { SpechTTSService } from 'src/app/shared/services/speech/spech-tts.service';
 // import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
@@ -25,13 +27,15 @@ export class InicioComponent implements OnInit, OnDestroy {
   isCliente = false;
   nombreClientSocket = '';
   isViewOnlyMozo = VIEW_APP_MOZO;
-
+  isNativePlataform = IS_NATIVE;
+  
   private countnDev = 0;
   private countLogo = 0;
   constructor(
     private verifyClientService: VerifyAuthClientService,
     private router: Router,
-    private infoToken: InfoTockenService
+    private infoToken: InfoTockenService,
+    private authNativeService: AuthNativeService
     // private webSocketService: WebsocketService
     ) { }
 
@@ -58,6 +62,14 @@ export class InicioComponent implements OnInit, OnDestroy {
       // document.body.style.backgroundColor = '#fff';
       // document.body.style.background = '#fff';
     }, 2000);
+
+
+    this.authNativeService.listen();
+  }
+
+  // test
+  IniciarSession() {
+    this.authNativeService.login();
   }
 
   private loadInit(): void {
@@ -195,5 +207,7 @@ export class InicioComponent implements OnInit, OnDestroy {
 
     if ( this.countLogo === 4 && this.countnDev === 2 ) { this.router.navigate(['./zona-delivery']); }
   }
+
+  
 
 }

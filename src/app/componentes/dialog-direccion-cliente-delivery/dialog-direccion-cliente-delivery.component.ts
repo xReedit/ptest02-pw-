@@ -7,6 +7,7 @@ import { Subject } from 'rxjs/internal/Subject';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { MapsServiceService } from 'src/app/shared/services/maps-service.service';
 import { SedeDeliveryService } from 'src/app/shared/services/sede-delivery.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
@@ -63,6 +64,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     private utilService: UtilitariosService,
     private plazaDelivery: SedeDeliveryService,
     private establecimientoService: EstablecimientoService,
+    private mapsService: MapsServiceService
   ) {
     this.idClienteBuscar = data.idcliente;
     this.isFromComercio = data.isFromComercio || false;
@@ -155,15 +157,25 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     this.getDireccionGeocode({ placeId: prediccionSelected.place_id }, prediccionSelected, showMapComercio);
   }
 
-  goUbicacionActual() {
-      this.getPosition().then(pos => {
+  async goUbicacionActual() {
+
+    // const rptPermissions = await this.mapsService.ubicacionRequestPermissions();
+    // console.log('rptPermissions', rptPermissions);
+    // this.mapsService.getPosition()
+
+    // this.getPosition().then(pos => {
+    //   console.log('pos navigater', JSON.stringify(pos));
+    // })
+    this.mapsService.getPosition().then((pos: any) => {
+      console.log('pos', JSON.stringify(pos));
+      
       this.latitude = pos.lat;
       this.longitude = pos.lng;
 
       this.centerChange(pos);
 
-      this.getDireccionGeocode({ 'location': { lat: this.mapCenter.lat, lng: this.mapCenter.lng }});
-  });
+      this.getDireccionGeocode({ 'location': { lat: pos.lat, lng: pos.lng }});
+    });
   }
 
   goMapa() {
@@ -181,52 +193,75 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     });
 }
 
-  private getDireccionGeocode(payload: any, prediccionSelected = null, showMapComercio = false) {
+  private async getDireccionGeocode(payload: any, prediccionSelected = null, showMapComercio = false) {
 
     if ( prediccionSelected ) {
       this.dataCliente.direccion = prediccionSelected.structured_formatting.main_text;
       this.dataCliente.ciudad = prediccionSelected.structured_formatting.secondary_text;
+      
     }
+
+    console.log('payload', payload);
 
     const geocoder = new google.maps.Geocoder();
     geocoder
       .geocode(payload)
-      .then(({ results }) => {
-        // console.log('results geocoder', results);
+      .then(({ results, status }) => {
+        
+      // const result = await this.mapsService.getDireccionInversa(payload.location.lat, payload.location.lng)
+        // console.log('results fecth', (results));
 
-        this.dataMapa = results[0];
+      // if (status === google.maps.GeocoderStatus.OK) {
+      // if (result.status === google.maps.GeocoderStatus.OK) { 
 
-        if ( !prediccionSelected ) {
-          const _foramt_address = this.dataMapa.formatted_address.split(', ');
-          this.dataCliente.direccion = _foramt_address[0];
-          this.dataCliente.ciudad = _foramt_address[1];
-        }
+          // const streetName = results[0].address_components.find(component => component.types.includes('route')).long_name;
+          // console.log('========> direccion cercana', streetName)
+    
+        // const selectedResult = results.find(result => result.types.includes('street_address') ||
+        //                                               result.types.includes('route') ||
+        //                                               result.types.includes('political')) || 
+        //                                               results.shift();
+        let selectedResult = results.find(result => result.types.includes('street_address'))
+          || results.find(result => result.types.includes('route'))        
+          || results.find(result => result.types.includes('political'))        
+          || results.shift();
 
-        this.latitude = results[0].geometry.location.lat();
-        this.longitude = results[0].geometry.location.lng();
-        this.zoom = 17;
-        this.isChangeDireccion = false;
+        this.dataMapa = selectedResult;
 
-        // centrar
-        this.mapCenter.lat = this.latitude;
-        this.mapCenter.lng = this.longitude;
+          if ( !prediccionSelected ) {
+            const _foramt_address = this.dataMapa.formatted_address.split(', ');
+            this.dataCliente.direccion = _foramt_address[0];
+            this.dataCliente.ciudad = _foramt_address[1];
+          }
 
-        this.countMoveMap = 0;
+          this.latitude = this.dataMapa.geometry.location.lat();
+          this.longitude = this.dataMapa.geometry.location.lng();
+          // this.latitude = this.dataMapa.geometry.location.lat;
+          // this.longitude = this.dataMapa.geometry.location.lng;
+          this.zoom = 17;
+          this.isChangeDireccion = false;
 
-        // 110422 si viene de comercio no pasa al mapa
-        if ( this.isFromComercio && !showMapComercio ) {
+          // centrar
+          this.mapCenter.lat = this.latitude;
+          this.mapCenter.lng = this.longitude;
+
+          this.countMoveMap = 0;
+
+          // 110422 si viene de comercio no pasa al mapa
+          if ( this.isFromComercio && !showMapComercio ) {
+            this.setDireccionSelected();
+            this.saveDireccion();
+            return;
+          }
+
+          this.showSelectedDireccion = false;
+
           this.setDireccionSelected();
-          this.saveDireccion();
-          return;
-        }
-
-        this.showSelectedDireccion = false;
-
-        this.setDireccionSelected();
 
 
-        // setTimeout(() => {
-        // }, 500);
+          // setTimeout(() => {
+          // }, 500);
+        // }
       });
   }
 
@@ -287,7 +322,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   }
 
   confirmarDireccion() {
-    this.countMoveMap = 1;
+    this.countMoveMap = 1;    
     this.getDireccionGeocode({ 'location': { lat: this.mapCenter.lat, lng: this.mapCenter.lng }});
 
     // this.getAddress(this.mapCenter.lat, this.mapCenter.lng);

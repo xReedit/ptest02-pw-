@@ -1,45 +1,83 @@
+<div class="x-fotter-native" *ngIf="isNativePlataform">
+    <button class="btn btn-primary" matRipple (click)="stopCamNative(true)">Cancelar</button>
+</div>
 <div class="container-scan animated fadeIn">        
     <!-- <div class="container-scan"> -->
 
-        <div class="video text-center" *ngIf="!isProcesando">
-            <div *ngIf="!hasPermissionPosition">
-                <p class="text-danger fs-14">Es necesario que active la ubicación de su telefono <i class="fa fa-map-marker"></i> </p>
-                <br>
-            </div>
-            <!-- <span class="text-info fs-14 fw-100">Recuerde activar la ubicacion de su telefono <i class="fa fa-map-marker"></i></span> -->
-            <p>Scanear codigo</p>
-            <p class="fw-100" *ngIf="!isCameraReady">Obteniendo Camara...</p>
-            <zxing-scanner *ngIf="isActivaCamara" class="video-scan"
-                [(device)]="currentDevice" 
-                (camerasFound)="onCamerasFound($event)" 
-                (permissionResponse)="onHasPermission($event)"
-                (scanSuccess)="scanSuccessHandler($event)"></zxing-scanner>
-            <div *ngIf="isCameraReady" class="linea-scan"></div>
-            <br>
-            <button mat-button *ngIf="isOptionChangeCamera" (click)="onDeviceSelectChange()"><i class="fa fa-undo" aria-hidden="true"></i><span class="pl-2">Rotar</span></button>        
-        </div>
-        
-        <div *ngIf="isProcesando">
-            <div class="text-center">
-                <ng-container *ngIf="isCodigoQrValido; else elseTemplate">
-                    <p>Obteniendo datos ...</p>
-                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>            
-                </ng-container>
-                <ng-template #elseTemplate>
-                    <div class="animated pulse">
-                        <p class="text-danger">Codigo no valido.</p>
-                    </div>                
+        <!-- test -->
+        <!-- <button (click)="startCam()">solicitar permiso camara</button> -->        
+        <ng-container *ngIf="isNativePlataform; else elseTemplateIsWeb">                                    
+            <ng-container *ngIf="!scanSuccess; else elseTemplateScanSuccess">                
+                <div *ngIf="scanActive" class="text-center">
+                    <div class="scan-box"></div>
+                    <div class="linea-scan-native"></div>                                        
+                </div>
+            </ng-container>
+            <ng-template #elseTemplateScanSuccess>
+                <div class="video text-center">
+                    <ng-container *ngIf="isCodigoQrValido; else elseTemplateQrValido">
+                        <div class="animated pulse">
+                            <i class="fa fa-check text-success fa-4x"></i>
+                            <p class="fw-600">Obteniendo datos ...</p>
+                        </div>
+                    </ng-container>
+                    <ng-template #elseTemplateQrValido>
+                        <div class="animated pulse">
+                            <i class="fa fa-warning text-warning fa-4x"></i>
+                            <p class="text-danger">Codigo no valido.</p>
+                            <br>
+                            <button class="btn btn-secondary" (click)="startCamNative()">Nuevamente</button>
+                        </div>
+                    </ng-template>                 
+                </div>
+            </ng-template>
+            
+
+            
+        </ng-container>
+        <ng-template #elseTemplateIsWeb>            
+            <div class="video text-center" *ngIf="!isProcesando">
+                <div *ngIf="!hasPermissionPosition">
+                    <p class="text-danger fs-14">Es necesario que active la ubicación de su telefono <i class="fa fa-map-marker"></i> </p>
                     <br>
-                    <button mat-stroked-button (click)="volverALeer()"><i class="fa fa-arrow-left" aria-hidden="true"></i> Intentar nuevamente.</button>
-                </ng-template>            
+                </div>
                 
-                <div [hidden]="hasPermissionPosition">
-                    <br>
-                    <p class="text-info">Se requiere que acepte los permisos.</p>
-                    <button mat-stroked-button (click)="getPosition()"><i class="fa fa-map-marker" aria-hidden="true"></i> Intentar nuevamente.</button>        
+                <!-- <span class="text-info fs-14 fw-100">Recuerde activar la ubicacion de su telefono <i class="fa fa-map-marker"></i></span> -->
+                <p>Scanear codigo</p>
+                <p class="fw-100" *ngIf="!isCameraReady">Obteniendo Camara...</p>
+                <zxing-scanner *ngIf="isActivaCamara" class="video-scan"
+                    [(device)]="currentDevice" 
+                    (camerasFound)="onCamerasFound($event)" 
+                    (permissionResponse)="onHasPermission($event)"
+                    (scanSuccess)="scanSuccessHandler($event)"></zxing-scanner>
+                <div *ngIf="isCameraReady" class="linea-scan"></div>
+                <br>
+                <button mat-button *ngIf="isOptionChangeCamera" (click)="onDeviceSelectChange()"><i class="fa fa-undo" aria-hidden="true"></i><span class="pl-2">Rotar</span></button>        
+            </div>
+            
+            <div *ngIf="isProcesando">
+                <div class="text-center">
+                    <ng-container *ngIf="isCodigoQrValido; else elseTemplate">
+                        <p>Obteniendo datos ...</p>
+                        <mat-progress-bar mode="indeterminate"></mat-progress-bar>            
+                    </ng-container>
+                    <ng-template #elseTemplate>
+                        <div class="animated pulse">
+                            <p class="text-danger">Codigo no valido.</p>
+                        </div>                
+                        <br>
+                        <button mat-stroked-button (click)="volverALeer()"><i class="fa fa-arrow-left" aria-hidden="true"></i> Intentar nuevamente.</button>
+                    </ng-template>            
+                    
+                    <div [hidden]="hasPermissionPosition">
+                        <br>
+                        <p class="text-info">Se requiere que acepte los permisos.</p>
+                        <button mat-stroked-button (click)="getPosition()"><i class="fa fa-map-marker" aria-hidden="true"></i> Intentar nuevamente.</button>        
+                    </div>
                 </div>
             </div>
-        </div>
+        </ng-template>
+        
     <!-- </div> -->
 </div>
 

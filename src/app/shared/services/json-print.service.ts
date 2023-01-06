@@ -368,6 +368,7 @@ export class JsonPrintService {
 
     // formato imprimir
     const _objMiPedido = this.pedidoService.getMiPedido();
+    console.log('_objMiPedido', _objMiPedido);
     xArrayBodyPrint = [];
       _objMiPedido.tipoconsumo
         .map((tpc: TipoConsumoModel, indexP: number) => {
@@ -402,7 +403,8 @@ export class JsonPrintService {
           });
 
     this.impresoras = <any[]>this.datosSede.impresoras;
-    const p = this.impresoras.filter(x => x.idtipo_otro).filter(x => x.idtipo_otro.indexOf('-2') > -1)[0];
+    // -1 impresora precuenta
+    const p = this.impresoras.filter(x => x.idtipo_otro).filter(x => x.idtipo_otro.indexOf('-1') > -1)[0];
     if ( !p ) {return false; }
     const childPrinter: any = {};
       childPrinter.ip_print = p.ip;

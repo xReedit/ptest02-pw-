@@ -197,14 +197,14 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
       this.dataClientePago.email = res.data[0].correo ? res.data[0].correo : '';
 
       // desarrollo
-      this.dataClientePago.email = 'integraciones.visanet@necomplus.com';
-      // this.dataClientePago.email = 'review@cybersource.com';
-      this.dataClientePago.isSaveEmail = false; // desarrollo
+      // this.dataClientePago.email = 'integraciones.visanet@necomplus.com';
+      // // this.dataClientePago.email = 'review@cybersource.com';
+      // this.dataClientePago.isSaveEmail = false; // desarrollo
 
       // email // comentar si es review@cybersource.com
-      // this.isRequiredEmail = this.dataClientePago.email === '' ?  true : false;
+      this.isRequiredEmail = this.dataClientePago.email === '' ?  true : false;
       this.isEmailValid = !this.isRequiredEmail;
-      // this.dataClientePago.isSaveEmail = this.isRequiredEmail;
+      this.dataClientePago.isSaveEmail = this.isRequiredEmail;
 
       this.dataClientePago.idcliente = res.data[0].idcliente_card;
       this.dataClientePago.diasRegistrado = res.data[0].dias_registrado;

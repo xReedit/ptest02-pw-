@@ -1,4 +1,4 @@
-<div class="text-left h-100">
+<div class="text-left h-100 w-100">
 
     <!-- info comercio con repartidores propios -->    
     <ng-container *ngIf="isComercioRepartidoresPropios && !isComercioPapayaSoloPedidosApp">
@@ -15,7 +15,7 @@
             <div>
                 <span class="fw-600 fs-14">Cubiertos  <i class="fa fa-cutlery"></i></span>
                 <ng-container *ngIf="isCubierto; else elseTemplateCubierto">
-                    <p class="fw-100 fs-12 text-secondary">El comercio incluirá cubierto en tu pedido.</p>
+                    <p class="fw-100 fs-12 text-secondary">El comercio incluirá cubierto en tu pedido. Solicita cubiertos solo cuando lo necesites.</p>
                 </ng-container>
                 <ng-template #elseTemplateCubierto>
                     <p class="fw-100 fs-12 text-secondary">Ayúdanos a reducir el desperdicio de plástico. Solicita cubiertos solo cuando lo necesites.</p>                                            

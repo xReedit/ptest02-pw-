@@ -51,6 +51,10 @@
     align-items: center;
 }
 
+.ul-items {
+    list-style-type: none;    
+}
+
 @media only screen and (min-width: 600px) {
     .content-master {
         display: flex;
@@ -97,6 +101,7 @@
 /* cuando es mayot o igual a 1500 */
 @media only screen and (min-width: 1250px) {
     .ul-items {
+        list-style-type: none;
         display: flex;
         flex-wrap: wrap;
         flex-flow: row wrap;

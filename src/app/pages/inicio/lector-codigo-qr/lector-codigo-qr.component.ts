@@ -15,6 +15,13 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { IfStmt } from '@angular/compiler';
 
+import { Camera, CameraResultType, CameraSource} from '@capacitor/camera';
+import { BarcodeScanner, SupportedFormat } from '@capacitor-community/barcode-scanner'
+import { IS_NATIVE } from 'src/app/shared/config/config.const';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
+// import { BarcodeScanner } from '@capacitor-community/barcode-scanner'
+
 // import {QrScannerComponent} from 'angular2-qrscanner';
 
 @Component({
@@ -41,6 +48,10 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   isSoloLLevar = false; // si escanea qr solo para llevar
   isDelivery = false; // si escanea qr solo para llevar
 
+  scanActive = false;
+  scanSuccess = false;
+  isNativePlataform = IS_NATIVE;
+
 
   // hasPermissionPosition = false;
 
@@ -59,7 +70,8 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private establecimientoService: EstablecimientoService,
     private router: Router,
-    private routerActive: ActivatedRoute
+    private routerActive: ActivatedRoute,
+    private navigationService: NavigatorLinkService
     ) { }
 
   ngOnInit() {
@@ -72,13 +84,68 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
       this.codQR = this._comercioUrl;
       this.leerDatosQR();
     }
+
+
+    // this.scanQR();
+    // this.requestCameraPermission()
+    if (IS_NATIVE) {
+      BarcodeScanner.prepare();
+      this.startCamNative()
+    }
   }
 
   ngOnDestroy(): void {
     // this.verifyClientService.unsubscribeClient();
     // this.veryfyClient.unsubscribe();
     this.currentDevice = null;
+    this.stopCamNative()
   }
+
+  stopCamNative(back = false) {
+    if (IS_NATIVE) { 
+      BarcodeScanner.stopScan();
+      this.scanActive = false;
+      this.scanSuccess = false;      
+      document.body.style.background = "#ffffff";
+      document.body.style.opacity = "1"
+
+      if (back) {
+        this.navigationService._router('./')
+      }
+    }
+  }
+
+  async startCamNative() {
+    const status = await BarcodeScanner.checkPermission({ force: true });
+    if (status.granted ) {
+      this.scanActive = true;
+      this.scanSuccess = false;
+      // document.body.style.opacity = "0.2";
+      document.body.style.background = "transparent";
+
+      BarcodeScanner.hideBackground();
+      const result = await BarcodeScanner.startScan({ targetedFormats: [SupportedFormat.QR_CODE] });
+      console.log('este es el resultado ====>>', result);
+      // if the result has content
+      if (result.hasContent) {
+        // console.log(result.content); // log the raw scanned content
+        console.log('este es el resultado content ====>>', result.content);
+        this.codQR = result.content;
+        this.scanActive = false;  
+        this.scanSuccess = true;      
+
+        document.body.style.background = "#ffffff";
+        document.body.style.opacity = "1"
+        setTimeout(() => {          
+          this.leerDatosQR()
+        }, 500);
+      }
+    } else {
+      alert('Necesita dar acceso a la camara para poder escanear el codigo Qr')
+      BarcodeScanner.openAppSettings();
+    }
+  }
+
 
   scanSuccessHandler($event: any) {
     console.log($event);

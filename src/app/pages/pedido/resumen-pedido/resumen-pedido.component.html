@@ -102,7 +102,7 @@
     <div class="div-resumen-pre-pago w-100" [hidden]="!isVisibleConfirmar">
         <div class="xcontent div-confirma-pedido w-100 p-3 transicion animated fadeInRight"
           [ngClass]="[isVisibleConfirmarAnimated ? 'show' : 'hide', isVisibleConfirmarAnimated ? 'fadeInRight' : 'fadeInLeft', !isDeliveryCliente ? 'bg-1': 'bg-2']">
-            <div class="text-center d-flex justify-content-center" style="max-width: 500px;">
+            <div class="text-center d-flex justify-content-center w-100">
 
                 <!-- cuando es usuario cliente y escaneo codigo solo para llevar -->
                 <!-- <ng-container *ngIf="isCliente && isSoloLLevar">
@@ -187,6 +187,7 @@
     
     
                             <app-confirmar-delivery 
+                                class="w-100"
                                 [listSubtotales] = "_arrSubtotales" 
                                 (isReady)="isReadyClienteDelivery = $event"
                                 (dataDelivery) = "getDatosFormConfirmaDelivery($event)">

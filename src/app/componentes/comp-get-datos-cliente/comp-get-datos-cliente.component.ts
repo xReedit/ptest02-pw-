@@ -269,7 +269,7 @@ export class CompGetDatosClienteComponent implements OnInit {
     // this.calcDistanceService.calculateRoute(this.direccionA, _dirB, false);
     this.calcDistanceService.calculateRouteObserver(this.direccionA, _dirB, false)
     .subscribe((res: any) => {
-      // setTimeout(() => {
+      // setTimeout(() => {        
         this.laPlazaDelivery = _dirB;
         this.isCalculandoDistancia = false;
         // this.calcCostoServicio();

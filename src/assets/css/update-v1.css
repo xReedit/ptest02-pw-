@@ -96,6 +96,10 @@ overflow: auto;
 
   .xfooter-zona-delivery .tabs-group {
     display: inline-block;  
+    position: fixed;
+    margin-top: -45px;
+    width: 100% !important;
+    left: 0;
   }
   .xfooter-zona-delivery {
     padding: 0px;

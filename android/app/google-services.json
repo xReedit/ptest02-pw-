@@ -1,0 +1,121 @@
+{
+  "project_info": {
+    "project_number": "1022258914393",
+    "project_id": "push-papaya-com-pe",
+    "storage_bucket": "push-papaya-com-pe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022258914393:android:a6d5a55d1cab8862943d48",
+        "android_client_info": {
+          "package_name": "express.papaya.com.pe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1022258914393-9ttvl41tvc9ehclpgd64bu55cme9knlb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADdA1W2Ngk8dgLuB7cnjVL5rHXQDC6Rmo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1022258914393-9ttvl41tvc9ehclpgd64bu55cme9knlb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1022258914393-2t2nu7j0ve2c1cqor1jsq6edihblr9ob.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "papaya.com.pe.repartidor",
+                "app_store_id": "1661062301"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022258914393:android:d49fdd65304eefb8943d48",
+        "android_client_info": {
+          "package_name": "papaya.com.pe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1022258914393-9ttvl41tvc9ehclpgd64bu55cme9knlb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADdA1W2Ngk8dgLuB7cnjVL5rHXQDC6Rmo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1022258914393-9ttvl41tvc9ehclpgd64bu55cme9knlb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1022258914393-2t2nu7j0ve2c1cqor1jsq6edihblr9ob.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "papaya.com.pe.repartidor",
+                "app_store_id": "1661062301"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022258914393:android:572eaa06507d58a1943d48",
+        "android_client_info": {
+          "package_name": "papaya.com.pe.repartidor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1022258914393-9ttvl41tvc9ehclpgd64bu55cme9knlb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADdA1W2Ngk8dgLuB7cnjVL5rHXQDC6Rmo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1022258914393-9ttvl41tvc9ehclpgd64bu55cme9knlb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1022258914393-2t2nu7j0ve2c1cqor1jsq6edihblr9ob.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "papaya.com.pe.repartidor",
+                "app_store_id": "1661062301"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

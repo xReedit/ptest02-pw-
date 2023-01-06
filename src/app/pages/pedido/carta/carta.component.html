@@ -51,7 +51,7 @@
                           
                         <!-- si esta disponible segun hora -->
                         <div *ngIf="!item.abierto" class="aling-rigth">
-                          <img src="assets/images/002-lock.png" alt="bloqueado" class="animated" [ngClass]="{'wobble': animateBloqueoCategoria}">
+                          <img src="assets/images/002-lock.png" alt="bloqueado" class="animated" [ngClass]="{'wobble': item.animateBloqueoCategoria}">
                         </div>
                       </div>
                   </li>
@@ -63,7 +63,8 @@
   
 
     <!-- Secciones -->
-    <div [hidden]="!showSecciones && isScreenIsMobile" class="content-secciones xanimated xfadeIn m-main-pt-40">
+    <div [hidden]="!showSecciones && isScreenIsMobile"      
+      class="content-secciones animated fadeIn m-main-pt-40">
 
         <!-- promociones -->
         <ng-container *ngIf="objPromociones">
@@ -110,7 +111,9 @@
 
     <!-- items -->
     <!-- color-fondo-ul -->
-    <div [hidden]="!showItems && isScreenIsMobile" class="content-items xtransicion m-main-pt-40">
+    <div [hidden]="!showItems && isScreenIsMobile" 
+      [ngClass]="{'fadeInRight': showItems}"
+      class="content-items animated fadeIn xtransicion m-main-pt-40">
       <ng-container>
 
 
