@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { MozoVirtualOnSpeechComponent } from './mozo-virtual-on-speech.component';
 
@@ -6,7 +6,7 @@ describe('MozoVirtualOnSpeechComponent', () => {
   let component: MozoVirtualOnSpeechComponent;
   let fixture: ComponentFixture<MozoVirtualOnSpeechComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ MozoVirtualOnSpeechComponent ]
     })

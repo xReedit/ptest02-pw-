@@ -95,11 +95,10 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(
     routes, {
-      useHash: false,
-      scrollPositionRestoration: 'top',
-      // anchorScrolling: 'enabled',
-      // paramsInheritanceStrategy: 'always'
-    }
+    useHash: false,
+    scrollPositionRestoration: 'top',
+    relativeLinkResolution: 'legacy'
+}
     )],
     providers: [
       // 22012022 eliminar el #

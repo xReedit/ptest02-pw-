@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CompListMesasComponent } from './comp-list-mesas.component';
 
@@ -6,7 +6,7 @@ describe('CompListMesasComponent', () => {
   let component: CompListMesasComponent;
   let fixture: ComponentFixture<CompListMesasComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CompListMesasComponent ]
     })

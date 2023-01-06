@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CompCtrlAddFastComponent } from './comp-ctrl-add-fast.component';
 
@@ -6,7 +6,7 @@ describe('CompCtrlAddFastComponent', () => {
   let component: CompCtrlAddFastComponent;
   let fixture: ComponentFixture<CompCtrlAddFastComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CompCtrlAddFastComponent ]
     })

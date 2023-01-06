@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CompDatosReservaComponent } from './comp-datos-reserva.component';
 
@@ -6,7 +6,7 @@ describe('CompDatosReservaComponent', () => {
   let component: CompDatosReservaComponent;
   let fixture: ComponentFixture<CompDatosReservaComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CompDatosReservaComponent ]
     })

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { MozoShowTraduceTextComponent } from './mozo-show-traduce-text.component';
 
@@ -6,7 +6,7 @@ describe('MozoShowTraduceTextComponent', () => {
   let component: MozoShowTraduceTextComponent;
   let fixture: ComponentFixture<MozoShowTraduceTextComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ MozoShowTraduceTextComponent ]
     })

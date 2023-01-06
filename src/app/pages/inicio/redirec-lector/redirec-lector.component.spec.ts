@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { RedirecLectorComponent } from './redirec-lector.component';
 
@@ -6,7 +6,7 @@ describe('RedirecLectorComponent', () => {
   let component: RedirecLectorComponent;
   let fixture: ComponentFixture<RedirecLectorComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ RedirecLectorComponent ]
     })

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CompPideExpressComponent } from './comp-pide-express.component';
 
@@ -6,7 +6,7 @@ describe('CompPideExpressComponent', () => {
   let component: CompPideExpressComponent;
   let fixture: ComponentFixture<CompPideExpressComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CompPideExpressComponent ]
     })
