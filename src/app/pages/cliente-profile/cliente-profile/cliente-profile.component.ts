@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
@@ -16,9 +16,9 @@ export class ClienteProfileComponent implements OnInit {
   infoAuth: SocketClientModel;
   dataCliente: any;
 
-  registerForm: FormGroup;
+  registerForm: UntypedFormGroup;
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private crudService: CrudHttpService,
     private verifyAuthService: VerifyAuthClientService,
     private utilService: UtilitariosService

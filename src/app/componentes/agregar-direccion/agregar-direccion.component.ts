@@ -1,6 +1,6 @@
 import { Component, OnInit, NgZone, ViewChild, ElementRef, Output, EventEmitter, Input, AfterViewInit } from '@angular/core';
 import { AgmMap, MapsAPILoader } from '@agm/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
@@ -34,7 +34,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   private isChangeDireccion = true;
   private geoCoder;
 
-  registerForm: FormGroup;
+  registerForm: UntypedFormGroup;
   dataCliente: DeliveryDireccionCliente;
   checkekFirstOption = true;
   // dataCliente: any = {
@@ -74,7 +74,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   _componentRestrictions: any = { country: 'pe' };
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private mapsAPILoader: MapsAPILoader,
     private ngZone: NgZone,
     private verifyClientService: VerifyAuthClientService,

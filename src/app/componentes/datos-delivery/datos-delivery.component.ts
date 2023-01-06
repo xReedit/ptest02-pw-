@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef, Input } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormControl, Validators } from '@angular/forms';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogSelectDireccionComponent } from '../dialog-select-direccion/dialog-select-direccion.component';
@@ -45,7 +45,7 @@ export class DatosDeliveryComponent implements OnInit {
     this._listSubtotales = val;
   }
 
-  myForm: FormGroup;
+  myForm: UntypedFormGroup;
   loadConsulta = false;
   isNuevoCliente = false; // si es nuevo cliente manda a guardar
   direccionCliente: any = {};
@@ -57,7 +57,7 @@ export class DatosDeliveryComponent implements OnInit {
 
   dataListClientes: any = [];
   filteredOptions: Observable<any[]>;
-  myControl = new FormControl();
+  myControl = new UntypedFormControl();
   clienteSelectBusqueda: any;
 
   infoEstablecimiento: DeliveryEstablecimiento;
@@ -106,7 +106,7 @@ export class DatosDeliveryComponent implements OnInit {
   isCubierto = false;
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private crudService: CrudHttpService,
     private dialogDireccion: MatDialog,
     private infoTokenService: InfoTockenService,
@@ -154,15 +154,15 @@ export class DatosDeliveryComponent implements OnInit {
     this.isAceptaRecojoLocal = this.establecimientoService.establecimiento.pwa_delivery_habilitar_recojo_local === 1;
 
     this.myForm = this.fb.group({
-      idcliente: new FormControl(''),
-      dni: new FormControl(''),
-      nombre: new FormControl('', [Validators.required]),
-      f_nac: new FormControl(''),
+      idcliente: new UntypedFormControl(''),
+      dni: new UntypedFormControl(''),
+      nombre: new UntypedFormControl('', [Validators.required]),
+      f_nac: new UntypedFormControl(''),
       // direccion: new FormControl('', [Validators.required]),
-      telefono: new FormControl(''),
+      telefono: new UntypedFormControl(''),
       // paga_con: new FormControl('', [Validators.required]),
-      dato_adicional: new FormControl(''),
-      num_verificador: new FormControl('')
+      dato_adicional: new UntypedFormControl(''),
+      num_verificador: new UntypedFormControl('')
     });
 
     this.myForm.statusChanges.subscribe(res => {
