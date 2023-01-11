@@ -184,7 +184,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isCargado = true;
     this.socketService.connect();
     // console.log('loader carta');
-    this.listenStatusService.setLoaderCarta(true);
+    // this.listenStatusService.setLoaderCarta(true);
 
     this.listeStatusBusqueda();
 

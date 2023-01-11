@@ -4,7 +4,7 @@ import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
-import { throwMatDialogContentAlreadyAttachedError } from '@angular/material/dialog';
+// import { throwMatDialogContentAlreadyAttachedError } from '@angular/material/dialog';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';

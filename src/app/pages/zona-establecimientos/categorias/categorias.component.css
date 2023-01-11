@@ -66,6 +66,11 @@
 .div-promo-content {
     background: papayawhip;
 }
+@media only screen and (max-width: 600px) {
+    .text-search-comercio {
+        width: 100%;
+    }
+}
 
 @media only screen and (min-width: 600px) {
     .scrolling-wrapper {
@@ -77,6 +82,8 @@
         border-right: 1px solid #dee2e6!important;
         border-bottom: 0px solid #dee2e6!important;
     }
+
+    
 
     .btn-link-cat-filtro {
       display: table;

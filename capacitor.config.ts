@@ -4,7 +4,7 @@ const config: CapacitorConfig = {
   appId: 'express.papaya.com.pe',
   appName: 'Papaya Express',
   webDir: 'dist/pwa-app-pedido',
-  bundledWebRuntime: false,
+  bundledWebRuntime: false,    
   plugins: {
     SplashScreen: {
       launchShowDuration: 0
@@ -14,7 +14,7 @@ const config: CapacitorConfig = {
       presentationOptions: ["badge", "sound", "alert"]
     }
   },
-  cordova: {}
+  cordova: {},
 };
 
 export default config;

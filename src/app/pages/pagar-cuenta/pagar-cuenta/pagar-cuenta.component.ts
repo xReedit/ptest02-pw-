@@ -197,14 +197,14 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
       this.dataClientePago.email = res.data[0].correo ? res.data[0].correo : '';
 
       // desarrollo
-      // this.dataClientePago.email = 'integraciones.visanet@necomplus.com';
-      // // this.dataClientePago.email = 'review@cybersource.com';
-      // this.dataClientePago.isSaveEmail = false; // desarrollo
+      this.dataClientePago.email = 'review@cybersource.com'; //'integraciones.visanet@necomplus.com';
+      // this.dataClientePago.email = 'review@cybersource.com';
+      this.dataClientePago.isSaveEmail = false; // desarrollo
 
       // email // comentar si es review@cybersource.com
-      this.isRequiredEmail = this.dataClientePago.email === '' ?  true : false;
-      this.isEmailValid = !this.isRequiredEmail;
-      this.dataClientePago.isSaveEmail = this.isRequiredEmail;
+      // this.isRequiredEmail = this.dataClientePago.email === '' ?  true : false;
+      // this.isEmailValid = !this.isRequiredEmail;
+      // this.dataClientePago.isSaveEmail = this.isRequiredEmail;
 
       this.dataClientePago.idcliente = res.data[0].idcliente_card;
       this.dataClientePago.diasRegistrado = res.data[0].dias_registrado;
@@ -559,7 +559,8 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     // this.lanzarPermisoNotificationPush(1);
     if ( this.dataResTransaction ) {
       if ( this.dataResTransaction.error ) {
-        this.navigatorService._router('../pedido');
+        // this.navigatorService._router('../pedido');
+        this.goBack();
       } else {
         if ( this.infoToken.isSoloLLevar ) {
           this.goBack();
@@ -568,10 +569,12 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
           // verificar si el establecimiento tiene activada la opcion de encuesta
           this.navigatorService._router('../lanzar-encuesta');
         }
+
+        this.miPedidoService.prepareNewPedido();
       }
     }
 
-    this.miPedidoService.prepareNewPedido();
+    // this.miPedidoService.prepareNewPedido();
 
   }
 
@@ -593,10 +596,10 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   }
 
-  private lanzarPermisoNotificationPush(option: number = 0) {
+  private async lanzarPermisoNotificationPush(option: number = 0) {
     // this.pushNotificationSerice.suscribirse(option);
 
-    if ( this.pushNotificationSerice.getIsTienePermiso() ) {
+    if ( await this.pushNotificationSerice.getIsTienePermiso() ) {
       this.pushNotificationSerice.suscribirse();
       return;
     }

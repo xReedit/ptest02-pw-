@@ -22,4 +22,5 @@ export class SocketClientModel {
     direccionEnvioSelected: DeliveryDireccionCliente;
     telefono: string;
     systemOS: string;
+    linkRedirecLogin: string
 }

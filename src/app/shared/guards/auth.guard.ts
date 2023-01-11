@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
-import { AuthService } from '../services/auth.service';
+import { AuthServiceSotrage } from '../services/auth.service';
 import { VerifyAuthClientService } from '../services/verify-auth-client.service';
 import { InfoTockenService } from '../services/info-token.service';
 // import { InfoTockenService } from '../services/info-token.service';
@@ -11,7 +11,7 @@ import { InfoTockenService } from '../services/info-token.service';
 })
 export class AuthGuard implements CanActivate {
   constructor(
-    private authService: AuthService,
+    private authService: AuthServiceSotrage,
     private verifyClientService: VerifyAuthClientService,
     private infoTokenService: InfoTockenService,
   ) {}

@@ -1,5 +1,5 @@
 import { Capacitor } from '@capacitor/core';
-export const IS_NATIVE = Capacitor.isNativePlatform();
+export const IS_NATIVE = Capacitor.getPlatform() !== 'web';
 
 // pruebas
 // export const URL_SERVER = 'http://192.168.1.39:5819/v3/'; // desarrollo
@@ -21,9 +21,9 @@ export const URL_SERVER_SOCKET = 'https://app.restobar.papaya.com.pe/'; // produ
 export const URL_SERVER_SOCKET_SPEECH = 'https://app.restobar.papaya.com.pe/';
 export const URL_SERVER_FILE_AUDIO_SPEECH = 'https://app.restobar.papaya.com.pe/speech/resources/'; //
 export const URL_IMG_CARTA = IS_NATIVE ? 'https://restobar.papaya.com.pe/file/' : '//restobar.papaya.com.pe/file/'; // web
-export const URL_IMG_PROMO = IS_NATIVE ? 'https://restobar.papaya.com.pe/repositorio/img_promo/' : '//restobar.papaya.com.pe/repositorio/img_promo'; // imagenes de promosiones
+export const URL_IMG_PROMO = IS_NATIVE ? 'https://restobar.papaya.com.pe/repositorio/img_promo/' : '//restobar.papaya.com.pe/repositorio/img_promo/'; // imagenes de promosiones
 // export const URL_IMG_CARTA = 'https://restobar.papaya.com.pe/file/'; // capacitor
-export const URL_IMG_COMERCIO = IS_NATIVE ? 'https://restobar.papaya.com.pe/print/logo' : '//restobar.papaya.com.pe/print/logo';
+export const URL_IMG_COMERCIO = IS_NATIVE ? 'https://restobar.papaya.com.pe/print/logo/' : '//restobar.papaya.com.pe/print/logo/';
 export const VAPID_PUBLIC = 'BOiwO8PftVFo8MrQfp3oAv4KbVtFdZAQojGKgzyxMCPgiNhg8PySbOSlkxDqd3iKA4J1GhzwFiCIGKmXRiKZM_0';
 
 export const VIEW_APP_MOZO = false; // true = app solo mozo // solo para vista incial

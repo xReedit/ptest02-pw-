@@ -3,12 +3,17 @@
         <p class="fs-18 fw-600"><i class="fa fa-arrow-left pr-2" (click)="cerrarDlg()"></i> Número de celular <i class="fa fa-phone ml-2"></i></p>
     </div>
 
-    <mat-form-field class="w-100">
-        <input type="number" matInput
+    <mat-form-field class="w-100">        
+        <input 
+        class="input-headline"
+        matInput        
+        type="tel"
         placeholder="Telefono"
         (keyup) = "verificarNum(telefono.value)" 
         [value] = "data.numberphone" autocomplete="off"
+        maxlength="9"        
         #telefono required>
+        <mat-hint align="end">{{telefono.value.length}} / 9</mat-hint>
     </mat-form-field>
     <p *ngIf="isNumberSuccess ===2 " class="text-danger">Número no valido.</p>
     <br>
@@ -54,8 +59,8 @@
 <div class="p-4" *ngIf="isSendSMS">
     <p class="text-success fs-600">En breve recibiras un mensaje. Escribelo el código aquí:</p>
     <mat-form-field class="w-100">
-        <input type="number" matInput name="txtCodigo"
-        placeholder="Código de verificación" autocomplete="off" #txtCodigo>
+        <input type="number" matInput name="txtCodigo" class="input-headline-verification"
+        placeholder="Código de verificación recibido" autocomplete="off" #txtCodigo>
     </mat-form-field>
     <br>
     <button 

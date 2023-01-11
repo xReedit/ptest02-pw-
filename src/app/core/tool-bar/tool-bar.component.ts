@@ -195,5 +195,9 @@ stopRecordingToolbar(): void {
   this.comandAnalizerService.stopRecording();
 }
 
+actualizarPage() {
+  location.reload();
+}
+
 
 }

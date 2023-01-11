@@ -43,7 +43,7 @@ import { SelectCiudadDeliveryComponent } from './select-ciudad-delivery/select-c
 import { CompDatosReservaComponent } from './comp-datos-reserva/comp-datos-reserva.component';
 import { CompGetHoraComponent } from './comp-get-hora/comp-get-hora.component';
 
-import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+// import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { DialogCalificacionSedeComponent } from './dialog-calificacion-sede/dialog-calificacion-sede.component';
 import { DialogNombreClienteComponent } from './dialog-nombre-cliente/dialog-nombre-cliente.component';
 import { DialogDireccionClienteDeliveryComponent } from './dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
@@ -120,7 +120,7 @@ import { CompListMesasComponent } from './comp-list-mesas/comp-list-mesas.compon
     FormsModule,
     MaterialModule,
     StarRatingModule.forRoot(),
-    NgxMaterialTimepickerModule
+    // NgxMaterialTimepickerModule
   ],
   exports: [
     AgregarDireccionComponent,

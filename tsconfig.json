@@ -1,6 +1,6 @@
 {
   "compileOnSave": false,
-  "enableIvy": false,
+  // "enableIvy": false,
   "compilerOptions": {
     "baseUrl": "./",
     "downlevelIteration": true,

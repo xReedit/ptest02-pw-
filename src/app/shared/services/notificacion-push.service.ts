@@ -63,8 +63,13 @@ export class NotificacionPushService {
     }
   }
 
-  getIsTienePermiso(): boolean {
-    return Notification.permission === 'granted' ? true : false;
+  async getIsTienePermiso(): Promise<boolean> {
+    if (IS_NATIVE) {
+      let permStatus = await PushNotifications.checkPermissions();
+      return permStatus.receive === 'granted' ? true : false;
+    } else {
+      return Notification.permission === 'granted' ? true : false;
+    }
   }
 
 

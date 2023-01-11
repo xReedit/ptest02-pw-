@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import { AuthServiceSotrage } from 'src/app/shared/services/auth.service';
 
 @Component({
   selector: 'app-lista-comercios',
@@ -36,7 +36,7 @@ export class ListaComerciosComponent implements OnInit {
     private pedidoService: MipedidoService,
     private router: Router,
     private infoToken: InfoTockenService,
-    private authService: AuthService,
+    private authService: AuthServiceSotrage,
   ) { }
 
   ngOnInit(): void {

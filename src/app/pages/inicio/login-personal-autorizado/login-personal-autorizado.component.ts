@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UsuarioAutorizadoModel } from 'src/app/modelos/usuario-autorizado.model';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import { AuthServiceSotrage } from 'src/app/shared/services/auth.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
@@ -20,7 +20,7 @@ export class LoginPersonalAutorizadoComponent implements OnInit {
   constructor(
     private socketService: SocketService,
     private router: Router,
-    private authService: AuthService,
+    private authService: AuthServiceSotrage,
     private infoToken: InfoTockenService,
     private establecimientoService: EstablecimientoService) { }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
@@ -6,7 +6,14 @@ import { Router } from '@angular/router';
 import { IS_NATIVE, VIEW_APP_MOZO } from 'src/app/shared/config/config.const';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { environment } from './../../../../environments/environment';
-// import { AuthNativeService } from 'src/app/shared/services/auth-native.service';
+import { AuthNativeService } from 'src/app/shared/services/auth-native.service';
+import { AuthService } from '@auth0/auth0-angular';
+
+import { Browser } from '@capacitor/browser';
+import { callbackUri } from 'src/app/auth.config';
+import { mergeMap } from 'rxjs/operators';
+import { App } from '@capacitor/app';
+import { VariableBinding } from '@angular/compiler';
 // import { SpechTotextService } from 'src/app/shared/services/speech/spech-totext.service';
 // import { SpechTTSService } from 'src/app/shared/services/speech/spech-tts.service';
 // import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
@@ -35,7 +42,9 @@ export class InicioComponent implements OnInit, OnDestroy {
     private verifyClientService: VerifyAuthClientService,
     private router: Router,
     private infoToken: InfoTockenService,
-    // private authNativeService: AuthNativeService
+    private authNativeService: AuthNativeService,
+    public authNative: AuthService, //@auth0/auth0-angular
+    private ngZone: NgZone  
     // private webSocketService: WebsocketService
     ) { }
 
@@ -64,12 +73,52 @@ export class InicioComponent implements OnInit, OnDestroy {
     }, 2000);
 
 
+    // if(!IS_NATIVE) {
     // this.authNativeService.listen();
+    // Use Capacitor's App plugin to subscribe to the `appUrlOpen` event
+    // console.log('xxxx --- leggoooo aca inicio - paso 0');
+    // App.addListener('appUrlOpen', ({ url }) => {
+    //   // Must run inside an NgZone for Angular to pick up the changes
+    //   // https://capacitorjs.com/docs/guides/angular
+    //   console.log('xxxx --- leggoooo aca inicio - paso 1');
+    //   this.ngZone.run(() => {
+    //     console.log('xxxx --- leggoooo aca inicio - paso 2');
+    //     if (url?.startsWith(callbackUri)) {
+    //       // If the URL is an authentication callback URL..
+    //       if (
+    //         url.includes('state=') &&
+    //         (url.includes('error=') || url.includes('code='))
+    //       ) {
+    //         // Call handleRedirectCallback and close the browser
+    //         console.log('xxxx --- leggoooo aca inicio - paso 3, url-redirige: ', url);
+    //         // this.router.navigate(['/callback-auth']);
+            
+    //         // try {              
+    //         // } catch (error) {
+    //         //   console.log('error redirec navigator: ', error);
+    //         // }
+            
+    //         this.authNative
+    //           .handleRedirectCallback(url)
+    //           .pipe(mergeMap(() => Browser.close()))
+    //           .subscribe();
+
+    //         this.router.navigate(['/callback-auth']);
+    //       } else {
+    //         Browser.close();
+    //       }
+    //     }
+    //   });
+    // });
+    // }
+
+
+    this.authNativeService.listen();
   }
 
   // test
   IniciarSession() {
-    // this.authNativeService.login();
+    this.authNativeService.loginWithRedirect();
   }
 
   private loadInit(): void {
@@ -170,20 +219,20 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.router.navigate(['./zona-delivery']);
   }
 
-  showAtm() {
-    // return false;
-    localStorage.removeItem('sys::punto');
-    if ( this.isLogin && this.isCliente ) {
-      this.router.navigate(['./cash-atm']);
-    } else {
-      this.verifyClientService.setIsDelivery(false);
-      this.verifyClientService.setIsReserva(false);
-      this.verifyClientService.setIsRetiroCash(true);
-      this.verifyClientService.setDataClient();
-      this.verifyClientService.setLinkRedirecLogin('./cash-atm');
-      this.router.navigate(['/login-client']);
-    }
-  }
+  // showAtm() {
+  //   // return false;
+  //   localStorage.removeItem('sys::punto');
+  //   if ( this.isLogin && this.isCliente ) {
+  //     this.router.navigate(['./cash-atm']);
+  //   } else {
+  //     this.verifyClientService.setIsDelivery(false);
+  //     this.verifyClientService.setIsReserva(false);
+  //     this.verifyClientService.setIsRetiroCash(true);
+  //     this.verifyClientService.setDataClient();
+  //     this.verifyClientService.setLinkRedirecLogin('./cash-atm');
+  //     this.router.navigate(['/login-client']);
+  //   }
+  // }
 
   showReserva() {
     // return false;

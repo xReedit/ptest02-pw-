@@ -12,7 +12,7 @@ import { TipoConsumoModel } from 'src/app/modelos/tipoconsumo.model';
 import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { InfoTockenService } from './info-token.service';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+// import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { MipedidoService } from './mipedido.service';
 import { Router } from '@angular/router';
 

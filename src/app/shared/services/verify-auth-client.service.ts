@@ -14,6 +14,8 @@ import { UtilitariosService } from './utilitarios.service';
 import { InfoTockenService } from './info-token.service';
 // import { shareReplay } from 'rxjs/internal/operators';
 import { catchError, shareReplay, share } from 'rxjs/internal/operators';
+import { IS_NATIVE } from '../config/config.const';
+import { AuthNativeService } from './auth-native.service';
 // import { share } from 'rxjs/internal/operators/share';
 
 @Injectable({
@@ -31,7 +33,8 @@ export class VerifyAuthClientService {
     private auth: Auth0Service,
     private crudService: CrudHttpService,
     private utilService: UtilitariosService,
-    private infoToken: InfoTockenService
+    private infoToken: InfoTockenService,
+    private authNativeService: AuthNativeService
     // private router: Router
   ) { }
 
@@ -155,6 +158,10 @@ export class VerifyAuthClientService {
     return this.clientSocket.isRetiroCash || false;
   }
 
+  getClientSocket(): SocketClientModel {
+    return this.clientSocket;
+  }
+
   verifyClient(): Observable<any> {
     return new Observable<any>(observerVerify => {
       // console.log('this.clientSocket verifyClient', this.clientSocket);
@@ -205,8 +212,42 @@ export class VerifyAuthClientService {
       return;
     }
 
+    // 060123
+    // new verification gmail o facebook
+    // get response authservice
+      this.authNativeService.userAuthNative$.subscribe(res => {
+        console.log('usuario logueado ==>>>', res);
+
+        this.clientSocket.datalogin = res;
+        // if ( this.clientSocket.idcliente ) {
+        this.clientSocket.isCliente = true;
+        // }
+        this.setDataClient();
+
+        // verifica y registra el cliente en la bd
+        this.registerCliente();
+
+        _dataClientReurn = this.clientSocket;
+
+        // setTimeout(() => {
+        if (res) {
+          observer.next(_dataClientReurn);
+        }
+        // }, 500);
+
+        return;
+      })
+
+      return;
+
+
+
+
     // setTimeout(() => {
       // this.auth.getUser$();
+
+    // si es web
+    if (IS_NATIVE) {        
       this.auth.userProfile$.subscribe(resp => {
         if ( !resp ) {
 
@@ -233,6 +274,7 @@ export class VerifyAuthClientService {
 
         } else {
 
+
           this.clientSocket.datalogin = resp;
           // if ( this.clientSocket.idcliente ) {
             this.clientSocket.isCliente = true;
@@ -258,11 +300,30 @@ export class VerifyAuthClientService {
       }, () => { console.log('complete'); });
 
 
+    } else { // si es nativo
+      this.authNativeService.userAuthNative$.subscribe(res=>{
+        console.log('usuario logueado ==>>>', res);
+
+        this.clientSocket.datalogin = res;
+        // if ( this.clientSocket.idcliente ) {
+        this.clientSocket.isCliente = true;
+        // }
+        this.setDataClient();
+
+        // verifica y registra el cliente en la bd
+        this.registerCliente();
+
+        _dataClientReurn = this.clientSocket;
+      })
+    }
+    
+    
     }).pipe(
       // shareReplay(1),
       share(),
       catchError(err => throwError(err))
     );
+    // }
   }
 
   registerInvitado() {
@@ -273,7 +334,7 @@ export class VerifyAuthClientService {
   //   this.subjectClient.next(null);
   // }
 
-  private registerCliente(): void {
+  registerCliente(): void {
     let idClient = 0;
     this.clientSocket.systemOS = this.utilService.getOS();
     this.crudService.postFree(this.clientSocket, 'ini', 'register-cliente-login', false).subscribe((rpt: any) => {
@@ -315,13 +376,14 @@ export class VerifyAuthClientService {
   }
 
   setLinkRedirecLogin(_link: string) {
+    this.clientSocket.linkRedirecLogin = _link;
     localStorage.setItem('sys::lrl', _link);
   }
 
   // link de redireccionamiento despues del login
   getLinkRedirecLogin() {
     let _link = localStorage.getItem('sys::lrl');
-    _link = _link ? _link : '';
+    _link = _link ? _link : this.clientSocket.linkRedirecLogin ? this.clientSocket.linkRedirecLogin : '';
     return _link;
   }
 

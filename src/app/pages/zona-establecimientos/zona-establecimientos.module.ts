@@ -35,7 +35,7 @@ import { PedidoExpressComponent } from './pedido-express/pedido-express.componen
     ZonaEstablecimientosRoutingModule,
     MaterialModule,
     ComponentesModule,
-    SharedModule
+    SharedModule,
     // NgxUiLoaderModule
   ],
   // providers: [NgxUiLoaderModule],

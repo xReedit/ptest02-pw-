@@ -18,7 +18,7 @@ import { IfStmt } from '@angular/compiler';
 import { Camera, CameraResultType, CameraSource} from '@capacitor/camera';
 import { BarcodeScanner, SupportedFormat } from '@capacitor-community/barcode-scanner'
 import { IS_NATIVE } from 'src/app/shared/config/config.const';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+// import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 // import { BarcodeScanner } from '@capacitor-community/barcode-scanner'
 

@@ -32,7 +32,8 @@ import { DialogDireccionClienteDeliveryComponent } from 'src/app/componentes/dia
 export class CategoriasComponent implements OnInit, OnDestroy {
   // rippleColor = 'rgb(255,238,88, 0.2)';
   loaderPage = true;
-  listEstablecimientos: DeliveryEstablecimiento[];
+  listEstablecimientos: DeliveryEstablecimiento[]; // es se utiliza para filtrar
+  listEstablecimientosMaster: DeliveryEstablecimiento[];
   listPromociones = [];
 
   codigo_postal_actual: string; // codigo postal de direccion seleccionada
@@ -50,6 +51,7 @@ export class CategoriasComponent implements OnInit, OnDestroy {
 
   private unsubscribe$: Subject<any> = new Subject<any>();
 
+  isShowTextBusquedaComercio = false;
   constructor(
     private crudService: CrudHttpService,
     private router: Router,
@@ -108,11 +110,12 @@ export class CategoriasComponent implements OnInit, OnDestroy {
       // preparr filtro
       this.listSubCatFiltros.map(x => x.selected = false);
       this.listSubCatFiltros.unshift({ id: 0, descripcion: 'Todos', selected: true });
+      this.listSubCatFiltros.unshift({ id: 0, descripcion: 'buscar', selected: false });
     } else {
       this.listSubCatFiltros = [];
     }
 
-    // console.log('this.listSubCatFiltros :>> ', this.listSubCatFiltros);
+    console.log('this.listSubCatFiltros :>> ', this.listSubCatFiltros);
 
     // this.activatedRoute.queryParams.subscribe(params => {
     //   if ( params['id'] ) {
@@ -153,6 +156,20 @@ export class CategoriasComponent implements OnInit, OnDestroy {
     }, 800);
   }
 
+  searchByNomComercio(nomComercio: string) {
+    this.listEstablecimientos = this.listEstablecimientosMaster.filter(x => x.nombre.toLocaleLowerCase().includes(nomComercio.toLocaleLowerCase()));    
+  }
+
+  clearTextBusquedaComercio() {
+    this.listEstablecimientos = this.listEstablecimientosMaster;
+    this.isShowTextBusquedaComercio = false;
+  }
+
+  showTextBusquedaComercio() {
+    this.listEstablecimientos = this.listEstablecimientosMaster;
+    this.isShowTextBusquedaComercio = true;
+  }
+
   loadEstablecimientos() {
     this.loaderPage = true;
     const _data = {
@@ -162,6 +179,7 @@ export class CategoriasComponent implements OnInit, OnDestroy {
     };
 
     this.listEstablecimientos = [];
+    this.listEstablecimientosMaster = [];
 
     this.crudService.postFree(_data, 'delivery', 'get-establecimientos', false)
       .subscribe( (res: any) => {
@@ -175,6 +193,8 @@ export class CategoriasComponent implements OnInit, OnDestroy {
             // dirEstablecimiento.c_servicio = _c_servicio;
 
           });
+
+        this.listEstablecimientosMaster = this.listEstablecimientos;
 
           // 250522 calculara la distancia cuando ingresa al comercio
           // this.setCalcDistanciaComercio();

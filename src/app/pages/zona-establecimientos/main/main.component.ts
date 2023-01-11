@@ -13,8 +13,9 @@ import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.ser
 import { DatosCalificadoModel } from 'src/app/modelos/datos.calificado.model';
 import { DialogCalificacionComponent } from 'src/app/componentes/dialog-calificacion/dialog-calificacion.component';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import { AuthServiceSotrage } from 'src/app/shared/services/auth.service';
 import { DialogDireccionClienteDeliveryComponent } from 'src/app/componentes/dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
+import { AuthNativeService } from 'src/app/shared/services/auth-native.service';
 
 
 
@@ -50,7 +51,8 @@ export class MainComponent implements OnInit {
     private socketService: SocketService,
     private navigartoService: NavigatorLinkService,
     private establecientoService: EstablecimientoService,
-    private authService: AuthService
+    private authService: AuthServiceSotrage,
+    private authNativeService: AuthNativeService
     // public ngxService: NgxUiLoaderService
   ) { }
 
@@ -154,7 +156,12 @@ export class MainComponent implements OnInit {
   setDireccion(direccion: DeliveryDireccionCliente) {
     if ( direccion?.direccion ) {
       this.isSelectedDireccion = true;
-      const _direccion = direccion.direccion.split(',');
+      let _direccion: any;
+      try {
+        _direccion = direccion?.direccion.split(',') || '';        
+      } catch (error) {        
+        console.log('error split', error);
+      }
       this.nomDireccionCliente = _direccion + ' ' + direccion.ciudad;
       this.listenService.setChangeDireccionDelivery(direccion);
     }
@@ -249,12 +256,13 @@ export class MainComponent implements OnInit {
     this.router.navigate(['/login-client']);
   }
 
-  cerrarAllSession() {
-    localStorage.clear();
+  cerrarAllSession() {    
     this.authService.loggedOutUser();
     this.authService.setLocalToken('');
-
+    this.authNativeService.logout()
+    localStorage.clear();
     this.router.navigate(['../']);
+    window.location.reload();
   }
 
 }

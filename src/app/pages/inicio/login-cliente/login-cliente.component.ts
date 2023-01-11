@@ -10,6 +10,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogVerificarTelefonoComponent } from 'src/app/componentes/dialog-verificar-telefono/dialog-verificar-telefono.component';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { DialogNombreClienteComponent } from 'src/app/componentes/dialog-nombre-cliente/dialog-nombre-cliente.component';
+import { AuthNativeService } from 'src/app/shared/services/auth-native.service';
 
 
 @Component({
@@ -44,6 +45,9 @@ constructor(
     private socketService: SocketService,
     private dialogTelefono: MatDialog,
     private dialogNombre: MatDialog,
+    private authNativeService: AuthNativeService,
+    // public authNative: AuthService,
+    // private ngZone: NgZone
     // private infoTokenService: InfoTockenService,
   ) { }
 
@@ -55,7 +59,7 @@ constructor(
     // cerramos socket para que cargue carta nuevamente
     if ( this.socketService.isSocketOpen ) {
       this.socketService.closeConnection();
-    }
+    }    
 
     // this.opcionesFrmCliente.telefono = true;
   }
@@ -66,7 +70,11 @@ constructor(
 
   goFb() {
     // tslint:disable-next-line:max-line-length
-    this.auth.login('#', 'facebook');
+    this.authNativeService.login(2);
+    // if (!IS_NATIVE) {
+    // } else {
+    //   this.auth.login('#', 'facebook');
+    // }
     // window.open('https://m.facebook.com/login.php?skip_api_login=1&api_key=433734160901286&kid_directed_site=0&app_id=433734160901286&signed_next=1
     // &next=https%3A%2F%2Fm.facebook.com%2Fdialog%2Foauth%3Fdisplay%3Dtouch%26response_type%3Dcode%26redirect_uri%3Dhttps%253A%252F%252Fdev
     // -m48s1pe2.auth0.com%252Flogin%252Fcallback%26scope%3Dpublic_profile%252Cemail%252Cuser_age_range%252Cuser_birthday%26state%3DXNLlXc5bBETMHz3ZsKjdrJN5Qg-m7tAs%26client_id%3D433734160901286%26ret%3Dlogin
@@ -77,7 +85,11 @@ constructor(
 
   goGmail() {
     // tslint:disable-next-line:max-line-length
-    this.auth.login('#', 'google-oauth2');
+    this.authNativeService.login(1);
+    // if (!IS_NATIVE) {
+    // } else {
+    //   this.auth.login('#', 'google-oauth2');
+    // }
     // window.open('https://accounts.google.com/signin/oauth/identifier?client_id=503309244000-nuq1e4aq964rumajuuuh8jrr8hqj4ggj.apps
     // .googleusercontent.com&as=Gt8_kdS94yJ8-SSNJ_FvAw&destination=https
     // %3A%2F%2Fdev-m48s1pe2.auth0.com&approval_state=!ChRYak5ZSGpadUgxXzNqb3hhcGZUehIfczJlb1h3T2JGZU1VRUZvSEdUZHlJLTJOcDdqNy1SWQ%E2%88%99AJDr988AAAAAXh3sARBYEr4oYCKCWs9U5zUn4rvw6fZ7&oauthgdpr=1&
@@ -444,5 +456,9 @@ constructor(
       this.router.navigate(['/callback-auth']);
     }, 500);
 
+  }
+
+  goBackLogin(): void {
+    window.history.back();
   }
 }

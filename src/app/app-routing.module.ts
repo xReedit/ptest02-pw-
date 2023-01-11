@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule, Router } from '@angular/router';
+import { Routes, RouterModule, Router, PreloadAllModules } from '@angular/router';
 // import { LayoutMainComponent } from './core/layout-main/layout-main.component';
 import { AuthGuard } from './shared/guards/auth.guard';
 import { ClienteProfileGuard } from './shared/guards/cliente-profile-guards';
@@ -75,11 +75,11 @@ const routes: Routes = [
       // canActivate: [ClienteProfileGuard],
       data: { 'tituloModulo': 'Cliente Zona Delivery' }
     },
-    {
-      path: 'cash-atm',
-      loadChildren: () => import('./pages/cash/cash.module').then(m => m.CashModule),
-      data: { 'tituloModulo': 'Atm' }
-    },
+    // {
+    //   path: 'cash-atm',
+    //   loadChildren: () => import('./pages/cash/cash.module').then(m => m.CashModule),
+    //   data: { 'tituloModulo': 'Atm' }
+    // },
     {
       path: 'reservar-mesa',
       loadChildren: () => import('./pages/reservar-mesa/reservar-mesa.module').then(m => m.ReservarMesaModule),
@@ -95,14 +95,15 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(
     routes, {
-    useHash: false,
-    scrollPositionRestoration: 'top',
-    relativeLinkResolution: 'legacy'
+    preloadingStrategy: PreloadAllModules,
+    // useHash: false,
+    // scrollPositionRestoration: 'top',
+    // relativeLinkResolution: 'legacy'
 }
     )],
     providers: [
       // 22012022 eliminar el #
-      {provide: LocationStrategy, useClass: PathLocationStrategy}
+      // {provide: LocationStrategy, useClass: PathLocationStrategy}
     ],
   exports: [RouterModule]
 })

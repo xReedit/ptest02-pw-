@@ -6,7 +6,7 @@ import { GoogleMap} from '@capacitor/google-maps';
 import { Geolocation } from '@capacitor/geolocation';
 import { MapsAPILoader } from '@agm/core';
 import { CrudHttpService } from './crud-http.service';
-import { ViewFlags } from '@angular/compiler/src/core';
+// import { ViewFlags } from '@angular/compiler/src/core';
 
 // import { Plugins } from '@capacitor/core';
 // const { Geolocation } = Plugins;

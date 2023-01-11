@@ -6,7 +6,7 @@ import { CrudHttpService } from './crud-http.service';
 @Injectable({
     providedIn: 'root'
 })
-export class AuthService {
+export class AuthServiceSotrage {
     private isLoggedStatus = false;
 
     constructor(

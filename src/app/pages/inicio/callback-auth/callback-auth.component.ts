@@ -1,12 +1,20 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from 'src/app/shared/services/auth.service';
+// import { AuthService } from 'src/app/shared/services/auth.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { take } from 'rxjs/internal/operators/take';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
-import { Auth0Service } from 'src/app/shared/services/auth0.service';
+// import { Auth0Service } from 'src/app/shared/services/auth0.service';
+
+import { AuthService } from '@auth0/auth0-angular';
+import { AuthServiceSotrage } from 'src/app/shared/services/auth.service';
+import { Browser } from '@capacitor/browser';
+import { callbackUri } from 'src/app/auth.config';
+import { mergeMap } from 'rxjs/operators';
+import { App } from '@capacitor/app';
+
 
 @Component({
   selector: 'app-callback-auth',
@@ -30,15 +38,19 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
   constructor(
     private verifyClientService: VerifyAuthClientService,
     private router: Router,
-    private authService: AuthService,
+    private authService: AuthServiceSotrage,
     // private auth: Auth0Service,
     private infoToken: InfoTockenService,
     private crudService: CrudHttpService,
+    public authNative: AuthService, //@auth0/auth0-angular
+    private ngZone: NgZone    
     ) { }
 
   ngOnInit() {
 
 
+    console.log('x === >> llegueeeee a callback');
+    
 
     try {
 
@@ -49,20 +61,24 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
           this.timeBtnReset = true;
           clearInterval(this.timeReset);
         }
-      }, 1000);
+      }, 1000);      
 
 
       this.veryfyClient = this.verifyClientService.verifyClient()
         .subscribe((res: any) => {
+          console.log('x === >> llegueeeee a callback - res', res);
           if ( !res ) { return; }
+          console.log('x === >> llegueeeee a callback - isResponseLogin', this.isResponseLogin);
           if ( this.isResponseLogin ) {return; }
           // if ( this.fromLogin ) { return; }
 
           // si no tiene el datalogin entonces busca en login auth0
+          console.log('x === >> llegueeeee a callback - res.datalogin', res.datalogin);
           if ( !res.datalogin ) {
             this.fromLogin = true;
             this.verifyClientService.verifyClientLogin()
             .subscribe(resLogin => {
+              console.log('x === >> llegueeeee a callback - resLogin', resLogin);
               if ( !resLogin ) { return; }
               this.usLoginGo(resLogin);
             });

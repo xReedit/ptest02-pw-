@@ -96,7 +96,7 @@ export class PagoTarjetaVisanetService {
       'method': 'POST',
       'headers': {
         'Authorization': this.parametrosSelected.Authorization,
-        'content-type' : 'text/plain',
+        // 'content-type' : 'text/plain',
         'Accept': '*/*'
       }
     };

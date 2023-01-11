@@ -12,7 +12,7 @@
                 {{itemEstablecimiento.nombre | titlecase}}                
             </p>
             <p class="fs-13" *ngIf="itemEstablecimiento.eslogan.length > 0">{{itemEstablecimiento.eslogan | titlecase}}</p>
-            <p class="fw-100 fs-12">{{itemEstablecimiento.sub_categoria}}</p>
+            <p class="fw-100 fs-12 m-0" style="line-height: 1;">{{itemEstablecimiento.sub_categoria}}</p>
             
         </div>
         <hr>
@@ -34,11 +34,12 @@
                     </div>
 
                     <!-- si acepta tarjeta -->
-                    <div>
-                        <span *ngIf="itemEstablecimiento.pwa_delivery_acepta_tarjeta === 1"
-                            class="div-acepta-tarjeta"> 
-                            <i class="fa fa-credit-card mr-1"></i> Acepta Tarjeta</span>
-                    </div>
+                    <ng-container *ngIf="itemEstablecimiento.pwa_delivery_acepta_tarjeta === 1">
+                        <div class="div-acepta-tarjeta">                            
+                                <i class="fa fa-credit-card mr-1"></i> Acepta Tarjeta                            
+                        </div>
+                    </ng-container>
+                    
                 </div>
 
                 <div *ngIf="reserva" class="d-flex">

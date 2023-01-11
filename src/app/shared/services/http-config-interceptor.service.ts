@@ -4,14 +4,14 @@ import { Observable } from 'rxjs/internal/Observable';
 import { catchError } from 'rxjs/operators';
 import { InfoTockenService } from './info-token.service';
 import { CrudHttpService } from './crud-http.service';
-import { AuthService } from './auth.service';
+import { AuthServiceSotrage } from './auth.service';
 
 
 @Injectable()
 export class HttpConfigInterceptorService implements HttpInterceptor {
 
   constructor(
-    private authService: AuthService
+    private authService: AuthServiceSotrage
     , private crudService: CrudHttpService) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
