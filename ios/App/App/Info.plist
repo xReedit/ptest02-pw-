@@ -44,7 +44,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Para poder escanear códigos de barras</string>
+	<string>Para poder escanear el código QR solicitado</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Para poder leer el código QR solicitado.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2022 Papaya.com.pe. All rights reserved.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
