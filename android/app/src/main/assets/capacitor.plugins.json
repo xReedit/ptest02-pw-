@@ -26,9 +26,5 @@
 	{
 		"pkg": "@capacitor/push-notifications",
 		"classpath": "com.capacitorjs.plugins.pushnotifications.PushNotificationsPlugin"
-	},
-	{
-		"pkg": "@capacitor/google-maps",
-		"classpath": "com.capacitorjs.plugins.googlemaps.CapacitorGoogleMapsPlugin"
 	}
 ]

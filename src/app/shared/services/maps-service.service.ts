@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IS_NATIVE } from '../config/config.const';
-import { GoogleMap} from '@capacitor/google-maps';
+// import { GoogleMap} from '@capacitor/google-maps';
 import { Geolocation } from '@capacitor/geolocation';
 import { MapsAPILoader } from '@agm/core';
 import { CrudHttpService } from './crud-http.service';

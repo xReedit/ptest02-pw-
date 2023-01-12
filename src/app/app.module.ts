@@ -13,7 +13,7 @@ import { environment } from '../environments/environment';
 import { SocketIoModule } from 'ngx-socket-io';
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { AgmCoreModule } from '@agm/core';
+// import { AgmCoreModule } from '@agm/core';
 import { AuthConfig, AuthModule } from '@auth0/auth0-angular';
 // import config from '../../capacitor.config';
 // import { IS_NATIVE } from './shared/config/config.const';
@@ -48,10 +48,10 @@ const configAuth: AuthConfig = {
     CoreModule,
     SocketIoModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
-    AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo',
-      libraries: ['places']
-    }),
+    // AgmCoreModule.forRoot({
+    //   apiKey: 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo',
+    //   libraries: ['places']
+    // }),
     AuthModule.forRoot(configAuth),
     // ServiceWorkerModule.register('assets/js/custom-service-worker.js', { enabled: environment.production })
   ],

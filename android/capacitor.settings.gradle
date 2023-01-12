@@ -22,6 +22,3 @@ project(':capacitor-geolocation').projectDir = new File('../node_modules/@capaci
 
 include ':capacitor-push-notifications'
 project(':capacitor-push-notifications').projectDir = new File('../node_modules/@capacitor/push-notifications/android')
-
-include ':capacitor-google-maps'
-project(':capacitor-google-maps').projectDir = new File('../node_modules/@capacitor/google-maps/android')

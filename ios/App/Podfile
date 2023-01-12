@@ -18,7 +18,6 @@ def capacitor_pods
   pod 'CapacitorCamera', :path => '../../node_modules/@capacitor/camera'
   pod 'CapacitorGeolocation', :path => '../../node_modules/@capacitor/geolocation'
   pod 'CapacitorPushNotifications', :path => '../../node_modules/@capacitor/push-notifications'
-  pod 'CapacitorGoogleMaps', :path => '../../node_modules/@capacitor/google-maps'
 end
 
 target 'App' do
