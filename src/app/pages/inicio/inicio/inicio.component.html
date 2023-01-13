@@ -93,6 +93,13 @@
             </div>
           </div>
 
+          <div *ngIf="isLogin">
+            <br>
+            <div class="fs-12 mt-2 text-secondary xCursor" (click)="cerrarAllSession()">
+              <i class="fa fa-sign-out"></i>
+              Cerrar Session</div>
+          </div>
+
         </ng-container>
 
         <!-- vista de app solo mozo -->
@@ -216,7 +223,7 @@
         </div>
 
         <div *ngIf="isViewOnlyMozo">
-          <button class="btn btnng-primary" matRipple [routerLink]="['/login-personal-autorizado']">Empezar</button>
+          <button class="btn btn-primary" matRipple [routerLink]="['/login-personal-autorizado']">Empezar</button>
         </div>
 
         <div class="w-100 text-center" (click)="goDev(2);">

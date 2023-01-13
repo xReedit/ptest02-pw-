@@ -14,6 +14,7 @@ import { callbackUri } from 'src/app/auth.config';
 import { mergeMap } from 'rxjs/operators';
 import { App } from '@capacitor/app';
 import { VariableBinding } from '@angular/compiler';
+import { AuthServiceSotrage } from 'src/app/shared/services/auth.service';
 // import { SpechTotextService } from 'src/app/shared/services/speech/spech-totext.service';
 // import { SpechTTSService } from 'src/app/shared/services/speech/spech-tts.service';
 // import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
@@ -35,6 +36,7 @@ export class InicioComponent implements OnInit, OnDestroy {
   nombreClientSocket = '';
   isViewOnlyMozo = VIEW_APP_MOZO;
   isNativePlataform = IS_NATIVE;
+  isSessionActive = false;
   
   private countnDev = 0;
   private countLogo = 0;
@@ -43,6 +45,7 @@ export class InicioComponent implements OnInit, OnDestroy {
     private router: Router,
     private infoToken: InfoTockenService,
     private authNativeService: AuthNativeService,
+    private authServiceStore: AuthServiceSotrage,
     public authNative: AuthService, //@auth0/auth0-angular
     private ngZone: NgZone  
     // private webSocketService: WebsocketService
@@ -66,7 +69,7 @@ export class InicioComponent implements OnInit, OnDestroy {
 
       if ( _infotoken ) {
         this.infoToken.setIsUsuarioAutorizacion(false);
-      }
+      }      
 
       // document.body.style.backgroundColor = '#fff';
       // document.body.style.background = '#fff';
@@ -191,7 +194,16 @@ export class InicioComponent implements OnInit, OnDestroy {
   // }
 
   cerrarSession(): void {
-    this.verifyClientService.loginOut();
+    this.verifyClientService.loginOut();    
+  }
+
+  cerrarAllSession(): void { 
+    this.authServiceStore.loggedOutUser();
+    this.authServiceStore.setLocalToken('');
+    this.authNativeService.logout()
+    localStorage.clear();
+    this.router.navigate(['../']);
+    window.location.reload();
   }
 
   // showClienteProfile() {
@@ -256,6 +268,7 @@ export class InicioComponent implements OnInit, OnDestroy {
 
     if ( this.countLogo === 4 && this.countnDev === 2 ) { this.router.navigate(['./zona-delivery']); }
   }
+
 
   
 
