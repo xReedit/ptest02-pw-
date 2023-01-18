@@ -1,5 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 export const IS_NATIVE = Capacitor.getPlatform() !== 'web';
+export const IS_PLATAFORM_IOS = IS_NATIVE ? Capacitor.getPlatform() === 'ios' : false;
 
 // pruebas
 // export const URL_SERVER = 'http://192.168.1.39:5819/v3/'; // desarrollo

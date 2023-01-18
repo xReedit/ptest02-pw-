@@ -44,7 +44,8 @@ export class DialogSelectDireccionComponent implements OnInit {
     this.isShowAddDireccion = true;
   }
 
-  cerrarDlg(): void {
+  cerrarDlg(): void {    
+    console.log('this.direccionSelected', this.direccionSelected);
     this.dialogRef.close(this.direccionSelected);
   }
 

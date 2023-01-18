@@ -14,7 +14,7 @@ import { UtilitariosService } from './utilitarios.service';
 import { InfoTockenService } from './info-token.service';
 // import { shareReplay } from 'rxjs/internal/operators';
 import { catchError, shareReplay, share } from 'rxjs/internal/operators';
-import { IS_NATIVE } from '../config/config.const';
+import { IS_NATIVE, IS_PLATAFORM_IOS } from '../config/config.const';
 import { AuthNativeService } from './auth-native.service';
 // import { share } from 'rxjs/internal/operators/share';
 
@@ -39,13 +39,14 @@ export class VerifyAuthClientService {
   ) { }
 
   isLogin(): boolean {
-    return this.auth.loggedIn;
+    return this.authNativeService.isLoginSuccess
+    // return this.auth.loggedIn;
   }
 
 // en el caso de que es trunco
   setLoginOn(val: boolean) {
     this.auth.loggedIn = val;
-  }
+  }  
 
   setIdOrg(val: number): void {
     this.clientSocket.idorg = val;
@@ -109,6 +110,11 @@ export class VerifyAuthClientService {
 
   setTelefono(val: string) {
     this.clientSocket.telefono = val;
+    this.setDataClient();
+  }
+
+  setIsClientTmp(val: boolean) {
+    this.clientSocket.isClienteTmp = val;
     this.setDataClient();
   }
 
@@ -215,25 +221,31 @@ export class VerifyAuthClientService {
     // 060123
     // new verification gmail o facebook
     // get response authservice
-      this.authNativeService.userAuthNative$.subscribe(res => {
-        console.log('usuario logueado ==>>>', res);
+      this.authNativeService.userAuthNative$.subscribe(async res => {        
+        if (!res) {  
+          await this.utilService.delay(500)
+          return;}        
 
         this.clientSocket.datalogin = res;
         // if ( this.clientSocket.idcliente ) {
         this.clientSocket.isCliente = true;
+        // console.log('this.clientSocket', this.clientSocket);
         // }
         this.setDataClient();
 
         // verifica y registra el cliente en la bd
-        this.registerCliente();
 
-        _dataClientReurn = this.clientSocket;
+        await this.registerCliente();
+        
 
-        // setTimeout(() => {
-        if (res) {
+        // _dataClientReurn = this.clientSocket;
+
+        setTimeout(() => {
+        // if (res) {
+          _dataClientReurn = this.clientSocket;
           observer.next(_dataClientReurn);
-        }
-        // }, 500);
+        // }
+        }, 500);
 
         return;
       })
@@ -334,12 +346,17 @@ export class VerifyAuthClientService {
   //   this.subjectClient.next(null);
   // }
 
-  registerCliente(): void {
+  async registerCliente() {
+    if (!this.clientSocket.datalogin) {return; }
     let idClient = 0;
+    // console.log('this.clientSocket', this.clientSocket);    
     this.clientSocket.systemOS = this.utilService.getOS();
-    this.crudService.postFree(this.clientSocket, 'ini', 'register-cliente-login', false).subscribe((rpt: any) => {
 
-      // console.log('rpt', rpt);
+    const _rptRegister =  await this.crudService.postFree(this.clientSocket, 'ini', 'register-cliente-login', false)
+    
+    _rptRegister.subscribe((rpt: any) => {
+
+      // console.log('registerCliente', rpt);
       if ( !rpt.success ) {return; }
 
       // login en backend
@@ -354,7 +371,7 @@ export class VerifyAuthClientService {
         this.clientSocket.datalogin.given_name = nombres.split(' ')[0];
       }
       this.clientSocket.nombres = this.clientSocket.datalogin.name;
-      this.clientSocket.usuario = this.clientSocket.datalogin.given_name;
+      this.clientSocket.usuario = IS_PLATAFORM_IOS ? this.clientSocket.datalogin.name: this.clientSocket.datalogin.given_name;
 
       this.clientSocket.isCliente = true;
       this.clientSocket.telefono = rpt.data[0].telefono;
@@ -366,12 +383,14 @@ export class VerifyAuthClientService {
       this.setDataClient();
       // window.localStorage.setItem('sys::tpm', JSON.stringify(this.clientSocket));
 
-      this.subjectClient.next(this.clientSocket);
+      // sacamos  aver que pasa
+      // this.subjectClient.next(this.clientSocket);
     });
   }
 
   setDataClient(): void {
     const dataClie = JSON.stringify(this.clientSocket);
+    // console.log('dataClie setea', dataClie);
     localStorage.setItem('sys::tpm', btoa(dataClie));
   }
 

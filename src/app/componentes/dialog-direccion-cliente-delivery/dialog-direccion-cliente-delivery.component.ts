@@ -167,7 +167,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     //   console.log('pos navigater', JSON.stringify(pos));
     // })
     this.mapsService.getPosition().then((pos: any) => {
-      console.log('pos', JSON.stringify(pos));
+      // console.log('pos', JSON.stringify(pos));
       
       this.latitude = pos.lat;
       this.longitude = pos.lng;
@@ -201,7 +201,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
       
     }
 
-    console.log('payload', payload);
+    // console.log('payload', payload);
 
     const geocoder = new google.maps.Geocoder();
     geocoder

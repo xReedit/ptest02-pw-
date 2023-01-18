@@ -105,6 +105,7 @@ export class ListaComerciosComponent implements OnInit {
     // restcarta
     this.pedidoService.resetAllNewPedido();
 
+    // console.log('verifyClient from lista comercios');
     this.veryfyClient = this.verifyClientService.verifyClient()
     .subscribe(res => {
       if ( !res ) {return; }

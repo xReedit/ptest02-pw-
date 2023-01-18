@@ -66,6 +66,7 @@ export class InicioComponent implements OnInit, OnDestroy {
       this.loadAll = true;
 
       const _infotoken = this.infoToken.getInfoUs();
+      console.log('_infotoken', _infotoken);
 
       if ( _infotoken ) {
         this.infoToken.setIsUsuarioAutorizacion(false);
@@ -124,7 +125,7 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.authNativeService.loginWithRedirect();
   }
 
-  private loadInit(): void {
+  private resetsDataLogin() {
     this.verifyClientService.getDataClient();
     this.verifyClientService.setQrSuccess(false);
     this.verifyClientService.setIsDelivery(false);
@@ -132,14 +133,28 @@ export class InicioComponent implements OnInit, OnDestroy {
     this.verifyClientService.setIsRetiroCash(false);
     this.verifyClientService.setLinkRedirecLogin('');
     this.verifyClientService.setDireccionDeliverySelected(null);
-
-    this.isLogin = this.verifyClientService.isLogin();
-    // console.log('desde incio', this.isLogin);
-
     this.verifyClientService.setMesa(null);
     this.verifyClientService.setIdOrg(null);
     this.verifyClientService.setIdSede(null);
     this.verifyClientService.setDataClient();
+  }
+
+  private loadInit(): void {
+    this.verifyClientService.getDataClient();
+    // this.verifyClientService.setQrSuccess(false);
+    // this.verifyClientService.setIsDelivery(false);
+    // this.verifyClientService.setIsReserva(false);
+    // this.verifyClientService.setIsRetiroCash(false);
+    // this.verifyClientService.setLinkRedirecLogin('');
+    // this.verifyClientService.setDireccionDeliverySelected(null);
+
+    this.isLogin = this.verifyClientService.isLogin();
+    // console.log('desde incio', this.isLogin);
+
+    // this.verifyClientService.setMesa(null);
+    // this.verifyClientService.setIdOrg(null);
+    // this.verifyClientService.setIdSede(null);
+    // this.verifyClientService.setDataClient();
 
 
     if ( this.isLogin ) {
@@ -147,6 +162,8 @@ export class InicioComponent implements OnInit, OnDestroy {
       this.nombreClientSocket = this.verifyClientService.clientSocket.usuario;
       return; }
 
+    // console.log('verifyClient from inicio');
+    // console.trace()
     this.veryfyClient = this.verifyClientService.verifyClient()
       // .pipe(finalize(() => localStorage.clear())) // si esta mal elimina todo
       .subscribe((res: SocketClientModel) => {
@@ -154,6 +171,11 @@ export class InicioComponent implements OnInit, OnDestroy {
 
           if ( !res ) { return; }
 
+        // si viene de delivery
+        // viene con isClienteTmp
+        if (res.isClienteTmp) { return; }
+
+        this.resetsDataLogin();
           // si es invitado desloguea
           if ( res.usuario ) {
             if ( res?.usuario.toLowerCase().indexOf('invitado') > -1 ) {
@@ -161,6 +183,7 @@ export class InicioComponent implements OnInit, OnDestroy {
               return;
             }
           }
+
 
           this.isCliente = true;
           this.nombreClientSocket = res.usuario;

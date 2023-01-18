@@ -64,9 +64,12 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    // console.log('this.infoTokenService.getInfoUs()', this.infoTokenService.getInfoUs());
     this.detectScreenSize();
     this.socketService.isSocketOpenReconect = false;
     this.navigatorService.setPageActive('carta');
+
 
     this.infoTokenService.getInfoUs();
     this.isPuntoAutoPedido = this.infoTokenService.isPuntoAutoPedido();
@@ -75,8 +78,9 @@ export class MainComponent implements OnInit {
 
     // console.log('this.infoTokenService.infoUsToken', this.infoTokenService.infoUsToken);
     // console.log('pedido main verifyClient');
+    // console.log('verifyClient from main pedido');
     this.verifyClientService.verifyClient().subscribe((res: SocketClientModel) => {
-      // console.log('desde incio', res);
+      // console.log('desde main pedido', res);
       // console.log('this.infoTokenService', this.infoTokenService);
       if ( !res ) { this.isUsuarioCliente = this.infoTokenService.infoUsToken.isCliente; } else {
         this.isUsuarioCliente = res.isCliente || false;
@@ -143,7 +147,7 @@ export class MainComponent implements OnInit {
           this.selectedTab = 1;
           break;
         case 'mesas':
-          console.log('llegamos a mesas');
+          // console.log('llegamos a mesas');
           this.listenStatusService.setshowLoadListMesas();
           // appListMesas.loadListMesas();
           break;
@@ -198,7 +202,7 @@ export class MainComponent implements OnInit {
       if ( this.loaderPage ) {
         window.location.reload();
       }
-    }, 15000);
+    }, 12000);
   }
 
   onScroll($event: any): void {

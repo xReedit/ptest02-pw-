@@ -8,15 +8,16 @@
 
     <!-- microfono mozo virtual -->
     <!-- <div class="example-ripple-container fs-15" *ngIf="isSpeechVoiceAcivado && isCliente && !isClienteDelivery">          -->
-     <div class="example-ripple-container fs-15" *ngIf="isActiveMozoVoz"> 
+
+     <!-- <div class="example-ripple-container fs-15" *ngIf="isActiveMozoVoz"> 
          <app-mozo-virtual-on-speech></app-mozo-virtual-on-speech>
-    </div>
+    </div> -->
 
      <!-- <button [matMenuTriggerFor]="menu" aria-label="Mas Opciones">
           <i class="fa fa-ellipsis-h"></i>
      </button> -->
      <div [matMenuTriggerFor]="menu" class="example-ripple-container fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor" >
-          <i class="fa fa-ellipsis-h"></i>
+          <i class="fa fa-ellipsis-v"></i>
      </div>
      <mat-menu #menu="matMenu">
           <button mat-menu-item *ngIf="!isCliente" matRipple matRippleCentered="true"

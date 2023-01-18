@@ -16,6 +16,9 @@ import { EstablecimientoService } from 'src/app/shared/services/establecimiento.
 import { AuthServiceSotrage } from 'src/app/shared/services/auth.service';
 import { DialogDireccionClienteDeliveryComponent } from 'src/app/componentes/dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
 import { AuthNativeService } from 'src/app/shared/services/auth-native.service';
+import { IS_PLATAFORM_IOS } from 'src/app/shared/config/config.const';
+import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
+import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 
 
 
@@ -33,10 +36,12 @@ export class MainComponent implements OnInit {
 
   isClienteLogueado = false;
   showPanelRigth = false;
+  showSelectedDireccion = false;
 
   listPedidoCalificar = [];
   numComerciosCalificar = 0;
   isShowCalificar = false;
+  isPlataformIos = IS_PLATAFORM_IOS;  
 
   telefonoSoporte = '934746830';
 
@@ -52,7 +57,8 @@ export class MainComponent implements OnInit {
     private navigartoService: NavigatorLinkService,
     private establecientoService: EstablecimientoService,
     private authService: AuthServiceSotrage,
-    private authNativeService: AuthNativeService
+    private authNativeService: AuthNativeService,
+    private crudService: CrudHttpService    
     // public ngxService: NgxUiLoaderService
   ) { }
 
@@ -60,19 +66,22 @@ export class MainComponent implements OnInit {
     // window.history.forward();
     // history.pushState(null, null, document.title);
 
-    this.infoTokenService.converToJSON();
+    this.infoTokenService.converToJSON();    
     this.infoClient = this.verifyClientService.getDataClient();
     this.isClienteLogueado = this.infoClient.isCliente;
+    this.showSelectedDireccion = this.isClienteLogueado;
+    
 
     // console.log('this.infoClient main', this.infoClient);
 
     // si cliente esta logueado
-    if ( this.isClienteLogueado ) {
+    if (this.isClienteLogueado || this.infoClient.isClienteTmp) {
       this.setDireccion(this.infoClient.direccionEnvioSelected);
+      this.showSelectedDireccion = true;
       // console.log('this.infoToken', this.infoClient);
       this.socketService.connect(this.infoClient, 0, true);
 
-      this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
+      this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {        
         if ( res) {
           // this.codigo_postal_actual = res.codigo;
           this.nomDireccionCliente = res.direccion + ' ' + res.ciudad;
@@ -113,7 +122,7 @@ export class MainComponent implements OnInit {
 
   openDialogDireccion1() {
 
-    if ( !this.isClienteLogueado ) {this.registarDirCliente(); return; }
+    // if ( !this.isClienteLogueado ) {this.registarDirCliente(); return; }
     // const dialogConfig = new MatDialogConfig();
 
     const dialogRef = this.dialogDireccion.open(DialogSelectDireccionComponent, {
@@ -132,7 +141,7 @@ export class MainComponent implements OnInit {
   }
 
   openDialogDireccion() {
-    if ( !this.isClienteLogueado ) {this.registarDirCliente(); return; }
+    // if ( !this.isClienteLogueado ) {this.registarDirCliente(); return; }
 
     const _dialogConfig = new MatDialogConfig();
     _dialogConfig.disableClose = true;
@@ -147,8 +156,16 @@ export class MainComponent implements OnInit {
     dialogDireccionCliente.afterClosed().subscribe((data: any) => {
       if ( !data ) { return; }
         // console.log('direcion', data);
+        this.infoClient.isClienteTmp = !this.isClienteLogueado;
+        this.showSelectedDireccion = true;
+
+        this.verifyClientService.setIsClientTmp(this.infoClient.isClienteTmp)
         this.verifyClientService.setDireccionDeliverySelected(data);
         this.setDireccion(data);
+
+        this.verifyClientService.setDataClient()
+      
+        // console.log('this.infoClient', this.infoClient);
     });
 
   }
@@ -263,6 +280,31 @@ export class MainComponent implements OnInit {
     localStorage.clear();
     this.router.navigate(['../']);
     window.location.reload();
+  }
+
+  eliminarCuentaUsuario() {
+
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+    _dialogConfig.data = { idMjs: 3, titleBtnSuccess: 'Si'};
+
+    const dialogRef = this.dialog.open(DialogDesicionComponent, _dialogConfig);
+    dialogRef.afterClosed().subscribe(
+      data => {
+        if (!data) { return; }
+
+        const _data = {
+          user: this.infoClient
+        }
+    
+        this.crudService.postFree(_data,'ini', 'user-account-remove', false)
+        .subscribe(res => {
+          this.cerrarAllSession()          
+        })
+      }
+    );
+
   }
 
 }

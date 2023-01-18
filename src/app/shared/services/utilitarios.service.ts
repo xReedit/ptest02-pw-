@@ -100,8 +100,8 @@ export class UtilitariosService {
     snd.play();
   }
 
-  delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
+  async delay(ms: number) {
+    return await new Promise( resolve => setTimeout(resolve, ms) );
   }
 
   compareSimilaryText(s1: string, s2: string) {

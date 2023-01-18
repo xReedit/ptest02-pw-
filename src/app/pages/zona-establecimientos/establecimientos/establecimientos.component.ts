@@ -33,7 +33,7 @@ export class EstablecimientosComponent implements OnInit {
 
   imgComercio = URL_IMG_COMERCIO;
 
-  listEstablecimientos: DeliveryEstablecimiento[];
+  listEstablecimientos: DeliveryEstablecimiento[] = [];
   ciudad_actual: string; // ciudad de direccion seleccionada
   codigo_postal_actual: string; // codigo postal de direccion seleccionada
   isNullselectedDireccion = true; // para mostrar comercios segun ciudad desde el inicio
@@ -89,10 +89,12 @@ export class EstablecimientosComponent implements OnInit {
 
 
     this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
-      if ( res && this.isClienteLogueado ) {
-        this.vistaInicio = res?.options?.vista ? res.options.vista : 0 ;
+      if (res && (this.isClienteLogueado) ) {
+        console.log('isChangeDireccionDelivery', res);
+        // opcion 2 = sercicio no disponible en tu zona
+        this.vistaInicio = res?.options ? res?.options?.vista ? res.options.vista : 0 : 2;
         this.ciudad_actual = res.ciudad;
-        this.isNullselectedDireccion = false;
+        this.isNullselectedDireccion = false;        
 
         // console.log('this.ciudad_actual === >', this.ciudad_actual );
 
@@ -139,7 +141,7 @@ export class EstablecimientosComponent implements OnInit {
 
   goComercioCategoria(idsede_categoria: number) {
 
-    if ( !this.isClienteLogueado ) {this.registarDirCliente(); return; }
+    // if ( !this.isClienteLogueado ) {this.registarDirCliente(); return; }
 
     const _subCategorias = JSON.stringify(this.listIcoCategoria.filter(x => x.idsede_categoria === idsede_categoria)[0].arritems);
     localStorage.setItem('sys:subcat', btoa(_subCategorias));
@@ -184,7 +186,9 @@ export class EstablecimientosComponent implements OnInit {
 
     const _lastCiudadSearch = localStorage.getItem('sys:city') || '';
 
-    if ( _lastCiudadSearch.toLowerCase() === this.ciudad_actual.toLowerCase()) { return; }
+    if ( _lastCiudadSearch.toLowerCase() === this.ciudad_actual.toLowerCase()
+      || this.listEstablecimientos.length > 0
+    ) { return; }
 
     const _data = {
       idsede_categoria: -1,
@@ -196,7 +200,7 @@ export class EstablecimientosComponent implements OnInit {
     this.crudService.postFree(_data, 'delivery', 'get-establecimientos', false)
       .subscribe( (res: any) => {
         // setTimeout(() => {
-          // console.log('_data get establecimientos', res);
+          console.log('_data get establecimientos', res);
           if ( res.data.length === 0 ) {return; }
           this.listEstablecimientos = res.data;
 

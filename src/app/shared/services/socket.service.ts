@@ -396,7 +396,9 @@ export class SocketService {
   emit(evento: string, data: any) {
     // verificar estado del socket
 
-    this.socket.emit(evento, data);
+    if (this.socket) {
+      this.socket.emit(evento, data);
+    }
   }
 
   emitRes(evento: string, data: any) {

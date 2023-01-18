@@ -20,6 +20,7 @@ import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
 import { DialogTiempoEntregaComponent } from '../dialog-tiempo-entrega/dialog-tiempo-entrega.component';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { DialogDireccionClienteDeliveryComponent } from '../dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
+import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 
 
 @Component({
@@ -31,6 +32,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   infoEstablecimiento: DeliveryEstablecimiento;
   infoToken: UsuarioTokenModel;
+  socketCliente: SocketClientModel;
   direccionCliente: DeliveryDireccionCliente;
   direccionClienteIni: DeliveryDireccionCliente;
   metodoPagoSelected: MetodoPagoModel;
@@ -132,6 +134,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
   ngOnInit() {
 
 
+    this.socketCliente = this.verifyClientService.getDataClient();
     this.loadData();
 
     const _datosEstablecieminto = this.establecimientoService.get();
@@ -139,7 +142,10 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.tipoComprobanteSelected = this.infoTokenService.infoUsToken.tipoComprobante;
     this.propinaSelected = this.infoTokenService.infoUsToken.propina;
 
-    this.isShowNombreClienteLoginInvitado = this.verifyClientService.getDataClient().isLoginByInvitado || false;
+    
+
+
+    this.isShowNombreClienteLoginInvitado = this.socketCliente.isLoginByInvitado || false;
     if ( this.isShowNombreClienteLoginInvitado ) {
       let nomClienteInvitato = this.infoTokenService.infoUsToken.nombres;
       nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
@@ -148,8 +154,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
     } else {
       // this.nombreClienteValido = true;
 
-      let nomClienteInvitato = this.infoTokenService.infoUsToken.nombres;
-      nomClienteInvitato = nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato;
+      let nomClienteInvitato = this.infoTokenService.infoUsToken.nombres || this.socketCliente.nombres;
+      nomClienteInvitato = nomClienteInvitato ? nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato : '';
       this.nombreClienteValido = nomClienteInvitato !== '';
     }
 
@@ -225,7 +231,9 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     // direccion de entrega
     this.infoToken = this.infoTokenService.getInfoUs();
+    this.infoToken.telefono = this.infoToken.telefono || '';
     // console.log('this.infoToken', this.infoToken);
+    this.infoToken.idcliente = this.infoToken.idcliente || this.socketCliente.idcliente
 
     // que tenga la posibilidad de cambiar de direccion
     this.direccionCliente = this.infoToken.direccionEnvioSelected ? this.infoToken.direccionEnvioSelected : this.direccionClienteIni;
@@ -242,7 +250,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.isAceptaRecojoLocal = this.infoEstablecimiento.pwa_delivery_habilitar_recojo_local === 1;
 
 
-    this.resData.telefono = this.infoToken.telefono;
+    this.resData.telefono = this.infoToken.telefono || '';
     this.isValidForm = this.infoToken.telefono ? this.infoToken.telefono.length >= 5 ? true : false : false;
     this.isValidForm = !this.metodoPagoSelected.idtipo_pago ? false : this.isValidForm;
     if ( this.isValidForm ) {

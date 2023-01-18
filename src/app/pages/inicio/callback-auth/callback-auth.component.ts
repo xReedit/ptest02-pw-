@@ -14,6 +14,7 @@ import { Browser } from '@capacitor/browser';
 import { callbackUri } from 'src/app/auth.config';
 import { mergeMap } from 'rxjs/operators';
 import { App } from '@capacitor/app';
+import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 
 
 @Component({
@@ -43,13 +44,14 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
     private infoToken: InfoTockenService,
     private crudService: CrudHttpService,
     public authNative: AuthService, //@auth0/auth0-angular
-    private ngZone: NgZone    
+    private ngZone: NgZone,
+    private utilitariosService: UtilitariosService
     ) { }
 
   ngOnInit() {
 
 
-    console.log('x === >> llegueeeee a callback');
+    // console.log('x === >> llegueeeee a callback');
     
 
     try {
@@ -64,27 +66,30 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
       }, 1000);      
 
 
+      console.log('verifyClient from callback');
       this.veryfyClient = this.verifyClientService.verifyClient()
         .subscribe((res: any) => {
-          console.log('x === >> llegueeeee a callback - res', res);
+          // console.log('x === >> llegueeeee a callback - res', res);
           if ( !res ) { return; }
-          console.log('x === >> llegueeeee a callback - isResponseLogin', this.isResponseLogin);
+          // console.log('x === >> llegueeeee a callback - isResponseLogin', this.isResponseLogin);
           if ( this.isResponseLogin ) {return; }
           // if ( this.fromLogin ) { return; }
 
           // si no tiene el datalogin entonces busca en login auth0
-          console.log('x === >> llegueeeee a callback - res.datalogin', res.datalogin);
+          // console.log('x === >> llegueeeee a callback - res.datalogin', res.datalogin);
           if ( !res.datalogin ) {
             this.fromLogin = true;
             this.verifyClientService.verifyClientLogin()
             .subscribe(resLogin => {
-              console.log('x === >> llegueeeee a callback - resLogin', resLogin);
+              // console.log('x === >> llegueeeee a callback - resLogin', resLogin);
               if ( !resLogin ) { return; }
+              
+              // await this.utilitariosService.delay(500)
               this.usLoginGo(resLogin);
             });
             return;
           }
-
+          
           this.usLoginGo(res);
 
         });
@@ -96,6 +101,7 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
   }
 
   private usLoginGo(resObservable: any) {
+      // console.log('usLoginGo', resObservable);
       this.isResponseLogin = true;
       clearInterval(this.timeReset);
       this.isProcesando = false;
@@ -113,7 +119,8 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
     }
   }
 
-  private setInfoToken(token: any): void {
+  private async setInfoToken(token: any) {
+    
     try {
       const _token = `eyCJ9.${btoa(JSON.stringify(token))}`;
       this.authService.setLocalToken(_token);
@@ -124,6 +131,7 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
       let _linkToRedirec = this.verifyClientService.getLinkRedirecLogin();
       _linkToRedirec = _linkToRedirec ? _linkToRedirec : '';
 
+      // console.log('_linkToRedirec', _linkToRedirec);
       if ( _linkToRedirec !== '' ) {
         this.router.navigate([_linkToRedirec]);
         this.verifyClientService.setLinkRedirecLogin('');
@@ -135,14 +143,17 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
         // si cliente scaneo qr para delivery
         if ( this.verifyClientService.getIsQrSuccess() ) {
           // this.router.navigate(['./pedido']);
+          // console.log('redirec', '/pedido');
           this.goUrlRedirec('/pedido');
         } else {
+          // console.log('redirec', '/zona-delivery');
           this.verifyClientService.setIsDelivery(true);
           this.goUrlRedirec('/zona-delivery');
         }
 
       } else {
         // this.router.navigate(['./pedido']);
+        // this.goUrlRedirec('/pedido2');
         this.goUrlRedirec('/pedido');
       }
     } catch (error) {
@@ -159,6 +170,7 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
 
   // para las versiones anteriores, si hay algun error, que se logueen nuevamente
   errorShowVersion(error: any) {
+    // console.log('errorShowVersion', error);
     this.showErrornweVersion = true;
 
     // guarda el error

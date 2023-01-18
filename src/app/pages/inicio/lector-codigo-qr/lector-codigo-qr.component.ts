@@ -125,11 +125,11 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
 
       BarcodeScanner.hideBackground();
       const result = await BarcodeScanner.startScan({ targetedFormats: [SupportedFormat.QR_CODE] });
-      console.log('este es el resultado ====>>', result);
+      // console.log('este es el resultado ====>>', result);
       // if the result has content
       if (result.hasContent) {
         // console.log(result.content); // log the raw scanned content
-        console.log('este es el resultado content ====>>', result.content);
+        // console.log('este es el resultado content ====>>', result.content);
         this.codQR = result.content;
         this.scanActive = false;  
         this.scanSuccess = true;      
@@ -148,7 +148,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
 
 
   scanSuccessHandler($event: any) {
-    console.log($event);
+    // console.log($event);
     this.codQR = $event;
     this.isProcesando = true;
     this.leerDatosQR();
@@ -412,6 +412,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
 
   private verificarCartaSedeParam(_nomsede: string) {
     // setear idsede en clienteSOcket
+    // console.log('verificarCartaSedeParam', _nomsede);
     this.verifyClientService.getDataClient();
 
     const _dataSend = { nomsede: _nomsede };

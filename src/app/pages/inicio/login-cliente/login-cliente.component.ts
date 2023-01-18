@@ -11,6 +11,7 @@ import { DialogVerificarTelefonoComponent } from 'src/app/componentes/dialog-ver
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { DialogNombreClienteComponent } from 'src/app/componentes/dialog-nombre-cliente/dialog-nombre-cliente.component';
 import { AuthNativeService } from 'src/app/shared/services/auth-native.service';
+import { IS_PLATAFORM_IOS } from 'src/app/shared/config/config.const';
 
 
 @Component({
@@ -36,6 +37,8 @@ export class LoginClienteComponent implements OnInit {
   private listMotnh: any = [];
   private listYear: any = [];
   private numDocumento = '';
+
+  isPlatformIOS = IS_PLATAFORM_IOS;
 
 constructor(
     private verifyClientService: VerifyAuthClientService,
@@ -70,7 +73,7 @@ constructor(
 
   goFb() {
     // tslint:disable-next-line:max-line-length
-    this.authNativeService.login(2);
+    this.authNativeService.login(1);
     // if (!IS_NATIVE) {
     // } else {
     //   this.auth.login('#', 'facebook');
@@ -85,7 +88,7 @@ constructor(
 
   goGmail() {
     // tslint:disable-next-line:max-line-length
-    this.authNativeService.login(1);
+    this.authNativeService.login(0);
     // if (!IS_NATIVE) {
     // } else {
     //   this.auth.login('#', 'google-oauth2');
@@ -95,6 +98,10 @@ constructor(
     // %3A%2F%2Fdev-m48s1pe2.auth0.com&approval_state=!ChRYak5ZSGpadUgxXzNqb3hhcGZUehIfczJlb1h3T2JGZU1VRUZvSEdUZHlJLTJOcDdqNy1SWQ%E2%88%99AJDr988AAAAAXh3sARBYEr4oYCKCWs9U5zUn4rvw6fZ7&oauthgdpr=1&
     // xsrfsig=ChkAeAh8T3hpGUbuZ88B9xbsKFXhx8WEy7mEEg5hcHByb3ZhbF9zdGF0ZRILZGVzdGluYXRpb24SBXNvYWN1Eg9vYXV0aHJpc2t5c2NvcGU&
     // flowName=GeneralOAuthFlow', '_self');
+  }
+
+  goApple() {
+    this.authNativeService.login(2);
   }
 
   goCelular() {

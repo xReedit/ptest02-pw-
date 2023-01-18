@@ -33,6 +33,11 @@
     background: #d32f2f;
 }
 
+.btn-social.apple {
+    background: #131313;
+    color: white;
+}
+
 .btn-social.wsp {
     background: #08b725;
 }

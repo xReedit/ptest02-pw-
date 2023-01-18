@@ -31,7 +31,7 @@ import { DialogDireccionClienteDeliveryComponent } from 'src/app/componentes/dia
 })
 export class CategoriasComponent implements OnInit, OnDestroy {
   // rippleColor = 'rgb(255,238,88, 0.2)';
-  loaderPage = true;
+  loaderPage = false;
   listEstablecimientos: DeliveryEstablecimiento[]; // es se utiliza para filtrar
   listEstablecimientosMaster: DeliveryEstablecimiento[];
   listPromociones = [];
@@ -48,6 +48,8 @@ export class CategoriasComponent implements OnInit, OnDestroy {
   private idcategoria_selected: any;
   private isMismaDireccionSelectd = false; // si es la misma direccion el calculo de distancia y costo de servicio lo trae de cache
   // private veryfyClient: Subscription = null;
+
+  private isClienteLogueado = false;
 
   private unsubscribe$: Subject<any> = new Subject<any>();
 
@@ -115,7 +117,6 @@ export class CategoriasComponent implements OnInit, OnDestroy {
       this.listSubCatFiltros = [];
     }
 
-    console.log('this.listSubCatFiltros :>> ', this.listSubCatFiltros);
 
     // this.activatedRoute.queryParams.subscribe(params => {
     //   if ( params['id'] ) {
@@ -127,11 +128,12 @@ export class CategoriasComponent implements OnInit, OnDestroy {
 
     // this.loadEstablecimientos();
     this.infoClient = this.verifyClientService.getDataClient();
+    this.isClienteLogueado = this.infoClient.isCliente || false;
 
     this.listenService.isChangeDireccionDelivery$
     .pipe(takeUntil(this.unsubscribe$))
     .subscribe((res: DeliveryDireccionCliente) => {
-      if ( res ) {
+      if ( res ) {        
         this.codigo_postal_actual = res.codigo || '0';
         this.ciudad_actual = res.ciudad;
         this.isNullselectedDireccion = false;
@@ -144,7 +146,7 @@ export class CategoriasComponent implements OnInit, OnDestroy {
         this.loadEstablecimientos();
         this.loadEstablecimientosPromos();
       } else {
-
+        // console.log('dir null');
       }
     });
 
@@ -290,11 +292,16 @@ export class CategoriasComponent implements OnInit, OnDestroy {
     //    this.calcDistanceService.calculateRoute(this.direccionCliente, $event, false);
     // }
 
+    
+
     this.socketService.closeConnection();
 
     this.verifyClientService.setIdSede($event.idsede);
     this.verifyClientService.setIdOrg($event.idorg);
     this.verifyClientService.setIsDelivery(true);
+    this.verifyClientService.setDataClient();
+    
+    this.infoTokenService.set();
 
     // console.log('establecimiento selected', $event);
     this.establecimientoService.set($event);
@@ -302,13 +309,21 @@ export class CategoriasComponent implements OnInit, OnDestroy {
     // restcarta
     this.pedidoService.resetAllNewPedido();
 
+    // console.log('this.infoClient', this.infoClient);
+    if (!this.isClienteLogueado) { this.registarDirCliente(); return; }
+
     this.router.navigate(['/callback-auth']);
 
   }
 
+  registarDirCliente() {
+    this.verifyClientService.setIsDelivery(true);
+    this.router.navigate(['/login-client']);
+  }
+
   openDialogDireccion1() {
     // const dialogConfig = new MatDialogConfig();
-
+    
     const dialogRef = this.dialogDireccion.open(DialogSelectDireccionComponent, {
       // panelClass: 'my-full-screen-dialog',
       panelClass: ['my-dialog-orden-detalle', 'my-dialog-scrool'],

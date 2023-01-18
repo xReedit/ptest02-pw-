@@ -19,15 +19,25 @@
               <div matRipple class="border-bottom p-3 xCursor" (click)="clickTab(1); drawer.toggle();">
                 Mis pedidos
               </div>
-              <div matRipple class="border-bottom p-3 xCursor">
+              <!-- <div matRipple class="border-bottom p-3 xCursor">
                 Descuentos y promociones
-              </div>
-              <div matRipple class="border-bottom p-3 xCursor d-flex justify-content-between" (click)="cerrarAllSession()">
-                <div>
-                  Cerrar Session
+              </div> -->
+              <div *ngIf="isClienteLogueado">
+                <div matRipple class="border-bottom p-3 xCursor d-flex justify-content-between" (click)="cerrarAllSession()">
+                  <div>
+                    Cerrar Session
+                  </div>
+                  <div>
+                      <i class="fa fa-key"></i>
+                  </div>
                 </div>
-                <div>
-                    <i class="fa fa-key"></i>
+                <div  matRipple class="border-bottom p-3 xCursor d-flex justify-content-between" (click)="eliminarCuentaUsuario()">
+                  <div>
+                    Eliminar Cuenta
+                  </div>
+                  <div>
+                    <i class="fa fa-user-times"></i>
+                  </div>
                 </div>
               </div>
               <div matRipple class="border-bottom p-3 xCursor" [routerLink]="['../']">
@@ -60,7 +70,9 @@
         <ngx-ui-loader></ngx-ui-loader>
       </div> -->
       <!-- primer paso loguearse -->
-      <div *ngIf="!isClienteLogueado" matRipple class="content-paso-ini text-center xCursor border" (click)="registarDirCliente()">
+      <!-- <div *ngIf="!isClienteLogueado" matRipple class="content-paso-ini text-center xCursor border" (click)="registarDirCliente()"> -->
+      <div *ngIf="!showSelectedDireccion" matRipple class="content-paso-ini text-center xCursor border"
+          (click)="openDialogDireccion()">
         <span class="text-secondary fs-12">Bienvenido, para ver los comercios en tu zona:</span>
         <div class="bg-warnig">
           <img src="../assets/images/placeholder.png" alt="">

@@ -37,6 +37,7 @@ export class RedirecLectorComponent implements OnInit {
   }
 
   private verificarCartaSedeParam(_nomsede: string) {
+    // console.log('verificarCartaSedeParam', _nomsede);
     // setear idsede en clienteSOcket
     this.verifyClientService.getDataClient();
 

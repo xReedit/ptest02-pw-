@@ -7,6 +7,7 @@ export class SocketClientModel {
     idorg: number; // cuando se loguea a un establecimiento
     idsede: number; // cuando se loguea a un establecimiento
     isCliente: boolean;
+    isClienteTmp: boolean; /// sin login aun
     nombres: string;
     usuario: string;
     datalogin: any;

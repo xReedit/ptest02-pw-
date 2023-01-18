@@ -387,6 +387,7 @@ export class InfoTockenService {
   // cerrar toda la sesssion
   cerrarSessionGoIni() {
     // this.cerrarSession();
+    // console.log('AuthGuard -> cerrarSessionGoIni');
     localStorage.clear();
     this.router.navigate(['../']);
   }
@@ -396,6 +397,7 @@ export class InfoTockenService {
   verificarContunuarSession(): boolean {
 
     // si no existe token cierra
+    // console.log('verificarContunuarSession', this.infoUsToken);
     if ( !this.infoUsToken) {
 
       // trata de recuperar el token desde tpm

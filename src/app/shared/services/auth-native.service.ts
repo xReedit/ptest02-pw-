@@ -19,6 +19,8 @@ import { Router } from '@angular/router';
 })
 export class AuthNativeService {
 
+isLoginSuccess = false;
+
 public userAuthNative$ = this.authNative.isAuthenticated$.pipe(switchMap(() => this.authNative.user$));  
 
     processLoginInit = false;
@@ -29,17 +31,21 @@ public userAuthNative$ = this.authNative.isAuthenticated$.pipe(switchMap(() => t
       @Inject(DOCUMENT) private doc: Document,) {
       this.userAuthNative$.subscribe(res => {        
             console.log('AuthService ressss ===>> user ', JSON.stringify(res));
-            this.usLoginSuccess(res);
+            if (res) {
+                this.isLoginSuccess = true;
+                this.usLoginSuccess(res);
+            }
       })
     }
 
     usLoginSuccess(user: any) {        
-        if (!user && this.processLoginInit) {
-            this.loginWithRedirect();
-            this.processLoginInit = false;
-            // this.router.navigate(['/callback-auth']);
-            return;
-        }
+        // if (!this.processLoginInit) {
+        //     this.loginWithRedirect();
+        //     this.processLoginInit = false;
+        //     window.location.reload();
+        //     // this.router.navigate(['/callback-auth']);
+        //     return;
+        // }
 
 
         // let clientSocket = this.verifyAuthClientService.getClientSocket();
@@ -51,10 +57,12 @@ public userAuthNative$ = this.authNative.isAuthenticated$.pipe(switchMap(() => t
         // this.navigateService._router('/callback-auth');
     }
     
-    async login(op: number = 1) {
+    async login(op: number = 0) {
         this.processLoginInit = true;
-        const _proveedor = op === 1 ? 'google-oauth2' : 'facebook';
-        console.log('callbackUri', callbackUri);
+        const arr_proveedor = ['google-oauth2', 'facebook', 'apple']
+        const _proveedor = arr_proveedor[op]
+        
+        // console.log('callbackUri', callbackUri);        
 
         // await this.authNative.loginWithRedirect({ noRedirect: true });
         this.authNative

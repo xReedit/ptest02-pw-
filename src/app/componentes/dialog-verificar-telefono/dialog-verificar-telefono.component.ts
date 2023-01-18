@@ -47,7 +47,7 @@ export class DialogVerificarTelefonoComponent implements OnInit {
     // setTimeout(() => {
       if (!this.socketService.isSocketOpen) {
         this.infoClient = this.verifyClientService.getDataClient();
-        console.log('this.infoClient', this.infoClient);
+        // console.log('this.infoClient', this.infoClient);
         this.socketService.connect(this.infoClient, 0, false, false);
       }
     // }, 2000);
@@ -55,7 +55,7 @@ export class DialogVerificarTelefonoComponent implements OnInit {
 
     // respuesta del msj verificacion
     this.socketService.onMsjVerificacionResponse().subscribe((res: any) => {
-      console.log('repuesta == ', res);
+      // console.log('repuesta == ', res);
       // if ( res.msj ) { this.intentoVerificacion = 0; } // por si quiere enviar nuevamente
       this.isNumberSuccess = res.msj ? 1 : 2;
       this.isSendSMS = true; // res.msj;
@@ -134,9 +134,9 @@ export class DialogVerificarTelefonoComponent implements OnInit {
     this.crudService.postFree(_dataCod, 'delivery', 'verificar-codigo-sms', false)
       .subscribe(res => {
 
-        console.log('x ===  verificarCodigoSMS', JSON.stringify(res));
+        // console.log('x ===  verificarCodigoSMS', JSON.stringify(res));
         this.isVerificacionOk = res.data[0].response === 1 ? true : false;
-        console.log('x ===  verificarCodigoSMS isVerificacionOk', this.isVerificacionOk);
+        // console.log('x ===  verificarCodigoSMS isVerificacionOk', this.isVerificacionOk);
         setTimeout(() => {
           this.loader = this.isVerificacionOk ? 2 : 3;
           this.data.verificado = this.isVerificacionOk;
