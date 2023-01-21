@@ -22,7 +22,7 @@
               <!-- <div matRipple class="border-bottom p-3 xCursor">
                 Descuentos y promociones
               </div> -->
-              <div *ngIf="isClienteLogueado">
+              <div>
                 <div matRipple class="border-bottom p-3 xCursor d-flex justify-content-between" (click)="cerrarAllSession()">
                   <div>
                     Cerrar Session
@@ -31,7 +31,7 @@
                       <i class="fa fa-key"></i>
                   </div>
                 </div>
-                <div  matRipple class="border-bottom p-3 xCursor d-flex justify-content-between" (click)="eliminarCuentaUsuario()">
+                <div *ngIf="isPlataformIos" matRipple class="border-bottom p-3 xCursor d-flex justify-content-between" (click)="eliminarCuentaUsuario()">
                   <div>
                     Eliminar Cuenta
                   </div>

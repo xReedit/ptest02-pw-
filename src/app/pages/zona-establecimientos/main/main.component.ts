@@ -19,6 +19,7 @@ import { AuthNativeService } from 'src/app/shared/services/auth-native.service';
 import { IS_PLATAFORM_IOS } from 'src/app/shared/config/config.const';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
+import { DialogOutAuthIosComponent } from 'src/app/componentes/dialog-out-auth-ios/dialog-out-auth-ios.component';
 
 
 
@@ -284,12 +285,12 @@ export class MainComponent implements OnInit {
 
   eliminarCuentaUsuario() {
 
-    const _dialogConfig = new MatDialogConfig();
-    _dialogConfig.disableClose = true;
-    _dialogConfig.hasBackdrop = true;
-    _dialogConfig.data = { idMjs: 3, titleBtnSuccess: 'Si'};
+    // const _dialogConfig = new MatDialogConfig();
+    // _dialogConfig.disableClose = true;
+    // _dialogConfig.hasBackdrop = true;
+    // _dialogConfig.data = { idMjs: 3, titleBtnSuccess: 'Si'};
 
-    const dialogRef = this.dialog.open(DialogDesicionComponent, _dialogConfig);
+    const dialogRef = this.dialog.open(DialogOutAuthIosComponent);
     dialogRef.afterClosed().subscribe(
       data => {
         if (!data) { return; }

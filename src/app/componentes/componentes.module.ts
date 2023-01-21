@@ -58,6 +58,7 @@ import { CompViewPromoComponent } from './comp-view-promo/comp-view-promo.compon
 import { CompListCallClientComponent } from './comp-list-call-client/comp-list-call-client.component';
 import { DatosFacturacionClienteComponent } from './datos-facturacion-cliente/datos-facturacion-cliente.component';
 import { CompListMesasComponent } from './comp-list-mesas/comp-list-mesas.component';
+import { DialogOutAuthIosComponent } from './dialog-out-auth-ios/dialog-out-auth-ios.component';
 
 @NgModule({
   declarations: [
@@ -107,6 +108,7 @@ import { CompListMesasComponent } from './comp-list-mesas/comp-list-mesas.compon
     CompListCallClientComponent,
     DatosFacturacionClienteComponent,
     CompListMesasComponent,
+    DialogOutAuthIosComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],

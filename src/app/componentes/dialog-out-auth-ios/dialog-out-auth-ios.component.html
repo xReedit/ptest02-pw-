@@ -1,0 +1,16 @@
+<div class="p-3">
+    <i class="fa fa-user-times fa-2x text-danger"></i>
+    <h4>Eliminar Cuenta</h4>
+    <p class="fs-13">Esta seguro de eliminar todo el registro de su cuenta, junto con los datos personales asociados como:
+    Direcciones de entrega y telefono? Este decisión será irreversible.</p>    
+    <hr>
+    <p class="fs-13">
+        Si esta seguro. Luego de eliminar su cuenta revoque el acceso siguiendo estos pasos
+    </p>
+    <a href="https://support.apple.com/en-us/HT210426" target="_blank">Revocar acceso</a>
+    <hr>
+    <div class="d-flex">
+        <button class="btn btn-sm btn-success" (click)="cerrarDlg(true)">Si estoy seguro.</button>
+        <button class="ml-2 btn btn-sm btn-danger" (click)="cerrarDlg(false)">No</button>
+    </div>
+</div>

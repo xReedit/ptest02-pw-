@@ -26,7 +26,7 @@ export class DialogDesicionComponent implements OnInit {
         this.msj = 'Tiene un pedido en curso el cual se cambiara para ver la cuenta. Desea ver la cuenta?';
         break;
       case 3:
-        this.msj = 'Esta seguro de eliminar su cuenta de Papaya Express?';
+        this.msj = 'Esta seguro de eliminar eliminar todo el registro de su cuenta, junto con los datos personales asociados como: Direcciones de entrega y telefono?';
         this.titleBtnSuccess = data.titleBtnSuccess;
         break;
     }
