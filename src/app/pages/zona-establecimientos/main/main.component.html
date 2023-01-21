@@ -31,7 +31,8 @@
                       <i class="fa fa-key"></i>
                   </div>
                 </div>
-                <div *ngIf="isPlataformIos" matRipple class="border-bottom p-3 xCursor d-flex justify-content-between" (click)="eliminarCuentaUsuario()">
+                <!-- *ngIf="isPlataformIos" -->
+                <div  *ngIf="isPlataformIos" matRipple class="border-bottom p-3 xCursor d-flex justify-content-between" (click)="eliminarCuentaUsuario()">
                   <div>
                     Eliminar Cuenta
                   </div>
