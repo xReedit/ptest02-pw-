@@ -102,20 +102,20 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   constructor(
-      private socketService: SocketService,
-      public miPedidoService: MipedidoService,
-      private reglasCartaService: ReglascartaService,
-      // private jsonPrintService: JsonPrintService,
-      private navigatorService: NavigatorLinkService,
-      private listenStatusService: ListenStatusService,
-      private infoToken: InfoTockenService,
-      private dialog: MatDialog,
-      private establecimientoService: EstablecimientoService,
-      private calcDistanciaService: CalcDistanciaService,
-      private crudService: CrudHttpService,
-      private speechDataProviderService: SpeechDataProviderService,
-      private cocinarPromoShowService: CocinarPromoShowService,
-      ) {
+    private socketService: SocketService,
+    public miPedidoService: MipedidoService,
+    private reglasCartaService: ReglascartaService,
+    // private jsonPrintService: JsonPrintService,
+    private navigatorService: NavigatorLinkService,
+    private listenStatusService: ListenStatusService,
+    private infoToken: InfoTockenService,
+    private dialog: MatDialog,
+    private establecimientoService: EstablecimientoService,
+    private calcDistanciaService: CalcDistanciaService,
+    private crudService: CrudHttpService,
+    private speechDataProviderService: SpeechDataProviderService,
+    private cocinarPromoShowService: CocinarPromoShowService,
+  ) {
 
   }
 
@@ -136,7 +136,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isPuntoAutoPedido = _configPunto.ispunto_autopedido || false;
     this.isTomaPedidoRapido = _configPunto.istoma_pedido_rapido || false;
 
-    if ( this.isTomaPedidoRapido ) {
+    if (this.isTomaPedidoRapido) {
       this.canalConsumoTomaPedidoRapido = _configPunto?.canal_consumo;
     }
 
@@ -145,7 +145,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // calificacion y comentarios
     this.isShowCalificacion = this.establecimientoService.get().calificacion >= 3.7;
-    if ( this.isShowCalificacion ) {
+    if (this.isShowCalificacion) {
       this.dataCalificacion = {
         calificacion: this.establecimientoService.get().calificacion,
         cantidad: 0,
@@ -157,13 +157,13 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       };
 
       this.crudService.postFree(_dataSendCalificacion, 'delivery', 'get-calificacion-sede', false)
-      .subscribe((res: any) => {
-        this.dataCalificacion.listCalificacion = res.data;
-        this.dataCalificacion.cantidad = this.dataCalificacion.listCalificacion.map(c => c.numpedidos).reduce((a, b) => a + b, 0);
-      });
+        .subscribe((res: any) => {
+          this.dataCalificacion.listCalificacion = res.data;
+          this.dataCalificacion.cantidad = this.dataCalificacion.listCalificacion.map(c => c.numpedidos).reduce((a, b) => a + b, 0);
+        });
     }
 
-    if ( this.infoToken.getInfoUs().isCliente && this.infoToken.getInfoUs().isDelivery &&  !this.infoToken.getInfoUs().isReserva) {
+    if (this.infoToken.getInfoUs().isCliente && this.infoToken.getInfoUs().isDelivery && !this.infoToken.getInfoUs().isReserva) {
       // console.log('calcula distancia desde carta');
       this.calcDistanciaService.calcCostoEntregaApiGoogleRain(this.infoToken.getInfoUs().direccionEnvioSelected, this.establecimientoService.get());
     }
@@ -172,7 +172,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.listenStatusService.listenGoBackCarta$
       .pipe(takeUntil(this.destroy$))
       .subscribe(res => {
-        if ( res === true ) { this.goBack(); }
+        if (res === true) { this.goBack(); }
       });
   }
 
@@ -190,9 +190,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // descarga la constate del items scala delivery // tanto para cliente como para usuario
     // if ( this.infoToken.isDelivery() ) {
-      if ( !this.infoToken.isReserva() ) {
-        this.miPedidoService.getDeliveryConstCantEscala();
-      }
+    if (!this.infoToken.isReserva()) {
+      this.miPedidoService.getDeliveryConstCantEscala();
+    }
     // }
 
     this.unsubscribeCarta = this.navigatorService.resNavigatorSourceObserve$.subscribe((res: any) => {
@@ -208,152 +208,158 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     // console.log('aaa');
     this.establecimientoService.getComsionEntrega();
     // if (!this.socketService.isSocketOpen) {
-      this.unsubscribeCarta = this.socketService.onGetCarta().subscribe((res: any) => {
+    this.unsubscribeCarta = this.socketService.onGetCarta().subscribe((res: any) => {
 
-        // console.log('onGetCarta', res);
-        // this.objCartaCarta = {
-        //   'carta': <CartaModel[]>res[0].carta,
-        //   'bodega': <SeccionModel[]>res[0].bodega
-        // };
-        this.listenStatusService.setLoaderCarta(false);
-        // console.log('cerrar loader carta');
+      // console.log('onGetCarta', res);
+      // this.objCartaCarta = {
+      //   'carta': <CartaModel[]>res[0].carta,
+      //   'bodega': <SeccionModel[]>res[0].bodega
+      // };
+      this.listenStatusService.setLoaderCarta(false);
+      // console.log('cerrar loader carta');
 
-        if (this.socketService.isSocketOpenReconect) {
-          // actualizar cantidad actual (stock actual) de ObjCarta del item
-          // if ( !this.miPedidoService.findIsHayItems() ) {
-          //   this.miPedidoService.updatePedidoFromStrorage();
-          // }
 
-            // this.objCartaCarta = res;
-            //
-            this.miPedidoService.setObjCarta(res);
+      // si se quedo cargando
+      if (this.listenStatusService.getIisMsjConexionLentaSendPedidoSourse()) {
+        this.listenStatusService.closeFinishLoaderSendPedidoSource();
+      }
 
-            this.resetParamsCarta();
+      if (this.socketService.isSocketOpenReconect) {
+        // actualizar cantidad actual (stock actual) de ObjCarta del item
+        // if ( !this.miPedidoService.findIsHayItems() ) {
+        //   this.miPedidoService.updatePedidoFromStrorage();
+        // }
 
-            if ( this.miPedidoService.findIsHayItems() ) {
-              this.miPedidoService.updatePedidoFromStrorage();
-            }
-
-            // console.log('objCartaCarta desde socket reconect');
-            this.navigatorService.setPageActive('carta');
-          // }
-
-          // para cargar la lista de mesas si se desconecta
-          localStorage.removeItem('sys::time-list-table');
-
-          return;
-        }
         // this.objCartaCarta = res;
         //
         this.miPedidoService.setObjCarta(res);
-        // console.log('this.miPedidoService.objCarta', this.miPedidoService.objCarta);
-
-        if ( this.miPedidoService.objCarta.promociones ) {
-          if ( this.miPedidoService.objCarta.promociones.lista_promociones ) {
-          // if (this.miPedidoService.objCarta.promociones[0].idpromocion) {
-            this.objPromociones = this.miPedidoService.objCarta.promociones.lista_promociones;
-            // filtramos si hay solo app
-            if (!this.isCliente) {
-              this.objPromociones = this.objPromociones.filter(p => p.parametros.body.solo_app === 0);
-            }
-            this.cocinarPromoShowService.iniReloadOpenPromo(this.objPromociones);
-          }
-          // }
-        }
-        // console.log('this.objPromociones', this.objPromociones);
 
         this.resetParamsCarta();
 
-        // this.isCargado = false;
-        // // this.showCategoria = true;
+        if (this.miPedidoService.findIsHayItems()) {
+          this.miPedidoService.updatePedidoFromStrorage();
+        }
 
-        // this.objSecciones = [];
-        // this.objItems = [];
-        // this.showCategoria = false;
-        // this.showSecciones = false;
-        // this.showItems = false;
-        // this.showCategoria = true;
+        // console.log('objCartaCarta desde socket reconect');
+        this.navigatorService.setPageActive('carta');
+        // }
 
+        // para cargar la lista de mesas si se desconecta
+        localStorage.removeItem('sys::time-list-table');
 
-        this.miPedidoService.clearPedidoIsLimitTime();
-        this.miPedidoService.updatePedidoFromStrorage();
+        return;
+      }
+      // this.objCartaCarta = res;
+      //
+      this.miPedidoService.setObjCarta(res);
+      // console.log('this.miPedidoService.objCarta', this.miPedidoService.objCarta);
 
-        // restaurar cuenta de timepo limite
-        // console.log('restore timer limt');
-        this.miPedidoService.restoreTimerLimit();
-
-        this.loadItemsBusqueda();
-
-        if ( this.isFirstLoadListen ) {return; }
-        this.isFirstLoadListen = true; // para que no vuelva a cargar los observables cuando actualizan desde sockets
-        this.miPedidoService.listenChangeCantItem(); // cuando se reconecta para que actualize
-      });
-
-      // tipo de consumo
-      this.unsubscribeCarta = this.socketService.onGetTipoConsumo().subscribe((res: TipoConsumoModel[]) => {
-        // console.log('tipo consumo ', res);
-        if (this.socketService.isSocketOpenReconect) {return; }
-        this.tiposConsumo = res;
-
-        // set tipos de consumo a new item tipo cosnumo para los item vista
-        this.tiposConsumo.map((t: TipoConsumoModel) => {
-          const _objTpcAdd = new ItemTipoConsumoModel();
-          _objTpcAdd.descripcion = t.descripcion;
-          _objTpcAdd.idtipo_consumo = t.idtipo_consumo;
-          _objTpcAdd.titulo = t.titulo;
-          _objTpcAdd.idimpresora = t.idimpresora;
-
-          // filtramos los tipos de consumo segun qr escaneado o personal autorizado
-
-
-          if ( this.infoToken.isCliente() ) {
-            if ( !this.infoToken.isDelivery() ) {
-              if ( t.descripcion === 'DELIVERY' ) { return; }
-              if ( this.infoToken.isSoloLlevar() && t.descripcion.indexOf('LLEVAR') === -1 ) { return; }
-            } else {
-              if ( t.descripcion !== 'DELIVERY' ) { return; } else {_objTpcAdd.descripcion = 'CANTIDAD'; }
-            }
+      if (this.miPedidoService.objCarta.promociones) {
+        if (this.miPedidoService.objCarta.promociones.lista_promociones) {
+          // if (this.miPedidoService.objCarta.promociones[0].idpromocion) {
+          this.objPromociones = this.miPedidoService.objCarta.promociones.lista_promociones;
+          // filtramos si hay solo app
+          if (!this.isCliente) {
+            this.objPromociones = this.objPromociones.filter(p => p.parametros.body.solo_app === 0);
           }
+          this.cocinarPromoShowService.iniReloadOpenPromo(this.objPromociones);
+        }
+        // }
+      }
+      // console.log('this.objPromociones', this.objPromociones);
 
-          if ( this.infoToken.isPuntoAutoPedido()  ) {
-            // solo para llevar
-            if ( t.descripcion.indexOf('LLEVAR') === -1 ) { return; }
+      this.resetParamsCarta();
+
+      // this.isCargado = false;
+      // // this.showCategoria = true;
+
+      // this.objSecciones = [];
+      // this.objItems = [];
+      // this.showCategoria = false;
+      // this.showSecciones = false;
+      // this.showItems = false;
+      // this.showCategoria = true;
+
+
+      this.miPedidoService.clearPedidoIsLimitTime();
+      this.miPedidoService.updatePedidoFromStrorage();
+
+      // restaurar cuenta de timepo limite
+      // console.log('restore timer limt');
+      this.miPedidoService.restoreTimerLimit();
+
+      this.loadItemsBusqueda();
+
+      if (this.isFirstLoadListen) { return; }
+      this.isFirstLoadListen = true; // para que no vuelva a cargar los observables cuando actualizan desde sockets
+      this.miPedidoService.listenChangeCantItem(); // cuando se reconecta para que actualize
+    });
+
+    // tipo de consumo
+    this.unsubscribeCarta = this.socketService.onGetTipoConsumo().subscribe((res: TipoConsumoModel[]) => {
+      // console.log('tipo consumo ', res);
+      if (this.socketService.isSocketOpenReconect) { return; }
+      this.tiposConsumo = res;
+
+      // set tipos de consumo a new item tipo cosnumo para los item vista
+      this.tiposConsumo.map((t: TipoConsumoModel) => {
+        const _objTpcAdd = new ItemTipoConsumoModel();
+        _objTpcAdd.descripcion = t.descripcion;
+        _objTpcAdd.idtipo_consumo = t.idtipo_consumo;
+        _objTpcAdd.titulo = t.titulo;
+        _objTpcAdd.idimpresora = t.idimpresora;
+
+        // filtramos los tipos de consumo segun qr escaneado o personal autorizado
+
+
+        if (this.infoToken.isCliente()) {
+          if (!this.infoToken.isDelivery()) {
+            if (t.descripcion === 'DELIVERY') { return; }
+            if (this.infoToken.isSoloLlevar() && t.descripcion.indexOf('LLEVAR') === -1) { return; }
+          } else {
+            if (t.descripcion !== 'DELIVERY') { return; } else { _objTpcAdd.descripcion = 'CANTIDAD'; }
           }
+        }
 
-          // if ( this.infoToken.isCliente() && t.descripcion === 'DELIVERY' ) {
+        if (this.infoToken.isPuntoAutoPedido()) {
+          // solo para llevar
+          if (t.descripcion.indexOf('LLEVAR') === -1) { return; }
+        }
 
-          // } else {
-            this.objNewItemTiposConsumo.push(_objTpcAdd);
-          // }
-        });
+        // if ( this.infoToken.isCliente() && t.descripcion === 'DELIVERY' ) {
 
-        // console.log('this.objNewItemTiposConsumo', this.objNewItemTiposConsumo);
-
-        this.miPedidoService.setObjNewItemTiposConsumo(this.objNewItemTiposConsumo);
-
-        this.navigatorService.addLink('carta-i-');
-
-        // console.log('this.objNewItemTiposConsumo', this.objNewItemTiposConsumo);
-        // this.tiposConsumo.secciones = [];
-
-        // this.loadItemsBusqueda();
-
-        this.initFirtsCategoria();
+        // } else {
+        this.objNewItemTiposConsumo.push(_objTpcAdd);
+        // }
       });
 
+      // console.log('this.objNewItemTiposConsumo', this.objNewItemTiposConsumo);
 
-      // descuentos
-      this.unsubscribeCarta = this.socketService.onGetDataSedeDescuentos().subscribe((res: any) => {
-        // console.log('onGetDataSedeDescuentos', res);
-        // console.log('infoToken', this.infoToken.infoUsToken);
-        this.miPedidoService.setObjCartaDescuentos(res);
-      });
+      this.miPedidoService.setObjNewItemTiposConsumo(this.objNewItemTiposConsumo);
+
+      this.navigatorService.addLink('carta-i-');
+
+      // console.log('this.objNewItemTiposConsumo', this.objNewItemTiposConsumo);
+      // this.tiposConsumo.secciones = [];
+
+      // this.loadItemsBusqueda();
+
+      this.initFirtsCategoria();
+    });
 
 
-      // this.socketService.onGetClienteLlama().subscribe((res: any) => {
-      //   console.log('cliente llama', res);
-      //   // this.listenStatusService.setCallListClienteAtencion(res);
-      // });
+    // descuentos
+    this.unsubscribeCarta = this.socketService.onGetDataSedeDescuentos().subscribe((res: any) => {
+      // console.log('onGetDataSedeDescuentos', res);
+      // console.log('infoToken', this.infoToken.infoUsToken);
+      this.miPedidoService.setObjCartaDescuentos(res);
+    });
+
+
+    // this.socketService.onGetClienteLlama().subscribe((res: any) => {
+    //   console.log('cliente llama', res);
+    //   // this.listenStatusService.setCallListClienteAtencion(res);
+    // });
 
     // }
 
@@ -369,7 +375,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   // si la carta solo tiene un categoria ( cena almuerzo entra de frente)
   private initFirtsCategoria() {
     // if ( this.isScreenIsMobile ) {return; }
-    if ( this.miPedidoService.objCarta.carta.length === 1 ) {
+    if (this.miPedidoService.objCarta.carta.length === 1) {
       this.objSecciones = this.miPedidoService.objCarta.carta[0].secciones;
       this.tituloToolBar = this.miPedidoService.objCarta.carta[0].des;
       this.showSecciones = true;
@@ -377,10 +383,10 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.showToolBar = true;
 
       // if ( this.isScreenIsMobile ) {
-        this.getSecciones(this.miPedidoService.objCarta.carta[0]);
-        // return; }
+      this.getSecciones(this.miPedidoService.objCarta.carta[0]);
+      // return; }
 
-      if ( !this.isScreenIsMobile ) {
+      if (!this.isScreenIsMobile) {
         this.getItems(this.objSecciones[0]);
       }
 
@@ -419,21 +425,21 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   private showAnimateBloqueoCategoria(categoria: CategoriaModel) {
     categoria.animateBloqueoCategoria = true;
 
-      setTimeout(() => {
-        categoria.animateBloqueoCategoria = false;
-      }, 300);
+    setTimeout(() => {
+      categoria.animateBloqueoCategoria = false;
+    }, 300);
   }
 
   getSecciones(categoria: CategoriaModel) {
     // chequea si esta disponible
-    if ( !this.isCliente && !categoria.abierto) { // si es personal autorizado
-      if ( categoria.accesible_mozo === '1' ) {
+    if (!this.isCliente && !categoria.abierto) { // si es personal autorizado
+      if (categoria.accesible_mozo === '1') {
         this.showAnimateBloqueoCategoria(categoria);
         return;
       }
     }
 
-    if ( this.isCliente && !categoria.abierto ) {
+    if (this.isCliente && !categoria.abierto) {
       this.showAnimateBloqueoCategoria(categoria);
       return;
     }
@@ -459,16 +465,16 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.miPedidoService.setObjSeccionSeleced(seccion);
     setTimeout(() => {
       this.seccionSelected = seccion;
-      this.objItems = seccion.items;      
+      this.objItems = seccion.items;
       this.showItems = true;
 
       setTimeout(() => {
         this.showSecciones = false;
       }, 200);
 
-      if ( this.isScreenIsMobile ) {
+      if (this.isScreenIsMobile) {
         // if ( this.tituloToolBar.indexOf(seccion.des) === -1) {
-          this.tituloToolBar = this.nomCategoriaSeleted + ' / ' + seccion.des;
+        this.tituloToolBar = this.nomCategoriaSeleted + ' / ' + seccion.des;
         // }
       }
 
@@ -509,7 +515,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // extraemos
     let _itemFind: any;
-    if ( !_objFind.carta ) { return; }
+    if (!_objFind.carta) { return; }
     _objFind.carta.map((c: CategoriaModel) => {
       c.secciones.map((s: SeccionModel) => {
         s.items.map((i: ItemModel) => {
@@ -536,8 +542,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   goBack() {
 
     try {
-      if ( this.miPedidoService.objCarta.carta.length === 1 && !this.isScreenIsMobile ) {return; } // si no es celular no regresa
-    } catch (error) {}
+      if (this.miPedidoService.objCarta.carta.length === 1 && !this.isScreenIsMobile) { return; } // si no es celular no regresa
+    } catch (error) { }
 
     this.objItems.map(x => x.selected = false);
     if (this.showItems) {
@@ -565,14 +571,14 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // console.log('_selectedItem', _selectedItem);
 
-    if ( (this.isPuntoAutoPedido || this.isTomaPedidoRapido || this.isCliente) && !openDetalle && _selectedItem?.count_subitems === 0 ) {
-      if ( !this.isViewMercado ) {
+    if ((this.isPuntoAutoPedido || this.isTomaPedidoRapido || this.isCliente) && !openDetalle && _selectedItem?.count_subitems === 0) {
+      if (!this.isViewMercado) {
         this.resultCantItemMercado(_selectedItem, true);
         return;
       }
     }
 
-    if ( _selectedItem.cantidad.toString() === '0' && !_selectedItem.cantidad_seleccionada ) { return; }
+    if (_selectedItem.cantidad.toString() === '0' && !_selectedItem.cantidad_seleccionada) { return; }
 
     _selectedItem.selected = true;
     this.itemSelected = _selectedItem;
@@ -580,7 +586,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     const _objNewItemTiposConsumo = JSON.parse(JSON.stringify(this.objNewItemTiposConsumo));
     this.objItemTipoConsumoSelected = _selectedItem.itemtiposconsumo ? _selectedItem.itemtiposconsumo : _objNewItemTiposConsumo;
 
-    if ( !_selectedItem.itemtiposconsumo ) {
+    if (!_selectedItem.itemtiposconsumo) {
       _selectedItem.itemtiposconsumo = this.objItemTipoConsumoSelected;
     }
 
@@ -588,7 +594,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     const idSeccionSelected = this.seccionSelected?.idseccion || 0;
     const _lastSeccionObjSeleted = this.miPedidoService.getObjSeccionSeleced();
     const _reasignarSeccion = _lastSeccionObjSeleted.idseccion !== idSeccionSelected;
-    if ( this.itemSelected.idseccion !== idSeccionSelected || _reasignarSeccion) {
+    if (this.itemSelected.idseccion !== idSeccionSelected || _reasignarSeccion) {
       this.seccionSelected = this.miPedidoService.findItemSeccionCarta(this.itemSelected.idseccion);
       this.miPedidoService.setObjSeccionSeleced(this.seccionSelected);
     }
@@ -604,7 +610,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   private openDlgItem(_item: ItemModel): void {
     const dialogConfig = new MatDialogConfig();
     const _itemFromCarta = _item.ispromo ? _item : this.miPedidoService.findItemCarta(_item);
-    if ( !_itemFromCarta.itemtiposconsumo ) {
+    if (!_itemFromCarta.itemtiposconsumo) {
       _itemFromCarta.itemtiposconsumo = _item.itemtiposconsumo;
     }
     // const _seccionItemSelect = this.miPedidoService.findItemSeccionCarta(_itemFromCarta.idseccion);
@@ -616,16 +622,16 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       item: _itemFromCarta,
       objItemTipoConsumoSelected: this.itemSelected.itemtiposconsumo
     };
-    dialogConfig.panelClass =  ['my-dialog-orden-detalle', 'margen-0', 'my-dialog-item-producto'];
+    dialogConfig.panelClass = ['my-dialog-orden-detalle', 'margen-0', 'my-dialog-item-producto'];
 
     const dialogRef = this.dialog.open(DialogItemEditComponent, dialogConfig);
 
     // subscribe al cierre y obtiene los datos
     dialogRef.afterClosed().subscribe(
-        data => {
-          if ( !data ) { return; }
-          // console.log('data dialog', data);
-        }
+      data => {
+        if (!data) { return; }
+        // console.log('data dialog', data);
+      }
     );
 
   }
@@ -655,7 +661,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   getEstadoStockItem(stock: any): string {
-    if ( stock === 'ND' || isNaN(stock) ) {
+    if (stock === 'ND' || isNaN(stock)) {
       // stock = 'ND';
       return 'verde';
     } else {
@@ -672,54 +678,54 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.listenStatusService.charBuqueda$
       .pipe(takeUntil(this.destroy$))
       .subscribe((res: string) => {
-      this.isBusquedaFindNow(res);
-    });
+        this.isBusquedaFindNow(res);
+      });
 
     this.socketService.isSocketOpen$
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(res => {
-      if (!res) {
-        // console.log('===== unsubscribe unsubscribe Carta =====');
-        this.unsubscribeCarta.unsubscribe();
-      }
-    });
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        if (!res) {
+          // console.log('===== unsubscribe unsubscribe Carta =====');
+          this.unsubscribeCarta.unsubscribe();
+        }
+      });
 
 
     // ===== COMANDOS DE VOZ =========== //
     // listen comando voz navegacion;
     this.speechDataProviderService.commandNavegacionSeccion$
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((rpt_seccion: SeccionModel) => {
-      if (rpt_seccion) {
-        // if (this.showCategoria ) {
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((rpt_seccion: SeccionModel) => {
+        if (rpt_seccion) {
+          // if (this.showCategoria ) {
           const _categoria = this.miPedidoService.objCarta.carta[0];
           this.getSecciones(_categoria);
           setTimeout(() => {
             this.getItems(rpt_seccion);
           }, 100);
-        // } else {
-        //   this.getItems(rpt_seccion);
-        // }
-      }
-    });
+          // } else {
+          //   this.getItems(rpt_seccion);
+          // }
+        }
+      });
 
     // listen comando voz navegacion;
     this.speechDataProviderService.commandNavegacionRecomendado$
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((itemsRecomendados: any) => {
-      if (itemsRecomendados.length > 0) {
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((itemsRecomendados: any) => {
+        if (itemsRecomendados.length > 0) {
           this.getItemsPromo(itemsRecomendados);
-      }
-    });
+        }
+      });
 
     // escuhar si se aumenta pedido
     this.speechDataProviderService.commandAddItem$
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((itemVoz: any) => {
-      if (itemVoz) {
-        this.resultCantItemMercado(itemVoz.item, itemVoz.isSuma);
-      }
-    });
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((itemVoz: any) => {
+        if (itemVoz) {
+          this.resultCantItemMercado(itemVoz.item, itemVoz.isSuma);
+        }
+      });
 
 
     // ===== COMANDOS DE VOZ =========== //
@@ -738,9 +744,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getObjDetalleSeccion(seccion: SeccionModel): String {
     let resp = '';
-    if (seccion.items === null ) {return; }
+    if (seccion.items === null) { return; }
     seccion.items.map((i: ItemModel, index: number) => {
-      if (index > 5) {return; }
+      if (index > 5) { return; }
       resp += i.des.toLowerCase() + ', ';
     });
 
@@ -756,17 +762,17 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     // if ( this.isTomaPedidoRapido ) {
     //   this.objItemTipoConsumoSelected = this.canalConsumoTomaPedidoRapido;
     // } else {
-      const _objNewItemTiposConsumo = JSON.parse(JSON.stringify(this.objNewItemTiposConsumo));
-      this.objItemTipoConsumoSelected = _selectedItem.itemtiposconsumo ? _selectedItem.itemtiposconsumo : _objNewItemTiposConsumo;
+    const _objNewItemTiposConsumo = JSON.parse(JSON.stringify(this.objNewItemTiposConsumo));
+    this.objItemTipoConsumoSelected = _selectedItem.itemtiposconsumo ? _selectedItem.itemtiposconsumo : _objNewItemTiposConsumo;
     // }
 
-    if ( !_selectedItem.itemtiposconsumo ) {
+    if (!_selectedItem.itemtiposconsumo) {
       _selectedItem.itemtiposconsumo = this.objItemTipoConsumoSelected;
     }
 
     this.miPedidoService.setobjItemTipoConsumoSelected(this.objItemTipoConsumoSelected);
-    let tpcSelect =  this.objItemTipoConsumoSelected[0];
-    if ( this.isTomaPedidoRapido ) {
+    let tpcSelect = this.objItemTipoConsumoSelected[0];
+    if (this.isTomaPedidoRapido) {
       tpcSelect = this.objItemTipoConsumoSelected.filter(x => x.descripcion.toLocaleLowerCase() === this.canalConsumoTomaPedidoRapido.descripcion.toLocaleLowerCase())[0];
     }
     const _isSuma = isSuma_selected ? 0 : _selectedItem.isSuma_selected ? 0 : 1;
@@ -776,7 +782,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     const idSeccionSelected = this.seccionSelected?.idseccion || 0;
     const _lastSeccionObjSeleted = this.miPedidoService.getObjSeccionSeleced();
     const _reasignarSeccion = _lastSeccionObjSeleted.idseccion !== idSeccionSelected;
-    if ( this.itemSelected.idseccion !== idSeccionSelected || _reasignarSeccion) {
+    if (this.itemSelected.idseccion !== idSeccionSelected || _reasignarSeccion) {
       this.seccionSelected = this.miPedidoService.findItemSeccionCarta(this.itemSelected.idseccion);
       this.miPedidoService.setObjSeccionSeleced(this.seccionSelected);
     }
@@ -817,24 +823,24 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     // dialogConfig.panelClass = 'dialog-item-edit';
     dialogConfig.autoFocus = false;
     dialogConfig.data = this.dataCalificacion;
-    dialogConfig.panelClass =  ['my-dialog-orden-detalle', 'my-dialog-scrool'];
+    dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
 
     const dialogRef = this.dialog.open(DialogCalificacionSedeComponent, dialogConfig);
 
     // subscribe al cierre y obtiene los datos
     dialogRef.afterClosed().subscribe(
-        data => {
-          if ( !data ) { return; }
+      data => {
+        if (!data) { return; }
 
-        }
+      }
     );
   }
 
 
   showItemsPromo(promo: any) {
     // if ( this.cocinarPromoShowService.consultarPromoAbierto(promo) ) {
-      const itemsPromo = this.cocinarPromoShowService.promoFilterShow(promo, this.categoriaSeleted);
-      this.getItemsPromo(itemsPromo);
+    const itemsPromo = this.cocinarPromoShowService.promoFilterShow(promo, this.categoriaSeleted);
+    this.getItemsPromo(itemsPromo);
     // } else {
     //   promo.abierto = 0;
     //   console.log('aaaaaaaaaaaaaa');

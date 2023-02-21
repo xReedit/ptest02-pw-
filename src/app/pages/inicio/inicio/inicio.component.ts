@@ -65,8 +65,7 @@ export class InicioComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.loadAll = true;
 
-      const _infotoken = this.infoToken.getInfoUs();
-      console.log('_infotoken', _infotoken);
+      const _infotoken = this.infoToken.getInfoUs();      
 
       if ( _infotoken ) {
         this.infoToken.setIsUsuarioAutorizacion(false);

@@ -1,61 +1,68 @@
 <!-- loader -->
-  <div [ngClass]="{'loaded': socketService.isSocketOpen$ | async}">
-    <div class="wrapper">
-        <div id="loader-wrapper">
-        <div id="loader"></div>                
-        <div class="loader-msj">{{socketService.msjConex$ | async}}</div>
-        <div class="loader-section section-left"></div>
-        <div class="loader-section section-right"></div>
-        </div>
+<div [ngClass]="{'loaded': socketService.isSocketOpen$ | async}">
+  <div class="wrapper">
+    <div id="loader-wrapper">
+      <div id="loader"></div>
+      <div class="loader-msj">{{socketService.msjConex$ | async}}</div>
+      <div class="loader-section section-left"></div>
+      <div class="loader-section section-right"></div>
     </div>
-  </div>     
+  </div>
+</div>
 <!-- loader -->
 
 <!-- loader send pedido or transaction -->
 <div class="animated fadeIn div-loader-2" *ngIf="listenStatusService.isLoaderSendPedido$ | async">
   <!-- <div class="animated fadeIn div-loader-2"> -->
   <div class="loader">
-      <ng-container *ngIf="listenStatusService.isFinishLoaderSendPedido$ | async; else elseTemplateNoFinish">
-        
-        <ng-container *ngIf="isUsuarioCliente; else elseTemplateIsMozo">
-          <img src="./assets/images/printer_3.gif" alt="send-printer">        
-          <div style="max-width: 220px;">
-            <p class="pt-2 fs-18 fw-600">Pedido Recibido.</p>
-            <hr>
-            <p class="pt-2 fs-15 fw-100">Su pedido fue recibido correctamente en las zonas de producción correspondientes.</p>
-            <hr>
-            <button mat-flat-button color="primary" (click)="closeMsjLoaderPedido()">Listo</button>
-          </div>          
-        </ng-container>
-        <ng-template #elseTemplateIsMozo>
+    <ng-container *ngIf="listenStatusService.isFinishLoaderSendPedido$ | async; else elseTemplateNoFinish">
 
-            <img src="./assets/images/success_3.gif" width="130px" alt="send-success">        
-            <p class="pt-2 fs-18 fw-600">Pedido Enviado</p>
-          
-        </ng-template>
-        
-
-                
+      <ng-container *ngIf="isUsuarioCliente; else elseTemplateIsMozo">
+        <img src="./assets/images/printer_3.gif" alt="send-printer">
+        <div style="max-width: 220px;">
+          <p class="pt-2 fs-18 fw-600">Pedido Recibido.</p>
+          <hr>
+          <p class="pt-2 fs-15 fw-100">Su pedido fue recibido correctamente en las zonas de producción correspondientes.
+          </p>
+          <hr>
+          <button mat-flat-button color="primary" (click)="closeMsjLoaderPedido()">Listo</button>
+        </div>
       </ng-container>
-      <ng-template #elseTemplateNoFinish>        
-        <img src="./assets/images/plane_3.gif" alt="send">
-        <br><br>
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        <span class="pt-2 fs-16 fw-600">Enviando pedido...</span>
+      <ng-template #elseTemplateIsMozo>
 
-        <!-- <button (click)="pruebaMsjs()">ok</button> -->
+        <img src="./assets/images/success_3.gif" width="130px" alt="send-success">
+        <p class="pt-2 fs-18 fw-600">Pedido Enviado</p>
+
       </ng-template>
-      
-  </div>    
+
+
+
+    </ng-container>
+    <ng-template #elseTemplateNoFinish>
+      <img src="./assets/images/plane_3.gif" alt="send">
+      <br><br>
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <span class="pt-2 fs-16 fw-600">Enviando pedido...</span>
+
+      <div class="animated flash" *ngIf="listenStatusService.isMsjConexionLentaSendPedido$ | async">
+        <p class="text-danger fs-13 m-0">Tienen una conexion lenta.</p>
+        <p *ngIf="isMozoApp" class="text-danger fs-13 m-0">Acerquese a un punto wifi si es el caso..</p>
+      </div>
+
+
+      <!-- <button (click)="pruebaMsjs()">ok</button> -->
+    </ng-template>
+
+  </div>
 </div>
 <!-- loader send pedido or transaction -->
 
 <!-- loader send pedido or transaction -->
 <div class="animated fadeIn div-loader-2" *ngIf="listenStatusService.isLoaderCarta$ | async">
   <div class="loader">
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-      <span class="pt-2">Obteniendo productos...</span>
-  </div>    
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <span class="pt-2">Obteniendo productos...</span>
+  </div>
 </div>
 <!-- loader send pedido or transaction -->
 
@@ -69,91 +76,93 @@
 
 <!-- <router-outlet></router-outlet> -->
 <!-- *ngIf="!isPagePagarShow" -->
-<div class="h-100 overflow-hidden" >  
-    <app-progress-time-limit></app-progress-time-limit>
-    <div class="toolbar-main" [ngClass]="{'fadeInTool': isVisibleToolBar, 'fadeOutTool': !isVisibleToolBar}">
-      <app-tool-bar></app-tool-bar>      
-    </div>        
+<div class="h-100 overflow-hidden">
+  <app-progress-time-limit></app-progress-time-limit>
+  <div class="toolbar-main" [ngClass]="{'fadeInTool': isVisibleToolBar, 'fadeOutTool': !isVisibleToolBar}">
+    <app-tool-bar></app-tool-bar>
+  </div>
 
-    <div>      
-      
-      <mat-tab-group (selectedTabChange)="clickTab($event)" backgroundColor="primary" color="accent"
-        class="main-contemt transicion xanimated xfadeIn" [selectedIndex]="selectedTab"
-        [ngClass]="{'header-less-tabs pt-0': isBusqueda}">
-        <mat-tab label="Carta">
-          <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">          
-            <app-carta></app-carta>
-            <br>
+  <div>
 
-            <!-- footer boton ir a mi pedido -->
-            <div class="footer-btn-go-lista animated fadeIn" 
-              [ngClass]="{'fadeInUp':  countTotalItems > 0,'fadeOutDown': countTotalItems <= 0}" 
-              *ngIf="(isUsuarioCliente || isPuntoAutoPedido) && isScreenIsMobile">
-              <!-- boton atras -->
-              <div class="content-info text-left">
-                <p class="fw-100 fs-12 m-0">Importe Total</p>
-                <p class="fw-800 fs-20">S/. {{ importeTotalProductos | number: '.2' }}</p>
-              </div>
+    <mat-tab-group (selectedTabChange)="clickTab($event)" backgroundColor="primary" color="accent"
+      class="main-contemt transicion xanimated xfadeIn" [selectedIndex]="selectedTab"
+      [ngClass]="{'header-less-tabs pt-0': isBusqueda}">
+      <mat-tab label="Carta">
+        <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
+          <app-carta></app-carta>
+          <br>
 
-              <!-- importe total del pedido -->
-              <div class="content-btn"> 
-                <button matRipple class="btn mr-1" style="background: #3f51b5; color: white;" (click)="goListaProductos()">
-                  <span class="fs-15">Ver Pedido</span>
-                </button>
-                <button matRipple class="btn text-center" style="background: #007BFF; color: white;" (click)="goBackCarta()">
-                  <i class="fa fa-arrow-left"></i>
-                </button>
-                <!-- <p class="badge badge-light">{{ countTotalItems }}</p>
+          <!-- footer boton ir a mi pedido -->
+          <div class="footer-btn-go-lista animated fadeIn"
+            [ngClass]="{'fadeInUp':  countTotalItems > 0,'fadeOutDown': countTotalItems <= 0}"
+            *ngIf="(isUsuarioCliente || isPuntoAutoPedido) && isScreenIsMobile">
+            <!-- boton atras -->
+            <div class="content-info text-left">
+              <p class="fw-100 fs-12 m-0">Importe Total</p>
+              <p class="fw-800 fs-20">S/. {{ importeTotalProductos | number: '.2' }}</p>
+            </div>
+
+            <!-- importe total del pedido -->
+            <div class="content-btn">
+              <button matRipple class="btn mr-1" style="background: #3f51b5; color: white;"
+                (click)="goListaProductos()">
+                <span class="fs-15">Ver Pedido</span>
+              </button>
+              <button matRipple class="btn text-center" style="background: #007BFF; color: white;"
+                (click)="goBackCarta()">
+                <i class="fa fa-arrow-left"></i>
+              </button>
+              <!-- <p class="badge badge-light">{{ countTotalItems }}</p>
                 <p>Ver pedido</p>
                 <p>S/. {{ importeTotalProductos | number: '.2' }}</p> -->
-              </div>
             </div>
-
-          </div>     
-        </mat-tab>
-        <mat-tab label="MiPedido" [disabled]="!isScreenIsMobile">
-          <ng-template matTabLabel>
-              <span>Mi Pedido </span>
-              <i class="fa fa-shopping-basket pl-2" aria-hidden="true"></i>
-              
-              <div *ngIf="countTotalItems > 0" class="countItem countTotal animated fadeInUp d-flex">
-                {{countTotalItems | number: '2.'}}
-                <div class="div-spinner">
-                </div>
-              </div>              
-          </ng-template>
-          <div class="x100-toolbar-hidden" [ngClass]="{'fondo-gris': isUsuarioCliente}" (scroll)="onScroll($event)">
-            <ng-container *ngIf="isScreenIsMobile">              
-              <app-resumen-pedido></app-resumen-pedido>
-            </ng-container>
-            
-            <br>
           </div>
-        </mat-tab>
 
-        <!-- solo si personal autorizado  -->
-        <mat-tab label="Mesas" *ngIf="!isUsuarioCliente && !isClienteDelivery && !isClienteReserva">
-            <div class="x100-toolbar-hidden" (scroll)="onScroll($event)"> 
-              <!-- <app-estado-pedido></app-estado-pedido> -->
-              <app-comp-list-mesas></app-comp-list-mesas>
-              <br>
-            </div>          
-        </mat-tab>      
+        </div>
+      </mat-tab>
+      <mat-tab label="MiPedido" [disabled]="!isScreenIsMobile">
+        <ng-template matTabLabel>
+          <span>Mi Pedido </span>
+          <i class="fa fa-shopping-basket pl-2" aria-hidden="true"></i>
 
-        <!-- solo si es usuario cliente  -->
-        <mat-tab label="Estado" *ngIf="isUsuarioCliente && !isClienteDelivery && !isClienteReserva">
-          <!-- <ng-container *ngIf="isUsuarioCliente"> -->
-            <div class="x100-toolbar-hidden" (scroll)="onScroll($event)"> 
-              <app-estado-pedido></app-estado-pedido>
-              <br>
+          <div *ngIf="countTotalItems > 0" class="countItem countTotal animated fadeInUp d-flex">
+            {{countTotalItems | number: '2.'}}
+            <div class="div-spinner">
             </div>
-          <!-- </ng-container>         -->
-        </mat-tab>
-      </mat-tab-group>
-    </div>    
-    
-    
-    <app-mozo-show-traduce-text></app-mozo-show-traduce-text>
-   
+          </div>
+        </ng-template>
+        <div class="x100-toolbar-hidden" [ngClass]="{'fondo-gris': isUsuarioCliente}" (scroll)="onScroll($event)">
+          <ng-container *ngIf="isScreenIsMobile">
+            <app-resumen-pedido></app-resumen-pedido>
+          </ng-container>
+
+          <br>
+        </div>
+      </mat-tab>
+
+      <!-- solo si personal autorizado  -->
+      <mat-tab label="Mesas" *ngIf="!isUsuarioCliente && !isClienteDelivery && !isClienteReserva">
+        <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
+          <!-- <app-estado-pedido></app-estado-pedido> -->
+          <app-comp-list-mesas></app-comp-list-mesas>
+          <br>
+        </div>
+      </mat-tab>
+
+      <!-- solo si es usuario cliente  -->
+      <mat-tab label="Estado" *ngIf="isUsuarioCliente && !isClienteDelivery && !isClienteReserva">
+        <!-- <ng-container *ngIf="isUsuarioCliente"> -->
+        <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
+          <app-estado-pedido></app-estado-pedido>
+          <br>
+        </div>
+        <!-- </ng-container>         -->
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+
+  <app-mozo-show-traduce-text></app-mozo-show-traduce-text>
+
 
 </div>

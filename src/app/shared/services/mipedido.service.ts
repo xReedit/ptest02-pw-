@@ -95,9 +95,9 @@ export class MipedidoService {
     private crudService: CrudHttpService,
     private infoTokenService: InfoTockenService,
     private cocinarDescuentosPromoService: CocinarDescuentosPromoService
-    ) {
+  ) {
 
-    }
+  }
 
 
   // cuando obtenemos la cuenta
@@ -117,112 +117,112 @@ export class MipedidoService {
     this.objCarta = {};
 
     // setTimeout(() => {
-      this.objCarta = {
-        'carta': null,
-        'bodega': null,
-        'promociones': null,
-        'recomendados': null
-      };
+    this.objCarta = {
+      'carta': null,
+      'bodega': null,
+      'promociones': null,
+      'recomendados': null
+    };
 
-      this.objCarta.carta = <CartaModel[]>res[0].carta;
-      this.objCarta.bodega = <SeccionModel[]>res[0].bodega;
-      this.objCarta.promociones = <any[]>res[0].promociones;
+    this.objCarta.carta = <CartaModel[]>res[0].carta;
+    this.objCarta.bodega = <SeccionModel[]>res[0].bodega;
+    this.objCarta.promociones = <any[]>res[0].promociones;
 
-      // colocamos la bodega en todas las cartas
-      let _carta = this.objCarta.carta;
-      const _bodega = this.objCarta.bodega;
-      if ( _bodega ) {
+    // colocamos la bodega en todas las cartas
+    let _carta = this.objCarta.carta;
+    const _bodega = this.objCarta.bodega;
+    if (_bodega) {
 
-        // si no hay carta solo productos
-        if ( !this.objCarta.carta ) {
-          // const newCarta = new CartaModel;
-          const newCategoria = new CategoriaModel;
-          newCategoria.des = 'Productos';
-          newCategoria.detalle = '';
-          newCategoria.hora_fin = '';
-          newCategoria.hora_ini = '';
-          newCategoria.idcarta = 0;
-          newCategoria.idcategoria = 0;
-          newCategoria.secciones = [];
+      // si no hay carta solo productos
+      if (!this.objCarta.carta) {
+        // const newCarta = new CartaModel;
+        const newCategoria = new CategoriaModel;
+        newCategoria.des = 'Productos';
+        newCategoria.detalle = '';
+        newCategoria.hora_fin = '';
+        newCategoria.hora_ini = '';
+        newCategoria.idcarta = 0;
+        newCategoria.idcategoria = 0;
+        newCategoria.secciones = [];
 
-          _carta = [];
-          _carta.push(newCategoria);
-
-          _carta.map((c: CategoriaModel) => {
-            _bodega.map((bs: SeccionModel) => {
-              c.secciones.push(bs);
-            });
-          });
-
-          this.objCarta.carta = _carta;
-          return;
-        }
+        _carta = [];
+        _carta.push(newCategoria);
 
         _carta.map((c: CategoriaModel) => {
           _bodega.map((bs: SeccionModel) => {
             c.secciones.push(bs);
           });
         });
+
+        this.objCarta.carta = _carta;
+        return;
       }
 
-      // console.log('_carta', _carta);
-      // console.log('infoTokenService', this.infoTokenService.getInfoUs());
-      // console.log('isCliente', this.infoTokenService.isCliente());
-
-      const _itemsRecomendacion = [];
-      const countListCarta = _carta.length;
       _carta.map((c: CategoriaModel) => {
-
-
-        // 020822
-        // si carta > 1 => validar horario de carta
-        c.abierto = true;
-        if ( countListCarta > 1 ) {
-          let open_day = false;
-          let open_hour = false;
-
-          // si esta abierto segun dia
-
-          open_day = c.dia_disponible.indexOf(c.day_of_week) > -1;
-          c.abierto = open_day;
-
-          if ( open_day ) {
-
-            // si esta abierto segun hora
-            if (c.hora_ini && c.hora_fin) {
-              open_hour = this.utilesService.isBetweenHoursNow(c.hora_ini, c.hora_fin);
-              c.abierto = open_hour;
-            }
-
-            // si es cliente
-            // if ( this.infoTokenService.isCliente() ) { // si es cliente
-            //   c.abierto = c.visible_cliente === 1;
-            // }
-          }
-
-          // si es mozo y solo si esta disponible segun horario
-          if (c.accesible_mozo === '1' && !this.infoTokenService.isCliente()) {
-            c.abierto = open_day && open_hour;
-          }
-
-        }
-
-        c.secciones.map((s: SeccionModel) => {
-          const _itemsSeccionRecomendados = s.items.filter(x => x.is_recomendacion === '1');
-          if ( _itemsSeccionRecomendados ) {
-            _itemsSeccionRecomendados.map(i => _itemsRecomendacion.push(i));
-          }
+        _bodega.map((bs: SeccionModel) => {
+          c.secciones.push(bs);
         });
       });
+    }
 
-      if ( _itemsRecomendacion.length > 0 ) {
-        this.objCarta.recomendados =  _itemsRecomendacion;
+    // console.log('_carta', _carta);
+    // console.log('infoTokenService', this.infoTokenService.getInfoUs());
+    // console.log('isCliente', this.infoTokenService.isCliente());
+
+    const _itemsRecomendacion = [];
+    const countListCarta = _carta.length;
+    _carta.map((c: CategoriaModel) => {
+
+
+      // 020822
+      // si carta > 1 => validar horario de carta
+      c.abierto = true;
+      if (countListCarta > 1) {
+        let open_day = false;
+        let open_hour = false;
+
+        // si esta abierto segun dia
+
+        open_day = c.dia_disponible.indexOf(c.day_of_week) > -1;
+        c.abierto = open_day;
+
+        if (open_day) {
+
+          // si esta abierto segun hora
+          if (c.hora_ini && c.hora_fin) {
+            open_hour = this.utilesService.isBetweenHoursNow(c.hora_ini, c.hora_fin);
+            c.abierto = open_hour;
+          }
+
+          // si es cliente
+          // if ( this.infoTokenService.isCliente() ) { // si es cliente
+          //   c.abierto = c.visible_cliente === 1;
+          // }
+        }
+
+        // si es mozo y solo si esta disponible segun horario
+        if (c.accesible_mozo === '1' && !this.infoTokenService.isCliente()) {
+          c.abierto = open_day && open_hour;
+        }
+
       }
 
-      // chequear si hay recomendaciones
+      c.secciones.map((s: SeccionModel) => {
+        const _itemsSeccionRecomendados = s.items.filter(x => x.is_recomendacion === '1');
+        if (_itemsSeccionRecomendados) {
+          _itemsSeccionRecomendados.map(i => _itemsRecomendacion.push(i));
+        }
+      });
+    });
 
-      // this.laCartaObjSource.next(this.objCarta);
-      // console.log('objCartaCarta', this.objCarta);
+    if (_itemsRecomendacion.length > 0) {
+      this.objCarta.recomendados = _itemsRecomendacion;
+    }
+
+    // chequear si hay recomendaciones
+
+    // this.laCartaObjSource.next(this.objCarta);
+    // console.log('objCartaCarta', this.objCarta);
     // }, 1000);
   }
 
@@ -237,8 +237,8 @@ export class MipedidoService {
   // aplicar descuentos a la carta
   setObjCartaDescuentos(objDescuento: any) {
     this.infoTokenService.infoUsToken.isHayDescuento = false;
-    if ( objDescuento.length === 0 ) {return; }
-    if ( objDescuento[0].solo_app === 1 && !this.infoTokenService.infoUsToken.isCliente ) { return; }
+    if (objDescuento.length === 0) { return; }
+    if (objDescuento[0].solo_app === 1 && !this.infoTokenService.infoUsToken.isCliente) { return; }
     this.infoTokenService.infoUsToken.isHayDescuento = true;
     let _dsc = 0;
     // let precio_ahora = 0;
@@ -249,13 +249,13 @@ export class MipedidoService {
         case 0: // items
           this.objCarta.carta.map((c: CategoriaModel) => {
             c.secciones.map((s: SeccionModel) => {
-                const _i = s.items.filter((i: ItemModel) => i.iditem.toString() === d.id)[0];
-                if ( _i ) {
-                  _dsc = d.porcentaje;
-                  _i.iddescuento = d.idsede_descuento;
-                  this.aplicarDescuentoImte(_i, _dsc);
-                  return false;
-                }
+              const _i = s.items.filter((i: ItemModel) => i.iditem.toString() === d.id)[0];
+              if (_i) {
+                _dsc = d.porcentaje;
+                _i.iddescuento = d.idsede_descuento;
+                this.aplicarDescuentoImte(_i, _dsc);
+                return false;
+              }
             });
           });
           break;
@@ -263,12 +263,12 @@ export class MipedidoService {
           _dsc = d.porcentaje;
           this.objCarta.carta.map((c: CategoriaModel) => {
             c.secciones.map((s: SeccionModel) => {
-              if (s.idseccion.toString() ===  d.id) {
+              if (s.idseccion.toString() === d.id) {
                 s.descuento = _dsc + '%';
                 s.iddescuento = d.idsede_descuento;
-                s.items.map( (i: ItemModel) => {
+                s.items.map((i: ItemModel) => {
                   this.aplicarDescuentoImte(i, _dsc);
-                } );
+                });
               }
             });
           });
@@ -277,7 +277,7 @@ export class MipedidoService {
           _dsc = d.porcentaje;
           this.objCarta.bodega.map((s: SeccionModel) => {
             const _i = s.items.filter((i: ItemModel) => i.iditem.toString() === d.id)[0];
-            if ( _i ) {
+            if (_i) {
               _dsc = d.porcentaje;
               _i.iddescuento = d.idsede_descuento;
               this.aplicarDescuentoImte(_i, _dsc);
@@ -288,13 +288,13 @@ export class MipedidoService {
         case 3: // producto familia
           _dsc = d.porcentaje;
           this.objCarta.bodega.map((s: SeccionModel) => {
-              if (s.idseccion.toString() ===  d.id) {
-                s.descuento = _dsc + '%';
-                s.iddescuento = d.idsede_descuento;
-                s.items.map( (i: ItemModel) => {
-                  this.aplicarDescuentoImte(i, _dsc);
-                } );
-              }
+            if (s.idseccion.toString() === d.id) {
+              s.descuento = _dsc + '%';
+              s.iddescuento = d.idsede_descuento;
+              s.items.map((i: ItemModel) => {
+                this.aplicarDescuentoImte(i, _dsc);
+              });
+            }
           });
           break;
       }
@@ -307,7 +307,7 @@ export class MipedidoService {
 
   private aplicarDescuentoImte(i: ItemModel, _dsc: number) {
     const _pItem = parseFloat(i.precio);
-    const precio_ahora = Math.round(_pItem - ( _pItem * ( _dsc / 100 )));
+    const precio_ahora = Math.round(_pItem - (_pItem * (_dsc / 100)));
     i.precio_antes = i.precio;
     i.precio = precio_ahora.toString();
     i.precio_default = precio_ahora;
@@ -320,18 +320,18 @@ export class MipedidoService {
     this.miPedido.tipoconsumo.map((tp: TipoConsumoModel) => {
       tp.secciones.map((s: SeccionModel) => {
         _idDsc = s.iddescuento;
-        if ( _idDsc ) {
-          if ( !listIds.filter(a => a.id === _idDsc)[0] ) {
-            listIds.push({id: _idDsc});
+        if (_idDsc) {
+          if (!listIds.filter(a => a.id === _idDsc)[0]) {
+            listIds.push({ id: _idDsc });
           }
         }
 
         // en items
         s.items.map((i: ItemModel) => {
           _idDsc = s.iddescuento;
-          if ( _idDsc ) {
-            if ( !listIds.filter(a => a.id === _idDsc)[0] ) {
-              listIds.push({id: _idDsc});
+          if (_idDsc) {
+            if (!listIds.filter(a => a.id === _idDsc)[0]) {
+              listIds.push({ id: _idDsc });
             }
           }
         });
@@ -342,7 +342,7 @@ export class MipedidoService {
   }
 
   getMiPedido(): PedidoModel {
-    if ( this.miPedido.tipoconsumo.length === 0 ) {
+    if (this.miPedido.tipoconsumo.length === 0) {
       if (this.storageService.isExistKey('sys::order::all')) {
         this.miPedido = JSON.parse(atob(this.storageService.get('sys::order::all')));
       }
@@ -388,7 +388,7 @@ export class MipedidoService {
 
     // recuperar del storage
     const _arrItemScala = localStorage.getItem('sys::ICS');
-    if ( _arrItemScala ) {
+    if (_arrItemScala) {
       this.deliveryArrConstantes = JSON.parse(atob(_arrItemScala));
     } else {
       this.crudService.getAll('pedido', 'get-const-delivery-items-escala', false, false, false)
@@ -429,7 +429,7 @@ export class MipedidoService {
     cantSeleccionada += sumar ? 1 : -1;
     if (cantSeleccionada < 0) { return; }
 
-    if ( item.isporcion !== 'ND' ) {
+    if (item.isporcion !== 'ND') {
       cantItem += sumar ? -1 : 1;
       cantSeleccionada = cantSeleccionada < 0 ? 0 : cantSeleccionada;
       cantItem = cantItem < 0 || cantSeleccionada < 0 ? 0 : cantItem;
@@ -462,7 +462,7 @@ export class MipedidoService {
     itemInPedido.cantidad = cantItem;
 
     // actualizar cantidades en item carta
-    if ( idTpcItemResumenSelect ) {
+    if (idTpcItemResumenSelect) {
       // console.log('idTpcItemResumenSelect addItem2', item);
       item = this.findItemCarta(item);
     }
@@ -510,6 +510,16 @@ export class MipedidoService {
 
     this.socketService.emit('itemModificado', item);
 
+    // devuelve temporalmente la cantidad actual a espera del socket
+    // para evitar valores -1
+    // 20022023 acelerar el envio en conexiones lentas
+    if (!isNaN(item.cantidad)) {
+      item.cantidad += sumar ? -1 : 1;
+    }
+
+
+    // console.log('item', item);1
+
     // console.log('listItemsPedido', this.listItemsPedido);
     // console.log('mipedido', this.miPedido);
     // console.log('itemModificado en add', item);
@@ -537,7 +547,7 @@ export class MipedidoService {
     // total subitems
     // sumar el total
     // const totalSubItems = elItem.subitems_selected ? elItem.subitems_selected.map((subIt: SubItem) => subIt.precio * subIt.cantidad_seleccionada).reduce((a, b) => a + b , 0) : 0;
-    const totalSubItems = elItem.subitems_view ? elItem.subitems_view.map((subIt: SubItemsView) => subIt.precio).reduce((a, b) => a + b , 0) : 0;
+    const totalSubItems = elItem.subitems_view ? elItem.subitems_view.map((subIt: SubItemsView) => subIt.precio).reduce((a, b) => a + b, 0) : 0;
     precioTotal += totalSubItems;
 
     elItem.cantidad_seleccionada = cantSeleccionadaTPC;
@@ -545,7 +555,7 @@ export class MipedidoService {
     // elItem.precio_print = precioTotal + totalSubItems;
 
     // revisa si aplica promo a este item
-    if ( elItem.ispromo ) {
+    if (elItem.ispromo) {
       precioTotal = this.cocinarDescuentosPromoService.reviewPromoApplyItem(elItem, precioTotal) || precioTotal;
     }
     elItem.precio_total = precioTotal;
@@ -555,12 +565,12 @@ export class MipedidoService {
 
   // agrega el precio sumado con los subitems si los hay del item mipedido
   private addPrecioItemMiPedido(elItem: ItemModel): void {
-    const totalSubItems = elItem.subitems_view ? elItem.subitems_view.map((subIt: SubItemsView) => subIt.precio).reduce((a, b) => a + b , 0) : 0;
+    const totalSubItems = elItem.subitems_view ? elItem.subitems_view.map((subIt: SubItemsView) => subIt.precio).reduce((a, b) => a + b, 0) : 0;
     let precioTotal = elItem.cantidad_seleccionada * parseFloat(elItem.precio_unitario);
     precioTotal += totalSubItems;
 
     // revisa si aplica promo a este item
-    if ( elItem.ispromo ) {
+    if (elItem.ispromo) {
       precioTotal = this.cocinarDescuentosPromoService.reviewPromoApplyItem(elItem, precioTotal) || precioTotal;
     }
 
@@ -575,7 +585,7 @@ export class MipedidoService {
       // elItem.subitems_view = elItem.subitems_view ? elItem.subitems_view : [];
 
       // subitemsviews
-      if (elItem.subitems.length === 0 ) { return; }
+      if (elItem.subitems.length === 0) { return; }
       const newSubItemView: SubItemsView = new SubItemsView();
       newSubItemView.id = '';
       newSubItemView.des = '';
@@ -585,7 +595,7 @@ export class MipedidoService {
       newSubItemView.indicaciones = '';
       newSubItemView.subitems = [];
 
-      if ( elItem.subitems_selected && elItem.subitems_selected.length > 0 ) {
+      if (elItem.subitems_selected && elItem.subitems_selected.length > 0) {
 
         elItem.subitems_selected.map((x) => {
           newSubItemView.id += x.iditem_subitem.toString();
@@ -599,7 +609,7 @@ export class MipedidoService {
 
         newSubItemView.des = newSubItemView.listDes.join(', ');
 
-        newSubItemView.des += elItem.indicaciones === undefined || elItem.indicaciones === '' ? '' :  ', (' + elItem.indicaciones + ')';
+        newSubItemView.des += elItem.indicaciones === undefined || elItem.indicaciones === '' ? '' : ', (' + elItem.indicaciones + ')';
 
         elItem.indicaciones = '';
         elItem.subitems_view = elItem.subitems_view ? elItem.subitems_view : [];
@@ -607,13 +617,13 @@ export class MipedidoService {
         // agregamos para que no sume de otro tpc
         // && subView.idtipo_consumo === tipoConsumo.idtipo_consumo
         const isExistInTipoConsumo = elItem.subitems_view.filter((subView: SubItemsView) => subView.idtipo_consumo === tipoConsumo.idtipo_consumo)[0];
-        if ( !isExistInTipoConsumo ) {
+        if (!isExistInTipoConsumo) {
           elItem.subitems_view = [];
         }
 
         const isExistSubItemView = elItem.subitems_view.filter((subView: SubItemsView) => subView.id === newSubItemView.id)[0];
-        if ( isExistSubItemView ) {
-          if ( sumar ) {
+        if (isExistSubItemView) {
+          if (sumar) {
             isExistSubItemView.indicaciones += newSubItemView.indicaciones;
             isExistSubItemView.cantidad_seleccionada += 1;
             isExistSubItemView.precio += newSubItemView.precio;
@@ -625,7 +635,7 @@ export class MipedidoService {
         } else {
           // si no existe
           // isExistSubItemView.indicaciones = newSubItemView.indicaciones;
-          if ( sumar ) {
+          if (sumar) {
             // elItem.subitems_view = [];
             elItem.subitems_view.push(newSubItemView);
           } else {
@@ -636,13 +646,13 @@ export class MipedidoService {
 
         this.addPrecioItemMiPedido(elItem);
 
-      }  else {
+      } else {
         // si no tiene ningun suitem seleccionado y ademas es restar y ademas que la cantidad es igual al los subtviews
         // entonces agarra al primer subview y comienza a restar
 
-        if ( !sumar ) {
-          if ( !elItem?.subitems_view ) { return; }
-          if (elItem?.subitems_view.length === 0 ) { return; }
+        if (!sumar) {
+          if (!elItem?.subitems_view) { return; }
+          if (elItem?.subitems_view.length === 0) { return; }
           this.restarCantSubItemView(elItem, null);
         }
       }
@@ -722,14 +732,14 @@ export class MipedidoService {
   }
 
   restarCantSubItemView(_elItem: ItemModel, isExistSubItemView: SubItemsView = null): void {
-    if ( isExistSubItemView ) {
+    if (isExistSubItemView) {
       // si existe subitemview
       const precioDescontar = isExistSubItemView.precio / isExistSubItemView.cantidad_seleccionada;
       isExistSubItemView.cantidad_seleccionada -= 1;
       isExistSubItemView.precio -= precioDescontar;
       isExistSubItemView.precio = isExistSubItemView.precio < 0 ? 0 : isExistSubItemView.precio;
 
-      if ( isExistSubItemView.cantidad_seleccionada <= 0 ) {
+      if (isExistSubItemView.cantidad_seleccionada <= 0) {
         // borrar el item
         _elItem.subitems_view = _elItem.subitems_view.filter((subView: SubItemsView) => subView.cantidad_seleccionada > 0);
       }
@@ -740,10 +750,10 @@ export class MipedidoService {
       const _SubItemView = _elItem.subitems_view[lentSubItemView - 1];
       const precioDescontar = _SubItemView.precio / _SubItemView.cantidad_seleccionada;
 
-      _SubItemView.cantidad_seleccionada --;
+      _SubItemView.cantidad_seleccionada--;
       _SubItemView.precio -= precioDescontar;
 
-      if ( _SubItemView.cantidad_seleccionada <= 0 ) {
+      if (_SubItemView.cantidad_seleccionada <= 0) {
         // borrar el item
         _elItem.subitems_view = _elItem.subitems_view.filter((subView: SubItemsView) => subView.cantidad_seleccionada > 0);
       }
@@ -757,17 +767,17 @@ export class MipedidoService {
   addItemInCarta(newItem: any) {
     // console.log('addItemInCarta', newItem);
     const newItemFind = this.findItemCarta(newItem);
-    if ( newItemFind ) { // update
+    if (newItemFind) { // update
       // console.log('update');
       newItemFind.cantidad = newItemFind.cantidad;
     } else { // agrega a la carta
       // console.log('add in carta');
       this.objCarta.carta.map((cat: CategoriaModel) => {
         cat.secciones
-          .filter((sec: SeccionModel) => sec.idseccion === newItem.idseccion )
+          .filter((sec: SeccionModel) => sec.idseccion === newItem.idseccion)
           .map((sec: SeccionModel) => {
             sec.items.push(newItem);
-        });
+          });
       });
     }
 
@@ -805,16 +815,16 @@ export class MipedidoService {
   findItemCartaAndClearIndicaciones() {
     this.objCarta.carta.map((cat: CategoriaModel) => {
       cat.secciones.map((sec: SeccionModel) => {
-        sec.items.map( x => x.is_visible_control_last_add = false );
+        sec.items.map(x => x.is_visible_control_last_add = false);
 
-        sec.items.filter((x: ItemModel) => x.indicaciones )
-              .map((x: ItemModel) => x.indicaciones = '');
+        sec.items.filter((x: ItemModel) => x.indicaciones)
+          .map((x: ItemModel) => x.indicaciones = '');
 
-        sec.items.filter((x: ItemModel) => x.subitems_selected )
-              .map((x: ItemModel) => x.subitems_selected = null);
+        sec.items.filter((x: ItemModel) => x.subitems_selected)
+          .map((x: ItemModel) => x.subitems_selected = null);
 
-        sec.items.filter((x: ItemModel) => x.subitems_view )
-              .map((x: ItemModel) => x.subitems_view = null);
+        sec.items.filter((x: ItemModel) => x.subitems_view)
+          .map((x: ItemModel) => x.subitems_view = null);
       });
     });
 
@@ -826,13 +836,13 @@ export class MipedidoService {
     let rpt: ItemModel;
     this.objCarta.carta.map((cat: CategoriaModel) => {
       cat.secciones.map((sec: SeccionModel) => {
-          const _rpt = sec.items.filter((x: ItemModel) => x.idcarta_lista.toString() === item.idcarta_lista.toString())[0];
-          if (_rpt) {
-            rpt = _rpt;
-            return rpt;
-          }
-        });
+        const _rpt = sec.items.filter((x: ItemModel) => x.idcarta_lista.toString() === item.idcarta_lista.toString())[0];
+        if (_rpt) {
+          rpt = _rpt;
+          return rpt;
+        }
       });
+    });
 
     return rpt;
   }
@@ -860,18 +870,18 @@ export class MipedidoService {
     this.objCarta.carta.map((cat: CategoriaModel) => {
       cat.secciones.map((sec: SeccionModel) => {
         sec.items
-        .filter((item: ItemModel) => item.iditem.toString() !== iditemFilter)
-        .filter((item: ItemModel) => item.subitems)
-        .map((item: ItemModel) => {
-          item.subitems.map((subItemContent: SubItemContent) => {
-            const _subItem = subItemContent.opciones.filter((x: SubItem) => x.idproducto.toString() + x.idporcion.toString() === idFind)[0];
-            if (_subItem) {
-              rptSubItem.push(_subItem);
-              // console.log(item);
-              // return rptSubItem;
-            }
+          .filter((item: ItemModel) => item.iditem.toString() !== iditemFilter)
+          .filter((item: ItemModel) => item.subitems)
+          .map((item: ItemModel) => {
+            item.subitems.map((subItemContent: SubItemContent) => {
+              const _subItem = subItemContent.opciones.filter((x: SubItem) => x.idproducto.toString() + x.idporcion.toString() === idFind)[0];
+              if (_subItem) {
+                rptSubItem.push(_subItem);
+                // console.log(item);
+                // return rptSubItem;
+              }
+            });
           });
-        });
       });
     });
     return rptSubItem;
@@ -879,11 +889,11 @@ export class MipedidoService {
 
   // resetear las cantidades seleccionadas en el item carta, luego de hacer un pedido para que no se quede marcado
   private resetCantidadesTpcItemCarta(): void {
-    if ( !this.objCarta ) {return; }
-    if ( !this.objCarta.carta ) {return; }
+    if (!this.objCarta) { return; }
+    if (!this.objCarta.carta) { return; }
     this.objCarta.carta.map((cat: CategoriaModel) => {
       cat.secciones.map((sec: SeccionModel) => {
-        sec.items.map( x => {
+        sec.items.map(x => {
           x.indicaciones = '';
           x.cantidad_seleccionada = 0;
           x.itemtiposconsumo = null;
@@ -897,7 +907,7 @@ export class MipedidoService {
     let rpt: SeccionModel;
     this.objCarta.carta.map((cat: CategoriaModel) => {
       const _rpt = cat.secciones.filter((sec: SeccionModel) => sec.idseccion === idFind)[0];
-      if ( _rpt ) {
+      if (_rpt) {
         rpt = _rpt;
         return;
       }
@@ -1010,13 +1020,13 @@ export class MipedidoService {
   }
 
   private quitarTpcMiPedido(tpcFind: TipoConsumoModel): void {
-    if ( tpcFind.count_items_seccion === 1 ) {
+    if (tpcFind.count_items_seccion === 1) {
       this.miPedido.tipoconsumo = this.miPedido.tipoconsumo.filter((tpc: TipoConsumoModel) => !tpcFind);
     }
   }
 
   private quitarSeccionMiPedido(secFind: SeccionModel): void {
-    if ( secFind.count_items === 1 ) {
+    if (secFind.count_items === 1) {
       this.miPedido.tipoconsumo.map((tpc: TipoConsumoModel) => {
         tpc.secciones.filter((sec: SeccionModel) => !secFind);
       });
@@ -1063,15 +1073,15 @@ export class MipedidoService {
     let sumTpcReqMesa = 0;
 
     this.miPedido.tipoconsumo
-    .filter((t: TipoConsumoModel) => t.count_items_seccion > 0)
-    .map((t: TipoConsumoModel) => {
-      if (t.titulo === 'LOCAL') { rptArr.isTpcLocal = true; sumTpcReqMesa++; }
-      if (t.descripcion.toUpperCase().indexOf('LLEVAR') > -1) { rptArr.isTpcSoloLLevar = true; sumTpcReqMesa++; }
-      if (t.descripcion.toUpperCase().indexOf('DELIVERY') > -1) { rptArr.isTpcSoloDelivery = true; }
+      .filter((t: TipoConsumoModel) => t.count_items_seccion > 0)
+      .map((t: TipoConsumoModel) => {
+        if (t.titulo === 'LOCAL') { rptArr.isTpcLocal = true; sumTpcReqMesa++; }
+        if (t.descripcion.toUpperCase().indexOf('LLEVAR') > -1) { rptArr.isTpcSoloLLevar = true; sumTpcReqMesa++; }
+        if (t.descripcion.toUpperCase().indexOf('DELIVERY') > -1) { rptArr.isTpcSoloDelivery = true; }
 
-      rptArr.isRequiereMesa = rptArr.isTpcLocal ? true : false;
-      rptArr.isTpcSoloLLevar = sumTpcReqMesa === 1 && rptArr.isTpcSoloLLevar ? true : false;
-    });
+        rptArr.isRequiereMesa = rptArr.isTpcLocal ? true : false;
+        rptArr.isTpcSoloLLevar = sumTpcReqMesa === 1 && rptArr.isTpcSoloLLevar ? true : false;
+      });
 
     return rptArr;
   }
@@ -1093,8 +1103,8 @@ export class MipedidoService {
   // quita los items, secciones, tpc con cantidad 0
   clearObjMiPedido(): void {
     // limpia los tipos de consumo con items = 0
-    this.miPedido.tipoconsumo = this.miPedido.tipoconsumo.filter((tpc: TipoConsumoModel) => tpc.count_items_seccion > 0 );
-    if ( this.miPedido.tipoconsumo.length === 0 ) {
+    this.miPedido.tipoconsumo = this.miPedido.tipoconsumo.filter((tpc: TipoConsumoModel) => tpc.count_items_seccion > 0);
+    if (this.miPedido.tipoconsumo.length === 0) {
       this.miPedido = new PedidoModel();
 
       // console.log('mi pedido clear', this.miPedido);
@@ -1217,7 +1227,7 @@ export class MipedidoService {
     try {
       this.listItemsPedido.map((item: ItemModel) => {
         item.indicaciones = '';
-        if ( !item.itemtiposconsumo ) { return; }
+        if (!item.itemtiposconsumo) { return; }
         item.itemtiposconsumo = null;
         // item.itemtiposconsumo.map((tpc: ItemTipoConsumoModel) => {
         //   tpc.cantidad_seleccionada = 0;
@@ -1262,16 +1272,16 @@ export class MipedidoService {
     // actualizar // buscar cada item en el obj carta
     this.listItemsPedido.map((item: ItemModel) => {
       // if (item.isalmacen === 0) { //
-        this.objCarta.carta.map((cat: CategoriaModel) => {
-          cat.secciones.map((sec: SeccionModel) => {
-            const itemUpdate = sec.items.filter((x: ItemModel) => x.idcarta_lista.toString() === item.idcarta_lista.toString())[0];
-            if (itemUpdate) {
-              // itemUpdate.cantidad = item.cantidad;
-              itemUpdate.cantidad_seleccionada = item.cantidad_seleccionada;
-              itemUpdate.itemtiposconsumo = item.itemtiposconsumo;
-            }
-          });
+      this.objCarta.carta.map((cat: CategoriaModel) => {
+        cat.secciones.map((sec: SeccionModel) => {
+          const itemUpdate = sec.items.filter((x: ItemModel) => x.idcarta_lista.toString() === item.idcarta_lista.toString())[0];
+          if (itemUpdate) {
+            // itemUpdate.cantidad = item.cantidad;
+            itemUpdate.cantidad_seleccionada = item.cantidad_seleccionada;
+            itemUpdate.itemtiposconsumo = item.itemtiposconsumo;
+          }
         });
+      });
       // }
     });
 
@@ -1283,7 +1293,7 @@ export class MipedidoService {
   // el socket notifica a todos incluyendo al remitente lo que hace esta funcion obsoleta
   updatePedidoFromClear() {
     // actualizar // buscar cada item en el obj carta
-    if ( !this.listItemsPedido ) {return; }
+    if (!this.listItemsPedido) { return; }
     this.listItemsPedido.map((item: ItemModel) => {
       if (item.isalmacen === 0) {
         this.objCarta.carta.map((cat: CategoriaModel) => {
@@ -1381,7 +1391,7 @@ export class MipedidoService {
                   xPrecio_mostrado = n.precio_total_calc !== null ? n.precio_total_calc : n.precio_total;
                   xPrecio_item_bus = xPrecio_mostrado;
 
-                  if ( xCantidadBuscar >= xCantidadBuscarSecc_detalle) {
+                  if (xCantidadBuscar >= xCantidadBuscarSecc_detalle) {
                     xPrecio_item_bus = 0;
                   } else if (diferencia > 0) {
                     xPrecio_item_bus = diferencia * precioUnitario_item;
@@ -1404,14 +1414,14 @@ export class MipedidoService {
   private countCantItemsFromSeccion(seccionSearch: number): number {
     let sum = 0;
     this.miPedido.tipoconsumo
-    .map((tpc: TipoConsumoModel) => {
-      tpc.secciones.map((z: SeccionModel) => {
-        sum += z.items
-          .filter((x: ItemModel) => x.idseccion.toString() === seccionSearch.toString())
-          .map((x: ItemModel) => x.cantidad_seleccionada)
-          .reduce((a, b) => a + b, 0);
+      .map((tpc: TipoConsumoModel) => {
+        tpc.secciones.map((z: SeccionModel) => {
+          sum += z.items
+            .filter((x: ItemModel) => x.idseccion.toString() === seccionSearch.toString())
+            .map((x: ItemModel) => x.cantidad_seleccionada)
+            .reduce((a, b) => a + b, 0);
+        });
       });
-    });
 
     return sum;
   }
@@ -1420,16 +1430,16 @@ export class MipedidoService {
   private countCantItemsFromTpcSeccion(tipoconsumo: number, seccionSearch: number): number {
     let sum = 0;
     this.miPedido.tipoconsumo
-    .filter((tpc: TipoConsumoModel) => tpc.idtipo_consumo.toString() === tipoconsumo.toString())
-    .map((tpc: TipoConsumoModel) => {
-      tpc.secciones
-      .map((z: SeccionModel) => {
-        sum += z.items
-          .filter((x: ItemModel) => x.idseccion.toString() === seccionSearch.toString())
-          .map((x: ItemModel) => x.cantidad_seleccionada)
-          .reduce((a, b) => a + b, 0);
+      .filter((tpc: TipoConsumoModel) => tpc.idtipo_consumo.toString() === tipoconsumo.toString())
+      .map((tpc: TipoConsumoModel) => {
+        tpc.secciones
+          .map((z: SeccionModel) => {
+            sum += z.items
+              .filter((x: ItemModel) => x.idseccion.toString() === seccionSearch.toString())
+              .map((x: ItemModel) => x.cantidad_seleccionada)
+              .reduce((a, b) => a + b, 0);
+          });
       });
-    });
 
     return sum;
   }
@@ -1438,35 +1448,35 @@ export class MipedidoService {
   private countCantItemsFromTpc(tipoconsumo: number): number {
     let sum = 0;
     this.miPedido.tipoconsumo
-    .filter((tpc: TipoConsumoModel) => tpc.idtipo_consumo.toString() === tipoconsumo.toString())
-    .map((tpc: TipoConsumoModel) => {
-      tpc.secciones
-      .map((z: SeccionModel) => {
-        sum += z.items
-          .map((x: ItemModel) => x.cantidad_seleccionada)
-          .reduce((a, b) => a + b, 0);
+      .filter((tpc: TipoConsumoModel) => tpc.idtipo_consumo.toString() === tipoconsumo.toString())
+      .map((tpc: TipoConsumoModel) => {
+        tpc.secciones
+          .map((z: SeccionModel) => {
+            sum += z.items
+              .map((x: ItemModel) => x.cantidad_seleccionada)
+              .reduce((a, b) => a + b, 0);
+          });
       });
-    });
 
     return sum;
   }
 
-    // devuelve cantidad tipoconsumo en el pedido buscado por descripcion, es decir cuanto delivery o cuantos para llevar hay // se usa calculo total delivery app cliente
-    private countCantItemsFromTpcDes(tpc_descripcion: string): number {
-      let sum = 0;
-      this.miPedido.tipoconsumo
+  // devuelve cantidad tipoconsumo en el pedido buscado por descripcion, es decir cuanto delivery o cuantos para llevar hay // se usa calculo total delivery app cliente
+  private countCantItemsFromTpcDes(tpc_descripcion: string): number {
+    let sum = 0;
+    this.miPedido.tipoconsumo
       .filter((tpc: TipoConsumoModel) => tpc.descripcion.toLowerCase() === tpc_descripcion.toLowerCase())
       .map((tpc: TipoConsumoModel) => {
         tpc.secciones
-        .map((z: SeccionModel) => {
-          sum += z.items
-            .map((x: ItemModel) => x.cantidad_seleccionada)
-            .reduce((a, b) => a + b, 0);
-        });
+          .map((z: SeccionModel) => {
+            sum += z.items
+              .map((x: ItemModel) => x.cantidad_seleccionada)
+              .reduce((a, b) => a + b, 0);
+          });
       });
 
-      return sum;
-    }
+    return sum;
+  }
 
   // <------ reglas de la carta ---->//
 
@@ -1486,7 +1496,7 @@ export class MipedidoService {
     let isClienteDelivery = this.infoTokenService.infoUsToken?.isDelivery || false;
     // si es cliente delivery
     // si el calculo de entrega es solo para pedidos de clientes desde la aplicacion o para todos
-    if ( isClienteDelivery ) {
+    if (isClienteDelivery) {
       isCalcCostoServicioDelivery = isCalcCostoServicioDelivery || isCalcCostoServicioDeliverySoloApp;
     }
 
@@ -1530,9 +1540,9 @@ export class MipedidoService {
       // sumaTotal += parseFloat(rpt.importe);
 
       // implement igv 030220
-      if ( rpt.descripcion === 'I.G.V') {
+      if (rpt.descripcion === 'I.G.V') {
         rpt.importe = isActivo ? porcentaje : 0;
-        rptPorcentajes.push(rpt); // solo agrega importe 0 si es IGV
+        // rptPorcentajes.push(rpt); // solo agrega importe 0 si es IGV
       } else {
         rpt.importe = isImpuesto ? isActivo ? importe : 0 : importe;
         rpt.importe = parseFloat(rpt.importe.toString()).toFixed(2);
@@ -1540,7 +1550,7 @@ export class MipedidoService {
       }
 
       // no muestra si tienen valor 0
-      if ( rpt.importe !== 0 ) {
+      if (rpt.importe !== 0) {
         rptPorcentajes.push(rpt);
       }
 
@@ -1553,7 +1563,7 @@ export class MipedidoService {
 
     // si es tiene idusuario es usuario autorizado no es cliente delivery  // si existe estableciiento en localstorage entonces es un clienteDelivery
     // let isClienteDelivery = this.infoTokenService.infoUsToken.idusuario ? false : true; // this.establecimientoService.get().idsede ? true : false;
-    let isTieneDelivery =  false; // si tiene la opcion de delivery configurado
+    let isTieneDelivery = false; // si tiene la opcion de delivery configurado
     let isAddDelivery = true; // si agrega delivery // puede que tenga otros servicio que no sea delivery
     let addServicioDeliveryExpress = false;
 
@@ -1567,15 +1577,15 @@ export class MipedidoService {
       const rpt: any = {};
 
       // si es servicio delivery y si es clienteDelivery
-      if ( (p.descripcion.toUpperCase().indexOf('DELIVERY') > -1
-          || p.descripcion.toUpperCase().indexOf('ENTREGA') > -1)
-          && isClienteDelivery ) {
+      if ((p.descripcion.toUpperCase().indexOf('DELIVERY') > -1
+        || p.descripcion.toUpperCase().indexOf('ENTREGA') > -1)
+        && isClienteDelivery) {
         isAddDelivery = true;
         isTieneDelivery = true;
 
         // si tiene propio servicio
         p.descripcion = 'Entrega';
-        if ( this.pwa_delivery_servicio_propio && !isCalcCostoServicioDelivery) { // si tiene servicio propio y no esta habilitado el calculo automatico
+        if (this.pwa_delivery_servicio_propio && !isCalcCostoServicioDelivery) { // si tiene servicio propio y no esta habilitado el calculo automatico
           importeOtros = parseFloat(p.monto);
         } else {
           addServicioDeliveryExpress = true; // agrega delivery
@@ -1596,11 +1606,11 @@ export class MipedidoService {
 
       // verifica si este tipo existe en el pedido
       const cantidadTipoConsumo = this.countCantItemsFromTpc(p.idtipo_consumo); // cantidad en todo el pedido
-      if ( cantidadTipoConsumo === 0 ) { return; } // si no encontro items con esos criterios
+      if (cantidadTipoConsumo === 0) { return; } // si no encontro items con esos criterios
 
       if (p.nivel === 0) { // aplica por item
         const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion); // cantidad por seccion
-        if ( cantidad === 0 ) { return; } // si no encontro items con esos criterios
+        if (cantidad === 0) { return; } // si no encontro items con esos criterios
         // const _costoXCantItems = addServicioDeliveryExpress ? this.calcCostoCantItemsDelivery() : 0;
         const _costoXCantItems = 0;
         importeOtros = (cantidad * parseFloat(p.monto)) + _costoXCantItems;
@@ -1630,39 +1640,39 @@ export class MipedidoService {
 
     // si no tiene la opcion delivery y es un clienteDelivery lo agrega // o requiere el servicio de calcular distancia
     // if ( isAddDelivery && !isTieneDelivery && isClienteDelivery && (!this.pwa_delivery_servicio_propio || isCalcCostoServicioDelivery )) {
-    if ( addServicioDeliveryExpress ) {
+    if (addServicioDeliveryExpress) {
 
       // const cantidad = this.countCantItemsFromTpcSeccion(p.idtipo_consumo, p.idseccion);
       // if ( cantidad > 0 ) {
-        const _costoXCantItems = this.calcCostoCantItemsDelivery();
-        const costoServicio = _costoXCantItems + (this.establecimientoService.get().c_servicio || this.establecimientoService.get().c_minimo );
-        const rpt: any = {};
+      const _costoXCantItems = this.calcCostoCantItemsDelivery();
+      const costoServicio = _costoXCantItems + (this.establecimientoService.get().c_servicio || this.establecimientoService.get().c_minimo);
+      const rpt: any = {};
 
-        // costo del servicio mas comision fija comercio no afiliado
-        const _costoServicio = costoServicio + comisionFijaComercioNoAfiliado;
+      // costo del servicio mas comision fija comercio no afiliado
+      const _costoServicio = costoServicio + comisionFijaComercioNoAfiliado;
 
-        // si el comercio paga el servicio, guardamos este costo para no mostrarlo al cliente
-        this.establecimientoService.setCostoSercioDelivery(_costoServicio);
+      // si el comercio paga el servicio, guardamos este costo para no mostrarlo al cliente
+      this.establecimientoService.setCostoSercioDelivery(_costoServicio);
 
-        // si esta habilitado calcular el servicio de delviry y que el comercio no pague la entrega
-        // entonces este item vera si el cliente
-        if ( !is_comercio_paga_entrega && isCalcCostoServicioDelivery ) {
+      // si esta habilitado calcular el servicio de delviry y que el comercio no pague la entrega
+      // entonces este item vera si el cliente
+      if (!is_comercio_paga_entrega && isCalcCostoServicioDelivery) {
 
-          rpt.id = -2;
-          rpt.descripcion = 'Entrega';
-          rpt.isDeliveryApp = true;
-          rpt.esImpuesto = 0;
-          rpt.visible = true;
-          rpt.quitar = true;
-          rpt.tachado = false;
-          rpt.visible_cpe = false;
-          rpt.importe = parseFloat(_costoServicio.toString()).toFixed(2);
-          // rpt.importe = parseFloat(importeOtros.toString()).toFixed(2);
+        rpt.id = -2;
+        rpt.descripcion = 'Entrega';
+        rpt.isDeliveryApp = true;
+        rpt.esImpuesto = 0;
+        rpt.visible = true;
+        rpt.quitar = true;
+        rpt.tachado = false;
+        rpt.visible_cpe = false;
+        rpt.importe = parseFloat(_costoServicio.toString()).toFixed(2);
+        // rpt.importe = parseFloat(importeOtros.toString()).toFixed(2);
 
-          sumaTotal += parseFloat(rpt.importe);
+        sumaTotal += parseFloat(rpt.importe);
 
-          rptOtros.push(rpt);
-        }
+        rptOtros.push(rpt);
+      }
       // }
     }
 
@@ -1671,13 +1681,13 @@ export class MipedidoService {
     rptOtros.map(y => arrSubtotales.push(y));
 
     // IGV filtramos los que no es impuesto IGV | 030220
-    const rowSubTotal =  arrSubtotales.filter(x => x.descripcion === 'SUB TOTAL')[0];
+    const rowSubTotal = arrSubtotales.filter(x => x.descripcion === 'SUB TOTAL')[0];
     const rowImporteIGV = arrSubtotales.filter(x => x.descripcion === 'I.G.V')[0];
     let _importeIGV = rowImporteIGV ? rowImporteIGV.importe : 0;
     let _importeSubTotal = rowSubTotal ? rowSubTotal.importe : 0;
 
-    if ( _importeIGV > 0 ) {
-      _importeIGV = parseFloat((_importeSubTotal *  _importeIGV).toString()).toFixed(2);
+    if (_importeIGV > 0) {
+      _importeIGV = parseFloat((_importeSubTotal * _importeIGV).toString()).toFixed(2);
       _importeSubTotal = _importeSubTotal - _importeIGV;
       rowImporteIGV.importe = _importeIGV;
       rowSubTotal.importe = _importeSubTotal.toFixed(2);
@@ -1697,18 +1707,18 @@ export class MipedidoService {
     arrSubtotales.push(_arrSubtotales);
 
     // console.log('totales', arrSubtotales);
-    return  arrSubtotales;
+    return arrSubtotales;
 
   }
 
   private calcCostoCantItemsDelivery(): number {
     let rpt = 0;
     const _cantItemScala = parseInt(this.deliveryArrConstantes.cantItemsScala.toString(), 0);
-    if ( _cantItemScala === 0 ) { return 0; }
+    if (_cantItemScala === 0) { return 0; }
     if (this.deliveryCanItemsInOrder > _cantItemScala) {
       const _div = this.deliveryCanItemsInOrder / _cantItemScala;
       // _div = Math.floor(_div);
-      if ( _div > 1 ) {
+      if (_div > 1) {
         rpt = Math.floor(_div) * this.deliveryArrConstantes.costoScala;
       }
     } else {
@@ -1794,7 +1804,7 @@ export class MipedidoService {
       // }
 
       // tiene lista de items en porciones compartidaas (Ej 1/8 pollo 1/4 pollo)
-      if ( res.listItemPorcion != null) {
+      if (res.listItemPorcion != null) {
         res.listItemPorcion.map((x: any) => {
           _itemInCarta = this.findItemCartaByIdCartaLista(x.idcarta_lista);
 
@@ -1803,7 +1813,7 @@ export class MipedidoService {
           this.setCantidadItemModificadoPwa(res.item, _itemInCarta, parseInt(x.cantidad, 0), true);
         });
       } else {
-        if ( !res.item ) {return; }
+        if (!res.item) { return; }
         res = res.item;
         // console.log('listenChangeCantItem onItemModificado', res);
         _itemInCarta = this.findItemCarta(res);
@@ -1848,7 +1858,7 @@ export class MipedidoService {
 
       let _itemInCarta: ItemModel;
       // tiene lista de items en porciones compartidaas (Ej 1/8 pollo 1/4 pollo)
-      if ( res.listItemPorcion != null ) {
+      if (res.listItemPorcion != null) {
         res.listItemPorcion.map((x: any) => {
           _itemInCarta = this.findItemCartaByIdCartaLista(x.idcarta_lista);
           _itemInCarta.cantidad = parseInt(x.cantidad, 0);
@@ -1937,7 +1947,7 @@ export class MipedidoService {
 
   setCantidadItemModificadoPwa(res: ItemModel, _itemInCarta: ItemModel, cantidadSet: number = null, isSubItemPorcion: boolean = false) {
     // actualizar cantidades subitems si existe
-    if ( res.subitems && res.idcarta_lista === _itemInCarta.idcarta_lista ) {
+    if (res.subitems && res.idcarta_lista === _itemInCarta.idcarta_lista) {
 
       // if ( !isReset ) {
       //   _itemInCarta.cantidad = cantidadSet ? cantidadSet : parseInt(res.cantidad.toString(), 0);
@@ -1955,14 +1965,14 @@ export class MipedidoService {
           if (!_itemInCarta.subitems) { return; }
           _itemInCarta?.subitems.map((s: SubItemContent) => {
             const itemFind = s.opciones.filter((_subItem: SubItem) => _subItem.iditem_subitem === parseInt(subitem.iditem_subitem.toString(), 0))[0];
-            if ( itemFind ) {
-              if ( itemFind.cantidad !== 'ND' ) {
+            if (itemFind) {
+              if (itemFind.cantidad !== 'ND') {
                 itemFind.cantidad = subitem.cantidad;
 
                 // buscar los demas items que tengan este subitem porcion o producto
                 const idFind = itemFind.idproducto.toString() + itemFind.idporcion.toString();
                 const _otherListSubItem = this.findSubItemCartaById(idFind, res.iditem.toString());
-                _otherListSubItem.map( (x: SubItem ) => {
+                _otherListSubItem.map((x: SubItem) => {
                   x.cantidad = subitem.cantidad;
                 });
 
@@ -1978,8 +1988,8 @@ export class MipedidoService {
     // _itemInCarta.cantidad = parseInt(res.cantidad.toString(), 0);
     // _itemInCarta.cantidad = cantidadSet ? cantidadSet : parseInt(res.cantidad.toString(), 0);
 
-    if ( !isSubItemPorcion ) {
-        _itemInCarta.cantidad = cantidadSet ? cantidadSet : parseInt(res.cantidad.toString(), 0);
+    if (!isSubItemPorcion) {
+      _itemInCarta.cantidad = cantidadSet ? cantidadSet : parseInt(res.cantidad.toString(), 0);
     }
 
     this.itemStockChangeSource.next(_itemInCarta);
@@ -1991,40 +2001,40 @@ export class MipedidoService {
     const c_tiposConsumo: TipoConsumoModel[] = [];
 
 
-        res.data.map( (tp: any) => {
-          let hayTpc = c_tiposConsumo.filter(x => x.idtipo_consumo === tp.idtipo_consumo)[0];
-          if (!hayTpc) {
-            hayTpc = new TipoConsumoModel;
-            hayTpc.descripcion = tp.des_tp;
-            hayTpc.idtipo_consumo = parseInt(tp.idtipo_consumo, 0);
-            c_tiposConsumo.push(hayTpc);
+    res.data.map((tp: any) => {
+      let hayTpc = c_tiposConsumo.filter(x => x.idtipo_consumo === tp.idtipo_consumo)[0];
+      if (!hayTpc) {
+        hayTpc = new TipoConsumoModel;
+        hayTpc.descripcion = tp.des_tp;
+        hayTpc.idtipo_consumo = parseInt(tp.idtipo_consumo, 0);
+        c_tiposConsumo.push(hayTpc);
+      }
+    });
+
+
+    c_tiposConsumo.map((tp: TipoConsumoModel) => {
+      res.data
+        .filter((_tp: any) => _tp.idtipo_consumo === tp.idtipo_consumo)
+        .map((_s: any, i: number) => {
+          // let haySeccion = !tp.secciones ? null : tp.secciones.filter((s: SeccionModel) => s.idseccion.toString() === _s.idseccion.toString())[0];
+          let haySeccion = tp.secciones.filter((s: SeccionModel) => s.idseccion.toString() === _s.idseccion.toString())[0];
+          if (!haySeccion) {
+            haySeccion = new SeccionModel;
+            haySeccion.idseccion = _s.idseccion.toString();
+            haySeccion.des = _s.des_seccion;
+            haySeccion.sec_orden = _s.sec_orden;
+            haySeccion.ver_stock_cero = 0;
+            tp.count_items_seccion = i + 1;
+            tp.secciones.push(haySeccion);
           }
         });
+    });
 
 
-        c_tiposConsumo.map((tp: TipoConsumoModel) => {
-          res.data
-            .filter((_tp: any) => _tp.idtipo_consumo === tp.idtipo_consumo)
-            .map((_s: any, i: number) => {
-              // let haySeccion = !tp.secciones ? null : tp.secciones.filter((s: SeccionModel) => s.idseccion.toString() === _s.idseccion.toString())[0];
-              let haySeccion = tp.secciones.filter((s: SeccionModel) => s.idseccion.toString() === _s.idseccion.toString())[0];
-              if (!haySeccion) {
-                haySeccion = new SeccionModel;
-                haySeccion.idseccion = _s.idseccion.toString();
-                haySeccion.des = _s.des_seccion;
-                haySeccion.sec_orden = _s.sec_orden;
-                haySeccion.ver_stock_cero = 0;
-                tp.count_items_seccion = i + 1;
-                tp.secciones.push(haySeccion);
-              }
-            });
-        });
-
-
-         // items
+    // items
     c_tiposConsumo.map((tp: TipoConsumoModel) => {
       tp.secciones.map((s: SeccionModel) => {
-          res.data
+        res.data
           .filter((_tp: any) => _tp.idtipo_consumo.toString() === tp.idtipo_consumo.toString() && _tp.idseccion.toString() === s.idseccion.toString())
           .map((_i: any, i: number) => {
             const hayItem = new ItemModel;
@@ -2047,33 +2057,33 @@ export class MipedidoService {
             s.items = s.items ? s.items : [];
             s.items.push(hayItem);
           });
-        });
       });
+    });
 
-      _miPedidoCuenta.tipoconsumo = c_tiposConsumo;
-      return _miPedidoCuenta;
+    _miPedidoCuenta.tipoconsumo = c_tiposConsumo;
+    return _miPedidoCuenta;
   }
 
   printerPrecuenta(_data: any) {
     // console.log('precuenta');
     this.crudService.postFree(_data, 'pedido', 'printer-precuenta', true)
-    .subscribe(res => {
-      // console.log('send-printer-precuenta',  res.data[0].rpt);
+      .subscribe(res => {
+        // console.log('send-printer-precuenta',  res.data[0].rpt);
 
-      // enviamos impresion al socket
-      const dataPrintSend = {
-        detalle_json: JSON.stringify(_data.dataPrint),
-        idprint_server_estructura: 1,
-        tipo: 'comanda',
-        descripcion_doc: 'comanda',
-        nom_documento: 'comanda',
-        idprint_server_detalle: res.data[0].rpt
-      };
+        // enviamos impresion al socket
+        const dataPrintSend = {
+          detalle_json: JSON.stringify(_data.dataPrint),
+          idprint_server_estructura: 1,
+          tipo: 'comanda',
+          descripcion_doc: 'comanda',
+          nom_documento: 'comanda',
+          idprint_server_detalle: res.data[0].rpt
+        };
 
-      this.socketService.emit('printerOnly', dataPrintSend);
+        this.socketService.emit('printerOnly', dataPrintSend);
 
-      this.socketService.emit('notificar-impresion-precuenta', null);
-    });
+        this.socketService.emit('notificar-impresion-precuenta', null);
+      });
   }
 
 

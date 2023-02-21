@@ -1,51 +1,51 @@
-<mat-toolbar color="primary">   
- <mat-toolbar-row [ngClass]="{'toolbar-busqueda': isBusqueda}">
-   <ng-container *ngIf="!isBusqueda"> 
-        
-     <!-- <i *ngIf="isClienteDelivery" class="fa fa-arrow-left pr-2" (click)="goBackOutEstablecimiento()"></i>   -->
-    <span class="nom-comercio">{{ nomSede | titlecase }}</span>
-    <span class="example-spacer"></span>
+<mat-toolbar color="primary">
+     <mat-toolbar-row [ngClass]="{'toolbar-busqueda': isBusqueda}">
+          <ng-container *ngIf="!isBusqueda">
 
-    <!-- microfono mozo virtual -->
-    <!-- <div class="example-ripple-container fs-15" *ngIf="isSpeechVoiceAcivado && isCliente && !isClienteDelivery">          -->
+               <!-- <i *ngIf="isClienteDelivery" class="fa fa-arrow-left pr-2" (click)="goBackOutEstablecimiento()"></i>   -->
+               <span class="nom-comercio">{{ nomSede | titlecase }}</span>
+               <span class="example-spacer"></span>
 
-     <!-- <div class="example-ripple-container fs-15" *ngIf="isActiveMozoVoz"> 
+               <!-- microfono mozo virtual -->
+               <!-- <div class="example-ripple-container fs-15" *ngIf="isSpeechVoiceAcivado && isCliente && !isClienteDelivery">          -->
+
+               <!-- <div class="example-ripple-container fs-15" *ngIf="isActiveMozoVoz"> 
          <app-mozo-virtual-on-speech></app-mozo-virtual-on-speech>
     </div> -->
 
-     <!-- <button [matMenuTriggerFor]="menu" aria-label="Mas Opciones">
+               <!-- <button [matMenuTriggerFor]="menu" aria-label="Mas Opciones">
           <i class="fa fa-ellipsis-h"></i>
      </button> -->
-     <div [matMenuTriggerFor]="menu" class="example-ripple-container fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor" >
-          <i class="fa fa-ellipsis-v"></i>
-     </div>
-     <mat-menu #menu="matMenu">
-          <button mat-menu-item *ngIf="!isCliente" matRipple matRippleCentered="true"
-               [matRippleColor]="rippleColor" (click)="configPunto()">
-               <i title="Configuracion" class="fa fa-wrench" aria-hidden="true"></i>
-               <span class="ml-1">Configuraciones</span>
-          </button>
-          
-          <button mat-menu-item class="fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor"
-               (click)="sharedCarta()" matTooltip="Enlace Copiado">
-               <i title="Compartir Carta" class="fa fa-share-alt" aria-hidden="true"></i>
-               <span class="ml-1">Compartir Carta</span>
-          </button>
-          <button mat-menu-item  matRipple [matRippleColor]="rippleColorBusqueda"
-                    matRippleCentered="true" matRippleUnbounded="true" matRippleRadius="290" (click)="activaBusqueda()"
-                    title="Buscar">
-               <i title="Buscar" class="fa fa-search" aria-hidden="true"></i> 
-               <span class="ml-1">Buscar</span>
-          </button>
-          <button mat-menu-item class="fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor"
+               <div [matMenuTriggerFor]="menu" class="example-ripple-container fs-15" matRipple matRippleCentered="true"
+                    [matRippleColor]="rippleColor">
+                    <i class="fa fa-ellipsis-v"></i>
+               </div>
+               <mat-menu #menu="matMenu">
+                    <button mat-menu-item *ngIf="!isCliente" matRipple matRippleCentered="true"
+                         [matRippleColor]="rippleColor" (click)="configPunto()">
+                         <i title="Configuracion" class="fa fa-wrench" aria-hidden="true"></i>
+                         <span class="ml-1">Configuraciones</span>
+                    </button>
+
+                    <button mat-menu-item class="fs-15" matRipple matRippleCentered="true"
+                         [matRippleColor]="rippleColor" (click)="sharedCarta()" matTooltip="Enlace Copiado">
+                         <i title="Compartir Carta" class="fa fa-share-alt" aria-hidden="true"></i>
+                         <span class="ml-1">Compartir Carta</span>
+                    </button>
+                    <button mat-menu-item matRipple [matRippleColor]="rippleColorBusqueda" matRippleCentered="true"
+                         matRippleUnbounded="true" matRippleRadius="290" (click)="activaBusqueda()" title="Buscar">
+                         <i title="Buscar" class="fa fa-search" aria-hidden="true"></i>
+                         <span class="ml-1">Buscar</span>
+                    </button>
+                    <!-- <button mat-menu-item class="fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor"
                (click)="actualizarPage()">
                <i title="Compartir Carta" class="fa fa-refresh" aria-hidden="true"></i>
                <span class="ml-1">Actualizar</span>
-          </button>
-     </mat-menu>
+          </button> -->
+               </mat-menu>
 
-     <!-- boton configuracion punto de autopedido -->
-     <!-- <div *ngIf="!isCliente" class="example-ripple-container fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor"
+               <!-- boton configuracion punto de autopedido -->
+               <!-- <div *ngIf="!isCliente" class="example-ripple-container fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor"
           (click)="configPunto()">
                <i title="Configuracion" class="fa fa-wrench" aria-hidden="true"></i>     
      </div>
@@ -67,24 +67,35 @@
           </div>
      </div> -->
 
-     <!-- cerrar session -->
-     <div class="example-ripple-container fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor" title="Cerrar Sesion" (click)="cerrarSession()">
-          <i title="Cerrar Sesion" class="fa fa-close" aria-hidden="true"></i>
-     </div>       
-   </ng-container>
+               <!-- actualizar -->
+               <div class="example-ripple-container fs-15" matRipple matRippleCentered="true"
+                    [matRippleColor]="rippleColor" title="Actualizar" (click)="actualizarPage()">
+                    <i title="Actualizar" class="fa fa-refresh" aria-hidden="true"></i>
+               </div>
 
-   <ng-container *ngIf="isBusqueda">
-      <div class="d-flex w-100">
-       <div class="example-ripple-container text-success fs-15" style="margin-left: -15px;" matRipple matRippleCentered="true" [matRippleColor]="rippleColorPlomo" title="Atras" (click)="activaBusqueda()">
-            <i title="Cerrar Sesion" class="fa fa-arrow-left" aria-hidden="true"></i>
-       </div>
-       <input type="text" class="text-busqueda w-100" placeholder="Buscar..." #txtBuscar (keyup)="buscarCharAhora(txtBuscar.value)" autofocus>
-       <div [hidden]="txtBuscar.value === ''" class="example-ripple-container text-dark fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColorPlomo"  (click)="clearTextBuqueda()">
-            <i title="Atras" class="fa fa-times" aria-hidden="true"></i>
-       </div>
-      </div>
-   </ng-container>
-   
-    <!-- <button (click)="cerrarSession()">aa</button> -->
- </mat-toolbar-row>
+               <!-- cerrar session -->
+               <div class="example-ripple-container fs-15" matRipple matRippleCentered="true"
+                    [matRippleColor]="rippleColor" title="Cerrar Sesion" (click)="cerrarSession()">
+                    <i title="Cerrar Sesion" class="fa fa-close" aria-hidden="true"></i>
+               </div>
+          </ng-container>
+
+          <ng-container *ngIf="isBusqueda">
+               <div class="d-flex w-100">
+                    <div class="example-ripple-container text-success fs-15" style="margin-left: -15px;" matRipple
+                         matRippleCentered="true" [matRippleColor]="rippleColorPlomo" title="Atras"
+                         (click)="activaBusqueda()">
+                         <i title="Cerrar Sesion" class="fa fa-arrow-left" aria-hidden="true"></i>
+                    </div>
+                    <input type="text" class="text-busqueda w-100" placeholder="Buscar..." #txtBuscar
+                         (keyup)="buscarCharAhora(txtBuscar.value)" autofocus>
+                    <div [hidden]="txtBuscar.value === ''" class="example-ripple-container text-dark fs-15" matRipple
+                         matRippleCentered="true" [matRippleColor]="rippleColorPlomo" (click)="clearTextBuqueda()">
+                         <i title="Atras" class="fa fa-times" aria-hidden="true"></i>
+                    </div>
+               </div>
+          </ng-container>
+
+          <!-- <button (click)="cerrarSession()">aa</button> -->
+     </mat-toolbar-row>
 </mat-toolbar>

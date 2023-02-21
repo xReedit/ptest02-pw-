@@ -15,6 +15,7 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { MipedidoService } from './mipedido.service';
 import { Router } from '@angular/router';
+import { ListenStatusService } from './listen-status.service';
 
 
 @Injectable({
@@ -42,17 +43,19 @@ export class SocketService {
 
   constructor(
     private infoTockenService: InfoTockenService,
-    private router: Router
-    ) {
+    private router: Router,
+    private listenStatusService: ListenStatusService
+  ) {
 
   }
 
   // _isOutCarta si esta fuera de la carta // si esta en la plataforma de deliverys estableciemientos
   // isCashAtm si esta desde cash atm
   connect(infoUser: any = null, opFrom: number = 1, _isOutCarta = false, _isCashAtm = false) {
-    if ( this.isSocketOpen ) {
+    if (this.isSocketOpen) {
       this.infoTockenService.setSocketId(this.socket.id);
-      return; } // para cuando se desconecta y conecta desde el celular
+      return;
+    } // para cuando se desconecta y conecta desde el celular
 
     // produccion
     // this.socket = io('/', {
@@ -81,9 +84,10 @@ export class SocketService {
     this.socket = io(this.urlSocket, {
       secure: true,
       rejectUnauthorized: false,
-      // forceNew: true,
+      forceNew: true,
       query: dataSocket,
-      transports: ['polling'], upgrade: false
+      transports: ['websocket'],
+      // upgrade: false
       // forceNew: true
     });
 
@@ -127,7 +131,7 @@ export class SocketService {
 
   onGetCarta() {
     return new Observable(observer => {
-        this.socket.on('getLaCarta', (res: any) => {
+      this.socket.on('getLaCarta', (res: any) => {
         observer.next(res);
       });
     });
@@ -135,7 +139,7 @@ export class SocketService {
 
   onGetDataSedeDescuentos() {
     return new Observable(observer => {
-        this.socket.on('getDataSedeDescuentos', (res: any) => {
+      this.socket.on('getDataSedeDescuentos', (res: any) => {
         observer.next(res);
       });
     });
@@ -158,7 +162,7 @@ export class SocketService {
   // verificar para eliminar
   getDataTipoConsumo(): ItemTipoConsumoModel[] {
     const resTPC: ItemTipoConsumoModel[] = [];
-    this.resTipoConsumo .map((t: TipoConsumoModel) => {
+    this.resTipoConsumo.map((t: TipoConsumoModel) => {
       const _objTpcAdd = new ItemTipoConsumoModel();
       _objTpcAdd.descripcion = t.descripcion;
       _objTpcAdd.idtipo_consumo = t.idtipo_consumo;
@@ -322,7 +326,7 @@ export class SocketService {
   onGetMesaPagada() {
     return new Observable(observer => {
       this.socket.on('restobar-notifica-pay-pedido-res', (res: any) => {
-        if ( res.importe_restante === 0 ) { // si es pagado en su totalidad
+        if (res.importe_restante === 0) { // si es pagado en su totalidad
           observer.next(res);
         }
       });
@@ -346,19 +350,19 @@ export class SocketService {
 
         let _item_mesa;
 
-        if ( res.m ) {
-          if ( res.m !== '' ) {
+        if (res.m) {
+          if (res.m !== '') {
             _item_mesa = res;
             pase = true;
           }
-        } else if ( res.p_header ) {
-          if ( res.p_header.m !== '' ) {
+        } else if (res.p_header) {
+          if (res.p_header.m !== '') {
             _item_mesa = res.p_header;
             pase = true;
           }
         }
 
-        if ( pase ) {
+        if (pase) {
           _rpt.nummesa = _item_mesa.m;
           _rpt.nommozo = _item_mesa.nom_us;
 
@@ -410,9 +414,38 @@ export class SocketService {
     });
   }
 
-  private listen( evento: string ) {
+  async emitResPedido(evento: string, data: any) {
     return new Observable(observer => {
-      this.socket.on( evento , (res: any) => {
+      this.socket.emit(evento, data, (res) => {
+        console.log('respuesta socket', res);
+        observer.next(res);
+      });
+    });
+  }
+
+  asyncEmitPedido(eventName: string, eventNameRes: string, data: any) {
+    return new Promise((resolve, reject) => {
+      try {
+        this.socket.emit(eventName, data);
+        this.socket.on(eventNameRes, result => {
+          this.socket.off(eventNameRes);
+          resolve(result);
+        });
+      } catch (error) {
+        return false;
+      }
+      // setTimeout(reject, 1000);
+      setTimeout(() => {
+        ;
+        this.listenStatusService.setIisMsjConexionLentaSendPedidoSourse(true)
+        return false;
+      }, 6000); // despues de 6 segundos indicara que se acerque al punto wifi  
+    });
+  }
+
+  private listen(evento: string) {
+    return new Observable(observer => {
+      this.socket.on(evento, (res: any) => {
         observer.next(res);
       });
     });
@@ -421,7 +454,7 @@ export class SocketService {
   closeConnection(): void {
     try {
       this.socket.disconnect();
-    } catch (error) {}
+    } catch (error) { }
     // this.isSocketOpen = false;
     // this.isSocketOpenSource.next(false);
     this.statusConexSocket(false, 'disconnect');
@@ -496,7 +529,7 @@ export class SocketService {
         return;
       }
 
-      if ( res === true ) { console.log('VERIFY CONECTION => OK'); this.verificandoConexion = false; return; }
+      if (res === true) { console.log('VERIFY CONECTION => OK'); this.verificandoConexion = false; return; }
 
       // no hay conexion -- en pruebas ver comportamiento
       // console.log('VERIFY CONECTION => FALSE');
@@ -559,7 +592,7 @@ export class SocketService {
   // verifica el estado del socket, si esta cerrado intenta abrirlo
   verifyConexionSocket(): void {
     // console.log('verificando...');
-    if ( this.verificandoConexion ) {return; }
+    if (this.verificandoConexion) { return; }
     this.verificandoConexion = true;
     this.emit('verificar-conexion', this.socket.id);
   }

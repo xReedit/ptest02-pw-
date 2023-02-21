@@ -8,6 +8,7 @@ import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { ComandAnalizerService } from 'src/app/shared/services/speech/comand-analizer.service';
+import { VIEW_APP_MOZO } from 'src/app/shared/config/config.const';
 
 @Component({
   selector: 'app-main',
@@ -29,7 +30,7 @@ export class MainComponent implements OnInit {
   loaderPage = false;
   timeLoader = null;
   isSpeechVoiceAcivado = false;
-
+  isMozoApp = VIEW_APP_MOZO;
 
   private lastValScrollTop = 0;
   importeTotalProductos = 0;
@@ -51,11 +52,11 @@ export class MainComponent implements OnInit {
     private infoTokenService: InfoTockenService,
     // private comandAnalizerService: ComandAnalizerService,
     private establecimientoService: EstablecimientoService,
-    ) {
-      // console.log('verifyClientService', this.verifyClientService.get);
-      // this.comandAnalizerService.getIsActive();
-      // this.comandAnalizerService.getComands();
-    }
+  ) {
+    // console.log('verifyClientService', this.verifyClientService.get);
+    // this.comandAnalizerService.getIsActive();
+    // this.comandAnalizerService.getComands();
+  }
 
   private detectScreenSize() {
     this.isScreenIsMobile = window.innerWidth > 1049 ? false : true;
@@ -82,7 +83,7 @@ export class MainComponent implements OnInit {
     this.verifyClientService.verifyClient().subscribe((res: SocketClientModel) => {
       // console.log('desde main pedido', res);
       // console.log('this.infoTokenService', this.infoTokenService);
-      if ( !res ) { this.isUsuarioCliente = this.infoTokenService.infoUsToken.isCliente; } else {
+      if (!res) { this.isUsuarioCliente = this.infoTokenService.infoUsToken.isCliente; } else {
         this.isUsuarioCliente = res.isCliente || false;
       }
       this.listenStatusService.setIsUsuarioCliente(this.isUsuarioCliente);
@@ -122,7 +123,7 @@ export class MainComponent implements OnInit {
     });
 
     this.listenStatusService.isFinishLoaderSendPedido$.subscribe((isOpen: boolean) => {
-      if ( isOpen === true && !this.isUsuarioCliente ) {
+      if (isOpen === true && !this.isUsuarioCliente) {
         setTimeout(() => {
           this.closeMsjLoaderPedido();
         }, 1600);
@@ -168,7 +169,7 @@ export class MainComponent implements OnInit {
 
     this.listenStatusService.isLoaderCarta$.subscribe(res => {
       this.loaderPage = res;
-      if ( this.loaderPage ) {
+      if (this.loaderPage) {
         this.verificarLoaderReload();
       } else {
         clearTimeout(this.timeLoader);
@@ -199,7 +200,7 @@ export class MainComponent implements OnInit {
   // 12 segundos de cargar, reload page
   private verificarLoaderReload() {
     this.timeLoader = setTimeout(() => {
-      if ( this.loaderPage ) {
+      if (this.loaderPage) {
         window.location.reload();
       }
     }, 12000);
@@ -231,7 +232,7 @@ export class MainComponent implements OnInit {
   }
 
   private resetObjCuenta(): void {
-    if ( !this.isHayCuentaBusqueda ) { return; }
+    if (!this.isHayCuentaBusqueda) { return; }
     this.miPedidoService.resetObjMiPedido();
     this.listenStatusService.setHayCuentaBuesqueda(false);
   }
