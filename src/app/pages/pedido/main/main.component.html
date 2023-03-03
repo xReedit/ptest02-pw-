@@ -46,7 +46,7 @@
 
       <div class="animated flash" *ngIf="listenStatusService.isMsjConexionLentaSendPedido$ | async">
         <p class="text-danger fs-13 m-0">Tienen una conexion lenta.</p>
-        <p *ngIf="isMozoApp" class="text-danger fs-13 m-0">Acerquese a un punto wifi si es el caso..</p>
+        <p *ngIf="!isUsuarioCliente" class="text-danger fs-13 m-0">Acerquese a un punto wifi si es el caso..</p>
       </div>
 
 

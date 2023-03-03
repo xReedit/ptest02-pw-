@@ -84,9 +84,10 @@ export class SocketService {
     this.socket = io(this.urlSocket, {
       secure: true,
       rejectUnauthorized: false,
-      forceNew: true,
+      // forceNew: true,
       query: dataSocket,
-      transports: ['websocket'],
+      // transports: ["polling", "websocket"] 
+      // transports: ['websocket'],
       // upgrade: false
       // forceNew: true
     });

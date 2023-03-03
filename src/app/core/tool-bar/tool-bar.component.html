@@ -21,22 +21,24 @@
                     <i class="fa fa-ellipsis-v"></i>
                </div>
                <mat-menu #menu="matMenu">
-                    <button mat-menu-item *ngIf="!isCliente" matRipple matRippleCentered="true"
+                    <button mat-menu-item *ngIf="!isCliente" matRipple
                          [matRippleColor]="rippleColor" (click)="configPunto()">
                          <i title="Configuracion" class="fa fa-wrench" aria-hidden="true"></i>
                          <span class="ml-1">Configuraciones</span>
                     </button>
 
-                    <button mat-menu-item class="fs-15" matRipple matRippleCentered="true"
+                    <button mat-menu-item class="fs-15" matRipple
                          [matRippleColor]="rippleColor" (click)="sharedCarta()" matTooltip="Enlace Copiado">
                          <i title="Compartir Carta" class="fa fa-share-alt" aria-hidden="true"></i>
                          <span class="ml-1">Compartir Carta</span>
                     </button>
-                    <button mat-menu-item matRipple [matRippleColor]="rippleColorBusqueda" matRippleCentered="true"
+
+                    <!-- <button mat-menu-item matRipple [matRippleColor]="rippleColorBusqueda" matRippleCentered="true"
                          matRippleUnbounded="true" matRippleRadius="290" (click)="activaBusqueda()" title="Buscar">
                          <i title="Buscar" class="fa fa-search" aria-hidden="true"></i>
                          <span class="ml-1">Buscar</span>
-                    </button>
+                    </button> -->
+
                     <!-- <button mat-menu-item class="fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor"
                (click)="actualizarPage()">
                <i title="Compartir Carta" class="fa fa-refresh" aria-hidden="true"></i>
@@ -66,6 +68,14 @@
                <i title="Buscar" class="fa fa-search" aria-hidden="true"></i>
           </div>
      </div> -->
+
+               
+
+               <!-- buscar -->
+               <div class="example-ripple-container fs-15" matRipple matRippleCentered="true" [matRippleColor]="rippleColor"
+                    title="Buscar" (click)="activaBusqueda()">
+                    <i title="Buscar" class="fa fa-search" aria-hidden="true"></i>
+               </div>
 
                <!-- actualizar -->
                <div class="example-ripple-container fs-15" matRipple matRippleCentered="true"

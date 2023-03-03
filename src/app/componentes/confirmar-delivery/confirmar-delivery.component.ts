@@ -482,7 +482,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     const dialogDireccionCliente = this.dialogDireccionClienteDelivery.open(DialogDireccionClienteDeliveryComponent, _dialogConfig);
     dialogDireccionCliente.afterClosed().subscribe((data: any) => {
       if ( !data ) { return; }
-        // console.log('direcion', data);
+        console.log('direcion', data);
         // this.verifyClientService.setDireccionDeliverySelected(data);
         // this.setDireccion(data);
 
@@ -562,6 +562,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     // this.calcDistanceService.calculateRoute(direccionCliente, this.dirEstablecimiento, false);
     this.calcDistanceService.calculateRouteObserver(direccionCliente, this.dirEstablecimiento, false)
     .subscribe((resEstablecimiento: DeliveryEstablecimiento) => {
+      console.log('calculateRouteObserver', resEstablecimiento);
     // setTimeout(() => {
       // this.dirEstablecimiento = this.dirEstablecimiento;
       // this.establecimientoService.set(this.dirEstablecimiento);
