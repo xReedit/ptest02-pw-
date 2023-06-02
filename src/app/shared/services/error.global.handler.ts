@@ -6,7 +6,7 @@ export class GlobalErrorHandler implements ErrorHandler {
 // manejo de errores en principio me maneja el error de carga inicial despues de una actualizacion
 
   handleError(error: any): void {
-   const chunkFailedMessage = /Loading chunk [\d]+ failed/;
+   const chunkFailedMessage = /Loading chunk [^\s]+ failed/;
 
     // error carga inicial despues de actualizacion, recarga la pagina
    if (chunkFailedMessage.test(error.message)) {

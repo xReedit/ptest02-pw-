@@ -3,9 +3,13 @@ import { Routes, RouterModule, Router, PreloadAllModules } from '@angular/router
 // import { LayoutMainComponent } from './core/layout-main/layout-main.component';
 import { AuthGuard } from './shared/guards/auth.guard';
 import { ClienteProfileGuard } from './shared/guards/cliente-profile-guards';
-import { LectorCodigoQrComponent } from './pages/inicio/lector-codigo-qr/lector-codigo-qr.component';
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 
+// para acceso directo url a la carta y lector qr
+import { MainComponent } from './pages/inicio/main/main.component';
+import { RedirecLectorComponent } from './pages/inicio/redirec-lector/redirec-lector.component';
+import { LectorCodigoQrComponent } from './pages/inicio/lector-codigo-qr/lector-codigo-qr.component';
+// import { LectorCodigoQrComponent } from './pages/inicio/lector-codigo-qr/lector-codigo-qr.component';
 
 const routes: Routes = [
   // { path: '', redirectTo: '', pathMatch: 'full' },
@@ -90,6 +94,24 @@ const routes: Routes = [
     //   loadChildren: () => import('./pages/inicio/inicio.module').then(m => m.InicioModule),
     //   data: { 'tituloModulo': 'Inicio' }
     // },
+  
+    // para acceso directo url a la carta y lector qr 0623
+    {
+      path: 'carta/:nomsede',
+      component: MainComponent,
+      data: { titulo: 'Login Personal Autorizado' }
+    },
+    {
+      path: 'redirec/:nomsede',
+      component: RedirecLectorComponent,
+      data: { titulo: 'Login Personal Autorizado' }
+    },
+    {
+      path: 'lector-qr',
+      component: LectorCodigoQrComponent,
+      data: { titulo: 'Lector QR' }
+    }
+
 ];
 
 @NgModule({

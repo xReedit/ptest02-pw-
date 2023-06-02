@@ -562,7 +562,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     // this.calcDistanceService.calculateRoute(direccionCliente, this.dirEstablecimiento, false);
     this.calcDistanceService.calculateRouteObserver(direccionCliente, this.dirEstablecimiento, false)
     .subscribe((resEstablecimiento: DeliveryEstablecimiento) => {
-      console.log('calculateRouteObserver', resEstablecimiento);
+      // console.log('calculateRouteObserver', resEstablecimiento);
     // setTimeout(() => {
       // this.dirEstablecimiento = this.dirEstablecimiento;
       // this.establecimientoService.set(this.dirEstablecimiento);

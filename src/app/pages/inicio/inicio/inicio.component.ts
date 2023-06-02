@@ -73,7 +73,7 @@ export class InicioComponent implements OnInit, OnDestroy {
 
       // document.body.style.backgroundColor = '#fff';
       // document.body.style.background = '#fff';
-    }, 2000);
+    }, 2500);
 
 
     // if(!IS_NATIVE) {

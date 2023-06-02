@@ -21,9 +21,12 @@ export class RedirecLectorComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    // console.log('llegue redirec-lector nomsede ====', this.activatedRoute.snapshot.params.nomsede);
     // solo para url carta delivery
     const nomsede = this.activatedRoute.snapshot.params.nomsede;
-    if ( nomsede ) {
+    if ( nomsede ) {      
+      
+      // si viene de codigo qr
       if ( nomsede.indexOf('co:') > -1 ) {
         const codUrl = nomsede.replace('co:', '');
         this.router.navigate(['/lector-qr'], { queryParams: {'co' : codUrl} });
@@ -32,7 +35,8 @@ export class RedirecLectorComponent implements OnInit {
 
       this.verificarCartaSedeParam(nomsede);
     } else {
-        this.router.navigate(['/']);
+      console.log('navigate /');
+      this.router.navigate(['/']);
     }
   }
 
@@ -44,6 +48,7 @@ export class RedirecLectorComponent implements OnInit {
     const _dataSend = { nomsede: _nomsede };
     this.crudService.postFree(_dataSend, 'ini', 'carta-virtual', false)
     .subscribe((res: any) => {
+      // console.log('ini carta', res);
       if (res.success && res.data.length > 0) {
         const s = res.data[0].idsede;
         const o = res.data[0].idorg;

@@ -1487,6 +1487,7 @@ export class MipedidoService {
   getArrSubTotales(rulesSubTotales: any[]): any {
 
     const subTotal = this.getSubTotalMiPedido();
+    // const isCalcCostoServicioDeliverySoloApp
     let isCalcCostoServicioDelivery = this.establecimientoService.establecimiento.pwa_delivery_hablitar_calc_costo_servicio === 1;
     const isCalcCostoServicioDeliverySoloApp = this.establecimientoService.establecimiento.pwa_delivery_habilitar_calc_costo_servicio_solo_app === 1;
     const comisionFijaComercioNoAfiliado = this.establecimientoService.establecimiento.pwa_delivery_comision_fija_no_afiliado; // comision fija comercio no afiliado (plaza vea cualquier pedido la comision es 2 para la platafoma)
