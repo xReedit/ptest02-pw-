@@ -47,7 +47,10 @@ const configAuth: AuthConfig = {
     AppRoutingModule,
     CoreModule,
     SocketIoModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+    ServiceWorkerModule.register('ngsw-worker.js', { 
+      enabled: environment.production,
+      registrationStrategy: 'registerWhenStable:30000'
+     }),
     // AgmCoreModule.forRoot({
     //   apiKey: 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo',
     //   libraries: ['places']

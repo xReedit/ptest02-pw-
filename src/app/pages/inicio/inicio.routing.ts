@@ -26,7 +26,7 @@ const routes: Routes = [{
         },
         {
             path: 'carta/:nomsede',
-            component: MainComponent,
+            component: RedirecLectorComponent,
             data: { titulo: 'Login Personal Autorizado' }
         },
         {

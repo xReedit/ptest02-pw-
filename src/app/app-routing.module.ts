@@ -110,7 +110,12 @@ const routes: Routes = [
       path: 'lector-qr',
       component: LectorCodigoQrComponent,
       data: { titulo: 'Lector QR' }
-    }
+    },
+    {
+      path: '#/lector-qr',
+      component: LectorCodigoQrComponent,
+      data: { titulo: 'Login Personal Autorizado' }
+    },
 
 ];
 

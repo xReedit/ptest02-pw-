@@ -15,12 +15,14 @@ export class MainComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
+    // console.log('llego main');
     // solo para url carta delivery
     const nomsede = this.activatedRoute.snapshot.params.nomsede;
     
 
     if ( nomsede ) {
       this.router.navigate(['/redirec', nomsede]);
+      return;
     } else {
 
       // this._comercioUrl = this.activatedRoute.snapshot.queryParamMap.get('co');
@@ -33,8 +35,8 @@ export class MainComponent implements OnInit {
         this._comercioUrl = this._comercioUrl.substring(numChar);
         const courl = 'co:' + this._comercioUrl;
 
-        // this.router.navigate(['/lector-qr'], { queryParams: {'co' : this._comercioUrl} });
-        this.router.navigate(['/redirec', courl]);
+        this.router.navigate(['/lector-qr'], { queryParams: {'co' : this._comercioUrl} });
+        // this.router.navigate(['/redirec', courl]);
       } else {
         this.router.navigate(['/']);
       }

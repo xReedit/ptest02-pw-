@@ -77,12 +77,15 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this._comercioUrl = this.routerActive.snapshot.queryParamMap.get('co');
+    // console.log('llego lector-qr', this._comercioUrl);
+
 
     // lee el url si es directo
     if (this._comercioUrl) {
       this.isActivaCamara = false;
       this.codQR = this._comercioUrl;
       this.leerDatosQR();
+      return;
     }
 
 
@@ -91,7 +94,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     if (IS_NATIVE) {
       BarcodeScanner.prepare();
       this.startCamNative()
-    }
+    } 
   }
 
   ngOnDestroy(): void {
