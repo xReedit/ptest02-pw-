@@ -20,6 +20,7 @@ import { Observable, Subscription } from 'rxjs';
 import { MetodoPagoModel } from 'src/app/modelos/metodo.pago.model';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { PagoTarjetaVisanetService } from 'src/app/shared/services/pago-tarjeta-visanet.service';
+import { Router } from '@angular/router';
 
 // import * as botonPago from 'src/assets/js/boton-pago.js';
 
@@ -78,13 +79,15 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private pushNotificationSerice: NotificacionPushService,
     private establecimientoServices: EstablecimientoService,
-    private pagoTarjetaServices: PagoTarjetaVisanetService
+    private pagoTarjetaServices: PagoTarjetaVisanetService,
+    private router: Router,
     // private verifyClientService: VerifyAuthClientService,
   ) { }
 
 
   ngOnInit() {
-    // console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa pago');
+    
+    console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa pago');
     this.navigatorService.disableGoBack();
     this.infoToken = this.infoTokenService.getInfoUs();
 
@@ -197,14 +200,14 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
       this.dataClientePago.email = res.data[0].correo ? res.data[0].correo : '';
 
       // desarrollo
-      this.dataClientePago.email = 'review@cybersource.com'; //'integraciones.visanet@necomplus.com';
+      // this.dataClientePago.email = 'review@cybersource.com'; //'integraciones.visanet@necomplus.com';
       // this.dataClientePago.email = 'review@cybersource.com';
-      this.dataClientePago.isSaveEmail = false; // desarrollo
+      // this.dataClientePago.isSaveEmail = false; // desarrollo
 
       // email // comentar si es review@cybersource.com
-      // this.isRequiredEmail = this.dataClientePago.email === '' ?  true : false;
-      // this.isEmailValid = !this.isRequiredEmail;
-      // this.dataClientePago.isSaveEmail = this.isRequiredEmail;
+      this.isRequiredEmail = this.dataClientePago.email === '' ?  true : false;
+      this.isEmailValid = !this.isRequiredEmail;
+      this.dataClientePago.isSaveEmail = this.isRequiredEmail;
 
       this.dataClientePago.idcliente = res.data[0].idcliente_card;
       this.dataClientePago.diasRegistrado = res.data[0].dias_registrado;
@@ -278,7 +281,11 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     this.navigatorService.disabledBack = false;
     this.socketService.isSocketOpenReconect = true;
     this.socketService.closeConnection();
+    console.log('../pedido');
     this.navigatorService._router('../pedido');
+    window.location.reload();
+
+    // this.router.navigate(['../pedido'])
     // this.listenStatusService.setIsPagePagarCuentaShow(false);
   }
 

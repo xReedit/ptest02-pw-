@@ -129,6 +129,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     this.detectScreenSize();
     // this.initCarta();
 
+
     const _configPunto = JSON.parse(localStorage.getItem('sys::punto')) || {};
     // console.log('this.establecimientoService.get()', this.establecimientoService.get());
     this.isViewMercado = this.establecimientoService.get().pwa_show_item_view_mercado === 1;

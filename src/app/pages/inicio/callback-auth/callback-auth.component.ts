@@ -66,7 +66,7 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
       }, 1000);      
 
 
-      console.log('verifyClient from callback');
+      // console.log('verifyClient from callback');
       this.veryfyClient = this.verifyClientService.verifyClient()
         .subscribe((res: any) => {
           // console.log('x === >> llegueeeee a callback - res', res);

@@ -58,6 +58,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   private isDemo = false;
   private divicePos: any;
   private _comercioUrl = '';
+  private _telCliente_fromBot = '';
   private isActivaCamara = true;
 
 
@@ -76,7 +77,11 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    // console.log('this.routerActive.snapshot.queryParamMap', this.routerActive.snapshot.queryParamMap);
     this._comercioUrl = this.routerActive.snapshot.queryParamMap.get('co');
+    this._telCliente_fromBot = this.routerActive.snapshot.queryParamMap.get('tel');
+
+    // console.log('this._telCliente_fromBot', this._telCliente_fromBot);
     // console.log('llego lector-qr', this._comercioUrl);
 
 

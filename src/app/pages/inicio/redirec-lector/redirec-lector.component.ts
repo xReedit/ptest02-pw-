@@ -11,6 +11,8 @@ import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-cli
 })
 export class RedirecLectorComponent implements OnInit {
 
+  idRowBot = null;
+  isLoginFromBot = false
 
   constructor(
     private crudService: CrudHttpService,
@@ -20,8 +22,15 @@ export class RedirecLectorComponent implements OnInit {
     private verifyClientService: VerifyAuthClientService,
   ) { }
 
-  ngOnInit(): void {
-    // console.log('llegue redirec-lector nomsede ====', this.activatedRoute.snapshot.params.nomsede);
+  async ngOnInit() {    
+    this.idRowBot = this.activatedRoute.snapshot.queryParamMap.get('bot');    
+
+    // viene del chat bot, obtener numero telefono y registrase
+    if (this.idRowBot ) {
+      this.isLoginFromBot = true
+      await this.verifyClientService.autoRegisterLoginByTelefonoFromBot(this.idRowBot)
+    }
+
     // solo para url carta delivery
     const nomsede = this.activatedRoute.snapshot.params.nomsede;
     if ( nomsede ) {      
@@ -34,8 +43,7 @@ export class RedirecLectorComponent implements OnInit {
       }
 
       this.verificarCartaSedeParam(nomsede);
-    } else {
-      console.log('navigate /');
+    } else {      
       this.router.navigate(['/']);
     }
   }
@@ -43,7 +51,7 @@ export class RedirecLectorComponent implements OnInit {
   private verificarCartaSedeParam(_nomsede: string) {
     // console.log('verificarCartaSedeParam', _nomsede);
     // setear idsede en clienteSOcket
-    this.verifyClientService.getDataClient();
+    this.verifyClientService.getDataClient();    
 
     const _dataSend = { nomsede: _nomsede };
     this.crudService.postFree(_dataSend, 'ini', 'carta-virtual', false)

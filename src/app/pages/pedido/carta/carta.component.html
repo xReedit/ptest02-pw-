@@ -111,9 +111,10 @@
 
     <!-- items -->
     <!-- color-fondo-ul -->
-    <div [hidden]="!showItems && isScreenIsMobile" 
-      [ngClass]="{'fadeInRight': showItems}"
-      class="content-items animated fadeIn xtransicion m-main-pt-40">
+    <!-- [ngClass]="{'fadeInRight': showItems}" -->
+    <div [hidden]="!showItems && isScreenIsMobile"     
+      [ngClass]="{'fadeInRight': showItems}"  
+      class="content-items animated fadeIn m-main-pt-40">
       <ng-container>
 
 

@@ -430,6 +430,7 @@ export class SocketService {
         this.socket.emit(eventName, data);
         this.socket.on(eventNameRes, result => {
           this.socket.off(eventNameRes);
+          this.listenStatusService.setIisMsjConexionLentaSendPedidoSourse(false)
           resolve(result);
         });
       } catch (error) {

@@ -1869,7 +1869,12 @@ export class MipedidoService {
       if (res.listItemPorcion != null) {
         res.listItemPorcion.map((x: any) => {
           _itemInCarta = this.findItemCartaByIdCartaLista(x.idcarta_lista);
-          _itemInCarta.cantidad = parseInt(x.cantidad, 0);
+          try {            
+            _itemInCarta.cantidad = parseInt(x.cantidad, 0);
+          } catch (error) {
+            console.error(error);
+            console.log('x.cantidad', x.cantidad);
+          }
           this.setCantidadItemModificadoPwa(res.item, _itemInCarta, parseInt(x.cantidad, 0), true);
           // _itemInCarta.subitems = res.subitems;
           this.itemStockChangeSource.next(_itemInCarta);

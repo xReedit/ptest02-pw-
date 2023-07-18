@@ -32,7 +32,7 @@
             <div class="num-mesa">
                 <span>{{item.nummesa}}</span>
             </div>
-            <div class="info-mesa animated fadeInUp" [ngClass]="{'bg-info-mesa-client': item.flag_is_cliente == 1}">
+            <div class="info-mesa" [ngClass]="{'bg-info-mesa-client': item.flag_is_cliente == 1}">
                 <table class="w-100">
                     <tr>
                         <ng-container *ngIf="item.flag_is_cliente == 1; else elseTemplateMozo">

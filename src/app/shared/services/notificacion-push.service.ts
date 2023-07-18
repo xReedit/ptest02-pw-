@@ -38,8 +38,7 @@ export class NotificacionPushService {
     //   window.open(url, '_blank');
     // });
 
-    this.swPush.notificationClicks.subscribe( event => {
-      alert('aaaaaaaaaaa');
+    this.swPush.notificationClicks.subscribe( event => {      
       console.log('clic notification', event);
       // const url = event.notification.data.url;
       // window.location.reload();
@@ -63,7 +62,7 @@ export class NotificacionPushService {
     }
   }
 
-  async getIsTienePermiso(): Promise<boolean> {
+  public async getIsTienePermiso(): Promise<boolean> {
     if (IS_NATIVE) {
       let permStatus = await PushNotifications.checkPermissions();
       return permStatus.receive === 'granted' ? true : false;
@@ -74,7 +73,7 @@ export class NotificacionPushService {
 
 
   // se suscribe a la notificacion
-  suscribirse(): void {
+  public suscribirse(): void {
     // console.log('llego a suscribirse estado this.swPush.isEnabled: ', this.swPush.isEnabled);
     // if ( this.swPush.isEnabled ) {
       // this.swPush.subscription.subscribe(res => {

@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
     const res = infoToken.isCliente ? infoToken.isDelivery || infoToken.isReserva  ? true : this.verifyClientService.getIsQrSuccess() && us : us;
 
     // if ( us )
-    // console.log('AuthGuard res ====> ', res);
+    console.log('AuthGuard res ====> ', res);
     return res;
   }
 

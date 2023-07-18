@@ -18,6 +18,7 @@ import { AuthConfig, AuthModule } from '@auth0/auth0-angular';
 // import config from '../../capacitor.config';
 // import { IS_NATIVE } from './shared/config/config.const';
 import { domain, clientId, callbackUri } from './auth.config';
+import { ImagenNoEncontradaPipe } from './shared/pipes/imagen-no-encontrada.pipe';
 
 // const redirectUri = callbackUri;
 // const redirectUri = `<%= "${config.appId}" %>://${account.namespace}/capacitor/<%= "${config.appId}" %>/callback`;
@@ -35,6 +36,7 @@ const configAuth: AuthConfig = {
 @NgModule({
   declarations: [
     AppComponent,
+    // ImagenNoEncontradaPipe
     // DirectionsMapDirectiveDirective,
     // DebounceClickDirective
   ],
@@ -47,10 +49,10 @@ const configAuth: AuthConfig = {
     AppRoutingModule,
     CoreModule,
     SocketIoModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { 
-      enabled: environment.production,
-      registrationStrategy: 'registerWhenStable:30000'
-     }),
+    //ServiceWorkerModule.register('ngsw-worker.js', { 
+    //enabled: environment.production,
+     // registrationStrategy: 'registerWhenStable:30000'
+     //}),
     // AgmCoreModule.forRoot({
     //   apiKey: 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo',
     //   libraries: ['places']

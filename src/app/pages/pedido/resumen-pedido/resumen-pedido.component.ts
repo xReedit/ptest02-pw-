@@ -205,7 +205,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
           this.checkTiposDeConsumo();
           this.checkIsRequierMesa();
           this.checkIsDelivery();
-
+          
           this.navigatorService.addLink('mipedido-confirma');
 
           this.isClienteSetValues();
@@ -529,6 +529,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private confirmarPeiddo(): void {
+    console.log('confirmarPeiddo ==');
     if (this.isVisibleConfirmarAnimated) { // enviar pedido
       if (this.isRequiereMesa || !this.isDeliveryValid) {
 
@@ -548,14 +549,14 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       this.checkTiposDeConsumo();
       this.checkIsRequierMesa();
       this.checkIsDelivery();
-
+      
       this.navigatorService.addLink('mipedido-confirma');
 
       this.isClienteSetValues();
     }
   }
 
-  private prepararEnvio(): void {
+  private prepararEnvio(): void {    
     if (!this.isDeliveryCliente) {
       this.showLoaderPedido();
       // const _dialogConfig = new MatDialogConfig();
@@ -602,7 +603,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // });
   }
 
-  private enviarPedido(): void {
+  private async enviarPedido() {
 
     // this.verificarConexionSocket();
 
@@ -746,6 +747,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       return;
     }
 
+    console.log('sigueeee');
 
     // descuentos
     if (this.infoToken.infoUsToken.isHayDescuento) {
@@ -760,7 +762,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     }
 
     // prioridad socket, por crud demora mucho aveces se queda enviando datos...
-    this.savePedidoSocket2(dataSend, isPagoConTarjeta, _subTotalesSave);
+    await this.savePedidoSocket2(dataSend, isPagoConTarjeta, _subTotalesSave);
 
     this.isDeliveryValid = false; // formulario no valido para delivery
 
@@ -1001,8 +1003,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     //   return;
     // }
 
-    // this.estadoPedidoClientService.getCuenta(); // get subtotales - esta listen resumen-pedido;
-    this.router.navigate(['./pagar-cuenta'])
+    // this.estadoPedidoClientService.getCuenta(); // get subtotales - esta listen resumen-pedido;    
+    this.router.navigate(['./pagar-cuenta'])    
       .then(() => {
         if (this.isBtnPagoShow) {
           window.location.reload();

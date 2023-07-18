@@ -154,9 +154,12 @@ export class ConfirmarDeliveryComponent implements OnInit {
     } else {
       // this.nombreClienteValido = true;
 
-      let nomClienteInvitato = this.infoTokenService.infoUsToken.nombres || this.socketCliente.nombres;
+      let nomClienteInvitato = this.infoTokenService.infoUsToken.nombres || this.socketCliente.nombres;      
       nomClienteInvitato = nomClienteInvitato ? nomClienteInvitato.toLocaleLowerCase().indexOf('invitado') > -1 ? '' : nomClienteInvitato : '';
       this.nombreClienteValido = nomClienteInvitato !== '';
+
+      // si viene del chatbot y su nombre es blanco le pide que ingrese nombre
+      this.isShowNombreClienteLoginInvitado = nomClienteInvitato === ''
     }
 
     this.isComercioSolidaridad = _datosEstablecieminto.pwa_delivery_comercio_solidaridad === 1;
@@ -356,6 +359,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.isValidForm = this.isValidForm && !this.isCalculandoDistanciaA;
     this.isValidForm = this.isValidForm && this.nombreClienteValido;
     // if ( !this.direccionCliente.codigo && !this.isRecojoLocalCheked ) { this.isValidForm = false; }
+    console.log('this.isValidForm', this.isValidForm);
     this.isReady.emit(this.isValidForm);
   }
 

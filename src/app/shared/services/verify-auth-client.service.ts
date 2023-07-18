@@ -136,6 +136,21 @@ export class VerifyAuthClientService {
     return this.clientSocket.isQrSuccess || false;
   }
 
+  setUserIsFromBot(val: boolean) {    
+    this.clientSocket.isUserFromBot = val;
+    this.setDataClient();
+  }
+
+  getUserIsFromBot(): boolean {
+    // this.getDataClient();
+    if (!this.clientSocket) {
+      this.getDataClient();
+    }
+
+    return this.clientSocket.isUserFromBot || false;
+  }
+
+
 
   getIsDelivery(): boolean {
     // this.getDataClient();
@@ -438,6 +453,75 @@ export class VerifyAuthClientService {
     this.setIsLoginByInvitado(true);
     this.registerInvitado();
 
+  }
+
+  // viene del chatbot, obtener numero telefono y registrase
+  async autoRegisterLoginByTelefonoFromBot(idChatBot: string) {
+    const _dataSend = {
+      id: idChatBot
+    };
+
+    let dataClienteFromBot: any
+
+    this.crudService.postFree(_dataSend, 'delivery', 'get-cliente-telefono-chatbot', false)
+    .subscribe((rpt: any) => {      
+      if ( !rpt.success ) {return; }
+      if ( rpt.data.length === 0 ) {return;}      
+
+
+      dataClienteFromBot = rpt.data[0];
+      
+      const idClient = dataClienteFromBot.idcliente;
+      const telefono_cliente = dataClienteFromBot.telefono;
+      if (telefono_cliente === null ) {return;}
+
+
+     
+      this.clientSocket.isCliente = true;
+
+      if (idClient > 0){ // buscar por id
+             
+        const nombres = dataClienteFromBot.nombres;
+        this.clientSocket.idcliente = idClient;
+        this.clientSocket.datalogin = {
+          name: nombres,
+          given_name: nombres=== ''? '' : nombres.split(' ')[0]
+        };
+        this.clientSocket.nombres = this.clientSocket.datalogin.name;
+        this.clientSocket.usuario = this.clientSocket.datalogin.given_name;          
+        this.clientSocket.telefono = dataClienteFromBot.telefono;
+        this.setIsLoginByDNI(false);
+        this.setIsLoginByTelefono(true);
+        this.setIsLoginByInvitado(false);
+        this.setUserIsFromBot(true);
+        // this.registerInvitado();
+        this.setDataClient()      
+        // this.verifyClientLogin()
+
+      } else { // busca por telefono   
+        if (telefono_cliente !==null ) {          
+          this.clientSocket.telefono = telefono_cliente;
+          this.clientSocket.idcliente = -1;
+  
+          this.clientSocket.datalogin = {
+            name: '',
+            given_name: '',
+            sub: `phone|${telefono_cliente}`
+          };
+  
+          this.setIsLoginByDNI(false);
+          this.setIsLoginByTelefono(true);
+          this.setIsLoginByInvitado(false);
+          this.setUserIsFromBot(true);
+          this.registerInvitado();
+        }
+        // this.verifyClientLogin()
+      }
+
+     
+
+      
+    });
   }
 
 

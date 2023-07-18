@@ -14,10 +14,9 @@ export class MainComponent implements OnInit {
     private router: Router,
   ) { }
 
-  async ngOnInit() {
-    // console.log('llego main');
+  async ngOnInit() {    
     // solo para url carta delivery
-    const nomsede = this.activatedRoute.snapshot.params.nomsede;
+    const nomsede = this.activatedRoute.snapshot.params.nomsede;    
     
 
     if ( nomsede ) {
@@ -26,7 +25,7 @@ export class MainComponent implements OnInit {
     } else {
 
       // this._comercioUrl = this.activatedRoute.snapshot.queryParamMap.get('co');
-      this._comercioUrl = this.activatedRoute.snapshot.fragment;
+      this._comercioUrl = this.activatedRoute.snapshot.fragment;      
       if ( !this._comercioUrl ) {return; }
       const numChar = this._comercioUrl.indexOf('?co=') + 4;
 

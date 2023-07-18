@@ -44,8 +44,7 @@ export class LectorSuccessComponent implements OnInit {
     const _data = {
       idsede: this.usLog.idsede
     };
-
-    // console.log('this.usLog', this.usLog);
+    
 
     this.numMesa = this.usLog.numMesaLector;
 
@@ -104,9 +103,17 @@ export class LectorSuccessComponent implements OnInit {
     } else {
       // this.auth.login();
 
+      // si viene del chatbot // ya esta registrado      
+      if (this.usLog.isUserFromBot ) { 
+        this.router.navigate(['/callback-auth']);       
+        return;
+      } 
+
+
+
       // si escanea el codigo y no esta registrado entonces va como invitado
       // y luego le pide sus datos que // telfono y nombre para delivery y nombre para mesa
-      if ( this.usLog.isQrSuccess ) {
+      if ( this.usLog.isQrSuccess ) {        
         this.goAutoRegisterByInvitado();
         return;
       }

@@ -33,6 +33,7 @@ export class ConfirmadoComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    console.log('llego a confirmado');
     this.navigatorService.disableGoBack();
     this.navigatorService.setOffListenNavigator(true);
 
@@ -70,11 +71,14 @@ export class ConfirmadoComponent implements OnInit {
 
   private lanzarPermisoNotificationPush(option: number = 0) {
     // this.pushNotificationSerice.suscribirse(option);
-
-    console.log('aaaaaaaaaaaaaaaaaaaaaaa');
-    if ( this.pushNotificationSerice.getIsTienePermiso() ) {
-      this.pushNotificationSerice.suscribirse();
-      return;
+    
+    try {      
+      if ( this.pushNotificationSerice.getIsTienePermiso() ) {
+        this.pushNotificationSerice.suscribirse();
+        return;
+      }
+    } catch (error) {
+      console.error(error);
     }
     // else {
     //   this.pushNotificationSerice.suscribirse();
@@ -91,7 +95,11 @@ export class ConfirmadoComponent implements OnInit {
     _dialogReset.afterClosed().subscribe(result => {
       if ( result ) {
         // console.log('result', result);
-        this.pushNotificationSerice.suscribirse();
+        try {          
+          this.pushNotificationSerice.suscribirse();
+        } catch (error) {
+          console.error(error);
+        }
       }
     });
   }
