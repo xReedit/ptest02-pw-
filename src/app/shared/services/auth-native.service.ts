@@ -30,7 +30,7 @@ public userAuthNative$ = this.authNative.isAuthenticated$.pipe(switchMap(() => t
       private router: Router,
       @Inject(DOCUMENT) private doc: Document,) {
       this.userAuthNative$.subscribe(res => {        
-            console.log('AuthService ressss ===>> user ', JSON.stringify(res));
+            // console.log('AuthService ressss ===>> user ', JSON.stringify(res));
             if (res) {
                 this.isLoginSuccess = true;
                 this.usLoginSuccess(res);

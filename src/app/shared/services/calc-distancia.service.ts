@@ -11,6 +11,7 @@ import {
   insideCircle, distanceTo
 } from 'geolocation-utils';
 import { MapsServiceService } from './maps-service.service';
+import { UtilitariosService } from './utilitarios.service';
 
 
 @Injectable({
@@ -26,7 +27,8 @@ export class CalcDistanciaService {
 
   constructor(
     private estableciminetoService: EstablecimientoService,
-    private mapsService: MapsServiceService
+    private mapsService: MapsServiceService,
+    private utilService: UtilitariosService
   ) { }
 
 
@@ -214,7 +216,7 @@ export class CalcDistanciaService {
 
 
   calculateRouteObserver(dirCliente: DeliveryDireccionCliente, dirEstablecimiento: DeliveryEstablecimiento, buscarEnCache: boolean = true): Observable<DeliveryEstablecimiento> {
-
+    
     
 
       return new Observable(observer => {
@@ -232,78 +234,28 @@ export class CalcDistanciaService {
             dirEstablecimiento.distancia_km = reskm.toString();
             dirEstablecimiento.isCalcApiGoogle = true;
             c_servicio = this.calCostoDistancia(dirEstablecimiento, reskm);
-            console.log('reskm', reskm);
-            console.log('c_servicio', c_servicio);
+            // console.log('reskm', reskm);
+            // console.log('c_servicio', c_servicio);
             dirEstablecimiento.c_servicio = c_servicio;
             
             observer.next(dirEstablecimiento);
             observer.complete();
-        });
-        
+        });              
 
-        
+    });
+  }
 
-
-        // dirEstablecimiento.latitude = typeof dirEstablecimiento.latitude === 'string' ? parseFloat(dirEstablecimiento.latitude) : dirEstablecimiento.latitude;
-        // dirEstablecimiento.longitude = typeof dirEstablecimiento.longitude === 'string' ? parseFloat(dirEstablecimiento.longitude) : dirEstablecimiento.longitude;
-        // dirCliente.latitude = typeof dirCliente.latitude === 'string' ? parseFloat(dirCliente.latitude) : dirCliente.latitude;
-        // dirCliente.longitude = typeof dirCliente.longitude === 'string' ? parseFloat(dirCliente.longitude) : dirCliente.longitude;
-
-
-
-
-        // if ( buscarEnCache ) {
-        //   const _establecimientoCacheado = <any>this.estableciminetoService.getFindDirClienteCacheEstableciemto(dirCliente, dirEstablecimiento);
-        //   if ( _establecimientoCacheado ) {
-        //     // console.log('from calcDistance cache', _establecimientoCacheado);
-
-        //     dirEstablecimiento.distancia_km = _establecimientoCacheado.distancia_km;
-        //     dirEstablecimiento.c_servicio = this.calCostoDistancia(dirEstablecimiento, _establecimientoCacheado.distancia_km);
-        //     // console.log('rpt a', dirEstablecimiento);
-        //     observer.next(dirEstablecimiento);
-        //     return;
-        //   }
-        // }
-
-        // // con google // //
-        //  // cordenadas
-        // this.origin = {
-        //   lat: dirCliente.latitude, lng: dirCliente.longitude
-        // };
-
-        // // console.log('this.origin', this.origin);
-
-        // this.destination = {
-        //   lat: dirEstablecimiento.latitude, lng: dirEstablecimiento.longitude
-        // };
-
-        // const request = {
-        //   origin: this.origin,
-        //   destination: this.destination,
-        //   travelMode: google.maps.TravelMode.DRIVING
-        // };
-
-        // let km = 0;
-        // // console.log('calculando.. 1');
-        // this.directionsService.route(request, (result: any, status) => {
-        //   if (status === 'OK') {
-        //     // this.directionsRenderer.setDirections(result);            
-        //     km = result.routes[0].legs[0].distance.value;
-        //     const _kmReal =  km / 1000;
-
-        //     dirEstablecimiento.distancia_mt = km.toString();
-        //     dirEstablecimiento.distancia_km = (_kmReal).toFixed(2);
-        //     dirEstablecimiento.isCalcApiGoogle = true;
-
-        //     // km = parseInt((km / 1000).toFixed(), 0);
-
-        //     c_servicio = this.calCostoDistancia(dirEstablecimiento, _kmReal);
-        //     dirEstablecimiento.c_servicio = c_servicio;           
-        //     observer.next(dirEstablecimiento);
-
-        //   }
-        // });
-
+  // obtener la distancia en kilometros del establecimiento a la direccion del cliente, retornar la distancia en kilometros
+  getDistanciaKmRoute(dirCliente: DeliveryDireccionCliente, dirEstablecimiento: DeliveryEstablecimiento): Observable<number> {
+    return new Observable(observer => {
+      let km = 0;
+      const _origen = `${dirEstablecimiento.latitude},${dirEstablecimiento.longitude}`
+      const _destino = `${dirCliente.latitude},${dirCliente.longitude}`
+      this.mapsService.calcularRuta(_origen, _destino).subscribe(reskm => {          
+          km = reskm;
+          observer.next(km);
+          observer.complete();
+      });              
     });
   }
 
@@ -327,10 +279,31 @@ export class CalcDistanciaService {
     return c_servicio;
   }
 
-  // regla x km adicional
-  // private reglaKm() {
+  // 1023 // calcular costo de entrega, recibiendo parametros para calcular la distancia
+  costoEntregaTiendaEnLinea(parametros: any, distanciaEnKm: number, isTiendaLinea = false) {
+    
+    const radioBasico = typeof parametros.km_base === 'string' ? parseFloat(parametros.km_base) : parametros.km_base; // Radio básico de 2 km
+    const costoBasico = typeof parametros.km_base_costo === 'string' ? parseFloat(parametros.km_base_costo) : parametros.km_base_costo; // Costo básico de $3.00
+    const costoAdicionalPorKilometro = typeof parametros.km_adicional_costo === 'string' ? parseFloat(parametros.km_adicional_costo) : parametros.km_adicional_costo; // Costo adicional por kilómetro de $2.00
+    const radioMaximo = typeof parametros.km_limite === 'string' ? parseFloat(parametros.km_limite) : parametros.km_limite; // Radio máximo de 10 km
 
-  // }
+
+    if (distanciaEnKm > radioMaximo) {
+      return { mensaje: "😔 Lo siento, el servicio no disponible en esta zona 🗺️\n Verifique que la direccion sea la correcta. *Tambien puede adjuntarnos su ubicación.*", success: false };
+    }
+
+    let costoServicio = costoBasico;
+    const distanciaAdicional = distanciaEnKm - radioBasico;
+
+    if (distanciaAdicional > 0) {
+      const costoAdicional = distanciaAdicional * costoAdicionalPorKilometro;      
+      costoServicio = parseFloat(costoServicio) + costoAdicional;      
+    }    
+    costoServicio = this.utilService.roundAmount(costoServicio)// redondea
+
+    return { distancia_en_km: distanciaEnKm.toFixed(2), costo_servicio: costoServicio, success: true };
+
+  }
 
 
   // retorna true si esta cerca

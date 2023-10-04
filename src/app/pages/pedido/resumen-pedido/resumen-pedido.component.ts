@@ -529,7 +529,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private confirmarPeiddo(): void {
-    console.log('confirmarPeiddo ==');
+    // console.log('confirmarPeiddo ==');
     if (this.isVisibleConfirmarAnimated) { // enviar pedido
       if (this.isRequiereMesa || !this.isDeliveryValid) {
 

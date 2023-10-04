@@ -153,4 +153,20 @@ export class UtilitariosService {
     }, {});
   }
 
+
+  roundAmount(amount: number): number {
+  // Extraer la parte entera y decimal del número
+  const integerPart = Math.floor(amount);
+  const decimalPart = amount - integerPart;
+
+  // Redondear hacia abajo si el decimal es menor a 0.50
+  if (decimalPart < 0.50) {
+    return integerPart;
+  } else {
+    // Redondear hacia arriba si el decimal es 0.50 o mayor
+    return integerPart + 0.50;
+  }
+}
+
+
 }

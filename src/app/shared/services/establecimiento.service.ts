@@ -3,6 +3,7 @@ import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimient
 import { CrudHttpService } from './crud-http.service';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 import { Observable } from 'rxjs';
+import { IS_NATIVE } from '../config/config.const';
 
 @Injectable({
   providedIn: 'root'
@@ -64,8 +65,7 @@ export class EstablecimientoService {
     // console.log('get-establecimientos _dataSend', _dataSend);
 
     this.crudService.postFree(_dataSend, 'delivery', 'get-establecimientos', false)
-    .subscribe(res => {
-      // console.log('get-establecimientos', res);
+    .subscribe(res => {      
       this.establecimiento = res.data[0];
       this.set(this.establecimiento);
     });
@@ -122,7 +122,8 @@ export class EstablecimientoService {
     if (_dirEstablecimineto.pwa_delivery_hablitar_calc_costo_servicio === 1) {
       const _dataSend = {
         codigo_postal: _dirEstablecimineto.codigo_postal
-      };
+      };      
+
       this.crudService.postFree(_dataSend, 'pedido', 'get-last-comsion-entrega-sede', false)
       .subscribe(res => {
         if ( res.data.length === 0 ) { return; }
@@ -133,6 +134,25 @@ export class EstablecimientoService {
         // console.log(res);
       });
     }
+  }
+
+  getParametrosTiendaLinea() {
+    let _dirEstablecimineto = this.get();
+    const _dataSend = {
+      idsede: _dirEstablecimineto.idsede
+    };
+
+    this.crudService.postFree(_dataSend, 'delivery', 'get-parametros-tienda-linea', false)
+    .subscribe(res => {
+      // console.log('res', res);
+      if ( res.data.length === 0 ) { return; }
+      const _data = res.data[0];
+      _dirEstablecimineto.parametros_tienda_linea = _data.parametros;
+      // console.log('_dirEstablecimineto', _dirEstablecimineto);
+      this.set(_dirEstablecimineto);          
+      // this.set(_dirEstablecimineto);
+      // console.log(res);
+    });
   }
 
 

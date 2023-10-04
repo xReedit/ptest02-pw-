@@ -195,7 +195,7 @@ export class ListenStatusService {
   }
 
   setLoaderCarta(value: boolean) {
-    console.log('setLoaderCarta', value);
+    // console.log('setLoaderCarta', value);
     this.isLoaderCartaSource.next(value);
   }
 

@@ -21,7 +21,10 @@ import { EMPTY } from 'rxjs';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { ClienteService } from 'src/app/shared/services/cliente.service';
 import { DialogDireccionClienteDeliveryComponent } from '../dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
+import { IS_NATIVE } from 'src/app/shared/config/config.const';
 // import { MapsAPILoader } from '@agm/core';
+
+// DEL COMERCIO
 
 @Component({
   selector: 'app-datos-delivery',
@@ -353,28 +356,6 @@ export class DatosDeliveryComponent implements OnInit {
         // esto para poder guardar en el procedure
         this.direccionCliente.idcliente_pwa_direccion = this.direccionCliente.idcliente_pwa_direccion === null ? 0 : this.direccionCliente.idcliente_pwa_direccion;
 
-
-        // console.log('aaaa calculateRoute');
-        // let c_servicio = this.calcDistanceService.calculateRoute(<DeliveryDireccionCliente>data, this.dirEstablecimiento, false);
-
-        // // recalcular
-        // setTimeout(() => {
-
-        //   c_servicio = this.dirEstablecimiento.c_servicio;
-        //   this.establecimientoService.set(this.dirEstablecimiento);
-        //   this.infoEstablecimiento.c_servicio = c_servicio; // this.dirEstablecimiento.c_servicio;
-        //   this.resData.costoTotalDelivery = c_servicio; // this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
-
-        //   const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
-        //   localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
-
-        //   this._listSubtotales = _arrSubtotales;
-
-
-        //   this.setearData();
-        // }, 800);
-
-
         this.calcDistanceService.calculateRouteObserver(<DeliveryDireccionCliente>data, this.dirEstablecimiento, false)
         .subscribe((resEstablecimiento: DeliveryEstablecimiento) => {
           // const c_servicio = this.dirEstablecimiento.c_servicio;
@@ -422,15 +403,11 @@ export class DatosDeliveryComponent implements OnInit {
 
         this.msjErrorDir = '';
         this.direccionCliente = <DeliveryDireccionCliente>data;
-
-        // if ( this.direccionCliente.codigo !== this.infoEstablecimiento.codigo_postal ) {
+        
+          // el servicio no esta disponible en esta ubicacion          
         if ( this.direccionCliente.ciudad.toLocaleLowerCase() !== this.infoEstablecimiento.ciudad.toLocaleLowerCase() ) {
-          // el servicio no esta disponible en esta ubicacion
-          // this.direccionCliente = this.direccionClienteIni;
-          // this.infoToken.direccionEnvioSelected = null;
           this.direccionCliente.codigo = null;
-          this.msjErrorDir = 'Servicio no disponible en esta dirección.';
-          // this.verificarMontoMinimo();
+          this.msjErrorDir = 'Servicio no disponible en esta dirección.';          
           return;
         }
 
@@ -447,11 +424,14 @@ export class DatosDeliveryComponent implements OnInit {
 
   calcularCostoEntrega(direccionCliente: DeliveryDireccionCliente) {
 
+    
+
     // this.isReady.emit(false);
     // this.isCalculandoDistanciaA = true;
     // this.calcDistanceService.calculateRoute(direccionCliente, this.dirEstablecimiento, false);
     this.calcDistanceService.calculateRouteObserver(direccionCliente, this.dirEstablecimiento, false)
     .subscribe((resEstablecimiento: DeliveryEstablecimiento) => {
+      // console.log('calculo normal');
     // setTimeout(() => {
       // this.dirEstablecimiento = this.dirEstablecimiento;
       this.dirEstablecimiento = resEstablecimiento;

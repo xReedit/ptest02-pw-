@@ -208,6 +208,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // console.log('aaa');
     this.establecimientoService.getComsionEntrega();
+    this.establecimientoService.getParametrosTiendaLinea();
     // if (!this.socketService.isSocketOpen) {
     this.unsubscribeCarta = this.socketService.onGetCarta().subscribe((res: any) => {
 

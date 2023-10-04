@@ -11,7 +11,7 @@ const auth0Domain = domain;
 
 // solo nativo
 // export const callbackUri = `${appId}://${auth0Domain}/capacitor/${appId}/callback`    
-console.log('IS_NATIVE', IS_NATIVE);
+// console.log('IS_NATIVE', IS_NATIVE);
 export const callbackUri = IS_NATIVE
     ? `${appId}://${auth0Domain}/capacitor/${appId}/callback-auth`
     : 'http://localhost:1800/callback-auth';

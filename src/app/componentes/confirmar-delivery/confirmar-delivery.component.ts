@@ -21,7 +21,9 @@ import { DialogTiempoEntregaComponent } from '../dialog-tiempo-entrega/dialog-ti
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { DialogDireccionClienteDeliveryComponent } from '../dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
+import { IS_NATIVE } from 'src/app/shared/config/config.const';
 
+// DEL CLIENTE
 
 @Component({
   selector: 'app-confirmar-delivery',
@@ -99,6 +101,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   isRestaurante = false;
   isCubierto = false;
+
+  isDireccionClienteCorrecta = false;
 
   @Input()
   set listSubtotales(val: any) {
@@ -349,18 +353,57 @@ export class ConfirmarDeliveryComponent implements OnInit {
     }
   }
 
-  private verificarFormValid(): void {
-    // console.log('this.nombreClienteValido', this.nombreClienteValido);
-    this.isValidForm = this.isTiempoEntregaValid;
-    this.isValidForm = this.resData.importeTotal >= this.montoMinimoPedido && this.isValidForm ? true : false;
-    this.isValidForm = !this.metodoPagoSelected.idtipo_pago ? false : this.isValidForm;
-    this.isValidForm = !this.direccionCliente.ciudad && !this.isRecojoLocalCheked ? false : this.isValidForm;
-    this.isValidForm = this.resData.telefono.trim().length >= 5 ? this.isValidForm : false;
-    this.isValidForm = this.isValidForm && !this.isCalculandoDistanciaA;
-    this.isValidForm = this.isValidForm && this.nombreClienteValido;
-    // if ( !this.direccionCliente.codigo && !this.isRecojoLocalCheked ) { this.isValidForm = false; }
-    console.log('this.isValidForm', this.isValidForm);
+  private verificarFormValid(): void {        
+    // this.isValidForm = this.isTiempoEntregaValid;
+    // this.isValidForm = this.resData.importeTotal >= this.montoMinimoPedido && this.isValidForm ? true : false;
+    // this.isValidForm = !this.metodoPagoSelected.idtipo_pago ? false : this.isValidForm;    
+    // this.isValidForm = !this.isDireccionClienteCorrecta && !this.isRecojoLocalCheked ? false : this.isValidForm;
+    // this.isValidForm = this.resData.telefono.trim().length >= 5 ? this.isValidForm : false;
+    // this.isValidForm = this.isValidForm && !this.isCalculandoDistanciaA;
+    // this.isValidForm = this.isValidForm && this.nombreClienteValido;
+    // this.isReady.emit(this.isValidForm);
+
+    // // if ( !this.direccionCliente.codigo && !this.isRecojoLocalCheked ) { this.isValidForm = false; }    
+
+    this.isDireccionClienteCorrecta = this.direccionCliente.latitude && this.direccionCliente.longitude ? true : false; 
+
+    this.isValidForm = false;
+    if (!this.isTiempoEntregaValid) { 
+      console.error('isTiempoEntregaValid', this.isTiempoEntregaValid);
+      this.isReady.emit(this.isValidForm); return; 
+    }
+    if (this.resData.importeTotal < this.montoMinimoPedido) {
+      console.error('resData.importeTotal', this.resData.importeTotal);
+      this.isReady.emit(this.isValidForm); return;
+    }
+    if (!this.metodoPagoSelected.idtipo_pago ) {
+      console.error('resData.metodoPagoSelected', this.metodoPagoSelected.idtipo_pago);
+      this.isReady.emit(this.isValidForm); return;
+    }
+
+    if (!this.isDireccionClienteCorrecta && !this.isRecojoLocalCheked) {
+      console.error('isDireccionClienteCorrecta', this.isDireccionClienteCorrecta);
+      this.isReady.emit(this.isValidForm); return;
+    }
+
+    if (this.resData.telefono.trim().length < 5 ) {
+      console.error('resData.telefono', this.resData.telefono.trim().length);
+      this.isReady.emit(this.isValidForm); return;
+    }
+
+    if (this.isCalculandoDistanciaA ) {
+      console.error('isCalculandoDistanciaA', this.isCalculandoDistanciaA);
+      this.isReady.emit(this.isValidForm); return;
+    }
+
+    if (!this.nombreClienteValido) {
+      console.error('nombreClienteValido', this.nombreClienteValido);
+      this.isReady.emit(this.isValidForm); return;
+    }
+
+    this.isValidForm = true;
     this.isReady.emit(this.isValidForm);
+
   }
 
   openDialogMetodoPago(): void {
@@ -486,7 +529,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     const dialogDireccionCliente = this.dialogDireccionClienteDelivery.open(DialogDireccionClienteDeliveryComponent, _dialogConfig);
     dialogDireccionCliente.afterClosed().subscribe((data: any) => {
       if ( !data ) { return; }
-        console.log('direcion', data);
+        // console.log('direcion', data);
         // this.verifyClientService.setDireccionDeliverySelected(data);
         // this.setDireccion(data);
 
@@ -494,14 +537,23 @@ export class ConfirmarDeliveryComponent implements OnInit {
         this.direccionCliente = <DeliveryDireccionCliente>data;
 
         // if ( this.direccionCliente.codigo !== this.infoEstablecimiento.codigo_postal ) {
-        if ( this.direccionCliente.ciudad.toLocaleLowerCase() !== this.infoEstablecimiento.ciudad.toLocaleLowerCase() ) {
-          // el servicio no esta disponible en esta ubicacion
-          // this.direccionCliente = this.direccionClienteIni;
-          // this.infoToken.direccionEnvioSelected = null;
-          this.direccionCliente.codigo = null;
-          this.msjErrorDir = 'Servicio no disponible en esta dirección.';
-          this.verificarMontoMinimo();
-          return;
+        // if ( this.direccionCliente.ciudad.toLocaleLowerCase() !== this.infoEstablecimiento.ciudad.toLocaleLowerCase() ) {
+        //   // el servicio no esta disponible en esta ubicacion
+        //   // this.direccionCliente = this.direccionClienteIni;
+        //   // this.infoToken.direccionEnvioSelected = null;
+        //   this.direccionCliente.codigo = null;
+        //   this.msjErrorDir = 'Servicio no disponible en esta dirección.';
+        //   this.verificarMontoMinimo();
+        //   return;
+        // }
+
+        // solo para el app // si es web es tienda online
+        if (IS_NATIVE) {
+          if (this.direccionCliente.ciudad.toLocaleLowerCase() !== this.infoEstablecimiento.ciudad.toLocaleLowerCase()) {
+            this.direccionCliente.codigo = null;
+            this.msjErrorDir = 'Servicio no disponible en esta dirección.';
+            return;
+          }
         }
 
         this.infoToken.direccionEnvioSelected = this.direccionCliente;
@@ -541,6 +593,9 @@ export class ConfirmarDeliveryComponent implements OnInit {
           // this.direccionCliente = this.direccionClienteIni;
           // this.infoToken.direccionEnvioSelected = null;
           this.direccionCliente.codigo = null;
+          this.direccionCliente.latitude = null;
+          this.direccionCliente.longitude = null;
+          this.isDireccionClienteCorrecta = false;
           this.msjErrorDir = 'Servicio no disponible en esta dirección.';
           this.verificarMontoMinimo();
           return;
@@ -561,31 +616,85 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   calcularCostoEntrega(direccionCliente: DeliveryDireccionCliente) {
 
+    this.isDireccionClienteCorrecta = false;
+
+    // verificar si direccionCliente tiene las propiedades de latitude y longitude
+    if ( !direccionCliente.latitude || !direccionCliente.longitude ) {      
+      return;
+    }
+
     this.isReady.emit(false);
     this.isCalculandoDistanciaA = true;
-    // this.calcDistanceService.calculateRoute(direccionCliente, this.dirEstablecimiento, false);
-    this.calcDistanceService.calculateRouteObserver(direccionCliente, this.dirEstablecimiento, false)
-    .subscribe((resEstablecimiento: DeliveryEstablecimiento) => {
-      // console.log('calculateRouteObserver', resEstablecimiento);
-    // setTimeout(() => {
-      // this.dirEstablecimiento = this.dirEstablecimiento;
-      // this.establecimientoService.set(this.dirEstablecimiento);
-      // this.infoEstablecimiento.c_servicio = this.dirEstablecimiento.c_servicio;
-      // this.resData.costoTotalDelivery = this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
-      this.dirEstablecimiento = resEstablecimiento;
-      this.establecimientoService.set(resEstablecimiento);
-      this.infoEstablecimiento.c_servicio = resEstablecimiento.c_servicio;
-      this.resData.costoTotalDelivery = resEstablecimiento.c_servicio; // 
 
-      const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
-      localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
+    // evalua si el comercio tiene repartidor propio y si el entorno es web
+    if (this.establecimientoService.establecimiento.pwa_delivery_servicio_propio === 1 && !IS_NATIVE) {
+      // entonces calculamos la distancia con los parametros de la tienda en linea
+      const _parametrosTiendaLinea = this.establecimientoService.get().parametros_tienda_linea;
+      if (_parametrosTiendaLinea) {        
+        this.calcDistanceService.getDistanciaKmRoute(direccionCliente, this.dirEstablecimiento)
+          .subscribe((distanciaKm: number) => {
+            const costoEntrega = this.calcDistanceService.costoEntregaTiendaEnLinea(_parametrosTiendaLinea, distanciaKm);
+            if (costoEntrega.success) {
+              this.dirEstablecimiento.c_servicio = costoEntrega.costo_servicio;
+              this.dirEstablecimiento.distancia_mt = costoEntrega.distancia_en_km.toString();
+              this.dirEstablecimiento.distancia_km = costoEntrega.distancia_en_km.toString();
+              this.dirEstablecimiento.isCalcApiGoogle = true;
+              this.establecimientoService.set(this.dirEstablecimiento);
 
-      this._listSubtotales = _arrSubtotales;
-      this.isCalculandoDistanciaA = false;
+              this.infoEstablecimiento.c_servicio = this.dirEstablecimiento.c_servicio;
+              this.resData.costoTotalDelivery = this.dirEstablecimiento.c_servicio; // 
 
-      this.verificarMontoMinimo();
-    // }, 1500);
-    });
+              const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
+              localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
+
+              this._listSubtotales = _arrSubtotales;
+              this.isCalculandoDistanciaA = false;
+
+              this.isDireccionClienteCorrecta = true;
+              this.verificarMontoMinimo();
+
+              return;
+            } else {
+              // la distancia es mayor a limite de distancia
+              this.msjErrorDir = costoEntrega.mensaje;
+              this.direccionCliente.latitude = null;
+              this.direccionCliente.longitude = null;
+              this.isDireccionClienteCorrecta = false;
+              return;
+            }
+          })
+      }
+
+
+    } else {
+
+      // this.calcDistanceService.calculateRoute(direccionCliente, this.dirEstablecimiento, false);
+      this.calcDistanceService.calculateRouteObserver(direccionCliente, this.dirEstablecimiento, false)
+      .subscribe((resEstablecimiento: DeliveryEstablecimiento) => {
+        // console.log('calculateRouteObserver', resEstablecimiento);
+      // setTimeout(() => {
+        // this.dirEstablecimiento = this.dirEstablecimiento;
+        // this.establecimientoService.set(this.dirEstablecimiento);
+        // this.infoEstablecimiento.c_servicio = this.dirEstablecimiento.c_servicio;
+        // this.resData.costoTotalDelivery = this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
+        this.dirEstablecimiento = resEstablecimiento;
+        this.establecimientoService.set(resEstablecimiento);
+        this.infoEstablecimiento.c_servicio = resEstablecimiento.c_servicio;
+        this.resData.costoTotalDelivery = resEstablecimiento.c_servicio; // 
+
+        this.isDireccionClienteCorrecta = true;
+  
+        const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
+        localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
+  
+        this._listSubtotales = _arrSubtotales;
+        this.isCalculandoDistanciaA = false;
+  
+        this.verificarMontoMinimo();
+      // }, 1500);
+      });
+    }
+
 
   }
 

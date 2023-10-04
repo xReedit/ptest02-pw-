@@ -56,4 +56,5 @@ export class DeliveryEstablecimiento {
     impresoras: []; // impresoras de la sede
     speech_disabled: number; // mozo virtual voz
     simbolo_moneda: string;
+    parametros_tienda_linea: any;
 }
