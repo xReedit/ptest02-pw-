@@ -1,0 +1,27 @@
+/* .keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 5px;
+} */
+
+.keypad-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* grid-gap: 5px; */
+}
+
+.keypad-key {
+    font-size: 20px;
+    border: 1px solid;
+    padding: 15px;
+    font-weight: 600;
+    width: 80px;
+}
+
+.ket-enter {
+    background: #c5e1f1;
+}
+
+.ket-remove {
+    background: #f1c5d6;
+}

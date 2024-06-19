@@ -1,0 +1,24 @@
+<!-- botones del teclado numerico + el boton enter -->
+<div class="content-keypad">
+    <div class="keypad">
+        <div class="keypad-row">
+            <div matRipple [matRippleColor]="rippleColor" class="keypad-key" (click)="addNumber(1)">1</div>
+            <div matRipple [matRippleColor]="rippleColor" class="keypad-key" (click)="addNumber(2)">2</div>
+            <div matRipple [matRippleColor]="rippleColor" class="keypad-key" (click)="addNumber(3)">3</div>
+        </div>
+        <div class="keypad-row">
+            <div matRipple [matRippleColor]="rippleColor" class="keypad-key" (click)="addNumber(4)">4</div>
+            <div matRipple [matRippleColor]="rippleColor" class="keypad-key" (click)="addNumber(5)">5</div>
+            <div matRipple [matRippleColor]="rippleColor" class="keypad-key" (click)="addNumber(6)">6</div>
+        </div>  
+        <div class="keypad-row">
+            <div matRipple [matRippleColor]="rippleColor" class="keypad-key" (click)="addNumber(7)">7</div>
+            <div matRipple [matRippleColor]="rippleColor" class="keypad-key" (click)="addNumber(8)">8</div>
+            <div matRipple [matRippleColor]="rippleColor" class="keypad-key" (click)="addNumber(9)">9</div>
+        </div>  
+        <div class="keypad-row">
+            <div matRipple [matRippleColor]="rippleColor" class="keypad-key" (click)="addNumber(0)">0</div>
+            <div matRipple [matRippleColor]="rippleColor" class="keypad-key ket-remove" (click)="deleteNumber()"><i class="fa fa-arrow-left"></i></div>
+            <div matRipple [matRippleColor]="rippleColor" class="keypad-key ket-enter" (click)="enterNumber()"><i class="fa fa-check"></i></div>
+        </div>
+</div>

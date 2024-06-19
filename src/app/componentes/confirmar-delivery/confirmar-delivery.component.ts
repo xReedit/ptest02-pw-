@@ -628,8 +628,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     // evalua si el comercio tiene repartidor propio y si el entorno es web
     if (this.establecimientoService.establecimiento.pwa_delivery_servicio_propio === 1 && !IS_NATIVE) {
-      // entonces calculamos la distancia con los parametros de la tienda en linea
-      const _parametrosTiendaLinea = this.establecimientoService.get().parametros_tienda_linea;
+      // entonces calculamos la distancia con los parametros de la tienda en linea      
+      const _parametrosTiendaLinea = this.establecimientoService.get().parametros_tienda_linea;      
       if (_parametrosTiendaLinea) {        
         this.calcDistanceService.getDistanciaKmRoute(direccionCliente, this.dirEstablecimiento)
           .subscribe((distanciaKm: number) => {
@@ -663,11 +663,15 @@ export class ConfirmarDeliveryComponent implements OnInit {
               return;
             }
           })
+
+          return;
       }
 
 
-    } else {
+    } 
+    // else {
 
+    // console.log('eeeeeeaaa');
       // this.calcDistanceService.calculateRoute(direccionCliente, this.dirEstablecimiento, false);
       this.calcDistanceService.calculateRouteObserver(direccionCliente, this.dirEstablecimiento, false)
       .subscribe((resEstablecimiento: DeliveryEstablecimiento) => {
@@ -693,7 +697,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
         this.verificarMontoMinimo();
       // }, 1500);
       });
-    }
+    // }
 
 
   }

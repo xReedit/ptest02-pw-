@@ -16,7 +16,7 @@ export class NavigatorLinkService {
   private resNavigatorSource = new BehaviorSubject<any[]>([]);
   public resNavigatorSourceObserve$ = this.resNavigatorSource.asObservable();
 
-  private pageActive = 'carta';
+  public pageActive = 'carta';
 
   private resNavigator: any = [];
   private historyNavigator: any[] = [];

@@ -1,0 +1,18 @@
+
+.list-group {
+    width: 100%;
+    margin-bottom: 20px;
+    max-height: 300px;
+    background: #494949;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.list-items {
+    max-height: 280px;
+    overflow: auto;
+}
+
+.list-group-item {
+    cursor: pointer;
+}

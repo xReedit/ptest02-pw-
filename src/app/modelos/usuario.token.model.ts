@@ -33,6 +33,7 @@ export class UsuarioTokenModel {
     isRetiroCash: boolean; // si es delivery
     isPuntoAutoPedido: boolean; // si es punto de autopedido
     isTomaPedidoRapido: boolean; // si es se toma pedido rapido se muestra como punto de autopedido
+    isPuntoTomaPedidos: boolean; // si es punto de toma de pedidos
     direccionEnvioSelected: DeliveryDireccionCliente;
     tiempoEntrega: TiempoEntregaModel;
     telefono: string;

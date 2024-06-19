@@ -117,7 +117,7 @@ export class CompListMesasComponent implements OnInit {
   }
 
   private showCuentaMesa(item: any) {
-    this.navigatorService.setPageActive('mipedido');
+    this.navigatorService.setPageActive('mipedido');    
     this.listenStatusService.setShowCuentaMesaNumero(item.nummesa);
   }
 

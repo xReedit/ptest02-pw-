@@ -1,40 +1,49 @@
 <div >
     <p class="fs-18">Configuraciones</p>
     <hr>
-    <mat-checkbox [(ngModel)]="isTomaPedidoRapido">
-        <span class="fw-600">Tomar pedido rápido</span>
-    </mat-checkbox>    
-    <p class="fs-12">Se adjuntara los items al clic, solo mostrará el detalle en los items que tienen opciones por seleccionar. <strong>Elija un canal de consumo predertiminado.</strong></p>
-
-    <mat-form-field>
-        <mat-label>Canal consumo prederminado</mat-label>
-        <mat-select placeholder="Canal de consumo" [(ngModel)]="selectedValueCanConsumo" name="selectedValueImpresora" [(value)] = "selectedValueCanConsumo" [compareWith]="compareByIdCanal">
-            <mat-option *ngFor="let item of listCanalConsumo" [value]="item">
-                {{item.descripcion}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-
-    <hr>
-
-    <mat-checkbox [(ngModel)]="isPuntoAutoPedidoCheck">
-        <span class="fw-600">Punto de Autopedido</span>
-    </mat-checkbox>    
-
-    <p class="fs-12">Configurar este equipo como Punto de Autopedido, donde el cliente podra realizar por su cuenta su pedido. 
-        Vincule una impresora donde el cliente obtendrá una copia de su pedido.
-        <strong>El canal de consumo será: Para Llevar</strong>
-    </p>
-    <br>
+    <div>
+        <mat-checkbox [(ngModel)]="isTomaPedidoRapido">
+            <span class="fw-600">Tomar pedido rápido</span>
+        </mat-checkbox>    
+        <p class="fs-12">Se adjuntara los items al clic, solo mostrará el detalle en los items que tienen opciones por seleccionar. <strong>Elija un canal de consumo predertiminado.</strong></p>
     
-    <mat-form-field>
-        <mat-label>Impresora Vinculada</mat-label>
-        <mat-select placeholder="Impresora" [(ngModel)]="selectedValueImpresora" name="selectedValueImpresora" [(value)] = "selectedValueImpresora" [compareWith]="compareById">
-            <mat-option *ngFor="let item of listImpresoras" [value]="item">
-                {{item.descripcion}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
+        <mat-form-field>
+            <mat-label>Canal consumo prederminado</mat-label>
+            <mat-select placeholder="Canal de consumo" [(ngModel)]="selectedValueCanConsumo" name="selectedValueImpresora" [(value)] = "selectedValueCanConsumo" [compareWith]="compareByIdCanal">
+                <mat-option *ngFor="let item of listCanalConsumo" [value]="item">
+                    {{item.descripcion}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    
+        <hr>
+    
+        <mat-checkbox [(ngModel)]="isPuntoAutoPedidoCheck">
+            <span class="fw-600">Punto de Autopedido</span>
+        </mat-checkbox>    
+    
+        <p class="fs-12">Configurar este equipo como Punto de Autopedido, donde el cliente podra realizar por su cuenta su pedido. 
+            Vincule una impresora donde el cliente obtendrá una copia de su pedido.
+            <strong>El canal de consumo será: Para Llevar</strong>
+        </p>
+        
+        <mat-form-field>
+            <mat-label>Impresora Vinculada</mat-label>
+            <mat-select placeholder="Impresora" [(ngModel)]="selectedValueImpresora" name="selectedValueImpresora" [(value)] = "selectedValueImpresora" [compareWith]="compareById">
+                <mat-option *ngFor="let item of listImpresoras" [value]="item">
+                    {{item.descripcion}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <hr>
+
+        <mat-checkbox [(ngModel)]="isPuntoTomaPedido">
+            <span class="fw-600">Punto de toma de pedidos</span>
+        </mat-checkbox>
+        <p class="fs-12">Configurar este equipo como Punto de toma de pedidos, donde el mesero podra ingresar el pedido del cliente.            
+        </p>
+    </div>
 
     <hr>
     <div class="d-flex">

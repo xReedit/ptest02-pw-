@@ -13,7 +13,7 @@
     </ng-container>
 
     <!-- categorias -->
-    <div [hidden]="!showCategoria" class="content-secciones xanimated xfadeIn">
+    <div [hidden]="!showCategoria" class="content-secciones categoria xanimated xfadeIn">
 
         <!-- informacion y comentarios solo delivery cliente -->
         <div class="p-2 pl-3 pr-3 border-bottom d-flex justify-content-between fs-14" 
@@ -63,8 +63,8 @@
   
 
     <!-- Secciones -->
-    <div [hidden]="!showSecciones && isScreenIsMobile"      
-      class="content-secciones animated fadeIn m-main-pt-40">
+    <div [hidden]="!showSecciones && isScreenIsMobile || showCategoria"      
+      class="content-secciones seccion animated fadeIn m-main-pt-40">
 
         <!-- promociones -->
         <ng-container *ngIf="objPromociones">
@@ -259,8 +259,8 @@
 
     <!-- mi orden siempre que la pantalla no sea mobile -->
     <ng-container>
-      <div class="content-resumen">
-          <app-resumen-pedido></app-resumen-pedido>
+      <div class="content-resumen content-resumen-pedido">
+          <app-resumen-pedido id="1"></app-resumen-pedido>
       </div>
     </ng-container>
     

@@ -131,9 +131,9 @@
             </div>
           </div>
         </ng-template>
-        <div class="x100-toolbar-hidden" [ngClass]="{'fondo-gris': isUsuarioCliente}" (scroll)="onScroll($event)">
-          <ng-container *ngIf="isScreenIsMobile">
-            <app-resumen-pedido></app-resumen-pedido>
+        <div class="x100-toolbar-hidden content-resumen-pedido" [ngClass]="{'fondo-gris': isUsuarioCliente}" (scroll)="onScroll($event)">
+          <ng-container>
+            <app-resumen-pedido id="show-cuenta-mesa"></app-resumen-pedido>
           </ng-container>
 
           <br>

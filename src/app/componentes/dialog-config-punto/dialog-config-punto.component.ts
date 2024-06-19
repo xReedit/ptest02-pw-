@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
+import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 
 @Component({
   selector: 'app-dialog-config-punto',
@@ -16,11 +17,13 @@ export class DialogConfigPuntoComponent implements OnInit {
   selectedValueCanConsumo: any;
   isPuntoAutoPedidoCheck: boolean;
   isTomaPedidoRapido: boolean;
+  isPuntoTomaPedido: boolean;
 
   constructor(
     private crudService: CrudHttpService,
     private establecimientoService: EstablecimientoService,
-    private infoTokenService: InfoTockenService
+    private infoTokenService: InfoTockenService,
+    private listenStatusService: ListenStatusService
   ) { }
 
   ngOnInit(): void {
@@ -38,9 +41,11 @@ export class DialogConfigPuntoComponent implements OnInit {
 
       this.isTomaPedidoRapido = _puntoConfig.istoma_pedido_rapido;
       this.selectedValueCanConsumo = _puntoConfig.canal_consumo;
+      this.isPuntoTomaPedido = _puntoConfig.ispunto_toma_pedidos;
 
       this.infoTokenService.setIsPuntoAutoPedido(this.isPuntoAutoPedidoCheck);
       this.infoTokenService.setIsTomaPedidoRapido(this.isTomaPedidoRapido);
+      this.infoTokenService.setIsPuntoTomaPedidos(this.isPuntoTomaPedido);
     }
 
 
@@ -52,6 +57,7 @@ export class DialogConfigPuntoComponent implements OnInit {
       istoma_pedido_rapido: this.isTomaPedidoRapido,
       canal_consumo: this.selectedValueCanConsumo,
       ispunto_autopedido: this.isPuntoAutoPedidoCheck,
+      ispunto_toma_pedidos: this.isPuntoTomaPedido,
       impresora: this.selectedValueImpresora
     };
 
@@ -61,6 +67,9 @@ export class DialogConfigPuntoComponent implements OnInit {
 
     this.infoTokenService.setIsPuntoAutoPedido(this.isPuntoAutoPedidoCheck);
     this.infoTokenService.setIsTomaPedidoRapido(this.isTomaPedidoRapido);
+    this.infoTokenService.setIsPuntoTomaPedidos(this.isPuntoTomaPedido);
+    
+    this.listenStatusService.setPuntoTomaPedidos(this.isPuntoTomaPedido);
 
     location.reload();
   }

@@ -42,6 +42,7 @@ import { CompPasarelaPagoComponent } from './comp-pasarela-pago/comp-pasarela-pa
 import { SelectCiudadDeliveryComponent } from './select-ciudad-delivery/select-ciudad-delivery.component';
 import { CompDatosReservaComponent } from './comp-datos-reserva/comp-datos-reserva.component';
 import { CompGetHoraComponent } from './comp-get-hora/comp-get-hora.component';
+import { CompTecladoNumerico } from './comp-teclado-numerico/comp-teclado-numerico.component';
 
 // import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { DialogCalificacionSedeComponent } from './dialog-calificacion-sede/dialog-calificacion-sede.component';
@@ -59,6 +60,7 @@ import { CompListCallClientComponent } from './comp-list-call-client/comp-list-c
 import { DatosFacturacionClienteComponent } from './datos-facturacion-cliente/datos-facturacion-cliente.component';
 import { CompListMesasComponent } from './comp-list-mesas/comp-list-mesas.component';
 import { DialogOutAuthIosComponent } from './dialog-out-auth-ios/dialog-out-auth-ios.component';
+import { DialogChangeUser } from './dialog-change-user/dialog-change-user.component';
 
 @NgModule({
   declarations: [
@@ -109,6 +111,8 @@ import { DialogOutAuthIosComponent } from './dialog-out-auth-ios/dialog-out-auth
     DatosFacturacionClienteComponent,
     CompListMesasComponent,
     DialogOutAuthIosComponent,
+    DialogChangeUser,
+    CompTecladoNumerico
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
@@ -165,7 +169,9 @@ import { DialogOutAuthIosComponent } from './dialog-out-auth-ios/dialog-out-auth
     CompViewPromoComponent,
     CompListCallClientComponent,
     DatosFacturacionClienteComponent,
-    CompListMesasComponent
+    CompListMesasComponent,
+    DialogChangeUser,
+    CompTecladoNumerico
     // DialogDesicionComponent
   ],
 

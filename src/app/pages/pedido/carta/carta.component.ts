@@ -257,6 +257,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       // console.log('this.miPedidoService.objCarta', this.miPedidoService.objCarta);
 
       if (this.miPedidoService.objCarta.promociones) {
+        console.log('this.miPedidoService.objCarta.promociones', this.miPedidoService.objCarta.promociones);
         if (this.miPedidoService.objCarta.promociones.lista_promociones) {
           // if (this.miPedidoService.objCarta.promociones[0].idpromocion) {
           this.objPromociones = this.miPedidoService.objCarta.promociones.lista_promociones;
@@ -742,6 +743,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       _charConcat = _charConcat.toLowerCase();
       i.visible = _charConcat.indexOf(charFind) > -1 ? true : false;
     });
+
   }
 
   getObjDetalleSeccion(seccion: SeccionModel): String {

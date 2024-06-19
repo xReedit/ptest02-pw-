@@ -14,6 +14,8 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DialogConfigPuntoComponent } from 'src/app/componentes/dialog-config-punto/dialog-config-punto.component';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { ComandAnalizerService } from 'src/app/shared/services/speech/comand-analizer.service';
+import { DialogChangeUser } from 'src/app/componentes/dialog-change-user/dialog-change-user.component';
+
 
 export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
   showDelay: 500,
@@ -41,9 +43,11 @@ export class ToolBarComponent implements OnInit {
   isCliente = false;
   isSpeechVoiceAcivado = false;
   isActiveMozoVoz = false;
+  isPuntoTomaPedidos = false;
 
 
   nomSede = '';
+  nomUsuario = '';
   idSedeCartaVirtual: number;
   urlSharedCartaVirtual: string;
 
@@ -70,6 +74,10 @@ export class ToolBarComponent implements OnInit {
     // console.log('establecimientoService', this.establecimientoService.get());
     this.isSpeechVoiceAcivado = this.establecimientoService.get().speech_disabled === 1;
 
+    this.isPuntoTomaPedidos = this.infoTokenService.infoUsToken.isPuntoTomaPedidos;
+    this.nomUsuario = this.infoTokenService.infoUsToken.usuario;
+    console.log('this.isPuntoTomaPedidos', this.isPuntoTomaPedidos);
+    
     this.listenStatusService.isBusqueda$.subscribe(res => {
       this.isBusqueda = res;
       // console.log('liste isBusqueda', res);
@@ -197,6 +205,12 @@ stopRecordingToolbar(): void {
 
 actualizarPage() {
   location.reload();
+}
+
+changeUser() {
+  this.dialog.open(DialogChangeUser).afterClosed().subscribe((res: any) => {    
+    this.nomUsuario = res.usuario;    
+  });
 }
 
 

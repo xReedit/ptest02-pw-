@@ -173,6 +173,7 @@ export class EstablecimientoService {
     return new Observable(observer => {
       this.crudService.postFree(_dataSend, 'delivery', 'get-comercio-x-calificar', false)
       .subscribe((res: any) => {
+        console.log('res', res);
         observer.next(res.data);
       });
 

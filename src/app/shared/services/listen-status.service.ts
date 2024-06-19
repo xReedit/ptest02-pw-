@@ -9,6 +9,10 @@ import { MetodoPagoModel } from 'src/app/modelos/metodo.pago.model';
 })
 export class ListenStatusService {
 
+  // para punto de pedidos
+  private isPuntoTomaPedidosSource = new BehaviorSubject<boolean>(false);
+  public isPuntoTomaPedidos$ = this.isPuntoTomaPedidosSource.asObservable();
+
   // para activar la busqueda
   private isBusquedaSource = new BehaviorSubject<boolean>(false);
   public isBusqueda$ = this.isBusquedaSource.asObservable();
@@ -208,6 +212,8 @@ export class ListenStatusService {
   }
 
   setShowCuentaMesaNumero(num: number) {
+    // si es 0 no muestra o el mismo valor que tiene no muestra
+    if (num === 0 || num === this.showCuentaMesaNumeroSoruce.value) { return; }
     this.showCuentaMesaNumeroSoruce.next(num);
   }
 
@@ -217,6 +223,10 @@ export class ListenStatusService {
 
   setListenGoCarta() {
     this.listenGoBackCartaSource.next(true);
+  }
+
+  setPuntoTomaPedidos(value: boolean) {
+    this.isPuntoTomaPedidosSource.next(value);
   }
 
   // setCallListClienteAtencion(num_mesa: string) {

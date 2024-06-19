@@ -17,8 +17,8 @@
           <div *ngIf="countTotalItems > 0" class="countItem countTotal animated fadeInUp">
             {{countTotalItems | number: '2.'}}</div>
         </ng-template>
-        <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
-          <app-resumen-pedido></app-resumen-pedido>
+        <div class="x100-toolbar-hidden content-resumen-pedido" (scroll)="onScroll($event)">
+          <app-resumen-pedido id="2"></app-resumen-pedido>
           <br>
         </div>
       </mat-tab>

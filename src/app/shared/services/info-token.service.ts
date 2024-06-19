@@ -80,6 +80,11 @@ export class InfoTockenService {
     return this.infoUsToken.isTomaPedidoRapido || false;
   }
 
+  isPuntoTomaPedidos(): boolean {
+    // this.verificarContunuarSession();
+    return this.infoUsToken.isPuntoTomaPedidos || false;
+  }
+
   isUsuarioAutorizado(): boolean {
     // this.verificarContunuarSession();
     return this.infoUsToken?.isUsuarioAutorizado || false;
@@ -258,6 +263,11 @@ export class InfoTockenService {
     this.set();
   }
 
+  setIsPuntoTomaPedidos( val: boolean) {
+    this.infoUsToken.isPuntoTomaPedidos = val;
+    this.set();
+  }
+
   setIsUsuarioAutorizacion( val: boolean) {
     this.infoUsToken.isUsuarioAutorizado = val;
     this.set();
@@ -287,6 +297,14 @@ export class InfoTockenService {
 
   getToken(): any { return localStorage.getItem('::token'); }
   getTokenAuth(): any { return localStorage.getItem('::token:auth'); }
+
+  // cuando es punto pedido y cambia de usuario, solo cambiamos en el infotoken idusuario y nombres
+  changeUserMozo(userMozo: any) {
+    this.infoUsToken.idusuario = userMozo.idusuario;
+    this.infoUsToken.nombres = userMozo.nombres;
+    this.infoUsToken.usuario = userMozo.usuario;
+    this.set();
+  }
 
   converToJSON(): void {
     if (localStorage.getItem('::token')) {

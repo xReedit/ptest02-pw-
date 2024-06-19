@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { ReglascartaService } from 'src/app/shared/services/reglascarta.service';
@@ -25,7 +25,7 @@ import { DialogLoadingComponent } from './dialog-loading/dialog-loading.componen
 import { DialogResetComponent } from './dialog-reset/dialog-reset.component';
 import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/dialog-item-edit.component';
 import { Subject } from 'rxjs/internal/Subject';
-import { takeUntil, take, last, takeLast } from 'rxjs/operators';
+import { takeUntil, take, last, takeLast, first } from 'rxjs/operators';
 import { EstadoPedidoClienteService } from 'src/app/shared/services/estado-pedido-cliente.service';
 // import { throwToolbarMixedModesError } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
@@ -45,6 +45,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   // private unsubscribeRe = new Subscription();
   private destroy$: Subject<boolean> = new Subject<boolean>();
+
+  @Input () id = '';
 
   _miPedido: PedidoModel = new PedidoModel();
   _arrSubtotales: any = [];
@@ -414,10 +416,16 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // ver la cuenta de mesa desde afuera
     this.listenStatusService.showCuentaMesaNumero$
-      .pipe(takeUntil(this.destroy$))
+      .pipe(        
+        takeUntil(this.destroy$)
+      )
       .subscribe((numMesa: number) => {
-        if (numMesa !== 0) {
-          this.xLoadCuentaMesa(numMesa.toString());
+        if (numMesa !== 0) {          
+          // solo si el url es pedido
+          if (this.navigatorService.pageActive === 'mipedido' && this.id === 'show-cuenta-mesa') {
+            console.log('load mesa resuemn pedido', numMesa);
+            this.xLoadCuentaMesa(numMesa.toString());
+          }
         }
       });
   }
@@ -545,6 +553,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
       this.isVisibleConfirmar = true;
       this.isVisibleConfirmarAnimated = true;
+      this.isSavingPedido = false;
 
       this.checkTiposDeConsumo();
       this.checkIsRequierMesa();
@@ -580,9 +589,17 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private showLoaderPedido(): void {
+    
     this.listenStatusService.setLoaderSendPedido(true);
 
-    if (this.isSavingPedido) { return; }
+    if (this.isSavingPedido) { 
+      // setTimeout(() => {
+      //   this.isSavingPedido = false;
+      //   this.listenStatusService.setLoaderSendPedido(false);
+      // }, 3000);
+      return; 
+    }
+
     this.isSavingPedido = true;
 
 
@@ -626,6 +643,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // usuario o cliente
     const dataUsuario = this.infoToken.getInfoUs();
+    console.log('dataUsuario', dataUsuario);
     // const dataUsuario = this.infoToken.infoUsToken;
 
     const dataFrmConfirma: any = {};
@@ -899,6 +917,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     }
 
     this.crudService.postFree(datos, 'pedido', 'lacuenta').subscribe((res: any) => {
+      console.log('ver la cuenta');
       this.desglozarCuenta(res);
     });
   }

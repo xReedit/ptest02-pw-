@@ -101,6 +101,7 @@
   position: absolute;  
   height: calc(100vh - 49px);
   overflow: auto;
+  
 }
 
 .div-resumen-pedido.hide {
@@ -208,6 +209,11 @@
     color: white;
 }
 
+/* .xfooter {
+    max-width: 500px;
+    max-width: revert-layer;
+} */
+
 
 @media only screen and (min-width: 600px) {
     
@@ -215,7 +221,7 @@
     .div-resumen-pedido {
         position: relative;
         height: auto;
-        overflow: hidden;
+        overflow: hidden;        
     }
 
     .div-resumen-pre-pago {
@@ -259,9 +265,9 @@
     }
 
     .xfooter{
-        width: 100%;
-        max-width: 100%;
-    }
+        max-width: 500px;
+        width: 100%;        
+    }    
     
 }
 

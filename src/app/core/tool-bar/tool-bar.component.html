@@ -16,6 +16,14 @@
                <!-- <button [matMenuTriggerFor]="menu" aria-label="Mas Opciones">
           <i class="fa fa-ellipsis-h"></i>
      </button> -->
+
+               <!-- informacion del usuario si es punto de toma de pedidos -->
+               <div *ngIf="isPuntoTomaPedidos" class="d-flex">
+                    <button class="btn btn-sm btn-dark" (click)="changeUser()">Cambiar</button>
+                    <span class="fs-15 ml-2 mr-2">|</span>
+                    <span class="fs-15">{{ nomUsuario }}</span>
+               </div>
+
                <div [matMenuTriggerFor]="menu" class="example-ripple-container fs-15" matRipple matRippleCentered="true"
                     [matRippleColor]="rippleColor">
                     <i class="fa fa-ellipsis-v"></i>

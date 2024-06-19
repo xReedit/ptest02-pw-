@@ -1,0 +1,63 @@
+<div class="dial-user-change">
+    <div class="container text-center">
+        <!-- cambiar de usuario, con nomusuario y clave -->
+        <div *ngIf="!isShowPassword">
+            <div>
+                <p class="fs-18">Cambiar de Usuario</p>                
+            </div>
+            <div>             
+                    <div *ngIf="listUsuarios.length > 0" class="list-group">
+                        <div class="list-items">
+                            <ul>
+                                <li class="list-group-item" *ngFor="let item of listUsuarios" (click)="selectUser(item)" matRipple [matRippleColor]="rippleColor">
+                                    {{item.nombres}}                            
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                <!-- </mat-form-field> -->                
+                <!-- <mat-form-field>
+                    <mat-label>Clave</mat-label>
+                    <input matInput type="password" placeholder="Clave" [(ngModel)]="claveUsuarioChange">
+                </mat-form-field> -->
+            </div>  
+            <!-- botonera -->
+            <div>                
+                <div>
+                    <!-- <button mat-raised-button color="primary" class="mr-2" (click)="changeLoginUser()">Listo</button> -->
+                    <button mat-raised-button color="accent" mat-dialog-close>Cancelar</button>
+                </div>
+            </div>
+            
+    </div>
+
+    <!-- password -->
+    <div *ngIf="isShowPassword">
+        <div>
+            <p class="fs-18">Ingrese su clave</p>
+        </div>
+        <div>
+            <div class="form-group">
+                <input type="password" class="form-control text-center fs-18" placeholder="Clave" [(ngModel)]="numberPassword" readonly>
+            </div>
+        </div>
+        <div>
+           <comp-teclado-numerico (numberOut)="writeNumber($event)" (numberEntered)="runChangeUser($event)"></comp-teclado-numerico>
+        </div>        
+
+        <br>
+        <!-- botonera -->
+        <div>
+            <div>
+                <mat-progress-bar [hidden]="!loading" mode="indeterminate"></mat-progress-bar>
+                <p class="text-danger animated flash" *ngIf="rptNoSuccess!==''">{{rptNoSuccess}}</p>
+                <br>
+            </div>
+            <div>
+                <!-- <button mat-raised-button color="primary" class="mr-2" (click)="changeLoginUser()">Listo</button> -->
+                <button mat-raised-button color="primary" (click)="isShowPassword=!isShowPassword">Regresar</button>
+            </div>
+        </div>
+    </div>
+</div>
