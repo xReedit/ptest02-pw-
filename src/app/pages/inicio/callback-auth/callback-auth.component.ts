@@ -122,11 +122,27 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
   private async setInfoToken(token: any) {
     
     try {
+      // Preservar propiedades de holding antes de sobrescribir el token
+      const _oldToken = this.infoToken.infoUsToken;
+      const _holdingData = {
+        is_holding: _oldToken?.is_holding,
+        holding: _oldToken?.holding,
+        is_mozo_accept_payments: _oldToken?.is_mozo_accept_payments
+      };
+
       const _token = `eyCJ9.${btoa(JSON.stringify(token))}`;
       this.authService.setLocalToken(_token);
       this.authService.setLoggedStatus(true);
       this.infoToken.converToJSON();
       this.infoToken.setIsUsLoggedIn(true);
+
+      // Restaurar propiedades de holding si existían
+      if (_holdingData.is_holding) {
+        this.infoToken.infoUsToken.is_holding = _holdingData.is_holding;
+        this.infoToken.infoUsToken.holding = _holdingData.holding;
+        this.infoToken.infoUsToken.is_mozo_accept_payments = _holdingData.is_mozo_accept_payments;
+        this.infoToken.set();
+      }
 
       let _linkToRedirec = this.verifyClientService.getLinkRedirecLogin();
       _linkToRedirec = _linkToRedirec ? _linkToRedirec : '';
