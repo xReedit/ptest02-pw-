@@ -32,6 +32,7 @@ export class MainComponent implements OnInit {
   isSpeechVoiceAcivado = false;
   isMozoApp = VIEW_APP_MOZO;
   isHolding = false;
+  labelTabOne = 'Carta';
 
   private lastValScrollTop = 0;
   importeTotalProductos = 0;
@@ -67,16 +68,17 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {
 
-    // console.log('this.infoTokenService.getInfoUs()', this.infoTokenService.getInfoUs());
+    console.log('llega a main pedido');
     this.detectScreenSize();
     this.socketService.isSocketOpenReconect = false;
-    this.navigatorService.setPageActive('carta');
+
 
 
     this.infoTokenService.getInfoUs();
     this.isPuntoAutoPedido = this.infoTokenService.isPuntoAutoPedido();
     this.isSpeechVoiceAcivado = this.establecimientoService.get().speech_disabled === 1;
     this.isHolding = this.infoTokenService.getIsHolding();
+    this.labelTabOne = this.isHolding === true ? `Marcas` : `Carta`;
     // this.navigatorService.addLink('carta');
 
     // console.log('this.infoTokenService.infoUsToken', this.infoTokenService.infoUsToken);
@@ -110,7 +112,14 @@ export class MainComponent implements OnInit {
       if (this.verifyClientService.getIsDelivery() && this.verifyClientService.getIsQrSuccess()) {
         this.socketService.isSocketOpen = false;
       }
+
+      // console.log('this.infoTokenService.isholdin', this.infoTokenService.getIsHolding());
+
     });
+
+    if (!this.infoTokenService.getIsHolding()) {
+      this.navigatorService.setPageActive('carta');
+    }
 
     this.listenStatusService.isBusqueda$.subscribe(res => {
       this.isBusqueda = res;
@@ -170,6 +179,7 @@ export class MainComponent implements OnInit {
     });
 
     this.listenStatusService.isLoaderCarta$.subscribe(res => {
+      console.log('isLoaderCarta', res);
       this.loaderPage = res;
       if (this.loaderPage) {
         this.verificarLoaderReload();
@@ -217,11 +227,18 @@ export class MainComponent implements OnInit {
     }, 100);
   }
 
+  clickMarca($event: any) {
+    const titleTab = $event.target.textContent.toLowerCase();
+    if (titleTab === 'marcas') {
+      this.listenStatusService.setListenGoBackMarcas();
+    }
+  }
+
   clickTab($event: any) {
 
 
 
-    // console.log('event tab', $event);
+    console.log('event tab', $event);
     this.selectedTab = $event.index;
 
     // if ( this.selectedTab === 1 && !this.isScreenIsMobile ) {return false; }

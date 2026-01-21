@@ -233,6 +233,14 @@ export class ListenStatusService {
     this.listenGoBackMarcasSource.next(true);
   }
 
+  setListenGoBackMarcas() {
+    this.listenGoBackMarcasSource.next(true);
+  }
+  
+  resetListenGoBackMarcas() {
+    this.listenGoBackMarcasSource.next(false);
+  }
+
   setPuntoTomaPedidos(value: boolean) {
     this.isPuntoTomaPedidosSource.next(value);
   }

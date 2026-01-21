@@ -897,35 +897,24 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onSelectMarca(marca: any) {
-    console.log('onSelectMarca - inicio');
     this.isSelectingMarca = true;
 
-    // Resetear estado visual inmediatamente
-    this.showHoldingMarcas = false;
-    this.showCategoria = false;
-    this.showSecciones = false;
-    this.showItems = false;
-    
-    // Configurar nueva marca
     this.showToolBar = true;
     this.tituloToolBar = "MARCAS";
     this.infoToken.setIdSede(marca.idsede_marca);
     this.infoToken.setIdOrg(marca.idorg_marca);
-    
-    // Reconectar socket y cargar carta
+    // this.socketService.closeConnection();
     this.socketService.reconnect();
     this.initCarta();
-    
     setTimeout(() => {
+      // this.navigatorService.addLink('marcas');
+      this.showHoldingMarcas = false;
       this.showCategoria = true;
-      console.log('onSelectMarca - mostrando categoría');
-      
-      // Desactivar bandera después de completar la selección - tiempo aumentado
+      // Desactivar bandera después de completar la selección
       setTimeout(() => {
         this.isSelectingMarca = false;
-        console.log('onSelectMarca - bandera desactivada');
-      }, 800);
-    }, 300);
+      }, 500);
+    }, 200);
   }
 
 }

@@ -11,6 +11,9 @@
 </div>
 <!-- loader -->
 
+<!-- notifica llamado cliente mesa -->
+<app-comp-list-call-client></app-comp-list-call-client>
+
 <!-- loader send pedido or transaction -->
 <div class="animated fadeIn div-loader-2" *ngIf="listenStatusService.isLoaderSendPedido$ | async">
   <!-- <div class="animated fadeIn div-loader-2"> -->
@@ -66,8 +69,7 @@
 </div>
 <!-- loader send pedido or transaction -->
 
-<!-- notifica llamado cliente mesa -->
-<app-comp-list-call-client></app-comp-list-call-client>
+
 <!-- notifica llamado cliente mesa -->
 
 <!-- <div *ngIf="isPagePagarShow">
@@ -84,16 +86,10 @@
 
   <div>
 
-    <mat-tab-group (selectedTabChange)="clickTab($event)" backgroundColor="primary" color="accent"
-      class="main-contemt transicion xanimated xfadeIn" [selectedIndex]="selectedTab"
+    <mat-tab-group (click)="clickMarca($event)" (selectedTabChange)="clickTab($event)" backgroundColor="primary"
+      color="accent" class="main-contemt transicion xanimated xfadeIn" [selectedIndex]="selectedTab"
       [ngClass]="{'header-less-tabs pt-0': isBusqueda}">
-      <mat-tab label="Marcas" *ngIf="isHolding">
-        <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
-          <app-carta></app-carta>
-          <br>
-        </div>
-      </mat-tab>
-      <mat-tab label="Carta">
+      <mat-tab label={{labelTabOne}}>
         <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
           <app-carta></app-carta>
           <br>
@@ -137,9 +133,9 @@
             </div>
           </div>
         </ng-template>
-        <div class="x100-toolbar-hidden content-resumen-pedido" [ngClass]="{'fondo-gris': isUsuarioCliente}" (scroll)="onScroll($event)">
-          <ng-container>
-            <app-resumen-pedido id="show-cuenta-mesa"></app-resumen-pedido>
+        <div class="x100-toolbar-hidden" [ngClass]="{'fondo-gris': isUsuarioCliente}" (scroll)="onScroll($event)">
+          <ng-container *ngIf="isScreenIsMobile">
+            <app-resumen-pedido></app-resumen-pedido>
           </ng-container>
 
           <br>
@@ -147,13 +143,30 @@
       </mat-tab>
 
       <!-- solo si personal autorizado  -->
-      <mat-tab label="Mesas" *ngIf="!isUsuarioCliente && !isClienteDelivery && !isClienteReserva">
-        <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
-          <!-- <app-estado-pedido></app-estado-pedido> -->
-          <app-comp-list-mesas></app-comp-list-mesas>
-          <br>
-        </div>
-      </mat-tab>
+      <ng-container *ngIf="!isUsuarioCliente && !isClienteDelivery && !isClienteReserva">
+        <ng-container *ngIf="!isHolding; else holdingTab">
+          <mat-tab label="Mesas">
+            <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
+              <!-- <app-estado-pedido></app-estado-pedido> -->
+              <app-comp-list-mesas></app-comp-list-mesas>
+              <br>
+            </div>
+          </mat-tab>
+        </ng-container>
+        <ng-template #holdingTab>
+          <mat-tab label="Pedidos">
+            <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
+              <!-- <app-estado-pedido></app-estado-pedido> -->
+              <!-- <app-comp-list-pedidos-holding></app-comp-list-pedidos-holding> -->
+              <app-main-tab-pedidos-holding></app-main-tab-pedidos-holding>
+              <br>
+            </div>
+          </mat-tab>
+        </ng-template>
+
+      </ng-container>
+
+
 
       <!-- solo si es usuario cliente  -->
       <mat-tab label="Estado" *ngIf="isUsuarioCliente && !isClienteDelivery && !isClienteReserva">

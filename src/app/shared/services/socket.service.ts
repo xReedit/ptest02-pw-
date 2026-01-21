@@ -126,6 +126,13 @@ export class SocketService {
     // this.onListenSocketDisconnet();
   }
 
+  reconnect() {
+    this.closeConnection();
+    setTimeout(() => {
+      this.connect();
+    }, 1000);
+  }
+
   getIdSocket(): string {
     return this.socket.id;
   }
