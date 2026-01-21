@@ -20,6 +20,7 @@ import { BarcodeScanner, SupportedFormat } from '@capacitor-community/barcode-sc
 import { IS_NATIVE } from 'src/app/shared/config/config.const';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
+import { HoldingService } from 'src/app/shared/services/holding.service';
 // import { BarcodeScanner } from '@capacitor-community/barcode-scanner'
 
 // import {QrScannerComponent} from 'angular2-qrscanner';
@@ -72,7 +73,8 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     private establecimientoService: EstablecimientoService,
     private router: Router,
     private routerActive: ActivatedRoute,
-    private navigationService: NavigatorLinkService
+    private navigationService: NavigatorLinkService,
+    private holdingService: HoldingService
     ) { }
 
   ngOnInit() {
@@ -319,6 +321,10 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
         this.verifyClientService.setIsSoloLLevar(this.isSoloLLevar);
         this.verifyClientService.setIsDelivery(this.isDelivery);
 
+        if ( res.data[0].is_holding == '1' ) {
+            this.loadHolding(dataHeader.idsede);
+        }
+
         if ( this.isDelivery ) {
           // this.infoTokenService.converToJSON();
           // this.infoTokenService.infoUsToken.isDelivery = true;
@@ -443,6 +449,10 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
       }
       // console.log('res', res);
     });
+  }
+
+  private loadHolding(idsede: number) {
+    this.holdingService.setHolding(idsede);
   }
 
 }

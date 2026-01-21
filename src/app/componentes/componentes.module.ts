@@ -61,6 +61,11 @@ import { DatosFacturacionClienteComponent } from './datos-facturacion-cliente/da
 import { CompListMesasComponent } from './comp-list-mesas/comp-list-mesas.component';
 import { DialogOutAuthIosComponent } from './dialog-out-auth-ios/dialog-out-auth-ios.component';
 import { DialogChangeUser } from './dialog-change-user/dialog-change-user.component';
+import { HoldingMarcasComponent } from './holding/marcas/marcas.component';
+import { ListComponent } from './holding/marcas/list/list.component';
+import { ItemComponent } from './holding/marcas/item/item.component';
+import { FormaPagoComponent } from './holding/forma-pago/forma-pago.component';
+import { CompListPedidosHoldingComponent } from './comp-list-pedidos-holding/comp-list-pedidos-holding.component';
 
 @NgModule({
   declarations: [
@@ -112,7 +117,12 @@ import { DialogChangeUser } from './dialog-change-user/dialog-change-user.compon
     CompListMesasComponent,
     DialogOutAuthIosComponent,
     DialogChangeUser,
-    CompTecladoNumerico
+    CompTecladoNumerico,
+    HoldingMarcasComponent,
+    ListComponent,
+    ItemComponent,
+    FormaPagoComponent,
+    CompListPedidosHoldingComponent
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
@@ -171,7 +181,12 @@ import { DialogChangeUser } from './dialog-change-user/dialog-change-user.compon
     DatosFacturacionClienteComponent,
     CompListMesasComponent,
     DialogChangeUser,
-    CompTecladoNumerico
+    CompTecladoNumerico,
+    HoldingMarcasComponent,
+    ListComponent,
+    ItemComponent,
+    FormaPagoComponent,
+    CompListPedidosHoldingComponent
     // DialogDesicionComponent
   ],
 
