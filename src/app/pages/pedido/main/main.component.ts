@@ -76,8 +76,7 @@ export class MainComponent implements OnInit {
     this.infoTokenService.getInfoUs();
     this.isPuntoAutoPedido = this.infoTokenService.isPuntoAutoPedido();
     this.isSpeechVoiceAcivado = this.establecimientoService.get().speech_disabled === 1;
-    const holdingValue = this.infoTokenService.getIsHolding();
-    this.isHolding = holdingValue === '1';
+    this.isHolding = this.infoTokenService.getIsHolding();
     // this.navigatorService.addLink('carta');
 
     // console.log('this.infoTokenService.infoUsToken', this.infoTokenService.infoUsToken);
