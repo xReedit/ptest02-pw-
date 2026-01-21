@@ -25,6 +25,7 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DialogCalificacionSedeComponent } from 'src/app/componentes/dialog-calificacion-sede/dialog-calificacion-sede.component';
 import { SpeechDataProviderService } from 'src/app/shared/services/speech/speech-data-provider.service';
 import { CocinarPromoShowService } from 'src/app/shared/services/promo/cocinar-promo-show.service';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 
 
@@ -95,6 +96,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   isCantidadCero = true;
   animateBloqueoCategoria = false;
+  
+  private isSelectingMarca = false; // bandera para prevenir que el observable se dispare durante la selección de marca
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
@@ -171,21 +174,22 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.calcDistanciaService.calcCostoEntregaApiGoogleRain(this.infoToken.getInfoUs().direccionEnvioSelected, this.establecimientoService.get());
     }
 
-    // listen go back carta
-    this.listenStatusService.listenGoBackCarta$
-      .pipe(takeUntil(this.destroy$))
+    // listen go back marcas
+    this.listenStatusService.listenGoBackMarcas$
+      .pipe(
+        takeUntil(this.destroy$),
+        distinctUntilChanged(),
+        debounceTime(100)
+      )
       .subscribe(res => {
-        if (res === true) { this.goBack(); }
+        if (res === true && !this.isSelectingMarca) {
+          this.showHoldingMarcas = true;
+          this.showCategoria = false;
+          this.showToolBar = false;
+          this.countSeeBack = 0;
+          this.listenStatusService.resetListenGoBackMarcas();
+        }
       });
-
-    this.listenStatusService.listenGoBackMarcas$.subscribe(res => {
-      if ( res === true ) {
-        this.showHoldingMarcas = true;
-        this.showCategoria = false;
-        this.showToolBar = false;
-        this.countSeeBack = 0;
-      }
-    });
   }
 
   ngAfterViewInit() {
@@ -255,6 +259,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
         // console.log('objCartaCarta desde socket reconect');
         this.navigatorService.setPageActive('carta');
+        if (this.infoToken.getIsHolding()) {
+          this.showToolBar = true;
+        }
         // }
 
         // para cargar la lista de mesas si se desconecta
@@ -402,7 +409,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.tituloToolBar = this.miPedidoService.objCarta.carta[0].des;
       this.showSecciones = true;
       this.showCategoria = false;
-      this.showToolBar = true;
+      this.showToolBar = true;      
 
       // if ( this.isScreenIsMobile ) {
       this.getSecciones(this.miPedidoService.objCarta.carta[0]);
@@ -431,7 +438,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     // this.showCategoria = false;
     this.showSecciones = false;
     this.showItems = false;
-    this.showToolBar = false;
+    // this.showToolBar = false;
     this.showCategoria = true;
   }
 
@@ -885,6 +892,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onSelectMarca(marca: any) {
+    this.isSelectingMarca = true;
+
     this.showToolBar = true;
     this.tituloToolBar = "MARCAS";
     this.infoToken.setIdSede(marca.idsede_marca);
@@ -896,6 +905,10 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       // this.navigatorService.addLink('marcas');
       this.showHoldingMarcas = false;
       this.showCategoria = true;
+      // Desactivar bandera después de completar la selección
+      setTimeout(() => {
+        this.isSelectingMarca = false;
+      }, 500);
     }, 200);
   }
 
