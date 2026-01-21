@@ -98,6 +98,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private isSavingPedido = false;
 
+  isShowPaymentMozo = false;
+  totalAmountPedido = 0;
+  dataPayametMozo: any = null;
+
   constructor(
     private miPedidoService: MipedidoService,
     private reglasCartaService: ReglascartaService,
@@ -120,6 +124,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     // this.establecimientoService.get();
+
+    this.isShowPaymentMozo = this.infoToken.getIsHolding() || this.infoToken.getIsMozoAcceptPayments();
 
     this.systemOS = this.utilService.getOS();
 
@@ -687,7 +693,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       is_print_subtotales: this.miPedidoService.objDatosSede.datossede[0].is_print_subtotales,
       isprint_copy_short: this.miPedidoService.objDatosSede.datossede[0].isprint_copy_short,
       isprint_all_short: this.miPedidoService.objDatosSede.datossede[0].isprint_all_short,
-      appv: 'v.2z'
+      appv: 'v.2z',
+      is_holding: this.infoToken.infoUsToken.is_holding,
+      holding: this.infoToken.getHolding(),
+      paymentMozo: this.dataPayametMozo,
+      idcliente: this.infoToken.infoUsToken.idcliente || 0,
     };
 
     // console.log('cccccccccccccc');
@@ -835,6 +845,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // this.isRequiereMesa = isTPCLocal;
     this.isRequiereMesa = this.isRequiereMesa && (!isMesaValid && !this.frmConfirma.reserva);
+    this.checkPaymentMozo();
 
   }
 
@@ -1219,5 +1230,19 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     return;
   }
 
+  paymentMozo(event: any) {
+    this.dataPayametMozo = event;
+    this.dataPayametMozo.idusuario = this.infoToken.getInfoUs().idusuario;
+    this.checkPaymentMozo();
+  }
+
+  checkPaymentMozo() {
+    if ( !this.isShowPaymentMozo ) return;
+
+    const numMesa = this.frmConfirma.nummesa;
+    if ( numMesa.length === 0 ) return;
+
+    this.isRequiereMesa = !this.dataPayametMozo.isPaymentSuccess;
+  }
 
 }
