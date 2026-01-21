@@ -339,6 +339,9 @@ export class InfoTockenService {
         _newUs.socketId = _token.socketId;
         _newUs.otro = _token.otro;
         _newUs.pasoRecoger = _token.pasoRecoger;
+        _newUs.is_holding = _token.is_holding;
+        _newUs.holding = _token.holding;
+        _newUs.is_mozo_accept_payments = _token.is_mozo_accept_payments;
         _newUs.isUsLoggedIn = false;
         // _newUs.isUsuarioAutorizado = false;
         this.infoUsToken = _newUs;
