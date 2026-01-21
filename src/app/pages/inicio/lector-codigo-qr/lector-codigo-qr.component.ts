@@ -67,7 +67,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
 
   constructor(
     private verifyClientService: VerifyAuthClientService,
-    // private infoTokenService: InfoTockenService,
+    private infoTokenService: InfoTockenService,
     private crudService: CrudHttpService,
     private dialog: MatDialog,
     private establecimientoService: EstablecimientoService,
@@ -322,6 +322,8 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
         this.verifyClientService.setIsDelivery(this.isDelivery);
 
         if ( res.data[0].is_holding == '1' ) {
+            this.infoTokenService.infoUsToken.is_holding = '1';
+            this.infoTokenService.set();
             this.loadHolding(dataHeader.idsede);
         }
 
