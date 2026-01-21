@@ -1823,8 +1823,9 @@ export class MipedidoService {
       } else {
         if (!res.item) { return; }
         res = res.item;
-        // console.log('listenChangeCantItem onItemModificado', res);
+        console.log('listenChangeCantItem onItemModificado', res);
         _itemInCarta = this.findItemCarta(res);
+        console.log('_itemInCarta', _itemInCarta);
         this.setCantidadItemModificadoPwa(res, _itemInCarta);
       }
 
@@ -1974,6 +1975,7 @@ export class MipedidoService {
       // }
 
       res.subitems.map((subitemOp: SubItemContent) => {
+        if (subitemOp.opciones.length === 0) { return; }
         subitemOp.opciones.map((subitem: SubItem) => {
           if (!_itemInCarta.subitems) { return; }
           _itemInCarta?.subitems.map((s: SubItemContent) => {

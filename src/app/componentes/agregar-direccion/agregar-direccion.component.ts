@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone, ViewChild, ElementRef, Output, EventEmitter, Input, AfterViewInit } from '@angular/core';
-import { AgmMap, MapsAPILoader } from '@agm/core';
+import { GoogleMap, MapMarker, GoogleMapsModule } from '@angular/google-maps';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
@@ -17,44 +17,42 @@ declare var google: any;
   styleUrls: ['./agregar-direccion.component.css']
 })
 export class AgregarDireccionComponent implements OnInit, AfterViewInit {
-  // title = 'AGM project';
   latitude: number;
   longitude: number;
   dataMapa: any;
-  zoom: number;
+  zoom: number = 17;
   address: string;
   loader = 0;
   dirInCoordenadas = false;
 
-  isUsCliente = true; // si el usuario es cliente o usuario autorizado
+  // Opciones del mapa
+  mapOptions: google.maps.MapOptions = {
+    zoomControl: true,
+    scrollwheel: true,
+    disableDoubleClickZoom: true,
+    mapTypeId: 'roadmap'
+  };
+
+  markerOptions: google.maps.MarkerOptions = {
+    draggable: true
+  };
+
+  isUsCliente = true;
   countMoveMap = 0;
 
-  @Input() idClienteBuscar: number; // cuando el pedido lo toma el mismo comercio
+  @Input() idClienteBuscar: number;
 
   private isChangeDireccion = true;
-  private geoCoder;
+  private geoCoder: google.maps.Geocoder;
 
   registerForm: UntypedFormGroup;
   dataCliente: DeliveryDireccionCliente;
   checkekFirstOption = true;
-  // dataCliente: any = {
-  //   isvalid: false,
-  //   idcliente: '',
-  //   direccion: '',
-  //   referencia: '',
-  //   latitude: this.latitude,
-  //   longitude: this.longitude,
-  //   titulo: '',
-  //   ciudad: '',
-  //   provincia: '',
-  //   departamento: '',
-  //   pais: '',
-  //   codigo: ''
-  // };
 
   private dataInfoSede: any;
 
   @ViewChild('search') public searchElementRef: ElementRef;
+  @ViewChild('map') map: GoogleMap;
   @ViewChild('registerForm') myForm;
 
   @Input() isGuardarDireccion = true;
@@ -62,20 +60,14 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   @Output() dataMaps = new EventEmitter<any>();
   @Output() saveDireccionOk = new EventEmitter<DeliveryDireccionCliente>();
 
-  isDireccionValid = true; // si esta dentro de la zona de atencion
+  isDireccionValid = true;
 
-
-  @ViewChild('search') agmMap;
-
-
-  mapCenter: any = {};
-  map: any;
+  mapCenter: google.maps.LatLngLiteral;
 
   _componentRestrictions: any = { country: 'pe' };
 
   constructor(
     private formBuilder: UntypedFormBuilder,
-    private mapsAPILoader: MapsAPILoader,
     private ngZone: NgZone,
     private verifyClientService: VerifyAuthClientService,
     private crudService: CrudHttpService,
@@ -86,15 +78,9 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
-
     this.dataCliente = new DeliveryDireccionCliente();
     this.inforTokenService.getInfoUs();
     this.isUsCliente = this.inforTokenService.getInfoUs().isCliente;
-
-    // if ( !this.isUsCliente ) {
-    //   this._componentRestrictions.postalCode = this.establecimientoService.get().codigo_postal;
-    // }
-
     this.loadForm();
   }
 
@@ -102,88 +88,76 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     this.loadInitComponent();
   }
 
-  private  loadInitComponent() {
-    // this.setCurrentLocation();
+  private loadInitComponent() {
+    this.geoCoder = new google.maps.Geocoder();
+    this.setCurrentLocation();
 
-    // console.log('this._componentRestrictions', this._componentRestrictions);
+    const autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
+      componentRestrictions: this._componentRestrictions
+    });
 
-    // load Places Autocomplete
-    this.mapsAPILoader.load().then(() => {
-      this.setCurrentLocation();
-      this.geoCoder = new google.maps.Geocoder;
+    autocomplete.addListener('place_changed', () => {
+      this.ngZone.run(() => {
+        const place: google.maps.places.PlaceResult = autocomplete.getPlace();
 
+        this.countMoveMap = 0;
+        this.dataMapa = place;
+        this.address = place.formatted_address;
 
-      const autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
-        // types: ['address'],
-        componentRestrictions: this._componentRestrictions
+        if (place.geometry === undefined || place.geometry === null) {
+          return;
+        }
+
+        this.latitude = place.geometry.location.lat();
+        this.longitude = place.geometry.location.lng();
+        this.isChangeDireccion = false;
+
+        this.mapCenter = {
+          lat: this.latitude,
+          lng: this.longitude
+        };
+
+        setTimeout(() => {
+          this.isChangeDireccion = true;
+        }, 500);
       });
-
-      autocomplete.addListener('place_changed', () => {
-        this.ngZone.run(() => {
-          // get the place result
-          const place: google.maps.places.PlaceResult = autocomplete.getPlace();
-
-          this.countMoveMap = 0;
-          this.dataMapa = place; // para extract data
-          this.address = place.formatted_address;
-
-          // verify result
-          if (place.geometry === undefined || place.geometry === null) {
-            return;
-          }
-
-          // set latitude, longitude and zoom
-          this.latitude = place.geometry.location.lat();
-          this.longitude = place.geometry.location.lng();
-          this.zoom = 17;
-          this.isChangeDireccion = false;
-
-          // 090121 genera error cambiar lat > lng
-          // actualiza marcador pantalla
-          // console.log('liena error');
-          // this.mapCenter.lng = this.latitude;
-          // this.mapCenter.lat = this.longitude;
-
-          this.mapCenter.lat = this.latitude;
-          this.mapCenter.lng = this.longitude;
-
-          setTimeout(() => {
-            this.isChangeDireccion = true;
-          }, 500);
-
-          // this.getAddress(this.latitude , this.longitude);
-        });
-      });
-
-
     });
   }
 
   private setCurrentLocation() {
-
-    // se pide la direccion desde el comercio // registrar pedido
-    if (this.isUsCliente === false ) {
+    if (this.isUsCliente === false) {
       this.dataInfoSede = this.miPedidoService.objDatosSede.datossede[0];
       this.latitude = this.dataInfoSede.latitude;
       this.longitude = this.dataInfoSede.longitude;
-      this.zoom = 17;
+      this.mapCenter = {
+        lat: this.latitude,
+        lng: this.longitude
+      };
       return;
     }
-
 
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
         this.latitude = position.coords.latitude;
         this.longitude = position.coords.longitude;
-        this.zoom = 17;
+        this.mapCenter = {
+          lat: this.latitude,
+          lng: this.longitude
+        };
         this.getAddress(this.latitude, this.longitude);
       });
     }
   }
 
-  markerDragEnd($event: any) {
-    this.latitude = $event.coords.lat;
-    this.longitude = $event.coords.lng;
+  markerDragEnd(event: google.maps.MapMouseEvent) {
+    if (event.latLng) {
+      this.latitude = event.latLng.lat();
+      this.longitude = event.latLng.lng();
+      this.mapCenter = {
+        lat: this.latitude,
+        lng: this.longitude
+      };
+    }
   }
 
   getDirCoordenadas(coodenadas: string) {
@@ -192,9 +166,12 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     const _lon = parseFloat(_coordenadas[1]);
     this.latitude = _lat;
     this.longitude = _lon;
+    this.mapCenter = {
+      lat: _lat,
+      lng: _lon
+    };
 
     this.isChangeDireccion = true;
-
     this.getAddress(_lat, _lon);
   }
 
@@ -359,8 +336,8 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   }
 
   public markerClicked = (markerObj) => {
-    if (this.map) {
-      this.map.setCenter({ lat: markerObj.latitude, lng: markerObj.longitude });
+    if (this.map && this.map.googleMap) {
+      this.map.googleMap.setCenter({ lat: markerObj.latitude, lng: markerObj.longitude });
     }
   }
 

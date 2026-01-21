@@ -209,7 +209,9 @@ actualizarPage() {
 
 changeUser() {
   this.dialog.open(DialogChangeUser).afterClosed().subscribe((res: any) => {    
-    this.nomUsuario = res.usuario;    
+    if (res.usuario) {
+      this.nomUsuario = res.usuario;    
+    }
   });
 }
 

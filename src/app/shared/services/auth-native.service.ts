@@ -65,15 +65,26 @@ public userAuthNative$ = this.authNative.isAuthenticated$.pipe(switchMap(() => t
         // console.log('callbackUri', callbackUri);        
 
         // await this.authNative.loginWithRedirect({ noRedirect: true });
-        this.authNative
-            .buildAuthorizeUrl({
+        // this.authNative
+        //     .buildAuthorizeUrl({
+        //         connection: _proveedor,
+        //         // appState: {
+        //         //     targetUrl: '/callback-auth',
+        //         // }
+        //     })
+        //     .pipe(mergeMap((url) => Browser.open({ url, windowName: '_self' })))
+        //     .subscribe();
+
+        this.authNative.loginWithRedirect({
+            authorizationParams: {
                 connection: _proveedor,
-                // appState: {
-                //     targetUrl: '/callback-auth',
-                // }
-            })
-            .pipe(mergeMap((url) => Browser.open({ url, windowName: '_self' })))
-            .subscribe();
+                // redirect_uri: callbackUri,
+            },
+            openUrl: (url) => {
+                Browser.open({ url, windowName: '_self' });
+                return Promise.resolve();
+            }
+        });
     } 
     
     async loginWithRedirect() {
@@ -122,19 +133,27 @@ public userAuthNative$ = this.authNative.isAuthenticated$.pipe(switchMap(() => t
     }
 
     logout() {        
-        this.authNative.logout({ localOnly: true, returnTo: this.doc.location.origin });
-        this.authNative.buildLogoutUrl();
-        // this.auth.logout();
-
-        // this.auth
-        //   .buildLogoutUrl({ returnTo: callbackUri })
-        //   .pipe(
-        //     tap(async (url) => {
-        //       this.auth.logout();
-
-        //     //   Browser.open({ url, windowName: '_self' });
-        //     })
-        //   )
-        //   .subscribe();
+        this.authNative.logout({
+            logoutParams: {
+                returnTo: this.doc.location.origin
+            }
+        });
     }
+
+    // logout() {        
+    //     this.authNative.logout({ localOnly: true, returnTo: this.doc.location.origin });
+    //     this.authNative.buildLogoutUrl();
+    //     // this.auth.logout();
+
+    //     // this.auth
+    //     //   .buildLogoutUrl({ returnTo: callbackUri })
+    //     //   .pipe(
+    //     //     tap(async (url) => {
+    //     //       this.auth.logout();
+
+    //     //     //   Browser.open({ url, windowName: '_self' });
+    //     //     })
+    //     //   )
+    //     //   .subscribe();
+    // }
 }

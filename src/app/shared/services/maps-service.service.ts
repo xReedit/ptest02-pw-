@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { IS_NATIVE } from '../config/config.const';
 // import { GoogleMap} from '@capacitor/google-maps';
 import { Geolocation } from '@capacitor/geolocation';
-import { MapsAPILoader } from '@agm/core';
 import { CrudHttpService } from './crud-http.service';
 // import { ViewFlags } from '@angular/compiler/src/core';
 
@@ -17,7 +16,6 @@ export class MapsServiceService {
 
   apiKeyGoogle = 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo';
   constructor(
-    private mapsAPILoader: MapsAPILoader,
     private crudService: CrudHttpService
     ) { }
 

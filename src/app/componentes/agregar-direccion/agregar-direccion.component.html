@@ -57,24 +57,21 @@
 
             <!-- mapa -->
                 <div class="border" id="map_canvas">
-                    <agm-map 
-                        [latitude]="latitude" 
-                        [longitude]="longitude"
-                        [zoom]="zoom"                        
-                        (centerChange)="centerChange($event)"
+                    <google-map #map
+                        [center]="mapCenter"
+                        [zoom]="zoom"
+                        [options]="mapOptions"
                         (mapClick)="clickmap()"
                         (idle)="idleMap()"
-                        >
-                        <!-- <agm-marker                             
-                            [latitude]="latitude" 
-                            [longitude]="longitude"                            
-                            [markerDraggable]="true"
-                            (dragEnd)="markerDragEnd($event)"
-                            >
-                        </agm-marker> -->
-                        <!-- [markerDraggable]="true"
-                            (dragEnd)="markerDragEnd($event)" -->
-                    </agm-map>           
+                        (centerChanged)="centerChange($event)"
+                        height="400px"
+                        width="100%">
+                        <map-marker
+                            [position]="mapCenter"
+                            [options]="markerOptions"
+                            (dragend)="markerDragEnd($event)">
+                        </map-marker>
+                    </google-map>
                     <div class="centerMarker"></div>     
                     <div class="btn-confirmar-dir" *ngIf="countMoveMap > 1">
                         <button class="btn btn-success" (click)="confirmarDireccion()">Confirmar</button>

@@ -1,22 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Auth0Service } from './auth0.service';
 import { CrudHttpService } from './crud-http.service';
-// import { Subject } from 'rxjs/internal/Subject';
-// import { Observable } from 'rxjs/internal/Observable';
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { Subject } from 'rxjs/internal/Subject';
-import { Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Subject, Observable, throwError } from 'rxjs';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 import { UtilitariosService } from './utilitarios.service';
-// import { Router } from '@angular/router';
-// import { AuthService } from './auth.service';
 import { InfoTockenService } from './info-token.service';
-// import { shareReplay } from 'rxjs/internal/operators';
-import { catchError, shareReplay, share } from 'rxjs/internal/operators';
+import { catchError, shareReplay, share } from 'rxjs/operators';
 import { IS_NATIVE, IS_PLATAFORM_IOS } from '../config/config.const';
 import { AuthNativeService } from './auth-native.service';
-// import { share } from 'rxjs/internal/operators/share';
 
 @Injectable({
   providedIn: 'root'

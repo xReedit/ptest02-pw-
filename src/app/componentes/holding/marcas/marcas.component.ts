@@ -1,6 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
-import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 
 
 
@@ -17,7 +16,6 @@ export class HoldingMarcasComponent {
 
   constructor(
     private crudService: CrudHttpService,
-    private infoToken: InfoTockenService
   ) { }
 
   ngOnInit(): void {
@@ -25,19 +23,13 @@ export class HoldingMarcasComponent {
   }
 
   loadMarcas() {
-    const holding = this.infoToken.getHolding();
-    if (!holding || !holding.idsede_holding) {
-      console.error('No se encontró información de holding');
-      return;
-    }
-
     const dataSend = {
-      idsede_holding: holding.idsede_holding
+      idsede_holding: 6
     }
 
     this.crudService.postFree(dataSend, 'holding', 'get-marcas', false)
     .subscribe((res: any) => {
-      console.log('Marcas cargadas:', res);
+      console.log(res);
       this.marcas = res.data;
     });
   }

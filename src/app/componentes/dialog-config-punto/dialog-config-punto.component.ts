@@ -67,7 +67,7 @@ export class DialogConfigPuntoComponent implements OnInit {
 
     this.infoTokenService.setIsPuntoAutoPedido(this.isPuntoAutoPedidoCheck);
     this.infoTokenService.setIsTomaPedidoRapido(this.isTomaPedidoRapido);
-    this.infoTokenService.setIsPuntoTomaPedidos(this.isPuntoTomaPedido);
+    // this.infoTokenService.setIsPuntoTomaPedidos(this.isPuntoTomaPedido);
     
     this.listenStatusService.setPuntoTomaPedidos(this.isPuntoTomaPedido);
 

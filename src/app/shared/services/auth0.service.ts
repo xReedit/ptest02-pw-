@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import createAuth0Client from '@auth0/auth0-spa-js';
-import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
+// import createAuth0Client from '@auth0/auth0-spa-js';
+import { createAuth0Client, Auth0Client } from '@auth0/auth0-spa-js';
+// import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
 import { from, of, Observable, BehaviorSubject, combineLatest, throwError } from 'rxjs';
 import { tap, catchError, concatMap, shareReplay, delay, switchMap, share } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -10,11 +11,24 @@ import { Router } from '@angular/router';
 })
 export class Auth0Service {
   // Create an observable of Auth0 instance of client
+  // auth0Client$ = (from(
+  //   createAuth0Client({
+  //     domain: 'dev-m48s1pe2.auth0.com',
+  //     clientId: 'kSs64dcx34Fo7HpDLYkE3gQH0v2MtcdR',
+  //     redirect_uri: `${window.location.origin}/callback-auth`
+  //   })
+  // ) as Observable<Auth0Client>).pipe(
+  //   share(), // Every subscription receives the same shared value
+  //   catchError(err => throwError(err))
+  // );
+
   auth0Client$ = (from(
     createAuth0Client({
       domain: 'dev-m48s1pe2.auth0.com',
-      client_id: 'kSs64dcx34Fo7HpDLYkE3gQH0v2MtcdR',
-      redirect_uri: `${window.location.origin}/callback-auth`
+      clientId: 'kSs64dcx34Fo7HpDLYkE3gQH0v2MtcdR',
+      authorizationParams: {
+        redirect_uri: `${window.location.origin}/callback-auth`
+      }
     })
   ) as Observable<Auth0Client>).pipe(
     share(), // Every subscription receives the same shared value
@@ -38,8 +52,12 @@ export class Auth0Service {
   //   concatMap((client: Auth0Client) => from(client.handleRedirectCallback()))
   // );
 
+  // handleRedirectCallback$ = this.auth0Client$.pipe(
+  //   concatMap((client: Auth0Client) => from(client.handleRedirectCallback(this.urlFromAuth)))
+  // );
+
   handleRedirectCallback$ = this.auth0Client$.pipe(
-    concatMap((client: Auth0Client) => from(client.handleRedirectCallback(this.urlFromAuth)))
+    concatMap((client: Auth0Client) => from(client.handleRedirectCallback()))
   );
 
   isAuthenticated$ = this.auth0Client$.pipe(
@@ -67,10 +85,17 @@ export class Auth0Service {
 
   // When calling, options can be passed if desired
   // https://auth0.github.io/auth0-spa-js/classes/auth0client.html#getuser
-  getUser$(options?): Observable<any> {
-    // console.log('change userProfileSubject');
+  // getUser$(options?): Observable<any> {
+  //   // console.log('change userProfileSubject');
+  //   return this.auth0Client$.pipe(
+  //     concatMap((client: Auth0Client) => from(client.getUser(options))),
+  //     tap(user => this.userProfileSubject$.next(user))
+  //   );
+  // }
+
+  getUser$(options?: any): Observable<any> {
     return this.auth0Client$.pipe(
-      concatMap((client: Auth0Client) => from(client.getUser(options))),
+      concatMap((client: Auth0Client) => from(client.getUser())),
       tap(user => this.userProfileSubject$.next(user))
     );
   }
@@ -99,9 +124,17 @@ export class Auth0Service {
     console.log('redirectPath auth0', redirectPath);
     this.auth0Client$.subscribe((client: Auth0Client) => {
       // Call method to log in
+      // client.loginWithRedirect({
+      //   connection: proveedor,
+      //   redirect_uri: `${window.location.origin}/callback-auth`,
+      //   appState: { target: redirectPath }
+      // });
+
       client.loginWithRedirect({
-        connection: proveedor,
-        redirect_uri: `${window.location.origin}/callback-auth`,
+        authorizationParams: {
+          connection: proveedor,
+          redirect_uri: `${window.location.origin}/callback-auth`,
+        },
         appState: { target: redirectPath }
       });
     });
@@ -117,7 +150,8 @@ export class Auth0Service {
         // Have client, now call method to handle auth callback redirect
         tap(cbRes => {
           // Get and set target redirect route from callback results
-          targetRoute = cbRes.appState && cbRes.appState.target ? cbRes.appState.target : '/';
+          const state = cbRes as { appState?: { target?: string } };
+          targetRoute = state?.appState?.target ? state.appState.target : '/';
         }),
         concatMap(() => {
           // Redirect callback complete; get user and login status
@@ -137,13 +171,23 @@ export class Auth0Service {
     }
   }
 
+  // logout() {
+  //   // Ensure Auth0 client instance exists
+  //   this.auth0Client$.subscribe((client: Auth0Client) => {
+  //     // Call method to log out
+  //     client.logout({
+  //       client_id: 'kSs64dcx34Fo7HpDLYkE3gQH0v2MtcdR',
+  //       returnTo: `${window.location.origin}`
+  //     });
+  //   });
+  // }
+
   logout() {
-    // Ensure Auth0 client instance exists
     this.auth0Client$.subscribe((client: Auth0Client) => {
-      // Call method to log out
       client.logout({
-        client_id: 'kSs64dcx34Fo7HpDLYkE3gQH0v2MtcdR',
-        returnTo: `${window.location.origin}`
+        logoutParams: {
+          returnTo: window.location.origin
+        }
       });
     });
   }

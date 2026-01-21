@@ -1,9 +1,9 @@
 <div class="dial-user-change">
     <div class="container text-center">
         <!-- cambiar de usuario, con nomusuario y clave -->
-        <div *ngIf="!isShowPassword">
+        <div *ngIf="!isShowPassword" class="animated fadeIn">
             <div>
-                <p class="fs-18">Cambiar de Usuario</p>                
+                <p class="fs-18">Seleccione Usuario</p>                
             </div>
             <div>             
                     <div *ngIf="listUsuarios.length > 0" class="list-group">
@@ -33,7 +33,7 @@
     </div>
 
     <!-- password -->
-    <div *ngIf="isShowPassword">
+    <div *ngIf="isShowPassword" class="animated fadeIn">
         <div>
             <p class="fs-18">Ingrese su clave</p>
         </div>
@@ -56,7 +56,10 @@
             </div>
             <div>
                 <!-- <button mat-raised-button color="primary" class="mr-2" (click)="changeLoginUser()">Listo</button> -->
-                <button mat-raised-button color="primary" (click)="isShowPassword=!isShowPassword">Regresar</button>
+                <button mat-raised-button color="secondary" (click)="isShowPassword=!isShowPassword">
+                    <i class="fa fa-arrow-left mr-1"></i>
+                    Regresar
+                </button>
             </div>
         </div>
     </div>

@@ -1,17 +1,18 @@
-import { AfterViewInit, Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatInput } from '@angular/material/input';
 import { NgxMaterialTimepickerHoursFace } from 'ngx-material-timepicker/src/app/material-timepicker/components/timepicker-hours-face/ngx-material-timepicker-hours-face';
-import { debounceTime, distinctUntilChanged } from 'rxjs/internal/operators';
-import { Subject } from 'rxjs/internal/Subject';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { MapsServiceService } from 'src/app/shared/services/maps-service.service';
-import { SedeDeliveryService } from 'src/app/shared/services/sede-delivery.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
-
+import { IS_NATIVE } from 'src/app/shared/config/config.const';
+import { SedeDeliveryService } from 'src/app/shared/services/sede-delivery.service';
 
 declare var google: any;
 
@@ -22,16 +23,13 @@ declare var google: any;
 })
 export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterViewInit {
 
-
-
   direccionSelected: DeliveryDireccionCliente;
   listDirecciones: DeliveryDireccionCliente[];
   idClienteDirecciones: number;
   idClienteBuscar: number;
-  data: any;
 
   direccionBuscar: string;
-  direccionBuscarUpdate = new Subject<string>();
+  direccionBuscarUpdate: Subject<string> = new Subject<string>();
 
   listPredicciones: any;
   showSelectedDireccion = true;
@@ -57,25 +55,26 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
 
 
   constructor(
-    private dialogRef: MatDialogRef<DialogDireccionClienteDeliveryComponent>,
-    @Inject(MAT_DIALOG_DATA) data: any,
+    public dialogRef: MatDialogRef<DialogDireccionClienteDeliveryComponent>,
+    @Inject(MAT_DIALOG_DATA) private dialogData: any,
     private crudService: CrudHttpService,
+    private infoTokenService: InfoTockenService,
     private verifyClientService: VerifyAuthClientService,
     private utilService: UtilitariosService,
-    private plazaDelivery: SedeDeliveryService,
     private establecimientoService: EstablecimientoService,
-    private mapsService: MapsServiceService
+    private mapsService: MapsServiceService,
+    private sedeDeliveryService: SedeDeliveryService
   ) {
-    this.idClienteBuscar = data.idcliente;
-    this.isFromComercio = data.isFromComercio || false;
+    this.idClienteBuscar = dialogData.idcliente;
+    this.isFromComercio = dialogData.isFromComercio || false;
 
     console.log(this.isFromComercio);
 
     this.direccionBuscarUpdate.pipe(
       debounceTime(400),
       distinctUntilChanged())
-      .subscribe(value => {
-        if ( value.length > 4 ) {
+      .subscribe((value: any) => {
+        if ( value?.length > 4 ) {
           this.showBusqueda = true;
           this.getPlacesPredictionsChange(value);
         }
@@ -380,7 +379,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
 
     if ( rpt_dir && this.dataCliente ) {
       if ( !this.dataCliente?.options ) {
-        this.plazaDelivery.loadDatosPlazaByCiudad(this.dataCliente.ciudad)
+        this.sedeDeliveryService.loadDatosPlazaByCiudad(this.dataCliente.ciudad)
         .subscribe((resPlaza: any) => {
           this.dataCliente.options = resPlaza ? resPlaza.options : null;
 

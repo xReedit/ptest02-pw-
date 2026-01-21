@@ -25,7 +25,7 @@
     transition: all 0.3s ease-out;
 } */
 
-.toolbar-main {
+.toolbar-main {  
   animation-duration: 0.3s;
   animation-timing-function: ease-out;
   animation-fill-mode: both;

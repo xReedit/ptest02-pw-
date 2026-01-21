@@ -6,8 +6,8 @@ import { ItemTipoConsumoModel } from 'src/app/modelos/item.tipoconsumo.model';
 import { SubItem } from 'src/app/modelos/subitems.model';
 import { SubItemContent } from 'src/app/modelos/subitem.content.model';
 import { SubItemsView } from 'src/app/modelos/subitems.view.model';
-import { Subject } from 'rxjs/internal/Subject';
-import { takeUntil } from 'rxjs/internal/operators';
+// import { Subject } from 'rxjs/internal/Subject';
+// import { takeUntil } from 'rxjs/internal/operators';
 import { URL_IMG_CARTA } from 'src/app/shared/config/config.const';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
@@ -15,6 +15,7 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 // import { type } from 'os';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-dialog-item-edit',
@@ -87,7 +88,7 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
     this.miPedidoService.itemStockChangeObserve$
     .pipe(takeUntil(this.destroyDlg$))
     .subscribe((res: ItemModel) => {
-      // para que la ultima cantidad modificada
+      // para que la ultima cantidad modificada      
       if ( this.isFirstOpen ) {this.isFirstOpen = false; return; }
 
       if ( this.item.iditem === res.iditem ) {

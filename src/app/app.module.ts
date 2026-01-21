@@ -13,12 +13,12 @@ import { environment } from '../environments/environment';
 import { SocketIoModule } from 'ngx-socket-io';
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-// import { AgmCoreModule } from '@agm/core';
 import { AuthConfig, AuthModule } from '@auth0/auth0-angular';
 // import config from '../../capacitor.config';
 // import { IS_NATIVE } from './shared/config/config.const';
 import { domain, clientId, callbackUri } from './auth.config';
-import { ImagenNoEncontradaPipe } from './shared/pipes/imagen-no-encontrada.pipe';
+// import { ImagenNoEncontradaPipe } from './shared/pipes/imagen-no-encontrada.pipe';
+import { GoogleMapsModule } from '@angular/google-maps';
 
 // const redirectUri = callbackUri;
 // const redirectUri = `<%= "${config.appId}" %>://${account.namespace}/capacitor/<%= "${config.appId}" %>/callback`;
@@ -27,7 +27,9 @@ import { ImagenNoEncontradaPipe } from './shared/pipes/imagen-no-encontrada.pipe
 const configAuth: AuthConfig = {
   domain,
   clientId,
-  redirectUri: callbackUri,
+  authorizationParams: {
+    redirect_uri: callbackUri
+  },
   cacheLocation: "localstorage",
   useRefreshTokens: true
 }
@@ -53,11 +55,8 @@ const configAuth: AuthConfig = {
     //enabled: environment.production,
      // registrationStrategy: 'registerWhenStable:30000'
      //}),
-    // AgmCoreModule.forRoot({
-    //   apiKey: 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo',
-    //   libraries: ['places']
-    // }),
     AuthModule.forRoot(configAuth),
+    GoogleMapsModule,
     // ServiceWorkerModule.register('assets/js/custom-service-worker.js', { enabled: environment.production })
   ],
   providers: [

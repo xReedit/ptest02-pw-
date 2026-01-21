@@ -6,7 +6,7 @@ import { MaterialModule } from '../core/material/material.module';
 import { DebounceClickDirective } from '../shared/directivas/debounce-click.directive';
 import { EncuestaOpcionComponent } from './encuesta-opcion/encuesta-opcion.component';
 // import { DialogUbicacionComponent } from './dialog-ubicacion/dialog-ubicacion.component';
-import { AgmCoreModule } from '@agm/core';
+// import { AgmCoreModule } from '@agm/core';
 
 import { AgregarDireccionComponent } from './agregar-direccion/agregar-direccion.component';
 
@@ -61,6 +61,7 @@ import { DatosFacturacionClienteComponent } from './datos-facturacion-cliente/da
 import { CompListMesasComponent } from './comp-list-mesas/comp-list-mesas.component';
 import { DialogOutAuthIosComponent } from './dialog-out-auth-ios/dialog-out-auth-ios.component';
 import { DialogChangeUser } from './dialog-change-user/dialog-change-user.component';
+
 import { HoldingMarcasComponent } from './holding/marcas/marcas.component';
 import { ListComponent } from './holding/marcas/list/list.component';
 import { ItemComponent } from './holding/marcas/item/item.component';
@@ -118,19 +119,20 @@ import { CompListPedidosHoldingComponent } from './comp-list-pedidos-holding/com
     DialogOutAuthIosComponent,
     DialogChangeUser,
     CompTecladoNumerico,
+    CompListMesasComponent,
     HoldingMarcasComponent,
     ListComponent,
     ItemComponent,
     FormaPagoComponent,
-    CompListPedidosHoldingComponent
+    CompListPedidosHoldingComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
   imports: [
-    AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo',
-      libraries: ['places']
-    }),
+    // AgmCoreModule.forRoot({
+    //   apiKey: 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo',
+    //   libraries: ['places']
+    // }),
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
@@ -182,11 +184,12 @@ import { CompListPedidosHoldingComponent } from './comp-list-pedidos-holding/com
     CompListMesasComponent,
     DialogChangeUser,
     CompTecladoNumerico,
+    CompListMesasComponent,
     HoldingMarcasComponent,
     ListComponent,
     ItemComponent,
     FormaPagoComponent,
-    CompListPedidosHoldingComponent
+    CompListPedidosHoldingComponent,
     // DialogDesicionComponent
   ],
 

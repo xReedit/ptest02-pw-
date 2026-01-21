@@ -75,7 +75,7 @@ export class DatosFacturacionClienteComponent implements OnInit {
   }
 
   comprobarDNI() {
-    const _lengthDNI = this.dataFac.dni ? this.dataFac.dni.toString().length : '';
+    const _lengthDNI = this.dataFac.dni ? this.dataFac.dni.toString().length : 0; 
     if (this.comprobanteSelected.descripcion === 'BOLETA') { // si es boleta
       this.msjDNI = _lengthDNI === 8 ? 'DNI correcto' : _lengthDNI < 8 ? 'DNI incorrecto' : '';
       this.msjDNI = _lengthDNI === 11 ? 'RUC correcto' : _lengthDNI < 11 && _lengthDNI > 8 ? 'RUC incorrecto' : this.msjDNI;

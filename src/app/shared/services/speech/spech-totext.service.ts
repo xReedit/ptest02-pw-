@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable, Output } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { delay } from 'rxjs/internal/operators';
+import { BehaviorSubject } from 'rxjs';
+import { delay } from 'rxjs/operators';
 import { SpechProviderConnectService } from './spech-provider-connect.service';
 
 @Injectable({

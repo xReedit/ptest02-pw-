@@ -23,6 +23,7 @@
 }
 
 .toolbar-main {
+    width: 100%;
     animation-duration: 0.3s;
     animation-timing-function: ease-out;
     animation-fill-mode: both;
@@ -48,7 +49,7 @@
 @keyframes fadeInTool {
   from {    
     margin-top: -60px;
-    display: inline-block;
+    /* display: inline-block; */
   }
 
   to {    
