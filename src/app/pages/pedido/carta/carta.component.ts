@@ -48,6 +48,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   public showSecciones = false;
   public showItems = false;
   public showToolBar = false;
+  public showHoldingMarcas = false;
+  public isHolding = false;
 
   // max_minute_order = MAX_MINUTE_ORDER;
   // time = new Date();
@@ -175,6 +177,15 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(res => {
         if (res === true) { this.goBack(); }
       });
+
+    this.listenStatusService.listenGoBackMarcas$.subscribe(res => {
+      if ( res === true ) {
+        this.showHoldingMarcas = true;
+        this.showCategoria = false;
+        this.showToolBar = false;
+        this.countSeeBack = 0;
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -340,7 +351,15 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.miPedidoService.setObjNewItemTiposConsumo(this.objNewItemTiposConsumo);
 
-      this.navigatorService.addLink('carta-i-');
+      // HOLDING MARCAS
+      console.log('this.infoToken' , this.infoToken.infoUsToken);
+      if ( this.infoToken.getIsHolding() ) {
+        this.showHoldingMarcas = true;
+        this.isHolding = true;
+        this.showCategoria = false;
+      } else {
+        this.navigatorService.addLink('carta-i-');
+      }
 
       // console.log('this.objNewItemTiposConsumo', this.objNewItemTiposConsumo);
       // this.tiposConsumo.secciones = [];
@@ -560,8 +579,22 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     if (this.showSecciones) {
-      this.showSecciones = false; this.showToolBar = false; this.showCategoria = true;
+      this.showSecciones = false;
+
+      if ( !this.isHolding ) {
+        this.showToolBar = false;
+      }
+
+      this.showCategoria = true;
+      return;
       // this.navigatorService.addLink('carta-i-');
+    }
+
+    if (this.showCategoria && this.isHolding && !this.showHoldingMarcas) {
+      this.showHoldingMarcas = true;
+      this.showCategoria = false;
+      this.showToolBar = false;
+      this.countSeeBack = 0; // para que no regrese
     }
   }
 
@@ -849,6 +882,18 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     //   promo.abierto = 0;
     //   console.log('aaaaaaaaaaaaaa');
     // }
+  }
+
+  onSelectMarca(marca: any) {
+    this.infoToken.setIdOrg(marca.idorg_marca);
+    this.socketService.closeConnection();
+    this.socketService.connect();
+    this.initCarta();
+    setTimeout(() => {
+      // this.navigatorService.addLink('marcas');
+      this.showHoldingMarcas = false;
+      this.showCategoria = true;
+    }, 200);
   }
 
 }
