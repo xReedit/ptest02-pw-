@@ -885,6 +885,9 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onSelectMarca(marca: any) {
+    this.showToolBar = true;
+    this.tituloToolBar = "MARCAS";
+    this.infoToken.setIdSede(marca.idsede_marca);
     this.infoToken.setIdOrg(marca.idorg_marca);
     this.socketService.closeConnection();
     this.socketService.connect();
