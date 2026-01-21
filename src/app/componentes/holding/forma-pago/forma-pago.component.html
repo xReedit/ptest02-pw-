@@ -1,0 +1,30 @@
+<div class="payment-container">
+    <header class="payment-info">
+        <h4>Forma de Pago</h4>
+        <div class="payment-totals">
+            <p class="m-0">Total a pagar: <strong>{{totalAmount | currency:'S/ '}}</strong></p>
+            <p class="m-0">Restante: <span [class.text-danger]="remainingAmount > 0">{{remainingAmount | currency:'S/ '}}</span></p>
+        </div>
+    </header>    
+
+    <div class="payment-methods">
+        <div *ngFor="let method of paymentMethods" class="payment-method" [class.active]="method.isActive"
+            [class.disabled]="method.isDisabled">
+            <div class="method-info">
+                <img src="{{method.icon}}" alt="{{method.name}}" width="20">
+                <p [for]="'payment-' + method.id">{{method.name}}</p>
+            </div>
+            <div class="input-group">
+                <!-- <span class="currency-symbol">S/</span> -->
+                <input 
+                    type="number"
+                    [id]="'payment-' + method.id"
+                    [value]="method.amount"                    
+                    [disabled]="method.isDisabled"
+                    (input)="onAmountChange(method, $event)"
+                    (click)="selectInputContent($event)"
+                    [max]="remainingAmount + method.amount" min="0" step="0.1" placeholder="0.00">
+            </div>
+        </div>
+    </div>
+</div>

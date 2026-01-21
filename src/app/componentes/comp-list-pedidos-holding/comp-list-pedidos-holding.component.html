@@ -1,0 +1,35 @@
+    <div class="m-3">    
+        <!-- listar listCallsMarcas marca mesa accion-->
+        <div>
+            <h4>Pedidos Listos</h4>        
+        </div>
+        <ng-container *ngIf="listCallsMarcasHolding.length === 0">
+            <div class="alert alert-warning">Por los momentos no hay pedidos listos. Antento al llamado.</div>            
+        </ng-container>
+
+        <div *ngIf="listCallsMarcasHolding.length > 0">            
+            <table class="tablex w-100 fs-12 table table-striped table-bordered table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th>Marca</th>
+                        <th>Referencia</th>
+                        <th align="center">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let marca of listCallsMarcasHolding">
+                        <td>{{marca.nom_marca}}</td>
+                        <td>{{marca.referencia}}</td>
+                        <td align="center">
+                            <ng-container *ngIf="marca.en_camino; else elseTemplate">
+                                <p class="text-success m-0">En Camino</p>
+                            </ng-container>
+                            <ng-template #elseTemplate>                                
+                                <button class="btn btn-sm btn-dark fs-10" (click)="goCallMarca(marca)">Voy</button>
+                            </ng-template>                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>

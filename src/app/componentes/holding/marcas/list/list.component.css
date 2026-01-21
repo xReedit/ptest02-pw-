@@ -1,0 +1,51 @@
+.marcas-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 columns fixed */
+    grid-auto-rows: auto;
+    /* Auto adjust height */
+    gap: 1rem;
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+/* Mobile view - stack items */
+@media (max-width: 350px) {
+    .marcas-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.marca-item {
+    cursor: pointer;
+    padding: 0.2rem;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: transform 0.2s;
+    background: aliceblue;
+}
+
+.marca-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.marca-item img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 0.5rem;
+    border-radius: 5px 5px 0 0;
+}
+
+.marca-item .nombre {
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.marca-item .oferta {
+    font-size: 0.6rem;
+    color: #333;
+    margin: 0;
+}

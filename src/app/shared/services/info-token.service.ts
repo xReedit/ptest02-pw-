@@ -4,6 +4,7 @@ import { MetodoPagoModel } from 'src/app/modelos/metodo.pago.model';
 import { TipoComprobanteModel } from 'src/app/modelos/tipo.comprobante.model';
 import { PropinaModel } from 'src/app/modelos/propina.model';
 import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
+import { HoldingModel } from 'src/app/modelos/holding.model';
 import { Router } from '@angular/router';
 
 
@@ -467,5 +468,37 @@ export class InfoTockenService {
 
     return true;
     // const timeAfter = localStorage.getItem('sys::tnum') ? parseInt(localStorage.getItem('sys::tnum'), 0) : ms_new;
+  }
+
+  setIdSede(val: number) {
+    this.infoUsToken.idsede = val;
+    this.set();
+  }
+
+  setIdOrg(val: number) {
+    this.infoUsToken.idorg = val;
+    this.set();
+  }
+
+  setHolding(holding: HoldingModel) {
+    this.infoUsToken.holding = holding;
+    this.set();
+  }
+
+  setIsMozoAcceptPayments(val: string) {
+    this.infoUsToken.is_mozo_accept_payments = val;
+    this.set();
+  }
+
+  getHolding() {
+    return this.infoUsToken.holding || null;
+  }
+
+  getIsHolding(): boolean {
+    return this.infoUsToken.is_holding == '1';
+  }
+
+  getIsMozoAcceptPayments(): boolean {
+    return this.infoUsToken.is_mozo_accept_payments == '1';
   }
 }

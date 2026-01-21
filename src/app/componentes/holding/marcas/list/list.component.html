@@ -1,0 +1,7 @@
+<div class="marcas-grid">
+    <div *ngFor="let marca of marcas; trackBy: trackByMarcaId" class="marca-item" (click)="selectMarca(marca)" matRipple>
+        <img [src]="marca.imagen_url_comercial" [alt]="marca.nombre_comercial" *ngIf="marca.imagen_url_comercial">
+        <p class="nombre">{{marca.nombre_comercial}}</p>
+        <p class="oferta">{{marca.oferta_comercial}}</p>
+    </div>
+</div>

@@ -603,4 +603,13 @@ export class SocketService {
   private cerrarSessionBeforeTimeSession(reload: boolean = false) {
     this.router.navigate(['../']);
   }
+
+  // holding
+  onCallPedidoListoMarca() {
+    return new Observable(observer => {
+      this.socket.on('restobar-call-mozo-holding', (res: any) => {
+        observer.next(res);
+      });
+    });
+  }
 }

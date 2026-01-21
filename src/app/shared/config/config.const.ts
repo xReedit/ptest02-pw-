@@ -24,6 +24,7 @@ export const URL_SERVER_FILE_AUDIO_SPEECH = 'https://app.restobar.papaya.com.pe/
 export const URL_IMG_CARTA = IS_NATIVE ? 'https://restobar.papaya.com.pe/file/' : '//restobar.papaya.com.pe/file/'; // web
 export const URL_IMG_PROMO = IS_NATIVE ? 'https://restobar.papaya.com.pe/repositorio/img_promo/' : '//restobar.papaya.com.pe/repositorio/img_promo/'; // imagenes de promosiones
 export const URL_IMG_COMERCIO = IS_NATIVE ? 'https://restobar.papaya.com.pe/print/logo/' : '//restobar.papaya.com.pe/print/logo/';
+export const URL_IMG_ICONS = 'https://restobar.papaya.com.pe/images/';
 export const VAPID_PUBLIC = 'BOiwO8PftVFo8MrQfp3oAv4KbVtFdZAQojGKgzyxMCPgiNhg8PySbOSlkxDqd3iKA4J1GhzwFiCIGKmXRiKZM_0';
 
 // // export const URL_IMG_CARTA = 'https://restobar.papaya.com.pe/file/'; // capacitor
