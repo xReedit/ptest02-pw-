@@ -482,6 +482,7 @@ export class InfoTockenService {
 
   setHolding(holding: HoldingModel) {
     this.infoUsToken.holding = holding;
+    this.infoUsToken.is_holding = '1';
     this.set();
   }
 
