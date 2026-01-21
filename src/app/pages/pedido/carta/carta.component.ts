@@ -179,12 +179,14 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(
         takeUntil(this.destroy$),
         distinctUntilChanged(),
-        debounceTime(100)
+        debounceTime(150)
       )
       .subscribe(res => {
         if (res === true && !this.isSelectingMarca) {
           this.showHoldingMarcas = true;
           this.showCategoria = false;
+          this.showSecciones = false;
+          this.showItems = false;
           this.showToolBar = false;
           this.countSeeBack = 0;
           this.listenStatusService.resetListenGoBackMarcas();
@@ -894,22 +896,36 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   onSelectMarca(marca: any) {
     this.isSelectingMarca = true;
 
-    this.showToolBar = true;
-    this.tituloToolBar = "MARCAS";
+    // Resetear completamente el estado visual antes de cargar nueva carta
+    this.showHoldingMarcas = false;
+    this.showCategoria = false;
+    this.showSecciones = false;
+    this.showItems = false;
+    this.showToolBar = false;
+    
+    // Limpiar datos anteriores
+    this.objSecciones = [];
+    this.objItems = [];
+    
+    // Configurar nueva marca
     this.infoToken.setIdSede(marca.idsede_marca);
     this.infoToken.setIdOrg(marca.idorg_marca);
+    
+    // Reconectar socket y cargar carta
     this.socketService.closeConnection();
     this.socketService.connect();
     this.initCarta();
+    
     setTimeout(() => {
-      // this.navigatorService.addLink('marcas');
-      this.showHoldingMarcas = false;
+      this.showToolBar = true;
+      this.tituloToolBar = "MARCAS";
       this.showCategoria = true;
+      
       // Desactivar bandera después de completar la selección
       setTimeout(() => {
         this.isSelectingMarca = false;
       }, 500);
-    }, 200);
+    }, 300);
   }
 
 }
