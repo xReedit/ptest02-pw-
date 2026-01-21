@@ -12,8 +12,16 @@
       </div>
     </ng-container>
 
+    <!-- holding marcas -->
+    <div [hidden]="!showHoldingMarcas" class="content-secciones xanimated xfadeIn">
+      <app-holding-marcas (marcaSelected)="onSelectMarca($event)"></app-holding-marcas>
+    </div>
+    <!-- holding marcas -->
+
     <!-- categorias -->
-    <div [hidden]="!showCategoria" class="content-secciones categoria xanimated xfadeIn">
+    <ng-container *ngIf="!showHoldingMarcas">
+      <div [hidden]="!showCategoria" class="content-secciones xanimated xfadeIn"
+        [ngClass]="{'m-main-pt-40': isHolding}">
 
         <!-- informacion y comentarios solo delivery cliente -->
         <div class="p-2 pl-3 pr-3 border-bottom d-flex justify-content-between fs-14" 
@@ -58,9 +66,8 @@
               </ul>    
             
         </ng-container>
-    </div>    
-
-  
+      </div>
+    </ng-container>
 
     <!-- Secciones -->
     <div [hidden]="!showSecciones && isScreenIsMobile || showCategoria"      
