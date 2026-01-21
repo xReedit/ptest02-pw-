@@ -3,7 +3,7 @@ export const IS_NATIVE = Capacitor.getPlatform() !== 'web';
 export const IS_PLATAFORM_IOS = IS_NATIVE ? Capacitor.getPlatform() === 'ios' : false;
 
 // pruebas
-export const URL_SERVER = 'http://localhost:5819/v3/'; // desarrollo
+export const URL_SERVER = 'http://localhost:5819/v3'; // desarrollo
 export const URL_SERVER_SOCKET = 'http://localhost:5819'; // desarrollo
 export const URL_SERVER_SOCKET_SPEECH = 'http://192.168.1.65:1337'; //
 export const URL_SERVER_FILE_AUDIO_SPEECH = 'http://192.168.1.65:1337/resources/'; //

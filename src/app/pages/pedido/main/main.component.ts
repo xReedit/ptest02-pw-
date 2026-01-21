@@ -31,6 +31,7 @@ export class MainComponent implements OnInit {
   timeLoader = null;
   isSpeechVoiceAcivado = false;
   isMozoApp = VIEW_APP_MOZO;
+  isHolding = false;
 
   private lastValScrollTop = 0;
   importeTotalProductos = 0;
@@ -75,6 +76,8 @@ export class MainComponent implements OnInit {
     this.infoTokenService.getInfoUs();
     this.isPuntoAutoPedido = this.infoTokenService.isPuntoAutoPedido();
     this.isSpeechVoiceAcivado = this.establecimientoService.get().speech_disabled === 1;
+    const holdingValue = this.infoTokenService.getIsHolding();
+    this.isHolding = holdingValue === '1';
     // this.navigatorService.addLink('carta');
 
     // console.log('this.infoTokenService.infoUsToken', this.infoTokenService.infoUsToken);

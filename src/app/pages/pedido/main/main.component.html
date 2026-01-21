@@ -87,6 +87,12 @@
     <mat-tab-group (selectedTabChange)="clickTab($event)" backgroundColor="primary" color="accent"
       class="main-contemt transicion xanimated xfadeIn" [selectedIndex]="selectedTab"
       [ngClass]="{'header-less-tabs pt-0': isBusqueda}">
+      <mat-tab label="Marcas" *ngIf="isHolding">
+        <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
+          <app-carta></app-carta>
+          <br>
+        </div>
+      </mat-tab>
       <mat-tab label="Carta">
         <div class="x100-toolbar-hidden" (scroll)="onScroll($event)">
           <app-carta></app-carta>
