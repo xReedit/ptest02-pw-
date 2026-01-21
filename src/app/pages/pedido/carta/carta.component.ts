@@ -174,15 +174,16 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.calcDistanciaService.calcCostoEntregaApiGoogleRain(this.infoToken.getInfoUs().direccionEnvioSelected, this.establecimientoService.get());
     }
 
-    // listen go back marcas
+    // listen go back marcas - SOLO UNA SUSCRIPCIÓN para evitar ejecuciones múltiples
     this.listenStatusService.listenGoBackMarcas$
       .pipe(
         takeUntil(this.destroy$),
         distinctUntilChanged(),
-        debounceTime(150)
+        debounceTime(200)
       )
       .subscribe(res => {
         if (res === true && !this.isSelectingMarca) {
+          console.log('listenGoBackMarcas$ disparado');
           this.showHoldingMarcas = true;
           this.showCategoria = false;
           this.showSecciones = false;
@@ -572,6 +573,8 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   goBack() {
 
+    console.log('goBack');
+
     try {
       if (this.miPedidoService.objCarta.carta.length === 1 && !this.isScreenIsMobile) { return; } // si no es celular no regresa
     } catch (error) { }
@@ -894,37 +897,34 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onSelectMarca(marca: any) {
+    console.log('onSelectMarca - inicio');
     this.isSelectingMarca = true;
 
-    // Resetear completamente el estado visual antes de cargar nueva carta
+    // Resetear estado visual inmediatamente
     this.showHoldingMarcas = false;
     this.showCategoria = false;
     this.showSecciones = false;
     this.showItems = false;
-    this.showToolBar = false;
-    
-    // Limpiar datos anteriores
-    this.objSecciones = [];
-    this.objItems = [];
     
     // Configurar nueva marca
+    this.showToolBar = true;
+    this.tituloToolBar = "MARCAS";
     this.infoToken.setIdSede(marca.idsede_marca);
     this.infoToken.setIdOrg(marca.idorg_marca);
     
     // Reconectar socket y cargar carta
-    this.socketService.closeConnection();
-    this.socketService.connect();
+    this.socketService.reconnect();
     this.initCarta();
     
     setTimeout(() => {
-      this.showToolBar = true;
-      this.tituloToolBar = "MARCAS";
       this.showCategoria = true;
+      console.log('onSelectMarca - mostrando categoría');
       
-      // Desactivar bandera después de completar la selección
+      // Desactivar bandera después de completar la selección - tiempo aumentado
       setTimeout(() => {
         this.isSelectingMarca = false;
-      }, 500);
+        console.log('onSelectMarca - bandera desactivada');
+      }, 800);
     }, 300);
   }
 
