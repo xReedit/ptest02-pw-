@@ -15,7 +15,8 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 // import { type } from 'os';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dialog-item-edit',

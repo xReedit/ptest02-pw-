@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone, ViewChild, ElementRef, Output, EventEmitter, Input, AfterViewInit } from '@angular/core';
-import { GoogleMap, MapMarker, GoogleMapsModule } from '@angular/google-maps';
+// import { GoogleMap, MapMarker, GoogleMapsModule } from '@angular/google-maps';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
@@ -52,7 +52,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   private dataInfoSede: any;
 
   @ViewChild('search') public searchElementRef: ElementRef;
-  @ViewChild('map') map: GoogleMap;
+  // @ViewChild('map') map: GoogleMap;
   @ViewChild('registerForm') myForm;
 
   @Input() isGuardarDireccion = true;
@@ -332,13 +332,13 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
 
 
   protected mapReady(map) {
-    this.map = map;
+    // this.map = map;
   }
 
   public markerClicked = (markerObj) => {
-    if (this.map && this.map.googleMap) {
-      this.map.googleMap.setCenter({ lat: markerObj.latitude, lng: markerObj.longitude });
-    }
+    // if (this.map && this.map.googleMap) {
+    //   this.map.googleMap.setCenter({ lat: markerObj.latitude, lng: markerObj.longitude });
+    // }
   }
 
   idleMap() {

@@ -134,9 +134,7 @@ public userAuthNative$ = this.authNative.isAuthenticated$.pipe(switchMap(() => t
 
     logout() {        
         this.authNative.logout({
-            logoutParams: {
-                returnTo: this.doc.location.origin
-            }
+            returnTo: this.doc.location.origin
         });
     }
 

@@ -1,7 +1,7 @@
 import { Directive, Input, Output, EventEmitter, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { throttleTime } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
 import { Subscription } from 'rxjs/internal/Subscription';
+import { throttleTime } from 'rxjs/operators';
 // import { debounceTime } from 'rxjs/internal/operators/debounceTime';
 // import { throttleTime } from 'rxjs/internal/operators';
 

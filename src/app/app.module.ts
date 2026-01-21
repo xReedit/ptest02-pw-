@@ -18,7 +18,7 @@ import { AuthConfig, AuthModule } from '@auth0/auth0-angular';
 // import { IS_NATIVE } from './shared/config/config.const';
 import { domain, clientId, callbackUri } from './auth.config';
 // import { ImagenNoEncontradaPipe } from './shared/pipes/imagen-no-encontrada.pipe';
-import { GoogleMapsModule } from '@angular/google-maps';
+// import { GoogleMapsModule } from '@angular/google-maps';
 
 // const redirectUri = callbackUri;
 // const redirectUri = `<%= "${config.appId}" %>://${account.namespace}/capacitor/<%= "${config.appId}" %>/callback`;
@@ -56,7 +56,7 @@ const configAuth: AuthConfig = {
      // registrationStrategy: 'registerWhenStable:30000'
      //}),
     AuthModule.forRoot(configAuth),
-    GoogleMapsModule,
+    // GoogleMapsModule,
     // ServiceWorkerModule.register('assets/js/custom-service-worker.js', { enabled: environment.production })
   ],
   providers: [
