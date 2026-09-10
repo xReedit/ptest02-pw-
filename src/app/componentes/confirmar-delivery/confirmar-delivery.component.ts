@@ -98,6 +98,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
 
   isCalculandoDistanciaA = false;
+  isDistanciaEstimada = false; // la distancia se estimo porque la api de google no respondio
 
   isRestaurante = false;
   isCubierto = false;
@@ -650,6 +651,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
               this._listSubtotales = _arrSubtotales;
               this.isCalculandoDistanciaA = false;
+              this.isDistanciaEstimada = this.dirEstablecimiento.isDistanciaEstimada === true;
 
               this.isDireccionClienteCorrecta = true;
               this.verificarMontoMinimo();
@@ -661,9 +663,12 @@ export class ConfirmarDeliveryComponent implements OnInit {
               this.direccionCliente.latitude = null;
               this.direccionCliente.longitude = null;
               this.isDireccionClienteCorrecta = false;
+              // sin esto el spinner y el boton Confirmar se quedaban bloqueados para siempre
+              this.isCalculandoDistanciaA = false;
+              this.verificarMontoMinimo();
               return;
             }
-          })
+          }, error => this.fallaCalculoDistancia(error))
 
           return;
       }
@@ -694,13 +699,24 @@ export class ConfirmarDeliveryComponent implements OnInit {
   
         this._listSubtotales = _arrSubtotales;
         this.isCalculandoDistanciaA = false;
-  
+        this.isDistanciaEstimada = this.dirEstablecimiento.isDistanciaEstimada === true;
+
         this.verificarMontoMinimo();
       // }, 1500);
-      });
+      }, error => this.fallaCalculoDistancia(error));
     // }
 
 
+  }
+
+  // el calculo de distancia fallo (google caido, sin red, cuota agotada...): el formulario
+  // tiene que desbloquearse y avisar, antes se quedaba girando el spinner para siempre
+  private fallaCalculoDistancia(error: any): void {
+    console.error('no se pudo calcular el costo de entrega', error);
+    this.isCalculandoDistanciaA = false;
+    this.isDireccionClienteCorrecta = false;
+    this.msjErrorDir = 'No pudimos calcular la distancia de entrega. Vuelve a intentarlo o elige otra dirección.';
+    this.verificarMontoMinimo();
   }
 
 

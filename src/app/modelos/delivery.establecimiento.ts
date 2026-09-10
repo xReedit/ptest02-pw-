@@ -45,6 +45,7 @@ export class DeliveryEstablecimiento {
     pwa_habilitar_busqueda_mapa: number; // 1 acepta busqueda de direcciones por mapa
     pwa_show_item_view_mercado: number; // si la vista es como estanes mercado
     isCalcApiGoogle: boolean; // si el calculo de la distacia fue desde api google
+    isDistanciaEstimada: boolean; // true si la distancia se estimo (linea recta) porque la api de google fallo
     is_rain: number; // 1 = true
     options: any;
     centro: any;

@@ -7,11 +7,15 @@ import { Observable } from 'rxjs/internal/Observable';
 
 declare var google: any;
 
+// tiempo maximo de espera a la api de rutas de google antes de estimar la distancia
+const TIMEOUT_RUTA_MS = 8000;
+
 import {
   insideCircle, distanceTo
 } from 'geolocation-utils';
 import { MapsServiceService } from './maps-service.service';
 import { UtilitariosService } from './utilitarios.service';
+import { distanciaKmHaversine } from '../utils/geo';
 
 
 @Injectable({
@@ -233,20 +237,53 @@ export class CalcDistanciaService {
         // calcular la distancia
         const _origen = `${dirEstablecimiento.latitude},${dirEstablecimiento.longitude}`
         const _destino = `${dirCliente.latitude},${dirCliente.longitude}`
-        this.mapsService.calcularRuta(_origen, _destino).subscribe(reskm => {          
+
+        let emitido = false;
+        let timerRuta: any;
+        const emitir = (reskm: number, esEstimada: boolean) => {
+            if (emitido) { return; }
+            emitido = true;
+            clearTimeout(timerRuta);
+
             dirEstablecimiento.distancia_mt = reskm.toString();
             dirEstablecimiento.distancia_km = reskm.toString();
-            dirEstablecimiento.isCalcApiGoogle = true;
+            dirEstablecimiento.isCalcApiGoogle = !esEstimada;
+            dirEstablecimiento.isDistanciaEstimada = esEstimada;
             c_servicio = this.calCostoDistancia(dirEstablecimiento, reskm);
             // console.log('reskm', reskm);
             // console.log('c_servicio', c_servicio);
             dirEstablecimiento.c_servicio = c_servicio;
-            
+
             observer.next(dirEstablecimiento);
             observer.complete();
-        });              
+        };
+
+        // con la clave mal restringida google ni siquiera llama al callback: sin este limite
+        // el formulario se queda calculando para siempre
+        timerRuta = setTimeout(() => emitir(this.kmEstimadoSinApi(dirCliente, dirEstablecimiento), true), TIMEOUT_RUTA_MS);
+
+        try {
+          this.mapsService.calcularRuta(_origen, _destino).subscribe(
+            reskm => emitir(reskm, false),
+            // si Directions falla el pedido no se puede quedar bloqueado: se estima la distancia
+            () => emitir(this.kmEstimadoSinApi(dirCliente, dirEstablecimiento), true)
+          );
+        } catch (error) {
+          // google ni siquiera cargo
+          emitir(this.kmEstimadoSinApi(dirCliente, dirEstablecimiento), true);
+        }
 
     });
+  }
+
+  // ponytail: factor fijo 1.3 sobre la línea recta cuando Directions falla
+  private kmEstimadoSinApi(dirCliente: DeliveryDireccionCliente, dirEstablecimiento: DeliveryEstablecimiento): number {
+    const km = distanciaKmHaversine(
+      { lat: Number(dirEstablecimiento.latitude), lng: Number(dirEstablecimiento.longitude) },
+      { lat: Number(dirCliente.latitude), lng: Number(dirCliente.longitude) }
+    ) * 1.3;
+
+    return Math.round(km * 100) / 100;
   }
 
   // obtener la distancia en kilometros del establecimiento a la direccion del cliente, retornar la distancia en kilometros
@@ -255,11 +292,33 @@ export class CalcDistanciaService {
       let km = 0;
       const _origen = `${dirEstablecimiento.latitude},${dirEstablecimiento.longitude}`
       const _destino = `${dirCliente.latitude},${dirCliente.longitude}`
-      this.mapsService.calcularRuta(_origen, _destino).subscribe(reskm => {          
+
+      let emitido = false;
+      let timerRuta: any;
+      const emitir = (reskm: number, esEstimada: boolean) => {
+          if (emitido) { return; }
+          emitido = true;
+          clearTimeout(timerRuta);
+
           km = reskm;
+          dirEstablecimiento.isDistanciaEstimada = esEstimada;
           observer.next(km);
           observer.complete();
-      });              
+      };
+
+      // ver comentario en calculateRouteObserver: google puede no responder nunca
+      timerRuta = setTimeout(() => emitir(this.kmEstimadoSinApi(dirCliente, dirEstablecimiento), true), TIMEOUT_RUTA_MS);
+
+      try {
+        this.mapsService.calcularRuta(_origen, _destino).subscribe(
+          reskm => emitir(reskm, false),
+          // si Directions falla el pedido no se puede quedar bloqueado: se estima la distancia
+          () => emitir(this.kmEstimadoSinApi(dirCliente, dirEstablecimiento), true)
+        );
+      } catch (error) {
+        // google ni siquiera cargo
+        emitir(this.kmEstimadoSinApi(dirCliente, dirEstablecimiento), true);
+      }
     });
   }
 
