@@ -15,9 +15,14 @@
     </div>
     <hr>
     <ng-container *ngIf="listMisPedidos.length === 0; else elseTemplateList">
-        <div class="max-w text-center">
+        <div class="max-w text-center" *ngIf="cargaFallida; else sinPedidosTemplate">
             <button class="btn btn-secondary" (click)="recargarLista()"> Recargar Lista ...</button>
-        </div>        
+        </div>
+        <ng-template #sinPedidosTemplate>
+            <div class="max-w text-center text-secondary">
+                <p>Aún no tienes pedidos. Cuando hagas uno, aparecerá aquí.</p>
+            </div>
+        </ng-template>
     </ng-container>
     <ng-template #elseTemplateList>        
         <div class="max-w">

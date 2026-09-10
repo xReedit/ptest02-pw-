@@ -17,7 +17,8 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
   loaderPage = true;
   private destroy$: Subject<boolean> = new Subject<boolean>();
   infoUser: UsuarioTokenModel;
-  listMisPedidos: any;
+  listMisPedidos: any = [];
+  cargaFallida = false;
 
   idClientePedidos: number;
 
@@ -91,7 +92,9 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
     this.crudService.postFree(_data, 'delivery', 'get-mis-pedidos', false)
       .subscribe( res => {
         // console.log(res);
-        if ( !res.success ) {return; }
+        // Una lista vacia no es un error: solo `success === false` o un fallo HTTP lo son.
+        if ( !res.success ) { this.cargaFallida = true; return; }
+        this.cargaFallida = false;
         this.listMisPedidos = res.data;
         this.listMisPedidos.map( x => {
           x.arrDatosDelivery = JSON.parse(x.arrDatosDelivery);
@@ -120,6 +123,10 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           this.loaderPage = false;
         }, 500);
+      }, error => {
+        console.error('Error al cargar mis pedidos', error);
+        this.cargaFallida = true;
+        this.loaderPage = false;
       });
   }
 
