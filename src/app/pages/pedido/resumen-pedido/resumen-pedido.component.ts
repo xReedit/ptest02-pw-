@@ -512,7 +512,32 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   }
 
+  // nonce del pedido en curso: se mantiene entre reintentos (incluida una recarga) y se rota
+  // al confirmar el pedido o al descartar el carrito
+  private nonceIdem(): string {
+    let n = '';
+    try {
+      n = localStorage.getItem('sys::idem-n') || '';
+    } catch (e) {
+      n = '';
+    }
+    if (!n) {
+      n = Date.now().toString(36);
+      try {
+        localStorage.setItem('sys::idem-n', n);
+      } catch (e) { /* sin storage */ }
+    }
+    return n;
+  }
+
+  private rotarNonceIdem(): void {
+    try {
+      localStorage.removeItem('sys::idem-n');
+    } catch (e) { /* sin storage */ }
+  }
+
   nuevoPedido() {
+    this.rotarNonceIdem(); // carrito descartado: el proximo pedido usa otro nonce
     this.backConfirmacion();
     if (this.isVisibleConfirmar) {
       this.backConfirmacion();
@@ -720,8 +745,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
 
       // clave de idempotencia derivada del carrito: el mismo pedido reintentado llega con el
-      // mismo idem (aunque se recargue la pagina) y un carrito distinto genera otra clave
-      this.idemPedido = claveIdem(dataUsuario?.idcliente, dataUsuario?.idsede, this._miPedido);
+      // mismo idem (aunque se recargue la pagina) y un carrito distinto genera otra clave.
+      // El nonce evita que dos pedidos identicos y deliberados se dedupliquen entre si:
+      // solo cambia cuando el pedido se confirma o el carrito se descarta.
+      this.idemPedido = claveIdem(dataUsuario?.idcliente, dataUsuario?.idsede, this._miPedido) + '-' + this.nonceIdem();
 
       const _p_header = {
         m: dataFrmConfirma.m, // this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00',
@@ -1179,6 +1206,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     this.pedidoConfirmado = true;
     clearTimeout(this.watchdogEnvio);
+    this.rotarNonceIdem(); // pedido confirmado: uno identico posterior no debe deduplicarse
     setTimeout(() => {
       this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
       this.isSavingPedido = false;
