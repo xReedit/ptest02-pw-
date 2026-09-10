@@ -93,7 +93,6 @@ export class EstablecimientosComponent implements OnInit {
 
     this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
       if (res && (this.isClienteLogueado) ) {
-        console.log('isChangeDireccionDelivery', res);
         // opcion 2 = sercicio no disponible en tu zona
         this.vistaInicio = res?.options ? res?.options?.vista ? res.options.vista : 0 : 2;
         this.ciudad_actual = res.ciudad;
@@ -208,7 +207,6 @@ export class EstablecimientosComponent implements OnInit {
     this.crudService.postFree(_data, 'delivery', 'get-establecimientos', false)
       .subscribe( (res: any) => {
         // setTimeout(() => {
-          console.log('_data get establecimientos', res);
           if ( res.data.length === 0 ) {return; }
           this.listEstablecimientos = res.data;
 

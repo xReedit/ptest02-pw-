@@ -76,8 +76,7 @@ export class ToolBarComponent implements OnInit {
 
     this.isPuntoTomaPedidos = this.infoTokenService.infoUsToken.isPuntoTomaPedidos;
     this.nomUsuario = this.infoTokenService.infoUsToken.usuario;
-    console.log('this.isPuntoTomaPedidos', this.isPuntoTomaPedidos);
-    
+
     this.listenStatusService.isBusqueda$.subscribe(res => {
       this.isBusqueda = res;
       // console.log('liste isBusqueda', res);

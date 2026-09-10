@@ -178,7 +178,7 @@ export class MainComponent implements OnInit {
       try {
         _direccion = direccion?.direccion.split(',') || '';        
       } catch (error) {        
-        console.log('error split', error);
+        console.error('error split', error);
       }
       this.nomDireccionCliente = _direccion + ' ' + direccion.ciudad;
       this.listenService.setChangeDireccionDelivery(direccion);

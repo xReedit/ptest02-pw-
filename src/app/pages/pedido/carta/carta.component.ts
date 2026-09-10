@@ -185,7 +185,6 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       )
       .subscribe(res => {
         if (res === true && !this.isSelectingMarca) {
-          console.log('listenGoBackMarcas$ disparado');
           this.showHoldingMarcas = true;
           this.showCategoria = false;
           this.showSecciones = false;
@@ -280,7 +279,6 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       // console.log('this.miPedidoService.objCarta', this.miPedidoService.objCarta);
 
       if (this.miPedidoService.objCarta.promociones) {
-        console.log('this.miPedidoService.objCarta.promociones', this.miPedidoService.objCarta.promociones);
         if (this.miPedidoService.objCarta.promociones.lista_promociones) {
           // if (this.miPedidoService.objCarta.promociones[0].idpromocion) {
           this.objPromociones = this.miPedidoService.objCarta.promociones.lista_promociones;
@@ -364,7 +362,6 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
       this.miPedidoService.setObjNewItemTiposConsumo(this.objNewItemTiposConsumo);
 
       // HOLDING MARCAS
-      console.log('this.infoToken' , this.infoToken.infoUsToken);
       if ( this.infoToken.getIsHolding() ) {
         this.showHoldingMarcas = true;
         this.isHolding = true;
@@ -579,8 +576,6 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   goBack() {
-
-    console.log('goBack');
 
     try {
       if (this.miPedidoService.objCarta.carta.length === 1 && !this.isScreenIsMobile) { return; } // si no es celular no regresa

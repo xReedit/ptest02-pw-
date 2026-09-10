@@ -71,7 +71,6 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {
 
-    console.log('llega a main pedido');
     this.detectScreenSize();
     this.socketService.isSocketOpenReconect = false;
 
@@ -182,7 +181,6 @@ export class MainComponent implements OnInit {
     });
 
     this.listenStatusService.isLoaderCarta$.subscribe(res => {
-      console.log('isLoaderCarta', res);
       this.loaderPage = res;
       if (this.loaderPage) {
         this.verificarLoaderReload();
@@ -244,9 +242,6 @@ export class MainComponent implements OnInit {
 
   clickTab($event: any) {
 
-
-
-    console.log('event tab', $event);
     this.selectedTab = $event.index;
 
     // if ( this.selectedTab === 1 && !this.isScreenIsMobile ) {return false; }
