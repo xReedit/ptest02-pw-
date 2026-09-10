@@ -40,7 +40,13 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.idpedidoPush = Number(this.route.snapshot.queryParams['idpedido'] || 0);
+    // suscripcion (no snapshot): si la lista ya esta abierta, tocar la notificacion tambien abre el detalle
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        this.idpedidoPush = Number(params['idpedido'] || 0);
+        this.abrirPedidoPush();
+      });
 
     // el id puede estar solo en el storage, solo en el token o solo en la sesion propia del cliente
     this.idClientePedidos = Number(this.infoTokenService.getIdCliente() || this.infoTokenService.infoUsToken?.idcliente || this.verifyClientService.getDataClient()?.idcliente || 0);
@@ -131,17 +137,26 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
           return x;
         });
 
-        if ( this.idpedidoPush > 0 ) {
-          const pedidoPush = this.listMisPedidos.find(x => Number(x.idpedido) === this.idpedidoPush);
-          this.idpedidoPush = 0;
-          if ( pedidoPush ) { this.openDetalle(pedidoPush); }
-        }
+        this.abrirPedidoPush();
       }, error => {
         // se conserva la lista anterior: un fallo de red no debe vaciar la pantalla
         console.error('Error al cargar mis pedidos', error);
         this.cargaFallida = this.listMisPedidos.length === 0;
         this.loaderPage = false;
       });
+  }
+
+  // abre el pedido que traia la notificacion, en cuanto la lista lo tenga
+  private abrirPedidoPush(): void {
+    if ( this.idpedidoPush <= 0 ) { return; }
+
+    const pedidoPush = (this.listMisPedidos || []).find(x => Number(x.idpedido) === this.idpedidoPush);
+    if ( !pedidoPush ) { return; } // la lista aun no llega: se reintenta al terminar loadMisPedidos
+
+    this.idpedidoPush = 0;
+    // sin limpiar el ?idpedido, al volver atras se re-crea el componente y el detalle se reabre solo
+    this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true })
+      .then(() => this.openDetalle(pedidoPush));
   }
 
   openDetalle(item: any) {

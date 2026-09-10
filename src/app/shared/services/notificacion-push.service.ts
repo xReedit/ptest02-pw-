@@ -77,9 +77,13 @@ export class NotificacionPushService {
     const payload = construirSuscripcionPush(this.idClienteActual(), this.tokenActual, this.plataforma());
     if (!debeRegistrarToken(payload, this.ultimoEnviado)) { return; }
 
-    this.ultimoEnviado = { token: payload.token, idcliente: payload.idcliente };
     this.crudService.postFree(payload, 'push', 'suscripcion', false)
       .subscribe({
+        // solo se recuerda lo que el backend acepto: si respondio mal, el proximo intento reenvia
+        next: (res: any) => {
+          if (!res || res.success === false) { return; }
+          this.ultimoEnviado = { token: payload.token, idcliente: payload.idcliente };
+        },
         error: (error: any) => {
           this.ultimoEnviado = { token: '', idcliente: 0 };
           console.error('push/suscripcion', error);
