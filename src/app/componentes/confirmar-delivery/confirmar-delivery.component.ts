@@ -369,39 +369,15 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
     this.isDireccionClienteCorrecta = this.direccionCliente.latitude && this.direccionCliente.longitude ? true : false; 
 
+    // un formulario a medio llenar es lo normal: ya no se vuelca en consola (BUG-115)
     this.isValidForm = false;
-    if (!this.isTiempoEntregaValid) { 
-      console.error('isTiempoEntregaValid', this.isTiempoEntregaValid);
-      this.isReady.emit(this.isValidForm); return; 
-    }
-    if (this.resData.importeTotal < this.montoMinimoPedido) {
-      console.error('resData.importeTotal', this.resData.importeTotal);
-      this.isReady.emit(this.isValidForm); return;
-    }
-    if (!this.metodoPagoSelected.idtipo_pago ) {
-      console.error('resData.metodoPagoSelected', this.metodoPagoSelected.idtipo_pago);
-      this.isReady.emit(this.isValidForm); return;
-    }
-
-    if (!this.isDireccionClienteCorrecta && !this.isRecojoLocalCheked) {
-      console.error('isDireccionClienteCorrecta', this.isDireccionClienteCorrecta);
-      this.isReady.emit(this.isValidForm); return;
-    }
-
-    if (this.resData.telefono.trim().length < 5 ) {
-      console.error('resData.telefono', this.resData.telefono.trim().length);
-      this.isReady.emit(this.isValidForm); return;
-    }
-
-    if (this.isCalculandoDistanciaA ) {
-      console.error('isCalculandoDistanciaA', this.isCalculandoDistanciaA);
-      this.isReady.emit(this.isValidForm); return;
-    }
-
-    if (!this.nombreClienteValido) {
-      console.error('nombreClienteValido', this.nombreClienteValido);
-      this.isReady.emit(this.isValidForm); return;
-    }
+    if (!this.isTiempoEntregaValid) { this.isReady.emit(this.isValidForm); return; }
+    if (this.resData.importeTotal < this.montoMinimoPedido) { this.isReady.emit(this.isValidForm); return; }
+    if (!this.metodoPagoSelected.idtipo_pago) { this.isReady.emit(this.isValidForm); return; }
+    if (!this.isDireccionClienteCorrecta && !this.isRecojoLocalCheked) { this.isReady.emit(this.isValidForm); return; }
+    if (this.resData.telefono.trim().length < 5) { this.isReady.emit(this.isValidForm); return; }
+    if (this.isCalculandoDistanciaA) { this.isReady.emit(this.isValidForm); return; }
+    if (!this.nombreClienteValido) { this.isReady.emit(this.isValidForm); return; }
 
     this.isValidForm = true;
     this.isReady.emit(this.isValidForm);
