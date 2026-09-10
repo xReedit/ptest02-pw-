@@ -19,6 +19,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
   infoUser: UsuarioTokenModel;
   listMisPedidos: any = [];
   cargaFallida = false;
+  sinSesion = false; // visitante sin cliente identificado: no se consulta al servidor
 
   idClientePedidos: number;
 
@@ -54,15 +55,34 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
         this.infoTokenService.infoUsToken = res;
         this.infoTokenService.set();
         this.infoTokenService.converToJSON();
-        this.idClientePedidos = this.infoUser.idcliente;
+        this.idClientePedidos = this.infoUser?.idcliente;
         this.conectServices();
       });
     }
   }
 
+  // sin idcliente el backend responde 400 y salia el boton de reintento: mejor invitar a entrar
+  private get haySesionCliente(): boolean {
+    return Number(this.idClientePedidos) > 0;
+  }
+
+  irALogin(): void {
+    // como en registarDirCliente: sin la marca de delivery el guard del login rechaza la ruta
+    this.verifyClientService.setIsDelivery(true);
+    this.router.navigate(['/login-client']);
+  }
+
   private conectServices() {
     // this.socketSerrvice.connect(this.infoUser, 0, true);
 
+    if ( !this.haySesionCliente ) {
+      this.sinSesion = true;
+      this.cargaFallida = false;
+      this.loaderPage = false;
+      return;
+    }
+
+    this.sinSesion = false;
     this.loadMisPedidos();
     this.listenChangeStatus();
   }

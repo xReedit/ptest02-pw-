@@ -15,13 +15,20 @@
     </div>
     <hr>
     <ng-container *ngIf="listMisPedidos.length === 0; else elseTemplateList">
-        <div class="max-w text-center" *ngIf="cargaFallida; else sinPedidosTemplate">
-            <button class="btn btn-secondary" (click)="recargarLista()"> Recargar Lista ...</button>
+        <!-- sin sesion no se consulta al servidor: antes salia "Recargar Lista" por un HTTP 400 -->
+        <div class="max-w text-center" *ngIf="sinSesion; else conSesionTemplate">
+            <p class="text-secondary">Inicia sesión para ver tus pedidos.</p>
+            <button class="btn btn-primary" (click)="irALogin()">Iniciar sesión</button>
         </div>
-        <ng-template #sinPedidosTemplate>
-            <div class="max-w text-center text-secondary">
-                <p>Aún no tienes pedidos. Cuando hagas uno, aparecerá aquí.</p>
+        <ng-template #conSesionTemplate>
+            <div class="max-w text-center" *ngIf="cargaFallida; else sinPedidosTemplate">
+                <button class="btn btn-secondary" (click)="recargarLista()"> Recargar Lista ...</button>
             </div>
+            <ng-template #sinPedidosTemplate>
+                <div class="max-w text-center text-secondary">
+                    <p>Aún no tienes pedidos. Cuando hagas uno, aparecerá aquí.</p>
+                </div>
+            </ng-template>
         </ng-template>
     </ng-container>
     <ng-template #elseTemplateList>        
