@@ -157,7 +157,8 @@ export class InfoTockenService {
     this.set();
   }
 
-  setIniMetodoPago(descripcion = 'Tarjeta') {
+  // Efectivo por defecto: con Tarjeta el pedido saltaba solo a la pasarela de pago (BUG-105)
+  setIniMetodoPago(descripcion = 'Efectivo') {
     const metodoPagoInit: MetodoPagoModel = new MetodoPagoModel;
     metodoPagoInit.idtipo_pago = descripcion === 'Tarjeta' ? 2 : 1;
     metodoPagoInit.descripcion = descripcion;
@@ -167,18 +168,14 @@ export class InfoTockenService {
     this.setMetodoPago( metodoPagoInit );
   }
 
+  // el metodo ya elegido manda; si no hay ninguno se arranca en Efectivo (nunca en Tarjeta,
+  // que enviaba al cliente directo a la pasarela sin pasar por la confirmacion) (BUG-105)
   setIniMetodoPagoSegunFiltro(isAceptaTarjeta): MetodoPagoModel {
-    const metodoPagoInit: MetodoPagoModel = new MetodoPagoModel;
+    const metodoPagoElegido = this.infoUsToken?.metodoPago;
+    if ( metodoPagoElegido?.idtipo_pago ) { return metodoPagoElegido; }
 
-    if ( isAceptaTarjeta ) {
-      metodoPagoInit.idtipo_pago = 2;
-      metodoPagoInit.descripcion = 'Tarjeta';
-      metodoPagoInit.importe = '0';
-      metodoPagoInit.checked = true;
-    }
-
-    this.setMetodoPago( metodoPagoInit );
-    return metodoPagoInit;
+    this.setIniMetodoPago('Efectivo');
+    return this.infoUsToken.metodoPago;
 
     // if ( isAceptaYape ) {
     //   metodoPagoInit.idtipo_pago = 3;
