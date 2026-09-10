@@ -9,14 +9,15 @@ export interface ParametrosCostoDelivery {
   km_adicional_costo?: number | string;
   km_limite?: number | string;
   costo_fijo?: number | string;
-  tiempo_aprox_entrega?: string;
+  // la base guarda unas sedes con un entero de minutos (13 -> 15) y otras con un texto ('30 - 45 min')
+  tiempo_aprox_entrega?: number | string;
 }
 
 export interface CostoEntrega {
   success: boolean;
   costo_servicio?: number;
   distancia_en_km?: string;
-  tiempo_aprox_entrega?: string;
+  tiempo_aprox_entrega?: number | string;
   mensaje?: string;
 }
 
@@ -24,6 +25,16 @@ export const MSJ_FUERA_DE_COBERTURA = 'Lo siento, el servicio no está disponibl
 
 // el backend devuelve los numeros unas veces como number y otras como cadena
 const aNumero = (valor: any): number => typeof valor === 'string' ? parseFloat(valor) : valor;
+
+// texto listo para pintar del tiempo de entrega: la sede lo puede tener como minutos (15) o como
+// texto ya redactado ('30 - 45 min'); solo al numero hay que ponerle la unidad
+export function formatearTiempoEntrega(valor?: number | string): string {
+  if (valor === null || valor === undefined || valor === '') { return ''; }
+  const enTexto = valor.toString().trim();
+  if (enTexto === '') { return ''; }
+  const minutos = Number(enTexto);
+  return Number.isFinite(minutos) ? `${minutos} min` : enTexto;
+}
 
 // redondear = UtilitariosService.roundAmount, inyectado para no arrastrar Angular al test
 export function calcularCostoEntrega(
@@ -54,6 +65,11 @@ export function calcularCostoEntrega(
   const costoBasico = aNumero(_parametros.km_base_costo);
   const costoAdicionalPorKilometro = aNumero(_parametros.km_adicional_costo);
   const radioMaximo = aNumero(_parametros.km_limite);
+
+  // sede sin la regla de costo configurada: mejor avisar que dejar que el NaN se cuele al pedido
+  if (!Number.isFinite(radioMaximo) || !Number.isFinite(costoBasico)) {
+    return { mensaje: MSJ_FUERA_DE_COBERTURA, success: false };
+  }
 
   if (distanciaEnKm > radioMaximo) {
     return { mensaje: MSJ_FUERA_DE_COBERTURA, success: false };

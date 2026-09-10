@@ -1,4 +1,4 @@
-import { calcularCostoEntrega } from './costo-entrega';
+import { calcularCostoEntrega, formatearTiempoEntrega } from './costo-entrega';
 
 // misma regla que UtilitariosService.roundAmount: baja a entero si el decimal es < 0.50, si no sube a .50
 const redondear = (monto: number): number => {
@@ -70,5 +70,38 @@ describe('calcularCostoEntrega', () => {
     expect(rpt.success).toBe(true);
     expect(rpt.costo_servicio).toBe(5);
     expect(rpt.tiempo_aprox_entrega).toBe('30 - 45 min');
+  });
+
+  it('modo zonas: todavia no existe, cae en el calculo por distancia', () => {
+    const porZonas = { ...parametrosVariable, modo: 'zonas' as const };
+    const rpt = calcularCostoEntrega(porZonas, 4.5, redondear);
+    expect(rpt.success).toBe(true);
+    expect(rpt.costo_servicio).toBe(10);
+  });
+
+  it('sede sin parametros configurados: success false en vez de un NaN', () => {
+    const rpt = calcularCostoEntrega({}, 3, redondear);
+    expect(rpt.success).toBe(false);
+    expect(rpt.mensaje).toBeTruthy();
+    expect(rpt.costo_servicio).toBeUndefined();
+  });
+});
+
+describe('formatearTiempoEntrega', () => {
+  it('minutos como numero: le pone la unidad', () => {
+    expect(formatearTiempoEntrega(15)).toBe('15 min');
+  });
+
+  it('minutos como cadena numerica: le pone la unidad', () => {
+    expect(formatearTiempoEntrega('15')).toBe('15 min');
+  });
+
+  it('texto ya redactado: se deja tal cual', () => {
+    expect(formatearTiempoEntrega('30 - 45 min')).toBe('30 - 45 min');
+  });
+
+  it('sin valor: cadena vacia', () => {
+    expect(formatearTiempoEntrega(undefined)).toBe('');
+    expect(formatearTiempoEntrega('')).toBe('');
   });
 });

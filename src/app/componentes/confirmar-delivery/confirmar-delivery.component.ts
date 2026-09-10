@@ -22,6 +22,7 @@ import { UtilitariosService } from 'src/app/shared/services/utilitarios.service'
 import { DialogDireccionClienteDeliveryComponent } from '../dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { IS_NATIVE } from 'src/app/shared/config/config.const';
+import { formatearTiempoEntrega } from 'src/app/shared/utils/costo-entrega';
 
 // DEL CLIENTE
 
@@ -623,7 +624,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
               this.dirEstablecimiento.c_servicio = costoEntrega.costo_servicio;
               this.dirEstablecimiento.distancia_mt = costoEntrega.distancia_en_km.toString();
               this.dirEstablecimiento.distancia_km = costoEntrega.distancia_en_km.toString();
-              this.tiempoAproxEntrega = costoEntrega.tiempo_aprox_entrega || '';
+              this.tiempoAproxEntrega = formatearTiempoEntrega(costoEntrega.tiempo_aprox_entrega);
               this.isDistanciaEstimada = this.dirEstablecimiento.isDistanciaEstimada === true;
               this.dirEstablecimiento.isCalcApiGoogle = !this.isDistanciaEstimada;
               this.establecimientoService.set(this.dirEstablecimiento);
@@ -705,6 +706,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     console.error('no se pudo calcular el costo de entrega', error);
     this.isCalculandoDistanciaA = false;
     this.isDireccionClienteCorrecta = false;
+    this.tiempoAproxEntrega = ''; // no hay entrega que anunciar
     this.msjErrorDir = 'No pudimos calcular la distancia de entrega. Vuelve a intentarlo o elige otra dirección.';
     this.verificarMontoMinimo();
   }

@@ -272,6 +272,7 @@ export class CompPideLoQueQuierasComponent implements OnInit  {
       this.direccionCliente.codigo = null;
       this.msjErrorDir = 'Servicio no disponible en esta dirección.';
       this.isCalculandoDistanciaA = false; // antes se salia dejando el indicador encendido
+      this.isFormValid = false; // igual que su hermano de comp-get-datos-cliente: sin cobertura no se envia
       this.validFormDos();
       return;
     }
