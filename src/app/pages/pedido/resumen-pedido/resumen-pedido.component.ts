@@ -855,6 +855,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
         // alerta falsa de "el pedido esta tardando" mientras el cliente llena el formulario
         clearTimeout(this.watchdogEnvio);
         this.isSavingPedido = false;
+        // la pantalla de tarjeta trae su propia UI: el overlay de envio tiene que irse.
+        // Por prepararEnvio() esta rama entra sin overlay (llama a enviarPedido() directo),
+        // pero otras entradas si lo abren (confirmarYEnviarPedidoHolding, isPagoSucces$),
+        // y cerrarlo es idempotente, asi que se cierra siempre.
+        this.listenStatusService.closeFinishLoaderSendPedidoSource();
         this.pagarCuentaDeliveryCliente();
         // enviamos a pagar
         return;
@@ -1263,16 +1268,19 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private errorSendPedido(resSocket: any) {
     clearTimeout(this.watchdogEnvio);
-    // el componente ya no esta en pantalla: alertar aqui interrumpiria otra pagina
-    if (this.destruido) { return; }
 
-    let msj = '!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.';
-    if (resSocket?.message === 'timeout') {
-      msj = 'El pedido está tardando más de lo normal. Revisa tu conexión y vuelve a intentar; si ya se registró no se duplicará.';
-    } else if (resSocket?.message === 'socket-desconectado') {
-      msj = 'Sin conexión con el servidor. Revisa tu internet y vuelve a intentar.';
+    // Solo la alerta se calla cuando el componente ya no esta en pantalla: interrumpiria
+    // otra pagina. El diagnostico y el cierre del overlay tienen que correr igual, porque
+    // el loader es un singleton root y quedaria tapando la app entera.
+    if (!this.destruido) {
+      let msj = '!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.';
+      if (resSocket?.message === 'timeout') {
+        msj = 'El pedido está tardando más de lo normal. Revisa tu conexión y vuelve a intentar; si ya se registró no se duplicará.';
+      } else if (resSocket?.message === 'socket-desconectado') {
+        msj = 'Sin conexión con el servidor. Revisa tu internet y vuelve a intentar.';
+      }
+      alert(msj);
     }
-    alert(msj);
 
     // guardamos el error
     const dataError = {
