@@ -12,6 +12,16 @@ class HostImgComponent {
   src = 'https://servidor.invalido.local/no-existe.png';
 }
 
+@Component({
+  template: `
+    <img id="conFallbackVacio" appImgFallback [src]="src">
+    <img id="ocultaVacio" appImgFallback="ocultar" [src]="src">
+  `
+})
+class HostImgVacioComponent {
+  src = '';
+}
+
 describe('ImgFallbackDirective', () => {
   let fixture: ComponentFixture<HostImgComponent>;
 
@@ -57,5 +67,33 @@ describe('ImgFallbackDirective', () => {
     const el = img('conFallback');
     expect(el.getAttribute('src')).toBe('https://servidor.invalido.local/no-existe.png');
     expect(el.style.display).toBe('');
+  });
+});
+
+describe('ImgFallbackDirective con src vacio desde el inicio', () => {
+  let fixture: ComponentFixture<HostImgVacioComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ImgFallbackDirective, HostImgVacioComponent]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(HostImgVacioComponent);
+    fixture.detectChanges();
+  });
+
+  function img(id: string): HTMLImageElement {
+    return fixture.nativeElement.querySelector('#' + id) as HTMLImageElement;
+  }
+
+  it('aplica el placeholder cuando el src ya nace vacio (pipe imgUrl sin nombre)', () => {
+    const el = img('conFallbackVacio');
+    expect(el.getAttribute('src')).toContain(IMG_FALLBACK);
+  });
+
+  it('esconde el elemento cuando el src ya nace vacio y el modo es ocultar', () => {
+    const el = img('ocultaVacio');
+    expect(el.style.display).toBe('none');
+    expect(el.getAttribute('src')).not.toContain(IMG_FALLBACK);
   });
 });
