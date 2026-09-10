@@ -65,12 +65,13 @@ export class PagoTarjetaVisanetService {
   }
 
   private generarSesion() {
+    // Sin clientData a propósito: el flujo de mesa siempre envió "antifraud": null
+    // en la sesión y solo mandaba los datos antifraude en la autorización.
     const body = {
       idsede: Number(this.infoTokenService.getInfoSedeToken()),
       amount: this.importe,
       purchaseNumber: this.purchasenumber,
-      channel: CANAL,
-      clientData: this.buildClientData()
+      channel: CANAL
     };
 
     this.crudService.postFree(body, CONTROLADOR_PAGO, ACCION_SESION, false)

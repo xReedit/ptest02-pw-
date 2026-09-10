@@ -61,6 +61,10 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   private listenKeyData = 'sys::transaction-response';
   private timeListenerKeys: any;
   private unsubscribeEstado = new Subscription();
+  // PagoTarjetaVisanetService es singleton de root y comp-pasarela-pago (cash/atm)
+  // emite en los mismos observables: hay que soltar estas dos al destruir la página.
+  private subPagoResponse: Subscription | null = null;
+  private subPagoLoader: Subscription | null = null;
 
   private dataClientePago: ClientePagoModel = new ClientePagoModel();
 
@@ -137,6 +141,15 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.unsubscribeEstado.unsubscribe();
+
+    if (this.subPagoResponse) {
+      this.subPagoResponse.unsubscribe();
+      this.subPagoResponse = null;
+    }
+    if (this.subPagoLoader) {
+      this.subPagoLoader.unsubscribe();
+      this.subPagoLoader = null;
+    }
   }
 
   private async listener() {
@@ -175,13 +188,13 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     localStorage.setItem('sys::btnP', '0');
 
 
-    this.pagoTarjetaServices.listenPaymetResponse$.subscribe(res => {
+    this.subPagoResponse = this.pagoTarjetaServices.listenPaymetResponse$.subscribe(res => {
       if (res) {
         this.listenResponsePayment(res);
       }
     });
 
-    this.pagoTarjetaServices.listenPaymetLoader$.subscribe(res => {
+    this.subPagoLoader = this.pagoTarjetaServices.listenPaymetLoader$.subscribe(res => {
       this.isLoaderTransaction = res;
     });
 

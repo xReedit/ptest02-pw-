@@ -41,6 +41,10 @@ export class CompNiubizPaymentComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // cancelPayment quita el listener de window payment.success y limpia la sesión;
+    // sin esto el listener del servicio (singleton) sobrevive al componente.
+    this.niubizService.cancelPayment();
+    delete (window as any).responseFormNiubiz;
     this.cleanup();
   }
 
