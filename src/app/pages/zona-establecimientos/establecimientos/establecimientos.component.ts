@@ -17,6 +17,8 @@ import { EstablecimientoService } from 'src/app/shared/services/establecimiento.
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { SedeDeliveryService } from 'src/app/shared/services/sede-delivery.service';
 import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { intentarAutoRecarga } from 'src/app/shared/utils/auto-reload.util';
 
 @Component({
   selector: 'app-establecimientos',
@@ -50,7 +52,8 @@ export class EstablecimientosComponent implements OnInit {
     private establecimientoService: EstablecimientoService,
     private pedidoService: MipedidoService,
     private plazaDelivery: SedeDeliveryService,
-    private notificationPushService: NotificacionPushService
+    private notificationPushService: NotificacionPushService,
+    private snackBar: MatSnackBar
     // private pushNotificationSerice: NotificacionPushService,
     // private dialog: MatDialog
   ) { }
@@ -130,12 +133,17 @@ export class EstablecimientosComponent implements OnInit {
       });
   }
 
-  // 12 segundos de cargar, reload page
+  // 12 segundos de cargar, reload page (una sola vez por sesion)
   private verificarLoaderReload() {
+    clearTimeout(this.timeLoader);
     this.timeLoader = setTimeout(() => {
-      if ( this.loaderPage ) {
-        window.location.reload();
-      }
+      if ( !this.loaderPage ) { return; }
+      if ( intentarAutoRecarga() ) { return; }
+
+      // Ya se recargo automaticamente hace poco: cortamos el loader y ofrecemos reintentar.
+      this.loaderPage = false;
+      this.snackBar.open('No se pudo conectar. Toca para reintentar.', 'Reintentar', { duration: 6000 })
+        .onAction().subscribe(() => window.location.reload());
     }, 12000);
   }
 

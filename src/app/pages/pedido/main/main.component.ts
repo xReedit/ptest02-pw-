@@ -9,6 +9,8 @@ import { EstablecimientoService } from 'src/app/shared/services/establecimiento.
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { ComandAnalizerService } from 'src/app/shared/services/speech/comand-analizer.service';
 import { VIEW_APP_MOZO } from 'src/app/shared/config/config.const';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { intentarAutoRecarga } from 'src/app/shared/utils/auto-reload.util';
 
 @Component({
   selector: 'app-main',
@@ -54,6 +56,7 @@ export class MainComponent implements OnInit {
     private infoTokenService: InfoTockenService,
     // private comandAnalizerService: ComandAnalizerService,
     private establecimientoService: EstablecimientoService,
+    private snackBar: MatSnackBar,
   ) {
     // console.log('verifyClientService', this.verifyClientService.get);
     // this.comandAnalizerService.getIsActive();
@@ -209,12 +212,17 @@ export class MainComponent implements OnInit {
 
   }
 
-  // 12 segundos de cargar, reload page
+  // 12 segundos de cargar, reload page (una sola vez por sesion)
   private verificarLoaderReload() {
+    clearTimeout(this.timeLoader);
     this.timeLoader = setTimeout(() => {
-      if (this.loaderPage) {
-        window.location.reload();
-      }
+      if (!this.loaderPage) { return; }
+      if (intentarAutoRecarga()) { return; }
+
+      // Ya se recargo automaticamente hace poco: cortamos el loader y ofrecemos reintentar.
+      this.loaderPage = false;
+      this.snackBar.open('No se pudo conectar. Toca para reintentar.', 'Reintentar', { duration: 6000 })
+        .onAction().subscribe(() => window.location.reload());
     }, 12000);
   }
 
