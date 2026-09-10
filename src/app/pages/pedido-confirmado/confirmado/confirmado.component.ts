@@ -3,11 +3,9 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
-import { Router } from '@angular/router';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
-import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { IS_NATIVE } from 'src/app/shared/config/config.const';
 
 @Component({
@@ -25,16 +23,13 @@ export class ConfirmadoComponent implements OnInit {
   constructor(
     private infoTokenService: InfoTockenService,
     private navigatorService: NavigatorLinkService,
-    private router: Router,
     private socketService: SocketService,
     private miPedidoService: MipedidoService,
     private dialog: MatDialog,
-    private pushNotificationSerice: NotificacionPushService,
-    private utilitariosSerivce: UtilitariosService
+    private pushNotificationSerice: NotificacionPushService
   ) { }
 
   ngOnInit(): void {
-    console.log('llego a confirmado');
     this.navigatorService.disableGoBack();
     this.navigatorService.setOffListenNavigator(true);
 
@@ -50,7 +45,7 @@ export class ConfirmadoComponent implements OnInit {
   finDeliveryAvisoMsj() {
 
     // iOS ya no se excluye: el push nativo es el mismo camino en Android y en iOS
-    this.lanzarPermisoNotificationPush(0);
+    void this.lanzarPermisoNotificationPush(0).catch((e) => console.error('push', e));
 
     // limpiar storage transaccion
     this.miPedidoService.prepareNewPedido();

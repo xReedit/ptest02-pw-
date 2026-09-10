@@ -151,11 +151,18 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
     if ( this.idpedidoPush <= 0 ) { return; }
 
     const pedidoPush = (this.listMisPedidos || []).find(x => Number(x.idpedido) === this.idpedidoPush);
-    if ( !pedidoPush ) { return; } // la lista aun no llega: se reintenta al terminar loadMisPedidos
 
     this.idpedidoPush = 0;
     // sin limpiar el ?idpedido, al volver atras se re-crea el componente y el detalle se reabre solo
-    this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true })
+    const limpiarParam = this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
+
+    // la lista ya llego y el pedido no esta en ella: se limpia igual para que el sondeo de 30 s no reintente siempre
+    if ( !pedidoPush ) {
+      limpiarParam.catch((err) => console.error('abrirPedidoPush', err));
+      return;
+    }
+
+    limpiarParam
       .then(() => this.openDetalle(pedidoPush))
       .catch((err) => console.error('abrirPedidoPush', err));
   }

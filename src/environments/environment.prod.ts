@@ -12,7 +12,6 @@ export const environment = {
   imgPromoUrl: 'https://restobar.papaya.com.pe/repositorio/img_promo/',
   imgComercioUrl: 'https://restobar.papaya.com.pe/print/logo/',
   imgIconsUrl: 'https://restobar.papaya.com.pe/images/',
-  vapidPublic: 'BOiwO8PftVFo8MrQfp3oAv4KbVtFdZAQojGKgzyxMCPgiNhg8PySbOSlkxDqd3iKA4J1GhzwFiCIGKmXRiKZM_0',
   // Solo datos públicos. merchantId, credenciales y urls de la pasarela viven
   // en el backend (POST /pago/niubiz/sesion y /pago/niubiz/autorizar).
   niubiz: {

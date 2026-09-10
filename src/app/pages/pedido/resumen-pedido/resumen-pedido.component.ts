@@ -35,6 +35,7 @@ import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-cli
 import { SpeechDataProviderService } from 'src/app/shared/services/speech/speech-data-provider.service';
 import { URL_IMG_ICONS } from 'src/app/shared/config/config.const';
 import { HoldingService } from 'src/app/shared/services/holding.service';
+import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 import { NiubizClientData, NiubizPaymentResponse } from 'src/app/shared/services/niubiz.service';
 import { b64DecodeUnicode, b64EncodeUnicode } from 'src/app/shared/utils/b64';
 import { claveIdem } from 'src/app/shared/utils/idem';
@@ -143,7 +144,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     private utilService: UtilitariosService,
     private verifyClientService: VerifyAuthClientService,
     private speechDataProviderService: SpeechDataProviderService,
-    private holdingService: HoldingService
+    private holdingService: HoldingService,
+    private notificacionPush: NotificacionPushService
   ) { }
 
   ngOnInit() {
@@ -1235,6 +1237,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // el servidor puede haber reasignado el cliente al guardar: ese idcliente manda
     if (Number(_res.idcliente) > 0) {
       this.infoToken.setIdClienteToken(Number(_res.idcliente));
+      // el idcliente definitivo ya esta en el token: se reenvia el token push con el cliente correcto
+      // (un cliente nuevo arranca con idcliente 0 y su token quedaria sin dueño)
+      this.notificacionPush.enviarSuscripcion();
       const cs = this.verifyClientService.getDataClient();
       if (cs) { cs.idcliente = Number(_res.idcliente); this.verifyClientService.setDataClient(); }
       this.socketService.joinCliente(Number(_res.idcliente));

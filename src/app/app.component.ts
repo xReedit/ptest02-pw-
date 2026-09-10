@@ -8,8 +8,6 @@ import { NotificacionPushService } from './shared/services/notificacion-push.ser
 })
 export class AppComponent implements OnInit {
 
-  suscribe: any;
-
   constructor(
     private notificacionPush: NotificacionPushService
   ) { }

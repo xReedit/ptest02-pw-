@@ -1,5 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter, take } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   ActionPerformed,
@@ -74,6 +75,7 @@ export class NotificacionPushService {
   // Reenvía el token vigente con el idcliente vigente. Se llama tras el registro en FCM,
   // después del login y después de guardar un pedido.
   public enviarSuscripcion(): void {
+    if (!IS_NATIVE) { return; }
     const payload = construirSuscripcionPush(this.idClienteActual(), this.tokenActual, this.plataforma());
     if (!debeRegistrarToken(payload, this.ultimoEnviado)) { return; }
 
@@ -146,11 +148,18 @@ export class NotificacionPushService {
   private abrirPedido(data: any): void {
     const idpedido = Number(data && data.idpedido ? data.idpedido : 0);
     const extras = idpedido > 0 ? { queryParams: { idpedido } } : {};
-    // ponytail: 800 ms para que el arranque en frío termine su navegación inicial
-    // antes de que la notificación imponga la suya.
-    setTimeout(() => {
-      this.router.navigate(['/zona-delivery/pedidos'], extras);
-    }, 800);
+    const irAPedidos = () => this.router.navigate(['/zona-delivery/pedidos'], extras);
+
+    // arranque en frío: se espera a que termine la navegación inicial antes de imponer la nuestra.
+    // Si el router ya navegó alguna vez, se navega de inmediato.
+    if (this.router.navigated) {
+      irAPedidos();
+      return;
+    }
+
+    this.router.events
+      .pipe(filter(evento => evento instanceof NavigationEnd), take(1))
+      .subscribe(() => irAPedidos());
   }
 
   private idClienteActual(): number {

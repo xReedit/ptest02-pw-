@@ -649,7 +649,7 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   finDelivery() {
 
-    this.lanzarPermisoNotificationPush(0);
+    void this.lanzarPermisoNotificationPush(0).catch((e) => console.error('push', e));
 
     // limpiar storage transaccion
     this.miPedidoService.prepareNewPedido();
@@ -669,13 +669,16 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
     // ponytail: web push fuera de alcance; quitar el gate cuando exista web push
     if (!IS_NATIVE) { return; }
 
-    // this.pushNotificationSerice.suscribirse(option);
+    try {
+      // el pedido ya se guardo: el idcliente definitivo puede haber cambiado
+      this.pushNotificationSerice.enviarSuscripcion();
 
-    this.pushNotificationSerice.enviarSuscripcion();
-
-    if ( await this.pushNotificationSerice.getIsTienePermiso() ) {
-      await this.pushNotificationSerice.suscribirse();
-      return;
+      if ( await this.pushNotificationSerice.getIsTienePermiso() ) {
+        await this.pushNotificationSerice.suscribirse();
+        return;
+      }
+    } catch (error) {
+      console.error('lanzarPermisoNotificationPush', error);
     }
 
     // si no tiene permiso le pregunta

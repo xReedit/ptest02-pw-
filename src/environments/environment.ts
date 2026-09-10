@@ -16,7 +16,6 @@ export const environment = {
   imgPromoUrl: 'http://192.168.1.65/restobar/repositorio/img_promo/',
   imgComercioUrl: 'http://192.168.1.65/restobar/print/logo/',
   imgIconsUrl: 'http://192.168.1.65/restobar/images/',
-  vapidPublic: 'BC7ietauZE99Hx9HkPyuGVr8jaYETyEJgH-gLaYIsbORYobppt9dX49_K_wubDqphu1afi7XrM6x1zAp4kJh_wU',
   // Solo datos públicos. merchantId, credenciales y urls de la pasarela viven
   // en el backend (POST /pago/niubiz/sesion y /pago/niubiz/autorizar).
   niubiz: {

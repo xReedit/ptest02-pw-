@@ -13,7 +13,6 @@ export const URL_IMG_CARTA = environment.imgCartaUrl; // imagenes de la carta
 export const URL_IMG_PROMO = environment.imgPromoUrl; // imagenes de promociones
 export const URL_IMG_COMERCIO = environment.imgComercioUrl;
 export const URL_IMG_ICONS = environment.imgIconsUrl; // iconos
-export const VAPID_PUBLIC = environment.vapidPublic;
 
 // sede a la que pertenece lo cacheado en sys::rules (las reglas no son globales)
 export const KEY_RULES_SEDE = 'sys::rules-sede';
