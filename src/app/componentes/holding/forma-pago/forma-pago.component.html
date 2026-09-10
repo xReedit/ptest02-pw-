@@ -11,7 +11,7 @@
         <div *ngFor="let method of paymentMethods" class="payment-method" [class.active]="method.isActive"
             [class.disabled]="method.isDisabled">
             <div class="method-info">
-                <img src="{{method.icon}}" alt="{{method.name}}" width="20">
+                <img src="{{method.icon}}" alt="{{method.name}}" width="20" appImgFallback="ocultar">
                 <p [for]="'payment-' + method.id">{{method.name}}</p>
             </div>
             <div class="input-group">

@@ -91,10 +91,10 @@
             <div class="m1 seccion">
               <div class="img">
                 <ng-container *ngIf="item.img === ''; else elseTemplateImg">
-                  <img src="assets/images/{{i}}.png" alt="img-icon">                  
+                  <img src="assets/images/{{i}}.png" alt="img-icon" appImgFallback="ocultar" loading="lazy">                  
                 </ng-container>
                 <ng-template #elseTemplateImg>
-                  <img src="assets/images/{{item.img}}" alt="img-icon">
+                  <img src="assets/images/{{item.img}}" alt="img-icon" appImgFallback="ocultar" loading="lazy">
                 </ng-template>
                 
               </div>
@@ -175,7 +175,7 @@
                           <!-- imagen -->
                           <div class="text-right ml-1">
                             <div class="rounded-circle icon-div-carta">
-                              <img class="icon-item-carta rounded-circle" [src]="item.img | imgUrl:'carta'" alt="icon-item-carta">
+                              <img class="icon-item-carta rounded-circle" [src]="item.img | imgUrl:'carta'" alt="icon-item-carta" appImgFallback loading="lazy">
                             </div>
                           </div>
                         </div>
@@ -236,7 +236,7 @@
                                   <img class="icon-item-carta" src="{{imgNull}}" alt="icon-item-carta" (click)="selectedItem(item)">
                                 </ng-container>
                                 <ng-template #elseTemplateConImg>
-                                  <img class="icon-item-carta" [src]="item.img | imgUrl:'carta'" alt="icon-item-carta" (click)="selectedItem(item)">                                  
+                                  <img class="icon-item-carta" [src]="item.img | imgUrl:'carta'" alt="icon-item-carta" (click)="selectedItem(item)" appImgFallback loading="lazy">                                  
                                 </ng-template>
                                 
                               </div>

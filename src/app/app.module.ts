@@ -18,7 +18,6 @@ import { AuthConfig, AuthModule } from '@auth0/auth0-angular';
 // import { IS_NATIVE } from './shared/config/config.const';
 import { domain, clientId, callbackUri } from './auth.config';
 import { GoogleMapsLoaderService } from './shared/services/google-maps-loader.service';
-// import { ImagenNoEncontradaPipe } from './shared/pipes/imagen-no-encontrada.pipe';
 // import { GoogleMapsModule } from '@angular/google-maps';
 
 // const redirectUri = callbackUri;
@@ -39,7 +38,6 @@ const configAuth: AuthConfig = {
 @NgModule({
   declarations: [
     AppComponent,
-    // ImagenNoEncontradaPipe
     // DirectionsMapDirectiveDirective,
     // DebounceClickDirective
   ],

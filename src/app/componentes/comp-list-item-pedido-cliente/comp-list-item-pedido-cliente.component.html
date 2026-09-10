@@ -87,7 +87,7 @@
                     <!-- si lluvia -->
                     <ng-container *ngIf="item.isDeliveryApp" class="d-flex">
                         <div *ngFor="let itemIcon of listIconsEntrega" class="d-inline">
-                            <img *ngIf="itemIcon.visible" class="img-ico-entrega pl-2 text-secondary" src="../assets/images/{{itemIcon.icon}}" alt="itemIcon.motivo" matTooltip="{{ itemIcon.motivo }}">
+                            <img *ngIf="itemIcon.visible" class="img-ico-entrega pl-2 text-secondary" src="../assets/images/{{itemIcon.icon}}" alt="itemIcon.motivo" matTooltip="{{ itemIcon.motivo }}" appImgFallback="ocultar">
                         </div>                                    
                         <!-- <i *ngIf="isCalculandoDistanciaA" class="fa fa-spinner fa-spin fa-fw ml-3"></i> -->
                     </ng-container>   

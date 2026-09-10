@@ -3,7 +3,7 @@
     <div class="div-promo w-100">        
         <div class="d-flex align-items-center">
             <div class="img-promo">
-                <img src="{{iconGifPromo}}" alt="ico_promo">
+                <img src="{{iconGifPromo}}" alt="ico_promo" appImgFallback="ocultar">
             </div>
             <div class="info-promo animated fadeIn" *ngIf="!showInfoPromo">
                 <p class="fw-600 fs-15">{{ ItemPromoheader.titulo }}</p>

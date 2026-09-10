@@ -3,7 +3,7 @@
         class="item-propina" [ngClass]="{'propina-selected': item.selected}"
         (click)="selectedItem(item)"
         >
-        <img src="./assets/images/icon-app/{{item.img}}" alt="">
+        <img src="./assets/images/icon-app/{{item.img}}" alt="" appImgFallback="ocultar">
         <p>{{item.descripcion}}</p>
     </div>
 </div>

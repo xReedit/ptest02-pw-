@@ -19,7 +19,7 @@
         matRipple class="item-option-pago"        
         [ngClass]="{'item-option-pago-selected': item.checked}"
         (click)="selectedItemOptionPago(item)">
-                <img src="../assets/images/icon-app/{{item.img}}" alt="{{item.img}}">
+                <img src="../assets/images/icon-app/{{item.img}}" alt="{{item.img}}" appImgFallback="ocultar">
                 <p>{{ item.descripcion }}</p>            
         </div>
         

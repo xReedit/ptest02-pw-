@@ -41,7 +41,7 @@
             <p class="pb-2">Información Básica</p>
             <div class="text-left">            
                     <div *ngFor="let item of listReglas" class="d-flex p-1 mb-3">
-                        <div class="pr-2"><img src="/assets/images/{{item.img}}" alt="i1"></div>
+                        <div class="pr-2"><img src="/assets/images/{{item.img}}" alt="i1" appImgFallback="ocultar"></div>
                         <p class="fw-100 fs-13">{{item.descripcion}}</p>
                     </div>            
             </div>

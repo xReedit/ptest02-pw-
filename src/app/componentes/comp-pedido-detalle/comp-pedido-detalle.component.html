@@ -15,9 +15,9 @@
                         <div *ngFor="let item of seccion.items">
                             <ng-container *ngIf="item.cantidad_seleccionada > 0">
                                 <!-- <div class="d-flex"> -->
-                                <!-- <div>
-                                    <img class="img-thumbnail img-carta" [src]="item.img | imgUrl:'carta'" width="65px" alt="{{item.img}}">
-                                </div> -->
+                                <div>
+                                    <img class="img-thumbnail img-carta" [src]="item.img | imgUrl:'carta'" width="65px" alt="{{item.img}}" appImgFallback>
+                                </div>
                                 <!-- <div class="w-100"> -->
                                 <li class="d-flex div-plr li-item" matRipple [matRippleColor]="rippleColor">
                                     <div class="pr-2 fw-100">{{item.cantidad_seleccionada | number: '2.'}}</div>
