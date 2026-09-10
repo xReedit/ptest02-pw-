@@ -255,6 +255,16 @@ export class InfoTockenService {
     localStorage.setItem('sys::ic-orden', btoa(id.toString()));
   }
 
+  // el backend puede asignar otro idcliente al guardar el pedido; se toma ese como definitivo
+  setIdClienteToken(id: number): void {
+    if (!id || id <= 0) { return; }
+    if (this.infoUsToken) {
+      this.infoUsToken.idcliente = id;
+      this.set();
+    }
+    localStorage.setItem('sys::ic-orden', btoa(id.toString()));
+  }
+
   setIsPuntoAutoPedido( val: boolean) {
     this.infoUsToken.isPuntoAutoPedido = val;
     this.set();

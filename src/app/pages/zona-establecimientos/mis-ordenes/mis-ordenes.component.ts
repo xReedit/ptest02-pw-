@@ -33,10 +33,10 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.idClientePedidos = this.infoTokenService.getIdCliente();
-    if ( this.idClientePedidos ) {
+    // el id puede estar solo en el storage, solo en el token o solo en la sesion propia del cliente
+    this.idClientePedidos = Number(this.infoTokenService.getIdCliente() || this.infoTokenService.infoUsToken?.idcliente || this.verifyClientService.getDataClient()?.idcliente || 0);
+    if ( this.idClientePedidos > 0 ) {
       this.conectServices();
-      console.log('from getsotrage id cliente');
       return;
     }
 

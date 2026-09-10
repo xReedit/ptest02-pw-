@@ -1255,6 +1255,14 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
 
     const _res = resSocket[0];
+
+    // el servidor puede haber reasignado el cliente al guardar: ese idcliente manda
+    if (Number(_res.idcliente) > 0) {
+      this.infoToken.setIdClienteToken(Number(_res.idcliente));
+      const cs = this.verifyClientService.getDataClient();
+      if (cs) { cs.idcliente = Number(_res.idcliente); this.verifyClientService.setDataClient(); }
+    }
+
     dataSend.dataPedido.idpedido = _res.idpedido;
     dataSend.dataPrint = _res.data?.[1]?.print ?? null;
 
