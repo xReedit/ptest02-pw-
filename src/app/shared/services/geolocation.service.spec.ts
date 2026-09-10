@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick, flush, flushMicrotasks } from '@angular/core/testing';
 import { GeolocationService, OPCIONES_GEO, conTimeout } from './geolocation.service';
 
 describe('GeolocationService (rama web)', () => {
@@ -92,37 +92,46 @@ describe('GeolocationService (rama web)', () => {
 
 // El plugin nativo ignora `timeout`, por eso el limite se impone con conTimeout. La rama nativa
 // no se puede ejercitar en Karma, pero el helper si: es una funcion pura sobre promesas.
+// Se usa fakeAsync/tick de Angular y no jasmine.clock(): instalar el reloj de jasmine sobre los
+// temporizadores que Zone.js ya tiene parcheados es intermitente ("Jasmine Clock was unable to
+// install over custom global timer functions"). Nada de async/await dentro de estos cuerpos.
 describe('conTimeout', () => {
 
-  beforeEach(() => {
-    jasmine.clock().install();
-  });
-
-  afterEach(() => {
-    jasmine.clock().uninstall();
-  });
-
-  it('resuelve con el valor original si la promesa llega antes del limite y limpia el temporizador', async () => {
+  it('resuelve con el valor original si la promesa llega antes del limite y limpia el temporizador', fakeAsync(() => {
     const limpiar = spyOn(window, 'clearTimeout').and.callThrough();
+    let resultado: any = null;
 
-    await expectAsync(conTimeout(Promise.resolve('ok'), OPCIONES_GEO.timeout)).toBeResolvedTo('ok');
+    conTimeout(Promise.resolve('ok'), OPCIONES_GEO.timeout).then(valor => { resultado = valor; });
 
+    flushMicrotasks();
+
+    expect(resultado).toBe('ok');
     expect(limpiar).toHaveBeenCalled();
-  });
+    expect(flush()).toBe(0); // no queda ningun temporizador pendiente
+  }));
 
-  it('rechaza con timeout cuando se pasa del limite', async () => {
+  it('rechaza con timeout cuando se pasa del limite', fakeAsync(() => {
     const nuncaResuelve = new Promise<string>(() => { /* nunca se resuelve */ });
-    const esperado = expectAsync(conTimeout(nuncaResuelve, OPCIONES_GEO.timeout)).toBeRejectedWith('timeout');
+    let error: any = null;
 
-    jasmine.clock().tick(OPCIONES_GEO.timeout + 1);
+    conTimeout(nuncaResuelve, OPCIONES_GEO.timeout).catch(motivo => { error = motivo; });
 
-    await esperado;
-  });
+    tick(OPCIONES_GEO.timeout + 1);
+    flushMicrotasks();
 
-  it('propaga el rechazo original si la promesa falla antes del limite', async () => {
-    const falla = Promise.reject({ code: 2, message: 'Position unavailable' });
+    expect(error).toBe('timeout');
+    expect(flush()).toBe(0);
+  }));
 
-    await expectAsync(conTimeout(falla, OPCIONES_GEO.timeout))
-      .toBeRejectedWith(jasmine.objectContaining({ code: 2 }));
-  });
+  it('propaga el rechazo original si la promesa falla antes del limite', fakeAsync(() => {
+    let error: any = null;
+
+    conTimeout(Promise.reject({ code: 2, message: 'Position unavailable' }), OPCIONES_GEO.timeout)
+      .catch(motivo => { error = motivo; });
+
+    flushMicrotasks();
+
+    expect(error).toEqual(jasmine.objectContaining({ code: 2 }));
+    expect(flush()).toBe(0);
+  }));
 });
