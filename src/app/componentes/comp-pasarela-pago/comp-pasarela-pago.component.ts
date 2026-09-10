@@ -1,4 +1,5 @@
-import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, Input, EventEmitter } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
@@ -6,15 +7,14 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { ClientePagoModel } from 'src/app/modelos/cliente.pago.model';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
 import { DataTransaccion } from 'src/app/modelos/DataTransaccion';
+import { PagoTarjetaVisanetService } from 'src/app/shared/services/pago-tarjeta-visanet.service';
 
-
-declare var pagar: any;
 @Component({
   selector: 'app-comp-pasarela-pago',
   templateUrl: './comp-pasarela-pago.component.html',
   styleUrls: ['./comp-pasarela-pago.component.css']
 })
-export class CompPasarelaPagoComponent implements OnInit {
+export class CompPasarelaPagoComponent implements OnInit, OnDestroy {
 
   @Input() dataTrasa: DataTransaccion;
   @Output() responseTransa = new EventEmitter<any>();
@@ -49,16 +49,15 @@ export class CompPasarelaPagoComponent implements OnInit {
   };
 
 
-  private listenKeyLoader = 'sys::transaction-load';
-  private listenKeyData = 'sys::transaction-response';
-  private timeListenerKeys: any;
   private dataClientePago: ClientePagoModel = new ClientePagoModel();
+  private subsPago: Subscription[] = [];
 
   constructor(
     private infoTokenService: InfoTockenService,
     private utilService: UtilitariosService,
     private crudService: CrudHttpService,
-    private listenStatusService: ListenStatusService
+    private listenStatusService: ListenStatusService,
+    private pagoTarjetaServices: PagoTarjetaVisanetService
   ) { }
 
   ngOnInit(): void {
@@ -69,6 +68,26 @@ export class CompPasarelaPagoComponent implements OnInit {
 
     this.getEmailCliente();
     localStorage.setItem('sys::btnP', '0');
+
+    this.subsPago.push(
+      this.pagoTarjetaServices.listenPaymetResponse$.subscribe(res => {
+        if (res) {
+          this.listenResponse(res);
+        }
+      })
+    );
+
+    this.subsPago.push(
+      this.pagoTarjetaServices.listenPaymetLoader$.subscribe(res => {
+        this.isLoaderTransaction = res;
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subsPago.forEach(sub => sub.unsubscribe());
+    this.subsPago = [];
+    this.pagoTarjetaServices.cancelPayment();
   }
 
 
@@ -164,8 +183,7 @@ export class CompPasarelaPagoComponent implements OnInit {
       const _purchasenumber = res.data[0].purchasenumber;
       this.el_purchasenumber = _purchasenumber;
 
-      pagar(this.importeTransaccion, _purchasenumber, this.dataClientePago);
-      this.listenResponse();
+      this.pagoTarjetaServices.processPayment(this.importeTransaccion, _purchasenumber, this.dataClientePago);
       this.verificarCheckTerminos();
 
       this.listenStatusService.setIsBtnPagoShow(true);
@@ -176,19 +194,16 @@ export class CompPasarelaPagoComponent implements OnInit {
 
   }
 
-  private listenResponse() {
-    this.timeListenerKeys = setTimeout(() => {
-
-      const dataResponse = localStorage.getItem(this.listenKeyData);
-      this.isLoaderTransaction = localStorage.getItem(this.listenKeyLoader) === '0' ? false : true;
-
+  // La respuesta llega por PagoTarjetaVisanetService; antes se sondeaba localStorage
+  // porque la autorización la hacía boton-pago.js (borrado junto con sus credenciales).
+  private listenResponse(_dataResTransaction: any) {
 
       let _dataTransactionRegister;
 
-      if ( dataResponse !== 'null' ) {
+      {
         this.isLoadBtnPago = false;
 
-        this.dataResTransaction = JSON.parse(dataResponse);
+        this.dataResTransaction = _dataResTransaction;
 
         this.isTrasctionSuccess = !this.dataResTransaction.error;
 
@@ -236,12 +251,7 @@ export class CompPasarelaPagoComponent implements OnInit {
 
           this.emitRespuesta();
         }
-
-        localStorage.removeItem(this.listenKeyData);
-      } else {
-        this.listenResponse();
       }
-    }, 100);
   }
 
 

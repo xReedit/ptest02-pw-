@@ -17,14 +17,11 @@ export const environment = {
   imgComercioUrl: 'http://192.168.1.65/restobar/print/logo/',
   imgIconsUrl: 'http://192.168.1.65/restobar/images/',
   vapidPublic: 'BC7ietauZE99Hx9HkPyuGVr8jaYETyEJgH-gLaYIsbORYobppt9dX49_K_wubDqphu1afi7XrM6x1zAp4kJh_wU',
+  // Solo datos públicos. merchantId, credenciales y urls de la pasarela viven
+  // en el backend (POST /pago/niubiz/sesion y /pago/niubiz/autorizar).
   niubiz: {
-    merchantId: '456879852',
-    urlApiSeguridad: 'https://apisandbox.vnforappstest.com/api.security/v1/security',
-    urlApiSesion: 'https://apisandbox.vnforappstest.com/api.ecommerce/v2/ecommerce/token/session/',
-    urlApiAutorizacion: 'https://apisandbox.vnforappstest.com/api.authorization/v3/authorization/ecommerce/',
     urlJs: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
-    logo: 'https://papaya.com.pe/images/l-pay-2.png',
-    authorization: 'Basic aW50ZWdyYWNpb25lcy52aXNhbmV0QG5lY29tcGx1cy5jb206ZDVlN25rJE0='
+    logo: 'https://papaya.com.pe/images/l-pay-2.png'
   }
 };
 

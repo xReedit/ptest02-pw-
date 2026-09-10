@@ -30,7 +30,6 @@
               "./node_modules/css-star-rating/css/star-rating.css"              
             ],
             "scripts": [
-              "src/assets/js/boton-pago.js",
               "src/assets/js/boton-payment.js"
             ],
             "crossOrigin": "use-credentials",
@@ -103,7 +102,7 @@
             ],
             "scripts": [
               "src/assets/js/jquery.js",
-              "src/assets/js/boton-pago.js"
+              "src/assets/js/boton-payment.js"
             ],
             "assets": [
               "src/favicon.ico",

@@ -13,13 +13,10 @@ export const environment = {
   imgComercioUrl: 'https://restobar.papaya.com.pe/print/logo/',
   imgIconsUrl: 'https://restobar.papaya.com.pe/images/',
   vapidPublic: 'BOiwO8PftVFo8MrQfp3oAv4KbVtFdZAQojGKgzyxMCPgiNhg8PySbOSlkxDqd3iKA4J1GhzwFiCIGKmXRiKZM_0',
+  // Solo datos públicos. merchantId, credenciales y urls de la pasarela viven
+  // en el backend (POST /pago/niubiz/sesion y /pago/niubiz/autorizar).
   niubiz: {
-    merchantId: '650149801',
-    urlApiSeguridad: 'https://apiprod.vnforapps.com/api.security/v1/security',
-    urlApiSesion: 'https://apiprod.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/',
-    urlApiAutorizacion: 'https://apiprod.vnforapps.com/api.authorization/v3/authorization/ecommerce/',
     urlJs: 'https://static-content.vnforapps.com/v2/js/checkout.js',
-    logo: 'https://papaya.com.pe/images/l-pay-2.png',
-    authorization: 'Basic bWFjcmF6ZS5pbmZvQGdtYWlsLmNvbTpqMzRPeiFuQg=='
+    logo: 'https://papaya.com.pe/images/l-pay-2.png'
   }
 };

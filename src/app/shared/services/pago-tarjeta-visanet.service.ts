@@ -1,8 +1,17 @@
-import { HostListener, Injectable } from '@angular/core';
-import { FetchOptions } from '@auth0/auth0-spa-js';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { CrudHttpService } from './crud-http.service';
+import { InfoTockenService } from './info-token.service';
 
-declare var pagar: any;
+// Pago con tarjeta (Niubiz) del consumo en mesa.
+// El navegador ya no conoce usuario, contraseña, merchantId ni las urls de la pasarela:
+// todo eso vive en el backend (POST /pago/niubiz/sesion y /pago/niubiz/autorizar).
+const CONTROLADOR_PAGO = 'pago';
+const ACCION_SESION = 'niubiz/sesion';
+const ACCION_AUTORIZAR = 'niubiz/autorizar';
+const CANAL = 'web';
+const LLAVE_TRANSACTION_LOAD = 'sys::transaction-load';
+const LLAVE_TRANSACTION_RESPONSE = 'sys::transaction-response';
 
 @Injectable({
   providedIn: 'root'
@@ -11,35 +20,11 @@ export class PagoTarjetaVisanetService {
 
   private importe: any;
   private purchasenumber: any;
-  private cargando_transaction = false;
   private dataCliente: any;
-  private tokenGenerate: any;
+  private sesion: any = null;
 
-  private parametros = [
-    { // 0 DESARROLLO
-      user : 'integraciones.visanet@necomplus.com',
-      password : 'd5e7nk$M',
-      merchantId : '522591303',
-      urlApiSeguridad : 'https://apitestenv.vnforapps.com/api.security/v1/security',
-      urlApiSesion : 'https://apitestenv.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/',
-      urlApiAutorization :  'https://apitestenv.vnforapps.com/api.authorization/v3/authorization/ecommerce/',
-      urlJs : 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
-      logo : 'http://web-p.test:8080/images/l-pay-2.png',
-      Authorization : 'Basic aW50ZWdyYWNpb25lcy52aXNhbmV0QG5lY29tcGx1cy5jb206ZDVlN25rJE0='
-    }, { // 1 PROD
-      user : 'macraze.info@gmail.com',
-      password : 'j34Oz!nB',
-      merchantId : '650149801',
-      urlApiSeguridad : 'https://apiprod.vnforapps.com/api.security/v1/security',
-      urlApiSesion : 'https://apiprod.vnforapps.com/api.ecommerce/v2/ecommerce/token/session/',
-      urlApiAutorization :  'https://apiprod.vnforapps.com/api.authorization/v3/authorization/ecommerce/',
-      urlJs : 'https://static-content.vnforapps.com/v2/js/checkout.js',
-      logo : 'https://papaya.com.pe/images/l-pay-2.png',
-      Authorization : 'Basic bWFjcmF6ZS5pbmZvQGdtYWlsLmNvbTpqMzRPeiFuQg=='
-    }
-  ];
-
-  parametrosSelected: any;
+  // Se registra al iniciar un pago y se quita al recibir la respuesta o al cancelar.
+  private paymentSuccessHandler: ((event: any) => void) | null = null;
 
   private listenPaymetResponseSource = new BehaviorSubject<any>(null);
   public listenPaymetResponse$ = this.listenPaymetResponseSource.asObservable();
@@ -47,16 +32,10 @@ export class PagoTarjetaVisanetService {
   private listenPaymetLoaderSource = new BehaviorSubject<boolean>(false);
   public listenPaymetLoader$ = this.listenPaymetLoaderSource.asObservable();
 
-  constructor() {
-
-    this.parametrosSelected = this.parametros[1];
-
-    window.addEventListener('payment.success', (event: any) => {
-      this.generateAutorizacion(event.detail);
-    });
-  }
-
-
+  constructor(
+    private crudService: CrudHttpService,
+    private infoTokenService: InfoTockenService
+  ) { }
 
   processPayment(_importe, _purchasenumber, _dataClie) {
 
@@ -65,127 +44,79 @@ export class PagoTarjetaVisanetService {
     this.dataCliente = _dataClie;
     // dataCliente.email_token = dataCliente.idcliente +'@apitoken.com'; // para guardar las tarjetas - userToken
     this.dataCliente.email_token = this.dataCliente.email;
-    this.getIpCliente();
+
+    // El BehaviorSubject es singleton: se limpia la respuesta anterior para que
+    // un pago nuevo no reciba de golpe el resultado del anterior.
+    this.listenPaymetResponseSource.next(null);
+    this.listenPaymetLoaderSource.next(false);
+
+    this.generarSesion();
   }
 
-  private getIpCliente() {
-
-    // antifraude
-    this.dataCliente.antifraud = {
-        'clientIp': this.dataCliente.ip,
-        'merchantDefineData': {
-          'MDD4': this.dataCliente.email,
-          'MDD32': this.dataCliente.idcliente,
-          'MDD75': 'Invitado',
-          'MDD77': this.dataCliente.diasRegistrado,
-          'MDD89': '1'
-          // "MDD70": "1", // correo electronico confirmado
-        }
+  // El backend arma el bloque antifraud/merchantDefineData con estos datos
+  // (MDD4, MDD32, MDD75, MDD77, MDD89), igual que antes lo hacía el navegador.
+  private buildClientData() {
+    return {
+      email: this.dataCliente.email || '',
+      idcliente: this.dataCliente.idcliente || '0',
+      ip: this.dataCliente.ip || '0.0.0.0',
+      diasRegistrado: this.dataCliente.diasRegistrado || 0
     };
-
-    this.generarToken();
   }
 
-
-  private generarToken() {
-    const _url = this.parametrosSelected.urlApiSeguridad;
-    const settings = {
-      'async': true,
-      'crossDomain': true,
-      // 'url': this.parametrosSelected.urlApiSeguridad,
-      'method': 'POST',
-      'headers': {
-        'Authorization': this.parametrosSelected.Authorization,
-        // 'content-type' : 'text/plain',
-        'Accept': '*/*'
-      }
+  private generarSesion() {
+    const body = {
+      idsede: Number(this.infoTokenService.getInfoSedeToken()),
+      amount: this.importe,
+      purchaseNumber: this.purchasenumber,
+      channel: CANAL,
+      clientData: this.buildClientData()
     };
 
-    fetch(_url, settings)
-      .then((response) => response.text())
-      .then(response => {
-        this.tokenGenerate = response;
-        this.generarSesion(response);
+    this.crudService.postFree(body, CONTROLADOR_PAGO, ACCION_SESION, false)
+      .subscribe({
+        next: (res: any) => {
+          if (!res || res.success !== true || !res.data || !res.data.sessionKey) {
+            this.emitirError('No se pudo iniciar el pago con tarjeta');
+            return;
+          }
+          this.sesion = res.data;
+          this.generarBoton(res.data);
+        },
+        error: (err) => this.emitirError('No se pudo iniciar el pago con tarjeta', err)
       });
-
   }
 
-  private generarSesion(token) {
-
-    const data = {
-      'amount': this.importe,
-      'antifraud': null,
-      'channel': 'web',
-      'recurrenceMaxAmount': null
-    };
-
-    const settings = {
-      'async': true,
-      'crossDomain': true,
-      'url': this.parametrosSelected.urlApiSesion + this.parametrosSelected.merchantId,
-      'method': 'POST',
-      'headers': {
-        'Authorization': token,
-        'Content-Type': 'application/json',
-      },
-      'dataMap': {
-        'userToken': this.dataCliente.email
-      },
-      'processData': false,
-      'body': JSON.stringify(data)
-    };
-
-    const _url = this.parametrosSelected.urlApiSesion + this.parametrosSelected.merchantId;
-
-    fetch(_url, settings)
-    .then((response) => response.json())
-    .then(response => {
-      this.generarBoton(response['sessionKey']);
-    });
-  }
-
-
-  private generarBoton(sessionKey) {
-    const moneda = 'PEN';
-
-    /// DEV
-    // var nombre = 'Integraciones';
-    // var apellido = 'VisaNet';
-    // var email = 'integraciones.visanet@necomplus.com';
-
-    // PROD
+  private generarBoton(sesion: any) {
     const nombre = this.dataCliente.nombre;
     const apellido = this.dataCliente.apellido;
     const email = this.dataCliente.email;
 
-    const json = {
-      'merchantId': this.parametrosSelected.merchantId,
-      'moneda': moneda,
-      'nombre': nombre,
-      'apellido': apellido,
-      'importe': this.importe,
-      'email': email
-    };
+    const contenedor = document.getElementById('btn_pago');
+    if (!contenedor) {
+      this.emitirError('Contenedor de pago no encontrado');
+      return;
+    }
 
-    // localStorage.setItem('data', JSON.stringify(json));
-
+    // Solo se escucha la respuesta de Niubiz mientras el formulario está abierto
+    this.startPaymentListener();
 
     const form = document.createElement('form');
     form.setAttribute('method', 'post');
     form.setAttribute('action', 'javascript:responseFormProd(self)');
     form.setAttribute('id', 'boton_pago');
-    document.getElementById('btn_pago').appendChild(form);
+    contenedor.appendChild(form);
 
     const scriptEl = document.createElement('script');
-    scriptEl.setAttribute('src', this.parametrosSelected.urlJs);
-    scriptEl.setAttribute('data-sessiontoken', sessionKey);
-    scriptEl.setAttribute('data-channel', 'web');
-    scriptEl.setAttribute('data-merchantid', this.parametrosSelected.merchantId);
+    scriptEl.setAttribute('src', sesion.urlJs);
+    scriptEl.setAttribute('data-sessiontoken', sesion.sessionKey);
+    scriptEl.setAttribute('data-channel', CANAL);
+    scriptEl.setAttribute('data-merchantid', sesion.merchantId);
 
-    scriptEl.setAttribute('data-purchasenumber', this.purchasenumber);
+    scriptEl.setAttribute('data-purchasenumber', sesion.purchaseNumber);
     scriptEl.setAttribute('data-amount', this.importe);
 
-    scriptEl.setAttribute('data-merchantlogo', this.parametrosSelected.logo);
+    scriptEl.setAttribute('data-merchantlogo', sesion.logo);
 
     scriptEl.setAttribute('data-expirationminutes', '8');
     scriptEl.setAttribute('data-timeouturl', 'javascript:responseFormProd(self)');
@@ -195,66 +126,98 @@ export class PagoTarjetaVisanetService {
     scriptEl.setAttribute('data-cardholderemail', email);
     scriptEl.setAttribute('data-usertoken', email);
 
-    document.getElementById('boton_pago').appendChild(scriptEl);
-    document.getElementById('btn-disabled').classList.add('btn-hidden');
+    form.appendChild(scriptEl);
 
+    const btnDisabled = document.getElementById('btn-disabled');
+    if (btnDisabled) {
+      btnDisabled.classList.add('btn-hidden');
+    }
   }
 
-  private async generateAutorizacion(transactionToken) {
+  private startPaymentListener(): void {
+    this.stopPaymentListener();
+    this.paymentSuccessHandler = (event: any) => {
+      this.generateAutorizacion(event.detail);
+    };
+    window.addEventListener('payment.success', this.paymentSuccessHandler);
+  }
+
+  private stopPaymentListener(): void {
+    if (this.paymentSuccessHandler) {
+      window.removeEventListener('payment.success', this.paymentSuccessHandler);
+      this.paymentSuccessHandler = null;
+    }
+  }
+
+  private generateAutorizacion(transactionToken) {
+    // El token llega una sola vez; a partir de aquí ya no se escucha el evento.
+    this.stopPaymentListener();
+
     this.listenPaymetLoaderSource.next(true);
-    this. cargando_transaction = true;
-    const token = this.tokenGenerate; // localStorage.getItem("token");
-    const  data = {
-          'antifraud' : this.dataCliente.antifraud,
-          'captureType' : 'manual',
-          'channel' : 'web',
-          'countable' : false,
-          'order' : {
-              'amount' : this.importe,
-              'currency' : 'PEN',
-              'purchaseNumber' : this.purchasenumber,
-              'tokenId' : transactionToken,
-          }
+    localStorage.setItem(LLAVE_TRANSACTION_LOAD, '1');
+
+    const body = {
+      idsede: Number(this.infoTokenService.getInfoSedeToken()),
+      purchaseNumber: this.sesion ? this.sesion.purchaseNumber : this.purchasenumber,
+      amount: this.importe,
+      transactionToken: transactionToken,
+      channel: CANAL,
+      clientData: this.buildClientData()
     };
 
-    const _url = this.parametrosSelected.urlApiAutorization + this.parametrosSelected.merchantId;
+    this.crudService.postFree(body, CONTROLADOR_PAGO, ACCION_AUTORIZAR, false)
+      .subscribe({
+        next: (rpta: any) => {
+          // Se conserva la forma que consume pagar-cuenta / comp-pasarela-pago:
+          // la respuesta cruda de Niubiz con el campo error agregado.
+          const res = (rpta && rpta.data) ? rpta.data : {};
+          const hayError = res.errorCode ? true : false;
+          res.error = hayError;
 
-
-    const settings  =  {
-      'method': 'POST',
-      'headers': {
-          'Authorization': token,
-          'Content-Type': 'application/json'
+          this.loaderTransactionResponse(res, hayError);
+          this.listenPaymetResponseSource.next(res);
         },
-      'body': JSON.stringify(data)
-    };
-
-    fetch(_url, <FetchOptions>settings)
-      .then((response) => response.json())
-      .then((res) => {
-        const hayError = res.errorCode ? true : false;
-        res.error = hayError;
-
-        this.loaderTransactionResponse(res, hayError);
-        this.listenPaymetResponseSource.next(res);
-      })
-      .catch((error) => {
-        error.error = true;
-
-        this.loaderTransactionResponse(error, true);
-        this.listenPaymetResponseSource.next(error);
-        // loaderTransaction(0);
-        // console.log(error);
+        error: (err) => this.emitirError('Error al autorizar el pago', err)
       });
+  }
+
+  private emitirError(mensaje: string, error?: any) {
+    console.error(mensaje, error);
+    this.stopPaymentListener();
+    const res: any = error && typeof error === 'object' ? error : {};
+    res.error = true;
+    res.errorMessage = mensaje;
+
+    this.loaderTransactionResponse(res, true);
+    this.listenPaymetResponseSource.next(res);
   }
 
   private loaderTransactionResponse(res, isError) {
     if ( res ) {
       res.error = isError;
       const elem = document.querySelector('#visaNetWrapper');
-      elem.parentNode.removeChild(elem);
+      if ( elem && elem.parentNode ) {
+        elem.parentNode.removeChild(elem);
+      }
     }
-    // localStorage.setItem('sys::transaction-response', JSON.stringify(res));
+    // Lo hacía boton-pago.js (borrado con sus credenciales); registrar-pago.service
+    // y resumen-pedido siguen leyendo estas dos claves.
+    localStorage.setItem(LLAVE_TRANSACTION_LOAD, '0');
+    localStorage.setItem(LLAVE_TRANSACTION_RESPONSE, JSON.stringify(res));
   }
 
+  // Cancelar el pago antes de que Niubiz responda: quita el listener y el formulario.
+  cancelPayment(): void {
+    this.stopPaymentListener();
+    this.sesion = null;
+
+    const form = document.getElementById('boton_pago');
+    if (form) {
+      form.remove();
+    }
+    const wrapper = document.getElementById('visaNetWrapper');
+    if (wrapper) {
+      wrapper.remove();
+    }
+  }
 }
