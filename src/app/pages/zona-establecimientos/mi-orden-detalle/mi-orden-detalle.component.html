@@ -2,12 +2,22 @@
     
     <div class="div-flat-white-borde mb-3">
         <h4>Pedido # {{dataPedido.idpedido}}</h4>
-        <div>
+        <div *ngIf="estadoResumen?.activo">
             <app-mapa-solo [origin]="origin" [destination]="destination"></app-mapa-solo>
         </div>
     
         <div class="div-flat-white-borde fs-13">
-            <div class="d-flex justify-content-between">
+            <div class="timeline" *ngIf="estadoResumen?.codigo !== 'cancelado'; else cancelado">
+              <div class="paso" *ngFor="let p of pasos; let i = index"
+                   [class.hecho]="i + 1 < estadoResumen?.paso" [class.actual]="i + 1 === estadoResumen?.paso">
+                <span class="punto"></span>
+                <span class="texto">{{ p.etiqueta }}</span>
+              </div>
+            </div>
+            <ng-template #cancelado><span class="chip-estado chip-cancelado">Cancelado</span></ng-template>
+
+            <ng-container *ngIf="dataPedido.idrepartidor">
+                <hr>
                 <div>
                     <span class="fw-600">Repartidor: </span><br>
                     <div class="fw-100">
@@ -15,32 +25,27 @@
                         <span> {{ dataPedido.telefono_repartidor }} </span>
                     </div>
                 </div>
-                <div class="w-50 text-right">
-                    <span class="fw-600 fs-20"> {{ estadoPedido }} </span>
-                </div>                
-            </div>                
-            <hr>
-            <div class="row text-center" *ngIf="dataPedido.idrepartidor && dataPedido.pwa_delivery_status !== '4'">
-                <div matRipple class="col-6 border-right text-info" (click)="callPhone()"><i class="fa fa-phone" aria-hidden="true"></i> LLamar</div>
-                <div matRipple class="col-6 text-info" (click)="redirectWhatsApp()"><i class="fa fa-commenting-o" aria-hidden="true"></i> Enviar Mensaje</div>
-            </div>
+                <hr>
+                <div class="row text-center" *ngIf="dataPedido.idrepartidor && estadoResumen?.activo">
+                    <div matRipple class="col-6 border-right text-info" (click)="callPhone()"><i class="fa fa-phone" aria-hidden="true"></i> LLamar</div>
+                    <div matRipple class="col-6 text-info" (click)="redirectWhatsApp()"><i class="fa fa-commenting-o" aria-hidden="true"></i> Enviar Mensaje</div>
+                </div>
+            </ng-container>
         </div>
-    </div>    
+    </div>
     <!--  detalle del pedido -->
     <div class="div-flat-white-borde mb-3 fs-13">        
         <app-comp-pedido-detalle [infoPedido] = "dataPedido" ></app-comp-pedido-detalle>
     </div>
 
     <!-- boton confirmar recibido -->
-    <div *ngIf="dataPedido.pwa_delivery_status !== '4' && dataPedido.idrepartidor">
-        <ng-container *ngIf="dataPedido.pwa_delivery_status == '3' || dataPedido.pwa_delivery_servicio_propio===1">
-            <div class="div-flat-white-borde mb-3 fs-13 text-center">
-                <p class="text-secondary fs-13">Por favor revise su pedido antes de confirmar.</p>
-                
-                <button mat-flat-button 
-                color="primary" (click)="openDialogCalificacion()" >Listo, recibi conforme.</button>
-            </div>
-        </ng-container>
-    </div>
+    <ng-container *ngIf="estadoResumen?.codigo === 'camino' || (dataPedido.pwa_delivery_servicio_propio == 1 && estadoResumen?.activo && dataPedido.idrepartidor)">
+        <div class="div-flat-white-borde mb-3 fs-13 text-center">
+            <p class="text-secondary fs-13">Por favor revise su pedido antes de confirmar.</p>
+
+            <button mat-flat-button
+            color="primary" (click)="openDialogCalificacion()" >Listo, recibi conforme.</button>
+        </div>
+    </ng-container>
     
 </div>

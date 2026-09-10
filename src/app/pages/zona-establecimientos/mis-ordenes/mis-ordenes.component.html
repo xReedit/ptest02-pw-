@@ -39,15 +39,14 @@
                 *ngFor="let item of listMisPedidos">
                 <div class="d-flex justify-content-between">
                     <p class="fw-100">Pedido: <span class="fw-600">#{{item.idpedido}}</span></p>
-                    <p class="fw-600"
-                        [ngClass]="{'text-success': item.pwa_delivery_status==='1'}"
-                    >{{item.estado}}</p>
+                    <span class="chip-estado" [ngClass]="'chip-' + item.estadoResumen?.codigo">{{ item.estado }}</span>
                 </div>
                 <hr>
                 <div class="row">
                     <div class="col-9">
                         <p class="fs-12 text-secondary">{{item.fecha}} {{item.hora}}</p>
-                        <p>{{item.ciudad}} | {{item.nombre}}</p>
+                        <p>{{item.nombre}} | {{item.ciudad}}</p>
+                        <p class="fs-12 text-programado" *ngIf="item.flag_pedido_programado == 1">Programado para {{ item.fecha_hora | date:'dd/MM HH:mm' }}</p>
                     </div>
                     <div class="col-3 text-right">
                         <p>S/.{{item.total_r}}</p>

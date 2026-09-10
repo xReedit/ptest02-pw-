@@ -347,6 +347,12 @@ export class SocketService {
   //   });
   // }
 
+  // tras guardar el pedido el servidor puede asignar otro idcliente; unirse a su sala sin reconectar
+  joinCliente(idcliente: number): void {
+    const id = Number(idcliente);
+    if (this.socket && id > 0) { this.socket.emit('join-cliente', id); }
+  }
+
   emit(evento: string, data: any) {
     // verificar estado del socket
 

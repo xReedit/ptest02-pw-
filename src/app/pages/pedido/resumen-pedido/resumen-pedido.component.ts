@@ -1237,6 +1237,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       this.infoToken.setIdClienteToken(Number(_res.idcliente));
       const cs = this.verifyClientService.getDataClient();
       if (cs) { cs.idcliente = Number(_res.idcliente); this.verifyClientService.setDataClient(); }
+      this.socketService.joinCliente(Number(_res.idcliente));
     }
 
     dataSend.dataPedido.idpedido = _res.idpedido;

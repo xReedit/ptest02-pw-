@@ -4,9 +4,12 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, debounceTime } from 'rxjs/operators';
+import { merge } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
 import { Router } from '@angular/router';
+import { SeguimientoPedidoService } from 'src/app/shared/services/seguimiento-pedido.service';
+import { resumirEstadoPedido } from 'src/app/shared/utils/estado-pedido';
 
 @Component({
   selector: 'app-mis-ordenes',
@@ -31,6 +34,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
     private crudService: CrudHttpService,
     private socketSerrvice: SocketService,
     private router: Router,
+    private seguimiento: SeguimientoPedidoService,
   ) { }
 
   ngOnInit() {
@@ -89,63 +93,40 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroy$.next(true);
-    this.destroy$.unsubscribe();
+    this.destroy$.complete();
   }
 
+  // socket, vuelta al primer plano y polling de respaldo: cualquiera refresca la lista
   private listenChangeStatus(): void {
-
-    this.socketSerrvice.onDeliveryPedidoChangeStatus()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(res => {
-      // console.log('socket listen onDeliveryPedidoChangeStatus', res);
-      this.loadMisPedidos();
-    });
+    merge(this.seguimiento.cambios$(), this.seguimiento.refrescoAutomatico$())
+      .pipe(takeUntil(this.destroy$), debounceTime(300))
+      .subscribe(() => this.loadMisPedidos(false));
   }
 
-  loadMisPedidos(): void {
-    this.loaderPage = false;
+  loadMisPedidos(mostrarLoader = true): void {
+    if ( mostrarLoader ) { this.loaderPage = true; }
     const _data = {
       idcliente: this.idClientePedidos
     };
 
-    this.listMisPedidos = [];
+    // no se vacia la lista antes de responder: evita el parpadeo en cada refresco
     this.crudService.postFree(_data, 'delivery', 'get-mis-pedidos', false)
       .subscribe( res => {
-        // console.log(res);
+        this.loaderPage = false;
         // Una lista vacia no es un error: solo `success === false` o un fallo HTTP lo son.
         if ( !res.success ) { this.cargaFallida = true; return; }
         this.cargaFallida = false;
-        this.listMisPedidos = res.data;
-        this.listMisPedidos.map( x => {
+        this.listMisPedidos = (res.data || []).map( x => {
           x.arrDatosDelivery = JSON.parse(x.arrDatosDelivery);
           x.direccionEnvioSelected = JSON.parse(x.direccionEnvioSelected);
-
-          switch (x.pwa_delivery_status) {
-            case '0':
-                x.estado = 'Preparando';
-              break;
-            case '1':
-                x.estado = 'Asignado y preparando';
-              break;
-            case '3':
-                x.estado = 'En Camino';
-              break;
-            case '4':
-                x.estado = 'Entregado';
-              break;
-          }
-
+          x.estadoResumen = resumirEstadoPedido(x);
+          x.estado = x.estadoResumen.etiqueta;
           return x;
         });
-
-
-
-        setTimeout(() => {
-          this.loaderPage = false;
-        }, 500);
       }, error => {
+        // se conserva la lista anterior: un fallo de red no debe vaciar la pantalla
         console.error('Error al cargar mis pedidos', error);
-        this.cargaFallida = true;
+        this.cargaFallida = this.listMisPedidos.length === 0;
         this.loaderPage = false;
       });
   }

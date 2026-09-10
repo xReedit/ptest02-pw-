@@ -2,14 +2,14 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { ILatLng } from 'src/app/shared/directivas/directions-map-directive.directive';
-import { Subject } from 'rxjs/internal/Subject';
-import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { Subject, merge } from 'rxjs';
+import { takeUntil, debounceTime } from 'rxjs/operators';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DatosCalificadoModel } from 'src/app/modelos/datos.calificado.model';
 import { DialogCalificacionComponent } from 'src/app/componentes/dialog-calificacion/dialog-calificacion.component';
-import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
-import { GeoPositionModel } from 'src/app/modelos/geoposition.model';
 import { Router } from '@angular/router';
+import { SeguimientoPedidoService } from 'src/app/shared/services/seguimiento-pedido.service';
+import { resumirEstadoPedido, PASOS_ESTADO, EstadoResumen } from 'src/app/shared/utils/estado-pedido';
 
 @Component({
   selector: 'app-mi-orden-detalle',
@@ -21,6 +21,9 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
   origin: ILatLng;
   destination: ILatLng;
   estadoPedido = '';
+  estadoResumen: EstadoResumen;
+  pasos = PASOS_ESTADO;
+  ubicacionRepartidor: { latitude: number; longitude: number } = null;
   showTelefonoRepartidor = false;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -29,14 +32,13 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
     private infoTokenService: InfoTockenService,
     private socketService: SocketService,
     private dialog: MatDialog,
-    private calcDistanciaService: CalcDistanciaService,
-    private router: Router
+    private router: Router,
+    private seguimiento: SeguimientoPedidoService
   ) { }
 
   ngOnInit() {
     this.dataPedido = this.infoTokenService.infoUsToken.otro;
 
-    // console.log('this.dataPedido otro', this.dataPedido);
     this.direccionCliente = this.infoTokenService.infoUsToken.otro.direccionEnvioSelected || this.infoTokenService.infoUsToken.direccionEnvioSelected;
     this.direccionCliente = typeof this.direccionCliente !== 'object' ? JSON.parse(this.direccionCliente) : this.direccionCliente;
 
@@ -53,73 +55,46 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
       longitude: this.direccionCliente.longitude,
     };
 
-    if ( this.dataPedido.pwa_delivery_status !== '4' ) {
-      this.listenUbicacionRepartidor();
-    }
+    this.aplicarEstado(this.dataPedido);
+    this.refrescar();
 
-    this.readEstadoPedido(this.dataPedido.pwa_delivery_status);
+    // socket, vuelta al primer plano y polling de respaldo: cualquiera vuelve a pedir el estado al servidor
+    merge(this.seguimiento.cambios$(), this.seguimiento.refrescoAutomatico$())
+      .pipe(takeUntil(this.destroy$), debounceTime(300))
+      .subscribe(() => this.refrescar());
+
+    this.seguimiento.ubicacionRepartidor$()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(pos => {
+        if ( !pos ) { return; }
+        this.ubicacionRepartidor = pos;
+        this.origin = pos;
+      });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next(true);
-    this.destroy$.unsubscribe();
+    this.destroy$.complete();
   }
 
-  private listenUbicacionRepartidor() {
-    this.socketService.onDeliveryUbicacionRepartidor()
+  // el estado lo decide el servidor: aqui solo se refleja
+  private refrescar(): void {
+    this.seguimiento.estadoDe(this.dataPedido.idpedido, this.dataPedido.idcliente)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-
-        if ( this.dataPedido.pwa_delivery_status === 4 ) {return; }
-
-        const _geoPosition = <ILatLng>res;
-        // console.log('ubicacion repartidor', res);
-        // calcular la distancia con el repartidor si esta cerca activa "recibi conforme" y "llamar a repartidor"
-        const isLLego = this.calcDistanciaService.calcDistancia(<GeoPositionModel>_geoPosition, <GeoPositionModel>this.destination);
-        // console.log('distancia listen llego ?', isLLego);
-
-        if ( isLLego ) {
-          // this.dataPedido.pwa_delivery_status = 3;
-          this.readEstadoPedido(3);
-        } else {
-          this.readEstadoPedido(1);
+      .subscribe(est => {
+        if ( !est ) { return; }
+        Object.assign(this.dataPedido, est);
+        this.aplicarEstado(this.dataPedido);
+        if ( est.position_now && !this.ubicacionRepartidor ) {
+          this.origin = { latitude: est.position_now.lat, longitude: est.position_now.lng };
         }
-
-        if ( this.estadoPedido === '4' ) {return; }
-        this.origin = _geoPosition;
       });
-
-    this.socketService.onDeliveryPedidoChangeStatus()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(res => {
-      if ( this.estadoPedido === '4' ) {return; }
-      this.readEstadoPedido(res);
-    });
   }
 
-  private readEstadoPedido(_estado: any) {
-    let estado = '';
-    this.showTelefonoRepartidor = false;
-    this.dataPedido.pwa_delivery_status = _estado;
-      switch (_estado.toString()) {
-        case '0':
-            estado = 'Preparando';
-          break;
-        case '1':
-            estado = 'Asignado y preparando';
-            this.showTelefonoRepartidor = true;
-          break;
-        case '3':
-            estado = 'En Camino';
-            this.showTelefonoRepartidor = true;
-          break;
-        case '4':
-            estado = 'Entregado';
-            this.showTelefonoRepartidor = false;
-          break;
-      }
-
-      this.estadoPedido = estado;
+  private aplicarEstado(p: any): void {
+    this.estadoResumen = resumirEstadoPedido(p);
+    this.estadoPedido = this.estadoResumen.etiqueta;
+    this.showTelefonoRepartidor = !!p.idrepartidor && this.estadoResumen.activo;
   }
 
   redirectWhatsApp() {
@@ -158,12 +133,10 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
         // notificar al repartidor fin del pedido
         this.socketService.emit('repartidor-notifica-fin-pedido', this.dataPedido);
         this.dataPedido.pwa_delivery_status = 4;
+        this.aplicarEstado(this.dataPedido);
         this.infoTokenService.set();
-        this.showTelefonoRepartidor = false;
-        this.estadoPedido = 'Entregado';
 
         this.router.navigate(['/zona-delivery/establecimientos']);
-        // console.log('data dialog', data);
       }
     );
   }

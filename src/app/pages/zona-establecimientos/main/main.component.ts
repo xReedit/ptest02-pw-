@@ -75,8 +75,8 @@ export class MainComponent implements OnInit {
 
     // console.log('this.infoClient main', this.infoClient);
 
-    // si cliente esta logueado
-    if (this.isClienteLogueado || this.infoClient.isClienteTmp) {
+    // si cliente esta logueado; la sesion propia del cliente tambien necesita el socket para seguir su pedido
+    if (this.isClienteLogueado || this.infoClient.isClienteTmp || this.verifyClientService.isLogin()) {
       this.setDireccion(this.infoClient.direccionEnvioSelected);
       this.showSelectedDireccion = true;
       // console.log('this.infoToken', this.infoClient);

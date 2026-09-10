@@ -1,0 +1,7 @@
+.timeline { display:flex; flex-direction:column; gap:6px; }
+.paso { display:flex; align-items:center; gap:8px; color:#8a92a0; font-size:12px; }
+.paso .punto { width:10px; height:10px; border-radius:50%; background:#d5d9e0; flex:none; }
+.paso.hecho { color:#3b4252; } .paso.hecho .punto { background:#2c7a4b; }
+.paso.actual { color:#1d2433; font-weight:700; } .paso.actual .punto { background:#e0651f; box-shadow:0 0 0 4px rgba(224,101,31,.2); }
+.chip-estado { display:inline-block; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; }
+.chip-cancelado { background:#fbe7e5; color:#b3261e; }
