@@ -190,12 +190,16 @@ export class MainComponent implements OnInit {
     });
 
     this.listenStatusService.isLoaderCarta$.subscribe(res => {
-      this.loaderPage = res;
-      if (this.loaderPage) {
-        this.verificarLoaderReload();
-      } else {
-        clearTimeout(this.timeLoader);
-      }
+      // app-carta enciende este loader durante el mismo ciclo de deteccion en el que el
+      // padre ya lo evaluo: aplazar un tick evita el NG0100 de cada carga (BUG-114)
+      setTimeout(() => {
+        this.loaderPage = res;
+        if (this.loaderPage) {
+          this.verificarLoaderReload();
+        } else {
+          clearTimeout(this.timeLoader);
+        }
+      });
     });
 
     // if ( this.socketService.isSocketOpen ) {
