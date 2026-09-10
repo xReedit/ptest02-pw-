@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { CrudHttpService } from './crud-http.service';
 import { InfoTockenService } from './info-token.service';
+import { autorizacionExitosa } from '../utils/niubiz-respuesta';
 
 // Pago con tarjeta (Niubiz) del consumo en mesa.
 // El navegador ya no conoce usuario, contraseña, merchantId ni las urls de la pasarela:
@@ -178,7 +179,9 @@ export class PagoTarjetaVisanetService {
           // Se conserva la forma que consume pagar-cuenta / comp-pasarela-pago:
           // la respuesta cruda de Niubiz con el campo error agregado.
           const res = (rpta && rpta.data) ? rpta.data : {};
-          const hayError = res.errorCode ? true : false;
+          // el backend responde success:false para todo ACTION_CODE distinto de '000';
+          // mirar solo errorCode daba por pagada una tarjeta rechazada
+          const hayError = !autorizacionExitosa(rpta);
           res.error = hayError;
 
           this.loaderTransactionResponse(res, hayError);

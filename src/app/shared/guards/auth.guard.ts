@@ -25,13 +25,16 @@ export class AuthGuard implements CanActivate {
   // }
 
   canActivate(): boolean | UrlTree {
-    const us = this.authService.getLoggedStatus();
+    // getInfoUs() primero: restaura '::token' desde 'sys::tpm' y recien despues
+    // getLoggedStatus() puede verlo (al reves el cliente caia a '/' tras recargar)
     const infoToken = this.infoTokenService.getInfoUs();
+    const us = this.authService.getLoggedStatus();
     if (!infoToken) {
       return us ? true : this.router.parseUrl('/');
     }
+    const clienteAutorizado = (this.verifyClientService.getIsQrSuccess() && us) || this.verifyClientService.isLogin();
     const res = infoToken.isCliente
-      ? (infoToken.isDelivery || infoToken.isReserva ? true : this.verifyClientService.getIsQrSuccess() && us)
+      ? (infoToken.isDelivery || infoToken.isReserva ? true : clienteAutorizado)
       : us;
     return res ? true : this.router.parseUrl('/');
   }

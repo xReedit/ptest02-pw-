@@ -252,6 +252,7 @@ export class InfoTockenService {
   // setea en sotrage el id del cliente despues de hacer un pedido para llamar en mis ordenes
   setIdCliente(id: number = null) {
     id = id ? id : this.infoUsToken?.idcliente || null;
+    if (!id || Number(id) <= 0) { return; } // sin id no hay nada que guardar (id.toString() reventaba)
     localStorage.setItem('sys::ic-orden', btoa(id.toString()));
   }
 
@@ -416,7 +417,7 @@ export class InfoTockenService {
   // borra datos del storage del pedido
   removeStoragePedido() {
     // sys::rules se conserva: son reglas de la sede, no del pedido
-    localStorage.removeItem('sys::idem'); // la clave de idempotencia muere con el pedido
+    // la clave de idempotencia ya no se persiste: se deriva del carrito (utils/idem.ts)
     localStorage.removeItem('sys::status');
     localStorage.removeItem('sys::st');
 
@@ -439,7 +440,8 @@ export class InfoTockenService {
       if ( isUsTmp ) {
         localStorage.setItem('::token', 'eyCJ9.' + isUsTmp);
         this.converToJSON();
-        return true;
+        // converToJSON puede descartar un token corrupto: la sesion solo continua si quedo algo
+        return !!this.infoUsToken;
       }
 
       return false; // sin sesión: no se borra nada, el guard redirige

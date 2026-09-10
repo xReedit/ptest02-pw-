@@ -87,7 +87,10 @@ export class CompPasarelaPagoComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subsPago.forEach(sub => sub.unsubscribe());
     this.subsPago = [];
-    this.pagoTarjetaServices.cancelPayment();
+    // con una autorización en vuelo no se cancela: el servicio termina de registrar el pago
+    if (!this.pagoTarjetaServices.autorizacionEnCurso) {
+      this.pagoTarjetaServices.cancelPayment();
+    }
   }
 
 
@@ -198,60 +201,56 @@ export class CompPasarelaPagoComponent implements OnInit, OnDestroy {
   // porque la autorización la hacía boton-pago.js (borrado junto con sus credenciales).
   private listenResponse(_dataResTransaction: any) {
 
-      let _dataTransactionRegister;
+    let _dataTransactionRegister;
 
-      {
-        this.isLoadBtnPago = false;
+    this.isLoadBtnPago = false;
 
-        this.dataResTransaction = _dataResTransaction;
+    this.dataResTransaction = _dataResTransaction;
 
-        this.isTrasctionSuccess = !this.dataResTransaction.error;
+    this.isTrasctionSuccess = !this.dataResTransaction.error;
 
-        if (this.isTrasctionSuccess) {
+    if (this.isTrasctionSuccess) {
 
-          _dataTransactionRegister = {
-            purchaseNumber: this.dataResTransaction.order.purchaseNumber,
-            card: this.dataResTransaction.dataMap.CARD,
-            brand: this.dataResTransaction.dataMap.BRAND,
-            descripcion: this.dataResTransaction.dataMap.ACTION_DESCRIPTION,
-            status: this.dataResTransaction.dataMap.STATUS,
-            error: this.dataResTransaction.error
-          };
-
-
-          // retorna evento transaccion success
-          this.responseTranaccion.success = true;
-          this.responseTranaccion.data = _dataTransactionRegister;
-
-          this.emitRespuesta();
-
-          setTimeout(() => {
-            this.isLoaderTransaction = false;
-            // marcador si actualiza la pagina cuando ya pago
-            this.infoTokenService.setIsPagoSuccess(true);
-
-            return;
-          }, 1900);
+      _dataTransactionRegister = {
+        purchaseNumber: this.dataResTransaction.order.purchaseNumber,
+        card: this.dataResTransaction.dataMap.CARD,
+        brand: this.dataResTransaction.dataMap.BRAND,
+        descripcion: this.dataResTransaction.dataMap.ACTION_DESCRIPTION,
+        status: this.dataResTransaction.dataMap.STATUS,
+        error: this.dataResTransaction.error
+      };
 
 
-        } else {
-          _dataTransactionRegister = {
-            purchaseNumber: this.el_purchasenumber,
-            card: this.dataResTransaction.data.CARD,
-            brand: this.dataResTransaction.data.BRAND,
-            descripcion: this.dataResTransaction.data.ACTION_DESCRIPTION,
-            status: this.dataResTransaction.data.STATUS,
-            error: this.dataResTransaction.error
-          };
+      // retorna evento transaccion success
+      this.responseTranaccion.success = true;
+      this.responseTranaccion.data = _dataTransactionRegister;
 
-          // retorna evento transaccion success
+      this.emitRespuesta();
 
-          this.responseTranaccion.success = false;
-          this.responseTranaccion.data = _dataTransactionRegister;
+      setTimeout(() => {
+        this.isLoaderTransaction = false;
+        // marcador si actualiza la pagina cuando ya pago
+        this.infoTokenService.setIsPagoSuccess(true);
+      }, 1900);
 
-          this.emitRespuesta();
-        }
-      }
+
+    } else {
+      _dataTransactionRegister = {
+        purchaseNumber: this.el_purchasenumber,
+        card: this.dataResTransaction.data.CARD,
+        brand: this.dataResTransaction.data.BRAND,
+        descripcion: this.dataResTransaction.data.ACTION_DESCRIPTION,
+        status: this.dataResTransaction.data.STATUS,
+        error: this.dataResTransaction.error
+      };
+
+      // retorna evento transaccion success
+
+      this.responseTranaccion.success = false;
+      this.responseTranaccion.data = _dataTransactionRegister;
+
+      this.emitRespuesta();
+    }
   }
 
 

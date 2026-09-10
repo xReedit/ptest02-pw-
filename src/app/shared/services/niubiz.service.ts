@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { CrudHttpService } from './crud-http.service';
 import { InfoTockenService } from './info-token.service';
+import { autorizacionExitosa } from '../utils/niubiz-respuesta';
 
 // Datos públicos que el backend devuelve para poder abrir el formulario de Niubiz.
 // Las credenciales (usuario, contraseña, cabecera Basic) viven solo en el backend.
@@ -68,6 +69,10 @@ export class NiubizService {
 
   // Se registra al iniciar un pago y se quita al responder o cancelar.
   private paymentSuccessHandler: ((event: any) => void) | null = null;
+
+  // true mientras el POST de autorización está en vuelo. Permite que un componente que se
+  // destruye en ese momento no cancele el pago y el servicio alcance a registrarlo.
+  public autorizacionEnCurso = false;
 
   private paymentResponseSubject = new Subject<NiubizPaymentResponse>();
   public paymentResponse$ = this.paymentResponseSubject.asObservable();
@@ -239,10 +244,18 @@ export class NiubizService {
       clientData: this.buildClientData()
     };
 
+    this.autorizacionEnCurso = true;
+
     this.crudService.postFree(body, CONTROLADOR_PAGO, ACCION_AUTORIZAR, false)
       .subscribe({
-        next: (res: any) => this.emitAuthorizationResponse(res),
-        error: (err) => this.emitError('Error al procesar la autorización', err)
+        next: (res: any) => {
+          this.autorizacionEnCurso = false;
+          this.emitAuthorizationResponse(res);
+        },
+        error: (err) => {
+          this.autorizacionEnCurso = false;
+          this.emitError('Error al procesar la autorización', err);
+        }
       });
   }
 
@@ -251,7 +264,8 @@ export class NiubizService {
 
     this.cleanupPaymentButton();
 
-    if (!res || res.success !== true || data.errorCode) {
+    // misma lectura que pago-tarjeta-visanet: el backend ya evaluo el ACTION_CODE
+    if (!autorizacionExitosa(res)) {
       this.paymentResponseSubject.next({
         success: false,
         error: true,

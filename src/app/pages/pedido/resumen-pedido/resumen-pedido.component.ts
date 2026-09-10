@@ -36,6 +36,8 @@ import { SpeechDataProviderService } from 'src/app/shared/services/speech/speech
 import { URL_IMG_ICONS } from 'src/app/shared/config/config.const';
 import { HoldingService } from 'src/app/shared/services/holding.service';
 import { NiubizClientData, NiubizPaymentResponse } from 'src/app/shared/services/niubiz.service';
+import { b64DecodeUnicode, b64EncodeUnicode } from 'src/app/shared/utils/b64';
+import { claveIdem } from 'src/app/shared/utils/idem';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
@@ -102,8 +104,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   private isSavingPedido = false;
   private isReglasListas = false; // ya se inicializaron los listeners con la primera emision de reglas
   private watchdogEnvio: any; // corta el loader si el envio nunca resuelve
-  private idemPedido: string = null; // clave de idempotencia: se mantiene entre reintentos del mismo pedido
+  private idemPedido: string = null; // clave de idempotencia: se deriva del carrito en cada envio
   private pedidoConfirmado = false; // el servidor ya devolvio idpedido: prohibido pedir reintento
+  private destruido = false; // el componente ya no esta en pantalla: no alertar ni tocar loaders
 
   isShowPaymentMozo = false;
   totalAmountPedido = 0;
@@ -155,9 +158,6 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this._miPedido = this.miPedidoService.getMiPedido();
 
     this.isPuntoAuntoPedido = this.infoToken.isPuntoAutoPedido();
-
-    // un pedido a medio enviar sobrevive a la recarga: se reutiliza su clave de idempotencia
-    this.idemPedido = localStorage.getItem('sys::idem') || null;
 
     // console.log('this.infoToken', this.infoToken);
 
@@ -308,6 +308,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // this.unsubscribe$.complete();
     // this.unsubscribeRe.unsubscribe();
     // Now let's also unsubscribe from the subject itself:
+    this.destruido = true;
+    clearTimeout(this.watchdogEnvio); // si no, salta la alerta de "esta tardando" fuera de la vista
     this.destroy$.next(true);
     this.destroy$.complete();
   }
@@ -340,7 +342,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
 
     this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
-    localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
+    localStorage.setItem('sys::st', b64EncodeUnicode(JSON.stringify(this._arrSubtotales)));
     this.hayItems = parseFloat(this._arrSubtotales[0].importe) > 0 ? true : false;
 
     setTimeout(() => {
@@ -458,7 +460,6 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
         if (numMesa !== 0) {          
           // solo si el url es pedido
           if (this.navigatorService.pageActive === 'mipedido' && this.id === 'show-cuenta-mesa') {
-            console.log('load mesa resuemn pedido', numMesa);
             this.xLoadCuentaMesa(numMesa.toString());
           }
         }
@@ -512,8 +513,6 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   nuevoPedido() {
-    this.idemPedido = null; // pedido distinto: nueva clave de idempotencia
-    localStorage.removeItem('sys::idem');
     this.backConfirmacion();
     if (this.isVisibleConfirmar) {
       this.backConfirmacion();
@@ -693,13 +692,12 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       // saca del local por que puede que se haya puestro propina
       // si no hay nada guardado (recarga o storage limpiado) se recalculan los subtotales
       const stGuardado = localStorage.getItem('sys::st');
-      this._arrSubtotales = stGuardado ? JSON.parse(atob(stGuardado)) : this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
-      localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
+      this._arrSubtotales = stGuardado ? JSON.parse(b64DecodeUnicode(stGuardado)) : this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
+      localStorage.setItem('sys::st', b64EncodeUnicode(JSON.stringify(this._arrSubtotales)));
 
 
       // usuario o cliente
       const dataUsuario = this.infoToken.getInfoUs();
-      console.log('dataUsuario', dataUsuario);
       // const dataUsuario = this.infoToken.infoUsToken;
 
       const dataFrmConfirma: any = {};
@@ -721,10 +719,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
 
 
-      // clave de idempotencia: el mismo pedido reintentado llega con el mismo idem,
-      // persistida para que un reintento tras recargar la pagina siga siendo deduplicable
-      this.idemPedido = this.idemPedido || `${dataUsuario?.idcliente || 0}-${dataUsuario?.idsede || 0}-${Date.now()}`;
-      localStorage.setItem('sys::idem', this.idemPedido);
+      // clave de idempotencia derivada del carrito: el mismo pedido reintentado llega con el
+      // mismo idem (aunque se recargue la pagina) y un carrito distinto genera otra clave
+      this.idemPedido = claveIdem(dataUsuario?.idcliente, dataUsuario?.idsede, this._miPedido);
 
       const _p_header = {
         m: dataFrmConfirma.m, // this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00',
@@ -767,7 +764,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       if (parseFloat(_subTotalesSave[_subTotalesSave.length - 1].importe) === 0) {
         _subTotalesSave = this.frmDelivery.subTotales;
         this._arrSubtotales = _subTotalesSave;
-        localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
+        localStorage.setItem('sys::st', b64EncodeUnicode(JSON.stringify(this._arrSubtotales)));
       }
 
       const dataPedido = {
@@ -827,12 +824,14 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
       if (this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago === 2) {
         this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
+        // el pedido lo continua el flujo de tarjeta: sin esto el watchdog dispara una
+        // alerta falsa de "el pedido esta tardando" mientras el cliente llena el formulario
+        clearTimeout(this.watchdogEnvio);
+        this.isSavingPedido = false;
         this.pagarCuentaDeliveryCliente();
         // enviamos a pagar
         return;
       }
-
-      console.log('sigueeee');
 
       // descuentos
       if (this.infoToken.infoUsToken.isHayDescuento) {
@@ -943,9 +942,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     };
 
     this.crudService.postFree(_data, 'pedido', 'get-last-pedido-cliente-this-table', false)
-      .subscribe(res => {
-        console.log(res);
-      });
+      .subscribe();
   }
 
   imprimirPrecuenta() {
@@ -1004,7 +1001,6 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     }
 
     this.crudService.postFree(datos, 'pedido', 'lacuenta').subscribe((res: any) => {
-      console.log('ver la cuenta');
       this.desglozarCuenta(res);
     });
   }
@@ -1097,7 +1093,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // console.log(_miPedidoCuenta);
     // console.log(this._miPedido);
     this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
-    localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
+    localStorage.setItem('sys::st', b64EncodeUnicode(JSON.stringify(this._arrSubtotales)));
 
   }
 
@@ -1162,67 +1158,6 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
 
-  private async savePedidoSocket(dataSend: any, isPagoConTarjeta: boolean, _subTotalesSave: any) {
-    // this.speechDataProviderService.setIsPedidoConfirmado();
-    // console.log('111111111111');
-
-
-    this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => {
-      // console.log('222222', resSocket);
-      if (resSocket === false) {
-        alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');
-        // guardamos el error
-        const dataError = {
-          elerror: resSocket,
-          elorigen: 'resumen-pedido'
-        };
-
-        this.crudService.postFree(dataError, 'error', 'set-error', false)
-          .subscribe(resp => console.log(resp));
-
-        this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
-        this.isSavingPedido = false;
-        return;
-      }
-
-      setTimeout(() => {
-        this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
-        this.isSavingPedido = false;
-        this.miPedidoService.stopTimerLimit();
-        this.miPedidoService.prepareNewPedido();
-      }, 800);
-
-
-      const _res = resSocket[0];
-      dataSend.dataPedido.idpedido = _res.idpedido;
-      dataSend.dataPrint = _res.data[1] ? _res.data[1]?.print : null;
-
-      this.newFomrConfirma();
-
-      // hora del pedido
-      this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
-
-      // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
-      if (this.isDeliveryCliente && !isPagoConTarjeta) {
-        this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
-        this.confirmarPedidoDeliveryEnviado();
-
-        // this.pagarCuentaDeliveryCliente();
-        // enviamos a pagar
-        return;
-      }
-
-      if (this.isReservaCliente) {
-        this.confirmarPedidoDeliveryEnviado();
-        return;
-      }
-
-
-
-      this.backConfirmarPedido();
-    });
-  }
-
   // 20022023
   // acelerar el envio en conexiones lentas
   private async savePedidoSocket2(dataSend: any, isPagoConTarjeta: boolean, _subTotalesSave: any) {
@@ -1244,8 +1179,6 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     this.pedidoConfirmado = true;
     clearTimeout(this.watchdogEnvio);
-    this.idemPedido = null;
-    localStorage.removeItem('sys::idem');
     setTimeout(() => {
       this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
       this.isSavingPedido = false;
@@ -1302,6 +1235,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private errorSendPedido(resSocket: any) {
     clearTimeout(this.watchdogEnvio);
+    // el componente ya no esta en pantalla: alertar aqui interrumpiria otra pagina
+    if (this.destruido) { return; }
 
     let msj = '!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.';
     if (resSocket?.message === 'timeout') {
@@ -1353,7 +1288,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private async guardarPedidoHoldingLlamarPersonal(): Promise<void> {
     this.checkTiposDeConsumo();
-    this._arrSubtotales = JSON.parse(atob(localStorage.getItem('sys::st')));
+    this._arrSubtotales = JSON.parse(b64DecodeUnicode(localStorage.getItem('sys::st')));
     
     const dataUsuario = this.infoToken.getInfoUs();
     const holdingData = this.infoToken.getHolding();
@@ -1382,7 +1317,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private async guardarPedidoHoldingPagarConfirmar(): Promise<void> {
     this.checkTiposDeConsumo();
-    this._arrSubtotales = JSON.parse(atob(localStorage.getItem('sys::st')));
+    this._arrSubtotales = JSON.parse(b64DecodeUnicode(localStorage.getItem('sys::st')));
     
     const dataUsuario = this.infoToken.getInfoUs();
     const holdingData = this.infoToken.getHolding();
@@ -1425,8 +1360,6 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   onNiubizPaymentSuccess(response: NiubizPaymentResponse): void {
-    console.log('Pago exitoso:', response);
-    
     // Guardar el purchaseNumber para enviarlo con el pedido
     this.niubizPurchaseNumber = response.order?.purchaseNumber || '';
     
