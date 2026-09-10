@@ -26,6 +26,10 @@ export class PagoTarjetaVisanetService {
   // Se registra al iniciar un pago y se quita al recibir la respuesta o al cancelar.
   private paymentSuccessHandler: ((event: any) => void) | null = null;
 
+  // true mientras el POST de autorización está en vuelo. Permite que una página que se
+  // destruye en ese momento conserve su suscripción y alcance a registrar el pago.
+  public autorizacionEnCurso = false;
+
   private listenPaymetResponseSource = new BehaviorSubject<any>(null);
   public listenPaymetResponse$ = this.listenPaymetResponseSource.asObservable();
 
@@ -166,6 +170,8 @@ export class PagoTarjetaVisanetService {
       clientData: this.buildClientData()
     };
 
+    this.autorizacionEnCurso = true;
+
     this.crudService.postFree(body, CONTROLADOR_PAGO, ACCION_AUTORIZAR, false)
       .subscribe({
         next: (rpta: any) => {
@@ -177,8 +183,12 @@ export class PagoTarjetaVisanetService {
 
           this.loaderTransactionResponse(res, hayError);
           this.listenPaymetResponseSource.next(res);
+          this.autorizacionEnCurso = false;
         },
-        error: (err) => this.emitirError('Error al autorizar el pago', err)
+        error: (err) => {
+          this.emitirError('Error al autorizar el pago', err);
+          this.autorizacionEnCurso = false;
+        }
       });
   }
 

@@ -65,6 +65,9 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   // emite en los mismos observables: hay que soltar estas dos al destruir la página.
   private subPagoResponse: Subscription | null = null;
   private subPagoLoader: Subscription | null = null;
+  // Si la página se destruye mientras Niubiz autoriza, no se sueltan las suscripciones
+  // hasta procesar la respuesta: si no, la tarjeta se cobra y el pago no se registra.
+  private liberarAlRecibirRespuesta = false;
 
   private dataClientePago: ClientePagoModel = new ClientePagoModel();
 
@@ -141,6 +144,19 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.unsubscribeEstado.unsubscribe();
+
+    if (this.pagoTarjetaServices.autorizacionEnCurso) {
+      // La autorización está en vuelo: se conserva la suscripción para poder
+      // registrar el pago cuando llegue la respuesta; se suelta en ese momento.
+      this.liberarAlRecibirRespuesta = true;
+      return;
+    }
+
+    this.liberarSuscripcionesPago();
+  }
+
+  private liberarSuscripcionesPago(): void {
+    this.liberarAlRecibirRespuesta = false;
 
     if (this.subPagoResponse) {
       this.subPagoResponse.unsubscribe();
@@ -470,7 +486,25 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   }
 
 
+  // PagoTarjetaVisanetService es singleton de root y comp-pasarela-pago (cash/atm)
+  // emite en el mismo observable: solo se procesa la transacción que inició esta página.
+  private esRespuestaPropia(_dataResTransaction: any): boolean {
+    if (!this.el_purchasenumber) {
+      return false;
+    }
+    const pnRespuesta = (_dataResTransaction.order && _dataResTransaction.order.purchaseNumber)
+      || (_dataResTransaction.data && _dataResTransaction.data.PURCHASE_NUMBER);
+
+    // Si la respuesta no trae número de compra no se puede distinguir; se acepta
+    // porque esta página sí tiene una transacción en curso.
+    return !pnRespuesta || String(pnRespuesta) === String(this.el_purchasenumber);
+  }
+
   private listenResponsePayment(_dataResTransaction: any) {
+
+    if (!this.esRespuestaPropia(_dataResTransaction)) {
+      return;
+    }
 
     this.dataResTransaction = _dataResTransaction;
 
@@ -536,6 +570,9 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
         });
       }
 
+      if (this.liberarAlRecibirRespuesta) {
+        this.liberarSuscripcionesPago();
+      }
 
     } else {
       _dataTransactionRegister = {
@@ -552,6 +589,10 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
         this.isLoaderTransaction = false;
         const _idPagoA = idPwaPago;
       });
+
+      if (this.liberarAlRecibirRespuesta) {
+        this.liberarSuscripcionesPago();
+      }
     }
   }
 
