@@ -1,11 +1,12 @@
-<div class="animated fadeIn">     
-     
-    <ng-container *ngIf="isClienteHolding">
+<div class="animated fadeIn">
+
+    <ng-container [ngSwitch]="isClienteHolding ? 'holding' : (isDeliveryCliente ? 'delivery' : 'mesa')">
+    <ng-container *ngSwitchCase="'holding'">
         <app-estado-pedidos-holding-cliente></app-estado-pedidos-holding-cliente>
     </ng-container>
 
-    <ng-container *ngIf="!isClienteHolding && !isDeliveryCliente; else templateDelivery">
-        
+    <ng-container *ngSwitchCase="'mesa'">
+
         <div class="row xboder-abajo m-0 p-2">
             <div class="col-4 text-center xboder-derecha">
                 <span>{{tituloMesa}}</span>
@@ -97,32 +98,10 @@
         </div> -->
     </ng-container>
 
+    <ng-container *ngSwitchCase="'delivery'">
+        <div class="p-3 text-center"><p>Sigue tu pedido en <strong>Mis pedidos</strong>.</p></div>
+    </ng-container>
+    </ng-container>
 
-
-    <!-- cunado es DELIVERY  -->
-    <ng-template #templateDelivery>
-        <div class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor">
-            <span class="fw-100 fs-12 text-secondary">Direccion de entrega:</span>
-            <p class="m-0">Jr. Reyes Guerra 456</p>
-        </div>
-        <div class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor">
-            <!-- <span class="fw-100 fs-12 text-secondary">Hora de entrega:</span> -->            
-            <p class="m-0"><i class="fa fa-clock-o"></i> Hora de entrega: 10 - 15 min</p>
-        </div>
-        <div class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor">
-            
-            <!-- <p class="m-0">Jr. Reyes Guerra 456</p> -->
-            <mat-form-field class="w-100">
-                <input type="number" matInput placeholder="Telefono">
-            </mat-form-field>
-            <span class="fw-100 fs-12 text-secondary">Añade un número de teléfono para que podamos contactarte e informarte de tu pedido.</span>
-        </div>
-
-        <div class="border-bottom m-0 p-3" matRipple [matRippleColor]="rippleColor">
-            <div class="row border-bottom">
-                
-            </div>
-        </div>
-    </ng-template>    
     <br><br>
 </div>

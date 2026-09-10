@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 declare global {
-  interface Window { __gmapsReady?: () => void; }
+  interface Window {
+    __gmapsReady?: () => void;
+    gm_authFailure?: () => void;
+  }
 }
 
 @Injectable({
@@ -10,9 +14,12 @@ declare global {
 })
 export class GoogleMapsLoaderService {
   private loadPromise: Promise<void> | null = null;
+  private authFallida = false;
+  private authFallidaSubject = new BehaviorSubject<boolean>(false);
+  authFallida$: Observable<boolean> = this.authFallidaSubject.asObservable();
 
   isLoaded(): boolean {
-    return typeof google !== 'undefined' && !!google.maps && !!google.maps.places;
+    return typeof google !== 'undefined' && !!google.maps && !!google.maps.places && !this.authFallida;
   }
 
   load(): Promise<void> {
@@ -31,6 +38,7 @@ export class GoogleMapsLoaderService {
       const fail = () => { if (!done) { done = true; this.loadPromise = null; reject(new Error('No se pudo cargar Google Maps')); } };
 
       window.__gmapsReady = ok;
+      window.gm_authFailure = () => { this.authFallida = true; this.authFallidaSubject.next(true); };
 
       if (!document.getElementById(scriptId)) {
         const script = document.createElement('script');

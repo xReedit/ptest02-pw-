@@ -1,4 +1,6 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { GoogleMapsLoaderService } from 'src/app/shared/services/google-maps-loader.service';
 
 export interface LatLng { latitude: number; longitude: number; }
@@ -8,9 +10,11 @@ export interface LatLng { latitude: number; longitude: number; }
   templateUrl: './mapa-solo.component.html',
   styleUrls: ['./mapa-solo.component.css']
 })
-export class MapaSoloComponent implements OnInit, OnChanges {
+export class MapaSoloComponent implements OnInit, OnChanges, OnDestroy {
   @Input() origin: LatLng;       // repartidor (o local mientras no hay repartidor)
   @Input() destination: LatLng;  // cliente
+
+  private destroy$ = new Subject<void>();
 
   mapsListo = false;
   zoom = 14;
@@ -20,14 +24,24 @@ export class MapaSoloComponent implements OnInit, OnChanges {
   posRepartidor: google.maps.LatLngLiteral = null;
   iconCliente: google.maps.Icon = { url: './assets/images/placeholder.png', scaledSize: { width: 30, height: 30 } as any };
   iconRepartidor: google.maps.Icon = { url: './assets/images/delivery-man.png', scaledSize: { width: 28, height: 28 } as any };
+  opcionesCliente: google.maps.MarkerOptions = { icon: this.iconCliente };
+  opcionesRepartidor: google.maps.MarkerOptions = { icon: this.iconRepartidor };
 
   constructor(private mapsLoader: GoogleMapsLoaderService) { }
 
   ngOnInit(): void {
     this.mapsLoader.load().then(() => { this.mapsListo = true; this.recalcular(); }).catch(() => { this.mapsListo = false; });
+    this.mapsLoader.authFallida$.pipe(takeUntil(this.destroy$)).subscribe((fallida) => {
+      if (fallida) { this.mapsListo = false; }
+    });
   }
 
   ngOnChanges(_: SimpleChanges): void { this.recalcular(); }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   private aLiteral(p: LatLng): google.maps.LatLngLiteral {
     const lat = Number(p?.latitude); const lng = Number(p?.longitude);
