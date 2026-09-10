@@ -9,28 +9,28 @@
         </div>
         <hr>
         <div class="pl-3 pr-3 pt-2 max-w">
-            <div class="btn-social apple" *ngIf="isPlatformIOS" matRipple (click)="goApple()">
+            <div class="btn-social apple" *ngIf="isPlatformIOS" matRipple role="button" tabindex="0" (click)="goApple()" (keyup.enter)="goApple()">
                 <i class="fa fa-apple" aria-hidden="true"></i>
                 <span class="pl-2">Con Apple</span>
             </div>
 
-            <div class="btn-social fb" matRipple (click)="goFb()">                
+            <div class="btn-social fb" matRipple role="button" tabindex="0" (click)="goFb()" (keyup.enter)="goFb()">                
                 <i class="fa fa-facebook" aria-hidden="true"></i>
                 <span class="pl-2">Con Facebook</span> 
             </div>
-            <div class="btn-social gmail" matRipple (click)="goGmail()">                
+            <div class="btn-social gmail" matRipple role="button" tabindex="0" (click)="goGmail()" (keyup.enter)="goGmail()">                
                 <i class="fa fa-google" aria-hidden="true"></i>
                 <span class="pl-2">Con Gmail</span>
             </div>
 
-            <div class="btn-social wsp" matRipple (click)="goCelular()">                
+            <div class="btn-social wsp" matRipple role="button" tabindex="0" (click)="goCelular()" (keyup.enter)="goCelular()">                
                 <i class="fa fa-whatsapp" aria-hidden="true"></i>
                 <span class="pl-2">Con tu celular</span>
             </div>
     
             <hr>
     
-            <div class="btn-social dni" matRipple  (click)="viewLoginDni()">
+            <div class="btn-social dni" matRipple role="button" tabindex="0" (click)="viewLoginDni()" (keyup.enter)="viewLoginDni()">
                 <i class="fa fa-id-card-o" aria-hidden="true"></i>
                 <span class="pl-2">Con DNI</span>
             </div>
@@ -49,7 +49,7 @@
             <div class="p-3  max-w">
                 <h5>Ingresar como Invitado</h5>
                 <p class="fs-11">En el modo invitados no puedes ver ni cambiar la información del perfil, tampoco accederas a promociones y descuentos.</p>
-                <div class="btn-social invitado" matRipple  (click)="viewLoginInvitado()">
+                <div class="btn-social invitado" matRipple role="button" tabindex="0" (click)="viewLoginInvitado()" (keyup.enter)="viewLoginInvitado()">
                     <i class="fa fa-user" aria-hidden="true"></i>
                     <span class="pl-2">Como Invitado</span>
                 </div>
@@ -89,12 +89,15 @@
                     <span class="fs-13 text-info">Para confirmar su identidad, indique el número verificador ubicado en la parte superior derecha de su DNI.</span>
 
                     <div class="div-list-date text-center">
-                        <div matRipple 
-                            class="item-list-date" 
-                            [ngClass]="{'selected': item.selected}" 
+                        <div matRipple
+                            class="item-list-date"
+                            role="button"
+                            tabindex="0"
+                            [ngClass]="{'selected': item.selected}"
                             (click)="verificarDNI(item)"
+                            (keyup.enter)="verificarDNI(item)"
                             *ngFor="let item of listViewDate">
-                            <div>{{item}}</div>                            
+                            <div>{{item}}</div>
                         </div>
                     </div>                        
 
