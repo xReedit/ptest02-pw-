@@ -53,6 +53,10 @@
 	<string>Se necesita acceso a la ubicación del dispositivo, para obtener la direccion actual donde se entregará su pedido.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Se necesita acceso a la ubicación del dispositivo, para obtener la direccion actual donde se entregará su pedido.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>Main.storyboard</string>
 	<key>UIMainStoryboardFile</key>

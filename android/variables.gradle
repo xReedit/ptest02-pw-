@@ -1,6 +1,10 @@
 ext {
     minSdkVersion = 22
-    compileSdkVersion = 32
+    compileSdkVersion = 33
+    // ponytail: targetSdkVersion sigue en 32 a proposito. El plugin push v4 declara
+    // @Permission(strings = {}) y su requestPermissions() no pide nada al sistema; con
+    // target 32 Android 13+ muestra el dialogo al crear el canal. Subir a 33/34 exige
+    // Capacitor 5 + plugin v5 (y AGP 8.1.1 para SDK 34): sprint aparte.
     targetSdkVersion = 32
     androidxActivityVersion = '1.4.0'
     androidxAppCompatVersion = '1.4.2'
