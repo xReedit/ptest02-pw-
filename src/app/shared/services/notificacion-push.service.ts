@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
 import { CrudHttpService } from './crud-http.service';
 import { InfoTockenService } from './info-token.service';
@@ -23,8 +23,11 @@ export class NotificacionPushService {
 
   // private VAPID_PUBLIC = 'BC7ietauZE99Hx9HkPyuGVr8jaYETyEJgH-gLaYIsbORYobppt9dX49_K_wubDqphu1afi7XrM6x1zAp4kJh_wU';
 
+  // ponytail: ServiceWorkerModule esta desactivado (ver app.module.ts y main.ts), asi que
+  // SwPush no tiene provider. Se inyecta como @Optional para que inyectar este servicio no
+  // rompa la creacion del componente (NullInjectorError: No provider for SwPush!).
   constructor(
-    private swPush: SwPush,
+    @Optional() private swPush: SwPush,
     private crudService: CrudHttpService,
     private infoTokenService: InfoTockenService,    
     // private dialog: MatDialog,
@@ -38,7 +41,7 @@ export class NotificacionPushService {
     //   window.open(url, '_blank');
     // });
 
-    this.swPush.notificationClicks.subscribe( event => {      
+    this.swPush?.notificationClicks.subscribe( event => {
       console.log('clic notification', event);
       // const url = event.notification.data.url;
       // window.location.reload();
@@ -103,6 +106,7 @@ export class NotificacionPushService {
   //  suscriberse
   private keySuscribtion() {
     // console.log('keySuscribtion');
+    if (!this.swPush) { return; }
     this.swPush
     .requestSubscription({
       serverPublicKey: VAPID_PUBLIC,
