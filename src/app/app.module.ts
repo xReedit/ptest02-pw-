@@ -65,7 +65,9 @@ const configAuth: AuthConfig = {
     {provide: LocationStrategy, useClass: PathLocationStrategy}, // 22012022 eliminar el #
     {
       provide: APP_INITIALIZER,
-      useFactory: (googleMapsLoader: GoogleMapsLoaderService) => () => googleMapsLoader.load(),
+      // ponytail: Maps se carga en segundo plano; si no llega en 5 s la app arranca igual y los mapas se cargan al usarse
+      useFactory: (googleMapsLoader: GoogleMapsLoaderService) => () =>
+        Promise.race([googleMapsLoader.load(), new Promise<void>(resolve => setTimeout(resolve, 5000))]).catch(() => undefined),
       deps: [GoogleMapsLoaderService],
       multi: true
     }

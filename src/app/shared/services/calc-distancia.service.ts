@@ -18,7 +18,11 @@ import { UtilitariosService } from './utilitarios.service';
   providedIn: 'root'
 })
 export class CalcDistanciaService {
-  directionsService = new google.maps.DirectionsService();
+  private _directionsService: google.maps.DirectionsService;
+  private get directionsService(): google.maps.DirectionsService {
+    if (!this._directionsService) { this._directionsService = new google.maps.DirectionsService(); }
+    return this._directionsService;
+  }
   // private directionsDisplay = new google.maps.DirectionsRenderer();
 
   private origin = {};
