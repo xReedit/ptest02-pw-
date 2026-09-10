@@ -33,6 +33,9 @@ import { EstablecimientoService } from 'src/app/shared/services/establecimiento.
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { SpeechDataProviderService } from 'src/app/shared/services/speech/speech-data-provider.service';
+import { URL_IMG_ICONS } from 'src/app/shared/config/config.const';
+import { HoldingService } from 'src/app/shared/services/holding.service';
+import { NiubizClientData, NiubizPaymentResponse } from 'src/app/shared/services/niubiz.service';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
@@ -102,6 +105,20 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   totalAmountPedido = 0;
   dataPayametMozo: any = null;
 
+  isHolding = false;
+  isShowNombreHolding = false;
+  isShowOpcionesHolding = false;
+  isShowNotificacionPersonal = false;
+  isShowNiubizPayment = false;
+  opcionHoldingSeleccionada: string = '';
+  dataPedidoHoldingTemp: any = null;
+  niubizClientData: NiubizClientData | null = null;
+  nombreHoldingValido = false;
+  importePagoHolding: number = 0;
+  simboloMoneda: string = 'S/';
+  niubizPurchaseNumber: string = '';
+  isShowMensajeConfirmacionPago = false;
+
   constructor(
     private miPedidoService: MipedidoService,
     private reglasCartaService: ReglascartaService,
@@ -118,7 +135,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     private establecimientoService: EstablecimientoService,
     private utilService: UtilitariosService,
     private verifyClientService: VerifyAuthClientService,
-    private speechDataProviderService: SpeechDataProviderService
+    private speechDataProviderService: SpeechDataProviderService,
+    private holdingService: HoldingService
   ) { }
 
   ngOnInit() {
@@ -126,6 +144,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // this.establecimientoService.get();
 
     this.isShowPaymentMozo = this.infoToken.getIsHolding() || this.infoToken.getIsMozoAcceptPayments();
+    this.isHolding = this.infoToken.getIsHolding();
 
     this.systemOS = this.utilService.getOS();
 
@@ -568,10 +587,20 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       this.navigatorService.addLink('mipedido-confirma');
 
       this.isClienteSetValues();
+
+      // Si es holding y cliente, verificar si ya tiene nombre guardado
+      if (this.isHolding && this.isCliente) {
+        this.verificarNombreHolding();
+      }
     }
   }
 
-  private prepararEnvio(): void {    
+  private prepararEnvio(): void {
+    if (this.isHolding && this.isCliente) {
+      this.verificarNombreHolding();
+      return;
+    }
+    
     if (!this.isDeliveryCliente) {
       this.showLoaderPedido();
       // const _dialogConfig = new MatDialogConfig();
@@ -698,6 +727,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       holding: this.infoToken.getHolding(),
       paymentMozo: this.dataPayametMozo,
       idcliente: this.infoToken.infoUsToken.idcliente || 0,
+      purchase_number: this.niubizPurchaseNumber || null, // Purchase number de Niubiz si existe
     };
 
     // console.log('cccccccccccccc');
@@ -809,6 +839,14 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     }
 
     this.isDeliveryValid = false; // formulario no valido para delivery
+    
+    // Si es holding y cliente, mostrar mensaje adicional antes de ir a estado
+    if (this.isHolding && this.isCliente && this.niubizPurchaseNumber) {
+      // El mensaje ya se mostró, ahora solo redirigir
+      setTimeout(() => {
+        this.navigatorService.setPageActive('estado');
+      }, 100);
+    }
   }
 
   private checkTiposDeConsumo(): void {
@@ -1192,6 +1230,13 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // hora del pedido
     this.estadoPedidoClientService.setHoraInitPedido(new Date().getTime());
 
+    // Si es pedido holding con pago Niubiz, limpiar datos
+    if (this.isHolding && this.niubizPurchaseNumber) {
+      this.holdingService.limpiarPedidoHolding();
+      localStorage.removeItem('sys::nombre_holding');
+      this.niubizPurchaseNumber = '';
+    }
+
     // si es delivery y el pago es en efectivo o en yape, notificamos transaccion conforme
     if (this.isDeliveryCliente && !isPagoConTarjeta) {
       this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
@@ -1243,6 +1288,271 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     if ( numMesa.length === 0 ) return;
 
     this.isRequiereMesa = !this.dataPayametMozo.isPaymentSuccess;
+  }
+
+  onOpcionHoldingSeleccionada(opcion: string): void {
+    this.opcionHoldingSeleccionada = opcion;
+    
+    if (opcion === 'llamar_personal') {
+      this.guardarPedidoHoldingLlamarPersonal();
+    } else if (opcion === 'pagar_confirmar') {
+      this.guardarPedidoHoldingPagarConfirmar();
+    }
+  }
+
+  private async guardarPedidoHoldingLlamarPersonal(): Promise<void> {
+    this.checkTiposDeConsumo();
+    this._arrSubtotales = JSON.parse(atob(localStorage.getItem('sys::st')));
+    
+    const dataUsuario = this.infoToken.getInfoUs();
+    const holdingData = this.infoToken.getHolding();
+    
+    const dataPedido = await this.construirDataPedido();
+    
+    this.holdingService.guardarPedidoClienteHolding(
+      dataPedido,
+      dataUsuario.idcliente,
+      holdingData.idsede_holding
+    ).subscribe(
+      (res: any) => {
+        if (res.success) {
+          this.isShowOpcionesHolding = false;
+          this.isShowNotificacionPersonal = true;
+        } else {
+          alert('Error al guardar el pedido. Por favor intente nuevamente.');
+        }
+      },
+      (error) => {
+        console.error('Error guardando pedido holding:', error);
+        alert('Error al guardar el pedido. Por favor intente nuevamente.');
+      }
+    );
+  }
+
+  private async guardarPedidoHoldingPagarConfirmar(): Promise<void> {
+    this.checkTiposDeConsumo();
+    this._arrSubtotales = JSON.parse(atob(localStorage.getItem('sys::st')));
+    
+    const dataUsuario = this.infoToken.getInfoUs();
+    const holdingData = this.infoToken.getHolding();
+    
+    const dataPedido = await this.construirDataPedido();
+    
+    this.dataPedidoHoldingTemp = {
+      pedido: dataPedido,
+      idcliente: dataUsuario.idcliente,
+      idsede_holding: holdingData.idsede_holding
+    };
+    
+    this.importePagoHolding = parseFloat(this._arrSubtotales[this._arrSubtotales.length - 1].importe);
+    this.simboloMoneda = this.establecimientoService.getSimboloMoneda() || 'S/';
+    
+    this.prepararDatosClienteNiubiz(dataUsuario);
+    
+    this.isShowOpcionesHolding = false;
+    this.isShowNiubizPayment = true;
+  }
+
+  private prepararDatosClienteNiubiz(dataUsuario: any): void {
+    const nombres = dataUsuario.nombres || '';
+    const partes = nombres.split(' ');
+    
+    this.niubizClientData = {
+      email: dataUsuario.correo || dataUsuario.email || '',
+      nombre: partes[0] || 'Cliente',
+      apellido: partes.length > 1 ? partes[partes.length - 1] : '',
+      idcliente: dataUsuario.idcliente?.toString() || '0',
+      ip: this.infoToken.infoUsToken?.ipCliente || '',
+      diasRegistrado: 0
+    };
+
+    if (!this.niubizClientData.ip) {
+      this.crudService.getFree('https://api.ipify.org?format=json').subscribe((res: any) => {
+        this.niubizClientData!.ip = res.ip;
+      });
+    }
+  }
+
+  onNiubizPaymentSuccess(response: NiubizPaymentResponse): void {
+    console.log('Pago exitoso:', response);
+    
+    // Guardar el purchaseNumber para enviarlo con el pedido
+    this.niubizPurchaseNumber = response.order?.purchaseNumber || '';
+    
+    // Construir el objeto paymentMozo para que el backend registre el pago
+    // id=4 corresponde a pago con tarjeta o billetera digital desde la aplicación
+    this.dataPayametMozo = {
+      methods: [
+        {
+          id: 4,
+          icon: `${URL_IMG_ICONS}_tp_05.png`,
+          name: 'APLICACION',
+          amount: this.importePagoHolding,
+          isActive: true,
+          isDisabled: false,
+          amount_real: this.importePagoHolding
+        }
+      ],
+      idusuario: this.infoToken.getInfoUs().idusuario,
+      isPaymentSuccess: true
+    };
+    
+    // Ocultar el componente de pago y mostrar mensaje de confirmación
+    this.isShowNiubizPayment = false;
+    this.isShowMensajeConfirmacionPago = true;
+  }
+
+  onNiubizPaymentError(response: NiubizPaymentResponse): void {
+    console.error('Error en pago:', response);
+    alert(response.errorMessage || 'Error al procesar el pago. Intente nuevamente.');
+  }
+
+  onNiubizPaymentCancel(event: { shouldReload: boolean }): void {
+    if (event.shouldReload) {
+      window.location.reload();
+    } else {
+      this.isShowNiubizPayment = false;
+      this.isShowOpcionesHolding = true;
+    }
+  }
+
+  private async construirDataPedido(): Promise<any> {
+    const dataUsuario = this.infoToken.getInfoUs();
+    
+    const dataFrmConfirma: any = {};
+    dataFrmConfirma.m = dataUsuario.numMesaLector || '';
+    dataFrmConfirma.r = dataUsuario.nombres.toUpperCase();
+    dataFrmConfirma.nom_us = dataUsuario.nombres.toUpperCase();
+    dataFrmConfirma.m_respaldo = dataFrmConfirma.m;
+
+    const _p_header = {
+      m: dataFrmConfirma.m,
+      m_respaldo: dataFrmConfirma.m_respaldo,
+      r: dataFrmConfirma.r,
+      nom_us: dataFrmConfirma.nom_us,
+      delivery: 0,
+      reservar: 0,
+      solo_llevar: 0,
+      idcategoria: localStorage.getItem('sys::cat'),
+      correlativo_dia: '',
+      num_pedido: '',
+      isCliente: 1,
+      isSoloLLevar: false,
+      idregistro_pago: 0,
+      arrDatosDelivery: {},
+      arrDatosReserva: {},
+      systemOS: this.systemOS,
+      idregistra_scan_qr: this.establecimientoService.getLocalIdScanQr(),
+      is_print_subtotales: this.miPedidoService.objDatosSede.datossede[0].is_print_subtotales,
+      isprint_copy_short: this.miPedidoService.objDatosSede.datossede[0].isprint_copy_short,
+      isprint_all_short: this.miPedidoService.objDatosSede.datossede[0].isprint_all_short,
+      appv: 'v.2z',
+      is_holding: this.infoToken.infoUsToken.is_holding,
+      holding: this.infoToken.getHolding(),
+      paymentMozo: null,
+      idcliente: this.infoToken.infoUsToken.idcliente || 0,
+    };
+
+    const dataPedido = {
+      p_header: _p_header,
+      p_body: this._miPedido,
+      p_subtotales: this._arrSubtotales,
+      idpedido: 0
+    };
+
+    // Construir datos de impresión
+    const arrPrint = this.jsonPrintService.enviarMiPedido(this.isCliente);
+    const dataPrint: any = [];
+    arrPrint.map((x: any) => {
+      dataPrint.push({
+        Array_enca: _p_header,
+        ArraySubTotales: this._arrSubtotales,
+        ArrayItem: x.arrBodyPrint,
+        Array_print: x.arrPrinters
+      });
+    });
+
+    const _dataUsuarioSend = {
+      'idusuario': dataUsuario.idusuario,
+      'idcliente': dataUsuario.idcliente,
+      'idorg': dataUsuario.idorg,
+      'idsede': dataUsuario.idsede,
+      'nombres': dataUsuario.nombres,
+      'cargo': dataUsuario.cargo,
+      'usuario': dataUsuario.usuario
+    };
+
+    // Construir el objeto completo como en enviarPedido
+    const dataSend = {
+      dataPedido: dataPedido,
+      dataPrint: dataPrint,
+      dataUsuario: _dataUsuarioSend,
+      isDeliveryAPP: false,
+      isClienteRecogeLocal: false,
+      dataDescuento: [],
+      listPrinters: arrPrint.listPrinters
+    };
+
+    return dataSend;
+  }
+
+  onCancelarNotificacionPersonal(): void {
+    this.isShowNotificacionPersonal = false;
+    this.isShowOpcionesHolding = true;
+  }
+
+  onIrAPagarDesdeNotificacion(): void {
+    this.isShowNotificacionPersonal = false;
+    this.guardarPedidoHoldingPagarConfirmar();
+  }
+
+  onVolverAtrasOpcionesHolding(): void {
+    this.isShowOpcionesHolding = false;
+    this.backConfirmacion();
+  }
+
+  onNombreHoldingValidado(isValid: boolean): void {
+    this.nombreHoldingValido = isValid;
+    // Guardar el nombre en localStorage cuando sea válido
+    if (isValid) {
+      const nombreCliente = this.infoToken.getInfoUs().nombres;
+      localStorage.setItem('sys::nombre_holding', nombreCliente);
+    }
+  }
+
+  continuarConOpcionesHolding(): void {
+    if (this.nombreHoldingValido) {
+      this.isShowNombreHolding = false;
+      this.isShowOpcionesHolding = true;
+    }
+  }
+
+  private verificarNombreHolding(): void {
+    const nombreGuardado = localStorage.getItem('sys::nombre_holding');
+    
+    if (nombreGuardado && nombreGuardado !== '' && nombreGuardado.toLowerCase() !== 'invitado') {
+      // Si ya tiene nombre guardado, establecerlo y saltar a opciones
+      this.infoToken.setNombres(nombreGuardado);
+      this.nombreHoldingValido = true;
+      this.isShowOpcionesHolding = true;
+    } else {
+      // Si no tiene nombre, mostrar pantalla de ingreso
+      this.isShowNombreHolding = true;
+    }
+  }
+
+  volverDesdeNombreHolding(): void {
+    this.isShowNombreHolding = false;
+    this.backConfirmacion();
+  }
+
+  confirmarYEnviarPedidoHolding(): void {
+    this.isShowMensajeConfirmacionPago = false;
+    this.listenStatusService.setLoaderSendPedido(true);
+    
+    setTimeout(() => {
+      this.enviarPedido();
+    }, 500);
   }
 
 }

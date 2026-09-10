@@ -67,6 +67,10 @@ import { ListComponent } from './holding/marcas/list/list.component';
 import { ItemComponent } from './holding/marcas/item/item.component';
 import { FormaPagoComponent } from './holding/forma-pago/forma-pago.component';
 import { CompListPedidosHoldingComponent } from './comp-list-pedidos-holding/comp-list-pedidos-holding.component';
+import { CompOpcionesPagoHoldingComponent } from './holding/comp-opciones-pago-holding/comp-opciones-pago-holding.component';
+import { CompNotificacionPersonalComponent } from './holding/comp-notificacion-personal/comp-notificacion-personal.component';
+import { CompNiubizPaymentComponent } from './comp-niubiz-payment/comp-niubiz-payment.component';
+import { EstadoPedidosHoldingClienteComponent } from './estado-pedidos-holding-cliente/estado-pedidos-holding-cliente.component';
 
 @NgModule({
   declarations: [
@@ -125,12 +129,16 @@ import { CompListPedidosHoldingComponent } from './comp-list-pedidos-holding/com
     ItemComponent,
     FormaPagoComponent,
     CompListPedidosHoldingComponent,
+    CompOpcionesPagoHoldingComponent,
+    CompNotificacionPersonalComponent,
+    CompNiubizPaymentComponent,
+    EstadoPedidosHoldingClienteComponent,
     // DialogDesicionComponent,
     // DialogUbicacionComponent
   ],
   imports: [
     // AgmCoreModule.forRoot({
-    //   apiKey: 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo',
+    //   apiKey: environment.googleMapsApiKey,
     //   libraries: ['places']
     // }),
     CommonModule,
@@ -190,6 +198,10 @@ import { CompListPedidosHoldingComponent } from './comp-list-pedidos-holding/com
     ItemComponent,
     FormaPagoComponent,
     CompListPedidosHoldingComponent,
+    CompOpcionesPagoHoldingComponent,
+    CompNotificacionPersonalComponent,
+    CompNiubizPaymentComponent,
+    EstadoPedidosHoldingClienteComponent,
     // DialogDesicionComponent
   ],
 

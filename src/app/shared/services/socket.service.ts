@@ -66,9 +66,16 @@ export class SocketService {
 
     const infToken = this.infoTockenService.infoUsToken || infoUser;
 
+    const idHolding = infToken?.holding?.idsede_holding || 0;
+    const isHolding = idHolding ? '1' : '0';
+
+
+
     const dataSocket = {
       idorg: infToken.idorg || 0,
       idsede: infToken.idsede || 0,
+      idholding: idHolding,
+      isClienteHoldingMesaApp: isHolding,
       idusuario: infToken.idusuario,
       idcliente: infToken.idcliente,
       iscliente: infToken.isCliente || false,

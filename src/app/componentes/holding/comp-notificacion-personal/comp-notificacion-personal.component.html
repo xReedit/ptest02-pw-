@@ -1,0 +1,47 @@
+<div class="notificacion-personal-container">
+  <div class="text-center">
+    <div class="icon-container mb-4">
+      <div class="pulse-icon">
+        <i class="fa fa-bell fs-50 text-primary"></i>
+      </div>
+    </div>
+
+    <h3 class="fw-600 fs-22 text-dark mb-3">
+      Notificando al Personal
+    </h3>
+
+    <p class="fw-100 fs-16 text-secondary mb-4">
+      Hemos notificado al personal de su mesa. En breve se acercarán para confirmar su pedido y realizar el cobro.
+    </p>
+
+    <div class="loading-dots mb-4">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <div class="info-box mb-4">
+      <i class="fa fa-info-circle text-info mr-2"></i>
+      <span class="fw-100 fs-14">Por favor, permanezca en su mesa mientras el personal se acerca</span>
+    </div>
+
+    <div class="acciones-container">
+      <button mat-stroked-button color="primary" class="btn-cambiar-opcion" (click)="onIrAPagar()">
+        <i class="fa fa-credit-card mr-2"></i>
+        Cambiar a Pagar con Tarjeta
+      </button>
+
+      <button mat-button class="btn-cancelar mt-3" (click)="onCancelar()">
+        <i class="fa fa-times mr-2"></i>
+        Cancelar y Volver
+      </button>
+    </div>
+
+    <div class="nota-footer mt-4">
+      <p class="fw-100 fs-13 text-secondary mb-0">
+        <i class="fa fa-clock-o mr-1"></i>
+        El personal atenderá su solicitud en el menor tiempo posible
+      </p>
+    </div>
+  </div>
+</div>

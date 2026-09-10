@@ -15,73 +15,20 @@
         #telefono required>
         <mat-hint align="end">{{telefono.value.length}} / 9</mat-hint>
     </mat-form-field>
-    <p *ngIf="isNumberSuccess ===2 " class="text-danger">Número no valido.</p>
     <br>
 
-    <p class="m-0 pb-1">
-        Enviar <span class="fw-600" *ngIf="intentoVerificacion > 0 && !isContandoShow">nuevamente</span> código de verificación por:
+    <p class="fs-12 text-secondary">
+        <i class="fa fa-info-circle text-info mr-1"></i>
+        Asegúrese de ingresar su número correctamente, será usado para contactarlo sobre su pedido.
     </p>
-    <ng-container *ngIf="!isContandoShow; else elseTemplateMsjVerificacion">
-        <div class="d-flex">
-            <button matRipple [disabled]="!isValidForm" (click)="enviarCodigoSMS(0)"  class="btn btn-success mr-1"><i class="fa fa-whatsapp pr-1" aria-hidden="true"></i> Whatsapp</button>
-            <button matRipple [disabled]="!isValidForm" (click)="enviarCodigoSMS(1)"  class="btn btn-info"><i class="fa fa-comment pr-1" aria-hidden="true"></i> SMS</button>
-        </div>
-    </ng-container>
-    <ng-template #elseTemplateMsjVerificacion>
-        <div>
-            <p class="fw-600 text-info">{{ numSegundosActivarBtn | number: '2.'}} Enviando Mensaje...</p>
-        </div>
-    </ng-template>
 
-    <!-- <button 
-        mat-flat-button color="primary"
-        [disabled]="!isValidForm || isContandoShow"
-        (click)="enviarCodigoSMS()"        
-    >   
-        <ng-container *ngIf="isContandoShow; else elseTemplateMsjVerificacion">
-            <span class="mr-2" >{{ numSegundosActivarBtn | number: '2.'}}</span>
-            Enviando Mensaje...
-        </ng-container>
-        <ng-template #elseTemplateMsjVerificacion>
-            <ng-container *ngIf="intentoVerificacion === 0; else elseTemplateMsjNuevamente">
-                Enviar código de verificación                
-            </ng-container>
-            <ng-template #elseTemplateMsjNuevamente>
-                Enviar código nuevamente
-            </ng-template>
-        </ng-template>
-        
-    </button>
-    <p class="fs-13 text-secondary mt-1">Recibira el código de verificación por WhatsApp, sino tiene entonces recibira el código por SMS</p> -->
-    
-</div>
-<hr>
-<div class="p-4" *ngIf="isSendSMS">
-    <p class="text-success fs-600">En breve recibiras un mensaje. Escribelo el código aquí:</p>
-    <mat-form-field class="w-100">
-        <input type="number" matInput name="txtCodigo" class="input-headline-verification"
-        placeholder="Código de verificación recibido" autocomplete="off" #txtCodigo>
-    </mat-form-field>
-    <br>
     <button 
-        mat-flat-button color="primary"        
-        (click)="verificarCodigoSMS(txtCodigo.value)"   
-        [disabled]="loader !== 0 && loader !== 3"
+        mat-flat-button color="primary"
+        class="w-100 mt-2"
+        [disabled]="!isValidForm"
+        (click)="confirmarTelefono()"
     >
-        <ng-container *ngIf="loader === 0 || loader === 3; else elseTemplate">
-            Verificar Codigo
-        </ng-container>
-        <ng-template #elseTemplate>
-            <ng-container *ngIf="loader === 1; else elseTemplateHecho">
-                <i class="fa fa-spinner fa-spin fa-fw"></i>
-                Verificando ...
-            </ng-container>
-            <ng-template #elseTemplateHecho>
-                <i class="fa fa-check"></i>
-                Hecho
-            </ng-template> 
-        </ng-template>            
-    </button>    
-    <p *ngIf="loader > 0 && !isVerificacionOk" class="text-danger fw-600 pt-2">Codigo ingresado incorrecto.</p>
+        <i class="fa fa-check mr-1"></i> Confirmar número
+    </button>
+
 </div>
-<!-- <hr> -->

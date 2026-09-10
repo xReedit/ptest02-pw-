@@ -1,0 +1,84 @@
+<div class="niubiz-payment-wrapper">
+  <!-- Información de pago (siempre visible) -->
+  <div class="payment-info">
+    <!-- Importe grande -->
+    <div class="payment-amount">
+      <span class="amount-label">Total a pagar</span>
+      <span class="amount-value">{{ simboloMoneda }} {{ importe | number:'1.2-2' }}</span>
+    </div>
+
+    <!-- Métodos de pago -->
+    <div class="payment-methods">
+      <p class="methods-title">Métodos de pago aceptados:</p>
+      <div class="methods-icons">
+        <div class="method-item">
+          <i class="fa fa-credit-card"></i>
+          <span>Tarjetas</span>
+        </div>
+        <div class="method-item">
+          <img src="assets/images/yape.png" alt="Yape" onerror="this.style.display='none'">
+          <span>Yape</span>
+        </div>
+        <div class="method-item">
+          <img src="assets/images/plin.png" alt="Plin" onerror="this.style.display='none'">
+          <span>Plin</span>
+        </div>
+      </div>
+      <p class="methods-note">
+        <i class="fa fa-lock"></i> Pago seguro procesado por Niubiz
+      </p>
+    </div>
+
+    <!-- Botón Pagar (cambia según el estado) -->
+    <button *ngIf="!isPaymentButtonVisible && !isLoading" class="btn-pagar" (click)="iniciarPago()">
+      <i class="fa fa-credit-card"></i>
+      <span>Pagar {{ simboloMoneda }} {{ importe | number:'1.2-2' }}</span>
+    </button>
+
+    <!-- Botón con loader -->
+    <button *ngIf="isLoading && !isPaymentButtonVisible" class="btn-pagar" disabled>
+      <i class="fa fa-spinner fa-spin"></i>
+      <span>Cargando...</span>
+    </button>
+
+    <!-- Botón Cancelar (solo visible antes del formulario Niubiz) -->
+    <button *ngIf="!isPaymentButtonVisible" class="btn-cancelar" (click)="cancelar()">
+      <i class="fa fa-arrow-left"></i>
+      Volver
+    </button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="payment-error">
+    <i class="fa fa-exclamation-circle"></i>
+    <span>{{ errorMessage }}</span>
+    <button class="btn-retry" (click)="cancelar()">
+      <i class="fa fa-arrow-left"></i> Volver
+    </button>
+  </div>
+
+  <!-- Contenedor del botón de Niubiz (reemplaza al botón pagar) -->
+  <div *ngIf="isPaymentButtonVisible && showNiubizContainer" class="payment-niubiz-container">
+    <div id="niubiz-payment-container" class="payment-button-container"></div>
+    
+    <!-- Botón cancelar -->
+    <div class="cancel-container">
+      <button class="btn-cancelar" (click)="cancelar()">
+        <i class="fa fa-arrow-left"></i>
+        Cancelar y volver
+      </button>
+    </div>
+  </div>
+
+  <!-- Loader y mensaje de procesamiento de pago -->
+  <div *ngIf="isProcessingPayment" class="payment-processing">
+    <div class="processing-content">
+      <div class="spinner-large" [class.success-icon]="showCheckIcon">
+        <i *ngIf="!showCheckIcon" class="fa fa-spinner fa-spin"></i>
+        <i *ngIf="showCheckIcon" class="fa fa-check-circle"></i>
+      </div>
+      <h3 class="processing-title">{{ successMessage }}</h3>
+      <p *ngIf="!showCheckIcon" class="processing-subtitle">Por favor espere...</p>
+    </div>
+  </div>
+</div>

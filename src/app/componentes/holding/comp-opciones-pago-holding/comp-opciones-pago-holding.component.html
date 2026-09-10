@@ -1,0 +1,61 @@
+<div class="opciones-pago-holding-container">
+  <div class="text-center mb-4">
+    <h3 class="fw-600 fs-20 text-dark mb-3">
+      <i class="fa fa-credit-card" aria-hidden="true"></i>
+      Seleccione una opción de pago
+    </h3>
+    <p class="fw-100 fs-15 text-secondary">
+      Para confirmar su pedido, elija cómo desea proceder:
+    </p>
+  </div>
+
+  <div class="opciones-container">
+    <div class="opcion-card" (click)="seleccionarOpcion('llamar_personal')" matRipple>
+      <div class="opcion-icon">
+        <i class="fa fa-bell fs-40 text-primary"></i>
+      </div>
+      <div class="opcion-content">
+        <h4 class="fw-600 fs-18 mb-2">Llamar a Personal</h4>
+        <p class="fw-100 fs-14 text-secondary mb-0">
+          El personal se acercará a su mesa para realizar el cobro y confirmar su pedido
+        </p>
+      </div>
+      <div class="opcion-arrow">
+        <i class="fa fa-chevron-right text-secondary"></i>
+      </div>
+    </div>
+
+    <div class="opcion-divider">
+      <span class="fw-100 fs-13 text-secondary">O</span>
+    </div>
+
+    <div class="opcion-card" (click)="seleccionarOpcion('pagar_confirmar')" matRipple>
+      <div class="opcion-icon">
+        <i class="fa fa-credit-card fs-40 text-success"></i>
+      </div>
+      <div class="opcion-content">
+        <h4 class="fw-600 fs-18 mb-2">Pagar y Confirmar</h4>
+        <p class="fw-100 fs-14 text-secondary mb-0">
+          Realice el pago con tarjeta o billetera digital (Yape, Plin, etc.) de forma segura y su pedido será confirmado automáticamente
+        </p>
+      </div>
+      <div class="opcion-arrow">
+        <i class="fa fa-chevron-right text-secondary"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-4">
+    <p class="fw-100 fs-13 text-secondary">
+      <i class="fa fa-info-circle" aria-hidden="true"></i>
+      Una vez seleccionada la opción, no podrá realizar cambios en su pedido
+    </p>
+  </div>
+
+  <div class="text-center mt-3">
+    <button mat-button (click)="onVolverAtras()" class="btn-volver">
+      <i class="fa fa-arrow-left mr-2"></i>
+      Volver a mi pedido
+    </button>
+  </div>
+</div>

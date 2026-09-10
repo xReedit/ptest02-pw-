@@ -1,20 +1,15 @@
-// trabaja con capacitor
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IS_NATIVE } from '../config/config.const';
-// import { GoogleMap} from '@capacitor/google-maps';
 import { Geolocation } from '@capacitor/geolocation';
 import { CrudHttpService } from './crud-http.service';
-// import { ViewFlags } from '@angular/compiler/src/core';
-
-// import { Plugins } from '@capacitor/core';
-// const { Geolocation } = Plugins;
+import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class MapsServiceService {
 
-  apiKeyGoogle = 'AIzaSyAknWQFyVH1RpR2OAL0vRTHTapaIpfKSqo';
+  private readonly apiKeyGoogle = environment.googleMapsApiKey;
   constructor(
     private crudService: CrudHttpService
     ) { }

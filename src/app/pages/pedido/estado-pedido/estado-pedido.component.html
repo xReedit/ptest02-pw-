@@ -1,6 +1,10 @@
 <div class="animated fadeIn">     
      
-    <ng-container *ngIf="!isDeliveryCliente; else templateDelivery">
+    <ng-container *ngIf="isClienteHolding">
+        <app-estado-pedidos-holding-cliente></app-estado-pedidos-holding-cliente>
+    </ng-container>
+
+    <ng-container *ngIf="!isClienteHolding && !isDeliveryCliente; else templateDelivery">
         
         <div class="row xboder-abajo m-0 p-2">
             <div class="col-4 text-center xboder-derecha">

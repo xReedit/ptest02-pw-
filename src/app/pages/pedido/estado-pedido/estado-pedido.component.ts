@@ -37,6 +37,8 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
   private destroyEstado$: Subject<boolean> = new Subject<boolean>();
 
   simbolo_moneda: string;
+  
+  isClienteHolding = false;
 
 
 
@@ -63,6 +65,9 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
 
     // console.log('this.establecimientoService', this.establecimientoService.get() );
     this.isComercioAceptaTarjeta = this.establecimientoService.get().pwa_delivery_acepta_tarjeta === 1;
+
+    // Verificar si es cliente en holding
+    this.isClienteHolding = this.infoTokenService.isCliente() && this.infoTokenService.getIsHolding();
 
     // escuchar cambios
     this.listenStatus();

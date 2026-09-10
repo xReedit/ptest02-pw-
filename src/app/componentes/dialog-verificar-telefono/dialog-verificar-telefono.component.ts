@@ -157,6 +157,11 @@ export class DialogVerificarTelefonoComponent implements OnInit {
     this.data.verificado = false;
   }
 
+  confirmarTelefono(): void {
+    this.data.verificado = true;
+    this.cerrarDlg();
+  }
+
   contadorActvarBtnSend() {
     this.isContandoShow = true;
     this.conteoInterval = setInterval(() => {

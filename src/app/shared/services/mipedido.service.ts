@@ -377,6 +377,9 @@ export class MipedidoService {
     this.mpObjSeccionSelected.ver_stock_cero = seccion.ver_stock_cero;
     this.mpObjSeccionSelected.iddescuento = seccion.iddescuento;
     this.mpObjSeccionSelected.descuento = seccion.descuento;
+    // Agregar idsede e idorg para identificar la marca de la sección
+    this.mpObjSeccionSelected.idsede = seccion.idsede;
+    this.mpObjSeccionSelected.idorg = seccion.idorg;
   }
 
   getObjSeccionSeleced() {
@@ -989,6 +992,9 @@ export class MipedidoService {
         const _newSeccion = <SeccionModel>JSON.parse(JSON.stringify(_seccion));
         _newSeccion.items = [];
         _newSeccion.items.push(elItem);
+        // Asegurar que idsede e idorg se copien correctamente
+        _newSeccion.idsede = _seccion.idsede;
+        _newSeccion.idorg = _seccion.idorg;
         findTpc.secciones = findTpc.secciones ? findTpc.secciones : [];
         findTpc.secciones.push(_newSeccion);
         // findTpc.secciones.push(_seccion);
@@ -1005,6 +1011,9 @@ export class MipedidoService {
       const _newSeccion = <SeccionModel>JSON.parse(JSON.stringify(_seccion));
       _newSeccion.items = [];
       _newSeccion.items.push(elItem);
+      // Asegurar que idsede e idorg se copien correctamente
+      _newSeccion.idsede = _seccion.idsede;
+      _newSeccion.idorg = _seccion.idorg;
       _tpc.secciones = _tpc.secciones ? _tpc.secciones : [];
       _tpc.secciones.push(_newSeccion);
 
@@ -2039,6 +2048,9 @@ export class MipedidoService {
             haySeccion.des = _s.des_seccion;
             haySeccion.sec_orden = _s.sec_orden;
             haySeccion.ver_stock_cero = 0;
+            // Agregar idsede e idorg si vienen en la respuesta
+            haySeccion.idsede = _s.idsede || null;
+            haySeccion.idorg = _s.idorg || null;
             tp.count_items_seccion = i + 1;
             tp.secciones.push(haySeccion);
           }

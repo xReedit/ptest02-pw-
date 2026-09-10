@@ -1,0 +1,115 @@
+.opciones-pago-holding-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.opciones-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.opcion-card {
+  background: aliceblue;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  /* background: white; */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.opcion-card:hover {
+  border-color: #4CAF50;
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.2);
+  transform: translateY(-2px);
+}
+
+.opcion-card:active {
+  transform: translateY(0);
+}
+
+.opcion-icon {
+  flex-shrink: 0;
+  width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.opcion-content {
+  flex: 1;
+  padding: 0 15px;
+}
+
+.opcion-arrow {
+  flex-shrink: 0;
+  width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.opcion-divider {
+  text-align: center;
+  position: relative;
+  margin: 10px 0;
+}
+
+.opcion-divider::before,
+.opcion-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 45%;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+.opcion-divider::before {
+  left: 0;
+}
+
+.opcion-divider::after {
+  right: 0;
+}
+
+.btn-volver {
+  color: #757575;
+  font-size: 14px;
+  text-transform: none;
+}
+
+.btn-volver:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 576px) {
+  .opciones-pago-holding-container {
+    padding: 15px;
+  }
+
+  .opcion-card {
+    padding: 15px;
+  }
+
+  .opcion-icon {
+    width: 50px;
+  }
+
+  .opcion-icon i {
+    font-size: 32px !important;
+  }
+
+  .opcion-content h4 {
+    font-size: 16px !important;
+  }
+
+  .opcion-content p {
+    font-size: 13px !important;
+  }
+}

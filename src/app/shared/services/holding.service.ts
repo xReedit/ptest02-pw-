@@ -17,12 +17,19 @@ interface CachedData<T> {
 })
 export class HoldingService {    
     holding: HoldingModel;
+    private idPedidoHoldingActual: number = 0;
 
     private eventHttp = 'holding';
     constructor(
         private crudService: CrudHttpService,
         private infoToken: InfoTockenService,
-    ) { }
+    ) { 
+        // Recuperar el id del pedido holding si existe
+        const idGuardado = localStorage.getItem('sys::idpedido_holding');
+        if (idGuardado) {
+            this.idPedidoHoldingActual = parseInt(idGuardado, 10);
+        }
+    }
 
     setHolding(idsede: number) {
         const datasend = {
@@ -75,4 +82,56 @@ export class HoldingService {
         );
     }
 
+    guardarPedidoClienteHolding(pedido: any, idcliente: number, idsede_holding: number, purchaseNumber?: string): Observable<any> {
+        const dataSend = {
+            id: this.idPedidoHoldingActual,
+            pedido: pedido,
+            idcliente: idcliente,
+            idsede_holding: idsede_holding,
+            purchase_number: purchaseNumber || null
+        };
+
+        return this.crudService.postFree(dataSend, this.eventHttp, 'guardar-pedido-cliente-holding', false)
+            .pipe(
+                map((response: any) => {
+                    // Guardar el id del pedido holding para futuras actualizaciones
+                    if (response.success && response.data && response.data[0].id) {
+                        this.idPedidoHoldingActual = response.data[0].id;
+                        localStorage.setItem('sys::idpedido_holding', this.idPedidoHoldingActual.toString());
+                    }
+                    return response;
+                }),
+                catchError(error => {
+                    console.error('Error guardando pedido holding:', error);
+                    return throwError(() => error);
+                })
+            );
+    }
+
+    limpiarPedidoHolding(): void {
+        this.idPedidoHoldingActual = 0;
+        localStorage.removeItem('sys::idpedido_holding');
+    }
+
+    getIdPedidoHoldingActual(): number {
+        return this.idPedidoHoldingActual;
+    }
+
+    obtenerPedidosClienteHolding(idcliente: number, idsede_holding: number): Observable<any> {
+        const dataSend = {
+            idcliente: idcliente,
+            idsede_holding: idsede_holding
+        };
+
+        return this.crudService.postFree(dataSend, this.eventHttp, 'obtener-pedidos-cliente-holding', false)
+            .pipe(
+                map((response: any) => {
+                    return response;
+                }),
+                catchError(error => {
+                    console.error('Error obteniendo pedidos cliente holding:', error);
+                    return throwError(() => error);
+                })
+            );
+    }
 }

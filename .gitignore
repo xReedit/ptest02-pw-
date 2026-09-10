@@ -39,6 +39,8 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+.env
+src/environments/env.secrets.ts
 
 # System Files
 .DS_Store

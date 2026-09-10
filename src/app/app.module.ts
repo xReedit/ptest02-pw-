@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, ErrorHandler } from '@angular/core';
+import { NgModule, ErrorHandler, APP_INITIALIZER } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 // import { SharedModule } from './shared/shared.module';
@@ -17,6 +17,7 @@ import { AuthConfig, AuthModule } from '@auth0/auth0-angular';
 // import config from '../../capacitor.config';
 // import { IS_NATIVE } from './shared/config/config.const';
 import { domain, clientId, callbackUri } from './auth.config';
+import { GoogleMapsLoaderService } from './shared/services/google-maps-loader.service';
 // import { ImagenNoEncontradaPipe } from './shared/pipes/imagen-no-encontrada.pipe';
 // import { GoogleMapsModule } from '@angular/google-maps';
 
@@ -61,7 +62,13 @@ const configAuth: AuthConfig = {
   ],
   providers: [
     // {provide: ErrorHandler, useClass: GlobalErrorHandler},
-    {provide: LocationStrategy, useClass: PathLocationStrategy} // 22012022 eliminar el #
+    {provide: LocationStrategy, useClass: PathLocationStrategy}, // 22012022 eliminar el #
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (googleMapsLoader: GoogleMapsLoaderService) => () => googleMapsLoader.load(),
+      deps: [GoogleMapsLoaderService],
+      multi: true
+    }
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
