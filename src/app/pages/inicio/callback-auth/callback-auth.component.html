@@ -1,11 +1,11 @@
 <div class="container-scan animated fadeIn text-center">
     <ng-container *ngIf="showErrornweVersion; else elseTemplate">
 
-        <!-- error en el logueo - manda loginOut -->
+        <!-- error en el logueo - reintenta sin borrar la sesión -->
         <div>
-            <div class="text-center">            
+            <div class="text-center">
                 <p class="fw-600">Agregamos nuevas caracteristicas, para poder verlas por favor vuelva a ingresar.</p>
-                <button mat-stroked-button (click)="loginOut()">Listo.</button>        
+                <button mat-stroked-button (click)="volverInicio()">Listo.</button>
             </div>
         </div>
         
@@ -18,7 +18,7 @@
             </div>
             <div class="p-3" *ngIf="timeBtnReset">
                 <p class="text-danger">Paso un problema al validar su usuario, vuelva a ingresar por favor.</p>
-                <button mat-flat-button color="accent" (click)="loginOut()">Volver</button>                    
+                <button mat-flat-button color="accent" (click)="volverInicio()">Reintentar</button>                  
             </div>
         </div>
     </ng-template>

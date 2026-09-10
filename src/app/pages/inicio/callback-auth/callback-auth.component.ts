@@ -15,6 +15,7 @@ import { callbackUri } from 'src/app/auth.config';
 import { mergeMap } from 'rxjs/operators';
 import { App } from '@capacitor/app';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
+import { b64EncodeUnicode } from 'src/app/shared/utils/b64';
 
 
 @Component({
@@ -130,7 +131,7 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
         is_mozo_accept_payments: _oldToken?.is_mozo_accept_payments
       };
 
-      const _token = `eyCJ9.${btoa(JSON.stringify(token))}`;
+      const _token = `eyCJ9.${b64EncodeUnicode(JSON.stringify(token))}`;
       this.authService.setLocalToken(_token);
       this.authService.setLoggedStatus(true);
       this.infoToken.converToJSON();
@@ -197,21 +198,12 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
 
     this.crudService.postFree(dataSend, 'error', 'set-error', false)
     .subscribe(res => console.log(res));
-
-    this.timerizador = setTimeout(() => {
-      this.loginOut();
-    }, 4000);
   }
 
-  loginOut() {
+  // Reintenta sin destruir la sesión guardada. El cierre de sesión real es solo desde el menú del cliente.
+  volverInicio() {
     this.timerizador = null;
-    this.infoToken.cerrarSession();
-    localStorage.clear();
-    this.router.navigate(['../'])
-      .then(() => {
-          this.verifyClientService.loginOut();
-          window.location.reload();
-      });
+    this.router.navigate(['/']).then(() => window.location.reload());
   }
 
 }

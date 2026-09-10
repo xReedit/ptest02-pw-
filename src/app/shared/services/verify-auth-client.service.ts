@@ -9,6 +9,7 @@ import { InfoTockenService } from './info-token.service';
 import { catchError, shareReplay, share } from 'rxjs/operators';
 import { IS_NATIVE, IS_PLATAFORM_IOS } from '../config/config.const';
 import { AuthNativeService } from './auth-native.service';
+import { b64DecodeUnicode, b64EncodeUnicode } from '../utils/b64';
 
 @Injectable({
   providedIn: 'root'
@@ -30,9 +31,12 @@ export class VerifyAuthClientService {
     // private router: Router
   ) { }
 
+  // la sesión propia guardada vale tanto como la confirmación de Auth0:
+  // el cliente sigue logueado hasta que cierre sesión explícitamente
   isLogin(): boolean {
-    return this.authNativeService.isLoginSuccess
-    // return this.auth.loggedIn;
+    if (this.authNativeService.isLoginSuccess) { return true; }
+    const c = this.getDataClient();
+    return !!(c && c.isCliente && Number(c.idcliente) > 0 && !c.isLoginByInvitado);
   }
 
 // en el caso de que es trunco
@@ -213,7 +217,8 @@ export class VerifyAuthClientService {
 
     // resObservable = this.clientSocket;
     // verrifica si esta logueado
-    if ( this.clientSocket?.isLoginByDNI || this.clientSocket?.isLoginByTelefono ) {
+    const sesionPropia = this.clientSocket?.isCliente && Number(this.clientSocket?.idcliente) > 0 && !!this.clientSocket?.datalogin && !this.clientSocket?.isLoginByInvitado;
+    if ( this.clientSocket?.isLoginByDNI || this.clientSocket?.isLoginByTelefono || sesionPropia ) {
       // verifica y registra el cliente en la bd
 
       this.registerCliente();
@@ -398,7 +403,7 @@ export class VerifyAuthClientService {
   setDataClient(): void {
     const dataClie = JSON.stringify(this.clientSocket);
     // console.log('dataClie setea', dataClie);
-    localStorage.setItem('sys::tpm', btoa(dataClie));
+    localStorage.setItem('sys::tpm', b64EncodeUnicode(dataClie));
   }
 
   setLinkRedirecLogin(_link: string) {
@@ -417,7 +422,7 @@ export class VerifyAuthClientService {
     const dataClie = localStorage.getItem('sys::tpm');
     if ( !dataClie ) { this.clientSocket = new SocketClientModel(); } else {
       try {
-        this.clientSocket = JSON.parse(atob(dataClie));
+        this.clientSocket = JSON.parse(b64DecodeUnicode(dataClie));
       } catch (error) {
         if ( this.clientSocket ) {
           if ( !this.clientSocket.datalogin ) {

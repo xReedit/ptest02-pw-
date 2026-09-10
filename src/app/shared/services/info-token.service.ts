@@ -6,6 +6,7 @@ import { PropinaModel } from 'src/app/modelos/propina.model';
 import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
 import { HoldingModel } from 'src/app/modelos/holding.model';
 import { Router } from '@angular/router';
+import { b64DecodeUnicode, b64EncodeUnicode } from '../utils/b64';
 
 
 
@@ -291,7 +292,7 @@ export class InfoTockenService {
 
   // guarda en el local storage
   set() {
-    const _token = `eyCJ9.${btoa(JSON.stringify(this.infoUsToken))}`;
+    const _token = `eyCJ9.${b64EncodeUnicode(JSON.stringify(this.infoUsToken))}`;
     localStorage.setItem('::token', _token);
   }
   //
@@ -309,7 +310,15 @@ export class InfoTockenService {
 
   converToJSON(): void {
     if (localStorage.getItem('::token')) {
-      let _token =  JSON.parse(atob(localStorage.getItem('::token').split('.')[1]));
+      let _token: any = null;
+      try {
+        _token = JSON.parse(b64DecodeUnicode(localStorage.getItem('::token').split('.')[1]));
+      } catch (error) {
+        // token corrupto: se descarta sin borrar el resto del storage
+        localStorage.removeItem('::token');
+        this.infoUsToken = null;
+        return;
+      }
 
       // si existe idcliente, setea al usuario
       if ( _token?.idcliente ) {
@@ -407,14 +416,6 @@ export class InfoTockenService {
     localStorage.removeItem('data');
   }
 
-  // cerrar toda la sesssion
-  cerrarSessionGoIni() {
-    // this.cerrarSession();
-    // console.log('AuthGuard -> cerrarSessionGoIni');
-    localStorage.clear();
-    this.router.navigate(['../']);
-  }
-
   // verifica el tiempo de inactividad para cerrar session
   // cerrar session despues de 3:20 => ( 12000 sec )horas inciadas
   verificarContunuarSession(): boolean {
@@ -431,7 +432,7 @@ export class InfoTockenService {
         return true;
       }
 
-      this.cerrarSessionGoIni();
+      return false; // sin sesión: no se borra nada, el guard redirige
     }
     if ( !this.infoUsToken || !this.infoUsToken.isCliente || !this.infoUsToken.isDelivery) { // si es usuario autorizado no cuenta tiempo
       return true;
