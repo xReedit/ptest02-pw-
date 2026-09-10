@@ -96,7 +96,7 @@ export class MipedidoService {
     private infoTokenService: InfoTockenService,
     private cocinarDescuentosPromoService: CocinarDescuentosPromoService
   ) {
-
+    try { const ds = localStorage.getItem('sys::ds'); if (ds) { this.objDatosSede = JSON.parse(ds); } } catch (error) { this.objDatosSede = undefined; }
   }
 
 
@@ -1921,6 +1921,8 @@ export class MipedidoService {
       this.objDatosSede = res[0];
       this.objDatosSede.datossede[0].longitude = parseFloat(this.objDatosSede.datossede[0].longitude);
       this.objDatosSede.datossede[0].latitude = parseFloat(this.objDatosSede.datossede[0].latitude);
+      // cache para rehidratar tras recarga: el evento getDatosSede solo llega una vez al conectar
+      try { localStorage.setItem('sys::ds', JSON.stringify(this.objDatosSede)); } catch (error) { /* storage lleno o bloqueado */ }
       this.listenStatusService.setHayDatosSede(true);
       // nombre sede
       localStorage.setItem('sys::s', this.objDatosSede.datossede[0].nombre + '|' + this.objDatosSede.datossede[0].ciudad);

@@ -372,30 +372,31 @@ export class SocketService {
   // Resuelve con la respuesta del servidor (por ack o por evento), rechaza por timeout o sin socket.
   asyncEmitPedido(eventName: string, eventNameRes: string, data: any, timeoutMs = 25000): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (!this.socket || !this.socket.connected) {
+      // se captura la instancia: si hay reconexion a mitad de vuelo, off() debe soltar la misma instancia en la que se hizo on()
+      const sock = this.socket;
+      if (!sock || !sock.connected) {
         reject(new Error('socket-desconectado'));
         return;
       }
       let settled = false;
       let timerLento: any;
       let timerTimeout: any;
-      const onRes = (result: any) => finish(() => {
-        this.listenStatusService.setIisMsjConexionLentaSendPedidoSourse(false);
-        resolve(result);
-      });
+      const onRes = (result: any) => finish(() => resolve(result));
       const finish = (fn: () => void) => {
         if (settled) { return; }
         settled = true;
         clearTimeout(timerLento);
         clearTimeout(timerTimeout);
-        this.socket.off(eventNameRes, onRes);
+        sock.off(eventNameRes, onRes);
+        // tambien en timeout: el aviso de conexion lenta no puede quedar colgado
+        this.listenStatusService.setIisMsjConexionLentaSendPedidoSourse(false);
         fn();
       };
       // despues de 6 segundos indica al usuario que la conexion esta lenta
       timerLento = setTimeout(() => this.listenStatusService.setIisMsjConexionLentaSendPedidoSourse(true), 6000);
       timerTimeout = setTimeout(() => finish(() => reject(new Error('timeout'))), timeoutMs);
-      this.socket.on(eventNameRes, onRes);
-      this.socket.emit(eventName, data, (ack: any) => onRes(ack));
+      sock.on(eventNameRes, onRes);
+      sock.emit(eventName, data, (ack: any) => onRes(ack));
     });
   }
 

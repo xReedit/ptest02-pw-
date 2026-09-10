@@ -100,6 +100,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   showCuentaCliente = false;
 
   private isSavingPedido = false;
+  private isReglasListas = false; // ya se inicializaron los listeners con la primera emision de reglas
+  private watchdogEnvio: any; // corta el loader si el envio nunca resuelve
+  private idemPedido: string = null; // clave de idempotencia: se mantiene entre reintentos del mismo pedido
 
   isShowPaymentMozo = false;
   totalAmountPedido = 0;
@@ -179,11 +182,14 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this.reglasCartaService.loadReglasCarta()
       .pipe(takeUntil(this.destroy$))
       .subscribe((res: any) => {
-        this.rulesCarta = res[0] ? res[0].reglas ? res[0].reglas : [] : res.reglas ? res.reglas : [];
-        this.rulesSubtoTales = res.subtotales || res[0].subtotales;
+        const r = Array.isArray(res) ? res[0] : res;
+        this.rulesCarta = r?.reglas ?? [];
+        this.rulesSubtoTales = r?.subtotales ?? [];
 
         this.establecimientoService.setRulesSubtotales(this.rulesSubtoTales);
 
+        if (this.isReglasListas) { return; } // segunda emision (socket tras cache): solo actualiza reglas
+        this.isReglasListas = true;
 
         this.listenMiPedido();
 
@@ -502,6 +508,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   nuevoPedido() {
+    this.idemPedido = null; // pedido distinto: nueva clave de idempotencia
     this.backConfirmacion();
     if (this.isVisibleConfirmar) {
       this.backConfirmacion();
@@ -637,6 +644,11 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     this.isSavingPedido = true;
 
+    clearTimeout(this.watchdogEnvio);
+    this.watchdogEnvio = setTimeout(() => {
+      if (this.isSavingPedido) { this.errorSendPedido(new Error('watchdog-envio')); }
+    }, 40000);
+
 
     // seteamos el metodo pago que el cliente selecciona
     this.infoToken.setMetodoPagoSelected(this.infoToken.infoUsToken.metodoPago);
@@ -656,175 +668,186 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private async enviarPedido() {
+    try {
 
-    // this.verificarConexionSocket();
+      // this.verificarConexionSocket();
 
-    // para asegurar que marque delivery si es
-    const isPagoConTarjeta = this.infoToken.getInfoUs().metodoPago.idtipo_pago === 2;
+      // para asegurar que marque delivery si es
+      const isPagoConTarjeta = this.infoToken.getInfoUs().metodoPago.idtipo_pago === 2;
 
-    this.checkTiposDeConsumo();
+      this.checkTiposDeConsumo();
 
-    // get subtotales // si es delivery porque puede que modifique la distancia y modifica el precio // que se va ver en comanda
-    // this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
+      // get subtotales // si es delivery porque puede que modifique la distancia y modifica el precio // que se va ver en comanda
+      // this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
 
-    // seteamos el metodo pago que el cliente selecciona
-    this.infoToken.setMetodoPagoSelected(this.infoToken.getInfoUs().metodoPago);
-    // this.infoToken.setMetodoPagoSelected(this.infoToken.infoUsToken.metodoPago);
+      // seteamos el metodo pago que el cliente selecciona
+      this.infoToken.setMetodoPagoSelected(this.infoToken.getInfoUs().metodoPago);
+      // this.infoToken.setMetodoPagoSelected(this.infoToken.infoUsToken.metodoPago);
 
-    // saca del local por que puede que se haya puestro propina
-    this._arrSubtotales = JSON.parse(atob(localStorage.getItem('sys::st')));
-    localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
-
-
-    // usuario o cliente
-    const dataUsuario = this.infoToken.getInfoUs();
-    console.log('dataUsuario', dataUsuario);
-    // const dataUsuario = this.infoToken.infoUsToken;
-
-    const dataFrmConfirma: any = {};
-    if (this.isCliente || this.isPuntoAuntoPedido && !this.isReservaCliente) {
-      this.frmConfirma.solo_llevar = this.isSoloLLevar ? true : this.frmConfirma.solo_llevar;
-      dataFrmConfirma.m = this.isSoloLLevar ? '' : dataUsuario.numMesaLector;
-      dataFrmConfirma.m = this.isDeliveryCliente ? '' : dataUsuario.numMesaLector;
-      dataFrmConfirma.r = dataUsuario.nombres.toUpperCase();
-      dataFrmConfirma.nom_us = dataUsuario.nombres.toUpperCase();
-      dataFrmConfirma.m_respaldo = dataFrmConfirma.m;
-    } else {
-      // dataFrmConfirma.m = this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00';
-      dataFrmConfirma.m_respaldo = this.frmConfirma.nummesa_resplado;
-      dataFrmConfirma.m = this.frmConfirma.nummesa ? this.frmConfirma.nummesa : this.arrReqFrm.isRequiereMesa ? this.frmConfirma.nummesa_resplado : '00';
-      dataFrmConfirma.r = this.frmConfirma.delivery ? this.frmDelivery.nombre : this.utilService.addslashes(this.frmConfirma.referencia) || '';
-      dataFrmConfirma.nom_us = dataUsuario.nombres.split(' ')[0].toUpperCase();
-    }
-
-
-
-
-    const _p_header = {
-      m: dataFrmConfirma.m, // this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00',
-      m_respaldo: dataFrmConfirma.m_respaldo,
-      r: dataFrmConfirma.r, // this.frmConfirma.referencia || '',
-      nom_us: dataFrmConfirma.nom_us, // this.infoToken.getInfoUs().nombres.split(' ')[0].toLowerCase(),
-      delivery: this.frmConfirma.delivery || this.isDeliveryCliente ? 1 : 0,
-      reservar: this.frmConfirma.reserva ? 1 : 0,
-      solo_llevar: this.frmConfirma.solo_llevar ? 1 : 0,
-      idcategoria: localStorage.getItem('sys::cat'),
-      correlativo_dia: '', // en backend
-      num_pedido: '', // en backend
-      isCliente: this.isCliente ? 1 : 0,
-      isSoloLLevar: this.isSoloLLevar,
-      idregistro_pago: 0,
-      // idregistro_pago: this.isSoloLLevar ? this.registrarPagoService.getDataTrasaction().idregistro_pago : 0,
-      arrDatosDelivery: this.frmDelivery,
-      arrDatosReserva: this.frmReservaCliente, // datos de la reserva que hace el cliente
-      systemOS: this.systemOS,
-      idregistra_scan_qr: this.establecimientoService.getLocalIdScanQr(), // el id del scan register
-      is_print_subtotales: this.miPedidoService.objDatosSede.datossede[0].is_print_subtotales,
-      isprint_copy_short: this.miPedidoService.objDatosSede.datossede[0].isprint_copy_short,
-      isprint_all_short: this.miPedidoService.objDatosSede.datossede[0].isprint_all_short,
-      appv: 'v.2z',
-      is_holding: this.infoToken.infoUsToken.is_holding,
-      holding: this.infoToken.getHolding(),
-      paymentMozo: this.dataPayametMozo,
-      idcliente: this.infoToken.infoUsToken.idcliente || 0,
-      purchase_number: this.niubizPurchaseNumber || null, // Purchase number de Niubiz si existe
-    };
-
-    // console.log('cccccccccccccc');
-    // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
-    const isClienteBuscaRepartidores = this.frmDelivery.buscarRepartidor ? this.frmDelivery.buscarRepartidor : this.isDeliveryCliente || false;
-    // const _subTotalesSave = _p_header.delivery === 1 ? this.frmDelivery.subTotales : this._arrSubtotales;
-    let _subTotalesSave = this._arrSubtotales;
-
-    // si el importe total es igual a cero hay un error, entonces toma los subtotales de frmDelivery
-    if (parseFloat(_subTotalesSave[_subTotalesSave.length - 1].importe) === 0) {
-      _subTotalesSave = this.frmDelivery.subTotales;
-      this._arrSubtotales = _subTotalesSave;
+      // saca del local por que puede que se haya puestro propina
+      // si no hay nada guardado (recarga o storage limpiado) se recalculan los subtotales
+      const stGuardado = localStorage.getItem('sys::st');
+      this._arrSubtotales = stGuardado ? JSON.parse(atob(stGuardado)) : this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
       localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
-    }
-
-    const dataPedido = {
-      p_header: _p_header,
-      p_body: this._miPedido,
-      p_subtotales: _subTotalesSave,
-      idpedido: 0 // setea despues de guardar el pedido para enviarlo al socket
-    };
 
 
-    // enviar a print_server_detalle // para imprimir
-    const arrPrint = this.jsonPrintService.enviarMiPedido(this.isCliente);
-    const dataPrint: any = [];
-    arrPrint.map((x: any) => {
-      dataPrint.push({
-        Array_enca: _p_header,
-        ArraySubTotales: _subTotalesSave,
-        ArrayItem: x.arrBodyPrint,
-        Array_print: x.arrPrinters
+      // usuario o cliente
+      const dataUsuario = this.infoToken.getInfoUs();
+      console.log('dataUsuario', dataUsuario);
+      // const dataUsuario = this.infoToken.infoUsToken;
+
+      const dataFrmConfirma: any = {};
+      if (this.isCliente || this.isPuntoAuntoPedido && !this.isReservaCliente) {
+        this.frmConfirma.solo_llevar = this.isSoloLLevar ? true : this.frmConfirma.solo_llevar;
+        dataFrmConfirma.m = this.isSoloLLevar ? '' : dataUsuario.numMesaLector;
+        dataFrmConfirma.m = this.isDeliveryCliente ? '' : dataUsuario.numMesaLector;
+        dataFrmConfirma.r = dataUsuario.nombres.toUpperCase();
+        dataFrmConfirma.nom_us = dataUsuario.nombres.toUpperCase();
+        dataFrmConfirma.m_respaldo = dataFrmConfirma.m;
+      } else {
+        // dataFrmConfirma.m = this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00';
+        dataFrmConfirma.m_respaldo = this.frmConfirma.nummesa_resplado;
+        dataFrmConfirma.m = this.frmConfirma.nummesa ? this.frmConfirma.nummesa : this.arrReqFrm.isRequiereMesa ? this.frmConfirma.nummesa_resplado : '00';
+        dataFrmConfirma.r = this.frmConfirma.delivery ? this.frmDelivery.nombre : this.utilService.addslashes(this.frmConfirma.referencia) || '';
+        dataFrmConfirma.nom_us = dataUsuario.nombres.split(' ')[0].toUpperCase();
+      }
+
+
+
+
+      // clave de idempotencia: el mismo pedido reintentado llega con el mismo idem
+      this.idemPedido = this.idemPedido || `${dataUsuario?.idcliente || 0}-${dataUsuario?.idsede || 0}-${Date.now()}`;
+
+      const _p_header = {
+        m: dataFrmConfirma.m, // this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00',
+        m_respaldo: dataFrmConfirma.m_respaldo,
+        r: dataFrmConfirma.r, // this.frmConfirma.referencia || '',
+        nom_us: dataFrmConfirma.nom_us, // this.infoToken.getInfoUs().nombres.split(' ')[0].toLowerCase(),
+        delivery: this.frmConfirma.delivery || this.isDeliveryCliente ? 1 : 0,
+        reservar: this.frmConfirma.reserva ? 1 : 0,
+        solo_llevar: this.frmConfirma.solo_llevar ? 1 : 0,
+        idcategoria: localStorage.getItem('sys::cat'),
+        correlativo_dia: '', // en backend
+        num_pedido: '', // en backend
+        isCliente: this.isCliente ? 1 : 0,
+        isSoloLLevar: this.isSoloLLevar,
+        idregistro_pago: 0,
+        // idregistro_pago: this.isSoloLLevar ? this.registrarPagoService.getDataTrasaction().idregistro_pago : 0,
+        arrDatosDelivery: this.frmDelivery,
+        arrDatosReserva: this.frmReservaCliente, // datos de la reserva que hace el cliente
+        systemOS: this.systemOS,
+        idregistra_scan_qr: this.establecimientoService.getLocalIdScanQr(), // el id del scan register
+        is_print_subtotales: this.miPedidoService.objDatosSede?.datossede?.[0]?.is_print_subtotales ?? 0,
+        isprint_copy_short: this.miPedidoService.objDatosSede?.datossede?.[0]?.isprint_copy_short ?? 0,
+        isprint_all_short: this.miPedidoService.objDatosSede?.datossede?.[0]?.isprint_all_short ?? 0,
+        appv: 'v.2z',
+        is_holding: this.infoToken.infoUsToken.is_holding,
+        holding: this.infoToken.getHolding(),
+        paymentMozo: this.dataPayametMozo,
+        idcliente: this.infoToken.infoUsToken.idcliente || 0,
+        idem: this.idemPedido,
+        purchase_number: this.niubizPurchaseNumber || null, // Purchase number de Niubiz si existe
+      };
+
+      // console.log('cccccccccccccc');
+      // frmDelivery.buscarRepartidor este dato viene de datos-delivery pedido tomado por el mismo comercio // si es cliente de todas maneras busca repartidores
+      const isClienteBuscaRepartidores = this.frmDelivery.buscarRepartidor ? this.frmDelivery.buscarRepartidor : this.isDeliveryCliente || false;
+      // const _subTotalesSave = _p_header.delivery === 1 ? this.frmDelivery.subTotales : this._arrSubtotales;
+      let _subTotalesSave = this._arrSubtotales;
+
+      // si el importe total es igual a cero hay un error, entonces toma los subtotales de frmDelivery
+      if (parseFloat(_subTotalesSave[_subTotalesSave.length - 1].importe) === 0) {
+        _subTotalesSave = this.frmDelivery.subTotales;
+        this._arrSubtotales = _subTotalesSave;
+        localStorage.setItem('sys::st', btoa(JSON.stringify(this._arrSubtotales)));
+      }
+
+      const dataPedido = {
+        p_header: _p_header,
+        p_body: this._miPedido,
+        p_subtotales: _subTotalesSave,
+        idpedido: 0 // setea despues de guardar el pedido para enviarlo al socket
+      };
+
+
+      // enviar a print_server_detalle // para imprimir
+      const arrPrint = this.jsonPrintService.enviarMiPedido(this.isCliente);
+      const dataPrint: any = [];
+      arrPrint.map((x: any) => {
+        dataPrint.push({
+          Array_enca: _p_header,
+          ArraySubTotales: _subTotalesSave,
+          ArrayItem: x.arrBodyPrint,
+          Array_print: x.arrPrinters
+        });
       });
-    });
 
 
 
-    const _dataUsuarioSend = {
-      'idusuario': dataUsuario.idusuario,
-      'idcliente': dataUsuario.idcliente,
-      'idorg': dataUsuario.idorg,
-      'idsede': dataUsuario.idsede,
-      'nombres': dataUsuario.nombres,
-      'cargo': dataUsuario.cargo,
-      'usuario': dataUsuario.usuario
-    };
+      const _dataUsuarioSend = {
+        'idusuario': dataUsuario.idusuario,
+        'idcliente': dataUsuario.idcliente,
+        'idorg': dataUsuario.idorg,
+        'idsede': dataUsuario.idsede,
+        'nombres': dataUsuario.nombres,
+        'cargo': dataUsuario.cargo,
+        'usuario': dataUsuario.usuario
+      };
 
-    const dataSend = {
-      dataPedido: dataPedido,
-      dataPrint: dataPrint,
-      dataUsuario: _dataUsuarioSend,
-      isDeliveryAPP: _p_header.delivery === 1 ? true : false, // isClienteBuscaRepartidores, // this.isDeliveryCliente,
-      isClienteRecogeLocal: this.infoToken.infoUsToken.pasoRecoger, // indica si el cliente pasa a recoger entonces ya no busca repartidor
-      dataDescuento: [], // lista de ids de descuento para restar cantidad num_pedidos
-      listPrinters: arrPrint.listPrinters
-    };
+      const dataSend = {
+        dataPedido: dataPedido,
+        dataPrint: dataPrint,
+        dataUsuario: _dataUsuarioSend,
+        isDeliveryAPP: _p_header.delivery === 1 ? true : false, // isClienteBuscaRepartidores, // this.isDeliveryCliente,
+        isClienteRecogeLocal: this.infoToken.infoUsToken.pasoRecoger, // indica si el cliente pasa a recoger entonces ya no busca repartidor
+        dataDescuento: [], // lista de ids de descuento para restar cantidad num_pedidos
+        listPrinters: arrPrint.listPrinters
+      };
 
 
-    // console.log('eeeeeeeeeeeeeeeeeeeee');
-    // ya no lo envio
-    // quitamos el order delivery de los datos del usuario para que no sea mucho el json
-    // dataSend.dataUsuario.orderDelivery = '';
-    // dataSend.dataUsuario.importeDelivery = '';
+      // console.log('eeeeeeeeeeeeeeeeeeeee');
+      // ya no lo envio
+      // quitamos el order delivery de los datos del usuario para que no sea mucho el json
+      // dataSend.dataUsuario.orderDelivery = '';
+      // dataSend.dataUsuario.importeDelivery = '';
 
-    // this.socketService.emit('printerComanda', dataPrint);
+      // this.socketService.emit('printerComanda', dataPrint);
 
-    // si es clienteDelivery no se emite nada
-    // primero confirma el pago y luego guarda pedido y posteriormente el pago
-    // guardamos el pedido
+      // si es clienteDelivery no se emite nada
+      // primero confirma el pago y luego guarda pedido y posteriormente el pago
+      // guardamos el pedido
 
-    if (this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago === 2) {
-      this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
-      this.pagarCuentaDeliveryCliente();
-      // enviamos a pagar
-      return;
+      if (this.isDeliveryCliente && dataUsuario.metodoPago.idtipo_pago === 2) {
+        this.infoToken.setOrderDelivery(JSON.stringify(dataSend), JSON.stringify(_subTotalesSave));
+        this.pagarCuentaDeliveryCliente();
+        // enviamos a pagar
+        return;
+      }
+
+      console.log('sigueeee');
+
+      // descuentos
+      if (this.infoToken.infoUsToken.isHayDescuento) {
+        const _listDsc = this.miPedidoService.getIdsDescuentos();
+        dataSend.dataDescuento = _listDsc;
+
+      }
+
+      // registrar el id cliente para consultar luego en mis pedidos
+      if (this.infoToken.infoUsToken.isCliente) {
+        this.infoToken.setIdCliente();
+      }
+
+      // prioridad socket, por crud demora mucho aveces se queda enviando datos...
+      await this.savePedidoSocket2(dataSend, isPagoConTarjeta, _subTotalesSave);
+
+      this.isDeliveryValid = false; // formulario no valido para delivery
+
+
+    } catch (error) {
+      // cualquier fallo antes de emitir deja el loader colgado: se cierra aqui
+      this.errorSendPedido(error);
     }
-
-    console.log('sigueeee');
-
-    // descuentos
-    if (this.infoToken.infoUsToken.isHayDescuento) {
-      const _listDsc = this.miPedidoService.getIdsDescuentos();
-      dataSend.dataDescuento = _listDsc;
-
-    }
-
-    // registrar el id cliente para consultar luego en mis pedidos
-    if (this.infoToken.infoUsToken.isCliente) {
-      this.infoToken.setIdCliente();
-    }
-
-    // prioridad socket, por crud demora mucho aveces se queda enviando datos...
-    await this.savePedidoSocket2(dataSend, isPagoConTarjeta, _subTotalesSave);
-
-    this.isDeliveryValid = false; // formulario no valido para delivery
-
-
   }
 
   private backConfirmarPedido() {
@@ -1190,29 +1213,22 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   private async savePedidoSocket2(dataSend: any, isPagoConTarjeta: boolean, _subTotalesSave: any) {
 
 
-    const resSocket = await this.socketService.asyncEmitPedido('nuevoPedido', 'nuevoPedidoRes', JSON.stringify(dataSend))
-      .catch((e) => {
-        this.errorSendPedido(e)
-      })
-
-    // this.socketService.emitRes('nuevoPedido', JSON.stringify(dataSend)).subscribe(resSocket => {
-    if (resSocket === false) {
-      this.errorSendPedido(resSocket)
-      // alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');
-      // // guardamos el error
-      // const dataError = {
-      //   elerror: resSocket,
-      //   elorigen: 'resumen-pedido'
-      // };
-
-      // this.crudService.postFree(dataError, 'error', 'set-error', false)
-      // .subscribe(resp => console.log(resp));
-
-      // this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
-      // this.isSavingPedido = false;
-      // return;
+    let resSocket: any;
+    try {
+      resSocket = await this.socketService.asyncEmitPedido('nuevoPedido', 'nuevoPedidoRes', JSON.stringify(dataSend));
+    } catch (error) {
+      this.errorSendPedido(error);
+      return;
     }
 
+    // sin idpedido el servidor no confirmo el pedido: nunca se limpia el carrito
+    if (!resSocket || resSocket === false || !resSocket[0]?.idpedido) {
+      this.errorSendPedido(resSocket);
+      return;
+    }
+
+    clearTimeout(this.watchdogEnvio);
+    this.idemPedido = null;
     setTimeout(() => {
       this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
       this.isSavingPedido = false;
@@ -1223,7 +1239,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     const _res = resSocket[0];
     dataSend.dataPedido.idpedido = _res.idpedido;
-    dataSend.dataPrint = _res.data[1] ? _res.data[1]?.print : null;
+    dataSend.dataPrint = _res.data?.[1]?.print ?? null;
 
     this.newFomrConfirma();
 
@@ -1260,17 +1276,27 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
 
   private errorSendPedido(resSocket: any) {
-    alert('!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.');
+    clearTimeout(this.watchdogEnvio);
+
+    let msj = '!Ups a ocurrido un error, por favor verifique los datos y vuelve a intentarlo.';
+    if (resSocket?.message === 'timeout') {
+      msj = 'El pedido está tardando más de lo normal. Revisa tu conexión y vuelve a intentar; si ya se registró no se duplicará.';
+    } else if (resSocket?.message === 'socket-desconectado') {
+      msj = 'Sin conexión con el servidor. Revisa tu internet y vuelve a intentar.';
+    }
+    alert(msj);
+
     // guardamos el error
     const dataError = {
-      elerror: resSocket,
+      elerror: resSocket?.message || resSocket,
       elorigen: 'resumen-pedido'
     };
 
     this.crudService.postFree(dataError, 'error', 'set-error', false)
-      .subscribe(resp => console.log(resp));
+      .subscribe();
 
     this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
+    this.listenStatusService.closeFinishLoaderSendPedidoSource();
     this.isSavingPedido = false;
     return;
   }

@@ -396,7 +396,7 @@ export class InfoTockenService {
 
   // borra datos del storage del pedido
   removeStoragePedido() {
-    localStorage.removeItem('sys::rules');
+    // sys::rules se conserva: son reglas de la sede, no del pedido
     localStorage.removeItem('sys::status');
     localStorage.removeItem('sys::st');
 
