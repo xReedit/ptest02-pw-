@@ -11,16 +11,20 @@ if (environment.production) {
 
 // ponytail: el SW de Angular está desactivado; desregistrar el que quedó instalado en dispositivos viejos
 // y borrar su caché. Quitar este bloque cuando se reactive ServiceWorkerModule con SwUpdate.
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations()
-    .then(regs => regs.forEach(r => r.unregister()))
-    .catch(() => undefined);
-}
-if (typeof caches !== 'undefined') {
-  caches.keys()
-    .then(keys => keys.filter(k => k.startsWith('ngsw')).forEach(k => caches.delete(k)))
-    .catch(() => undefined);
-}
+try {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations()
+      .then(regs => regs.forEach(r => r.unregister()))
+      .catch(() => undefined);
+  }
+} catch (e) { /* sin API */ }
+try {
+  if (typeof caches !== 'undefined') {
+    caches.keys()
+      .then(keys => keys.filter(k => k.startsWith('ngsw')).forEach(k => caches.delete(k)))
+      .catch(() => undefined);
+  }
+} catch (e) { /* sin API */ }
 
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.error(err));

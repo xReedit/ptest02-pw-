@@ -10,13 +10,15 @@ export class GlobalErrorHandler implements ErrorHandler {
     const msg = String(error?.message ?? error ?? '');
     const esChunk = /Loading chunk [^\s]+ failed/.test(msg) || /ChunkLoadError/.test(msg);
     if (esChunk) {
-      let ultima = 0;
-      try { ultima = Number(sessionStorage.getItem(CLAVE_ULTIMA_RECARGA) || 0); } catch (e) { ultima = 0; }
-      if (Date.now() - ultima > VENTANA_RECARGA_MS) {
-        try { sessionStorage.setItem(CLAVE_ULTIMA_RECARGA, String(Date.now())); } catch (e) { /* sin storage */ }
-        window.location.reload();
-        return;
-      }
+      let puedeRecargar = false;
+      try {
+        const ultima = Number(sessionStorage.getItem(CLAVE_ULTIMA_RECARGA) || 0);
+        if (Date.now() - ultima > VENTANA_RECARGA_MS) {
+          sessionStorage.setItem(CLAVE_ULTIMA_RECARGA, String(Date.now()));
+          puedeRecargar = true;
+        }
+      } catch (e) { puedeRecargar = false; } // sin storage no hay forma de evitar un bucle: no recargar
+      if (puedeRecargar) { window.location.reload(); return; }
     }
     console.error(error);
   }
