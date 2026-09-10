@@ -366,11 +366,12 @@ export class DatosDeliveryComponent implements OnInit {
           this.infoEstablecimiento.c_servicio = c_servicio; // this.dirEstablecimiento.c_servicio;
           this.resData.costoTotalDelivery = c_servicio; // this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
 
+          // sin reglas se conservan los subtotales anteriores (ya se registro el error)
           const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
-          localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
-
-          this._listSubtotales = _arrSubtotales;
-
+          if (_arrSubtotales) {
+            localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
+            this._listSubtotales = _arrSubtotales;
+          }
 
           this.setearData();
         });
@@ -439,10 +440,12 @@ export class DatosDeliveryComponent implements OnInit {
       this.infoEstablecimiento.c_servicio = this.dirEstablecimiento.c_servicio;
       this.resData.costoTotalDelivery = this.dirEstablecimiento.c_servicio; // this.infoEstablecimiento.costo_total_servicio_delivery;
 
+      // sin reglas se conservan los subtotales anteriores (ya se registro el error)
       const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
-      localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
-
-      this._listSubtotales = _arrSubtotales;
+      if (_arrSubtotales) {
+        localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
+        this._listSubtotales = _arrSubtotales;
+      }
       // this.isCalculandoDistanciaA = false;
 
       // this.verificarMontoMinimo();

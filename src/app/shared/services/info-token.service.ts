@@ -168,11 +168,21 @@ export class InfoTockenService {
     this.setMetodoPago( metodoPagoInit );
   }
 
-  // el metodo ya elegido manda; si no hay ninguno se arranca en Efectivo (nunca en Tarjeta,
-  // que enviaba al cliente directo a la pasarela sin pasar por la confirmacion) (BUG-105)
-  setIniMetodoPagoSegunFiltro(isAceptaTarjeta): MetodoPagoModel {
+  // El metodo ya elegido manda, pero siempre validado contra lo que acepta el comercio:
+  //  - comercio solidario (soloTarjeta): se fuerza Tarjeta
+  //  - comercio que no acepta tarjeta: una Tarjeta guardada se degrada a Efectivo
+  //  - si no hay ninguno elegido se arranca en Efectivo, nunca en Tarjeta, que enviaba al
+  //    cliente directo a la pasarela sin pasar por la confirmacion (BUG-105)
+  setIniMetodoPagoSegunFiltro(isAceptaTarjeta, soloTarjeta = false): MetodoPagoModel {
     const metodoPagoElegido = this.infoUsToken?.metodoPago;
-    if ( metodoPagoElegido?.idtipo_pago ) { return metodoPagoElegido; }
+
+    if ( soloTarjeta ) {
+      if ( metodoPagoElegido?.idtipo_pago !== 2 ) { this.setIniMetodoPago('Tarjeta'); }
+      return this.infoUsToken.metodoPago;
+    }
+
+    const esTarjetaNoAceptada = metodoPagoElegido?.idtipo_pago === 2 && !isAceptaTarjeta;
+    if ( metodoPagoElegido?.idtipo_pago && !esTarjetaNoAceptada ) { return metodoPagoElegido; }
 
     this.setIniMetodoPago('Efectivo');
     return this.infoUsToken.metodoPago;

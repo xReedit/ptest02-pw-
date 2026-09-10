@@ -15,6 +15,9 @@ export const URL_IMG_COMERCIO = environment.imgComercioUrl;
 export const URL_IMG_ICONS = environment.imgIconsUrl; // iconos
 export const VAPID_PUBLIC = environment.vapidPublic;
 
+// sede a la que pertenece lo cacheado en sys::rules (las reglas no son globales)
+export const KEY_RULES_SEDE = 'sys::rules-sede';
+
 export const VIEW_APP_MOZO = false; // true = app solo mozo // solo para vista incial
 export const URL_CONSULTA_RUC_DNI = 'https://apifac.papaya.com.pe/api/services/'; // consulta dni o ruc
 // ponytail: TOKEN_CONSULTA y TOKEN_SMS siguen en el bundle; pasarlos por el backend en el sprint de seguridad

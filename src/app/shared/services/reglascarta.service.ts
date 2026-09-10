@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { SocketService } from './socket.service';
 import { StorageService } from './storage.service';
+import { EstablecimientoService } from './establecimiento.service';
+import { KEY_RULES_SEDE } from '../config/config.const';
 import { Observable } from 'rxjs/internal/Observable';
 import { b64DecodeUnicode, b64EncodeUnicode } from '../utils/b64';
 
@@ -13,7 +15,8 @@ export class ReglascartaService {
 
   constructor(
     private storageService: StorageService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private establecimientoService: EstablecimientoService
   ) { }
 
   // Emite primero lo cacheado en sys::rules (si existe y es legible) y luego cada emision del socket,
@@ -51,6 +54,9 @@ export class ReglascartaService {
   private codeObjInSotrage(): void {
     try {
       this.storageService.set(this.keyStorage, b64EncodeUnicode(JSON.stringify(this.objReglasCarta)));
+      // las reglas son de una sede concreta: sin esta marca no se puede reutilizar el cache
+      const idsede = this.establecimientoService.get()?.idsede;
+      if (idsede) { this.storageService.set(KEY_RULES_SEDE, idsede.toString()); }
     } catch (error) {
       console.error('no se pudo cachear las reglas de carta', error);
     }

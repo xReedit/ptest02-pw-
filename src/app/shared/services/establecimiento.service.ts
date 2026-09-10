@@ -3,7 +3,7 @@ import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimient
 import { CrudHttpService } from './crud-http.service';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 import { Observable } from 'rxjs';
-import { IS_NATIVE } from '../config/config.const';
+import { IS_NATIVE, KEY_RULES_SEDE } from '../config/config.const';
 import { b64DecodeUnicode } from '../utils/b64';
 
 @Injectable({
@@ -37,24 +37,34 @@ export class EstablecimientoService {
   // Tras confirmar un pedido se borra sys::ed y el establecimiento vuelve del API sin
   // rulesSubTotales: el segundo pedido reventaba con "reading 'filter' of undefined".
   // Se rehidratan desde el cache de reglas de la sede (sys::rules), que sobrevive al pedido.
+  // Devuelve null si no hay reglas fiables: cobrar con reglas ajenas o vacias saldria mas caro
+  // que fallar, asi que quien llama tiene que tratarlo como error.
   getRulesSubTotales(): any[] {
     const _delEstablecimiento = this.get().rulesSubTotales;
-    if (_delEstablecimiento) { return _delEstablecimiento; }
+    if (_delEstablecimiento?.length > 0) { return _delEstablecimiento; }
 
     const _delCacheReglas = this.readSubtotalesCacheReglas();
-    if (_delCacheReglas.length > 0) { this.setRulesSubtotales(_delCacheReglas); }
+    if (_delCacheReglas) { this.setRulesSubtotales(_delCacheReglas); }
 
     return _delCacheReglas;
   }
 
+  // sys::rules es una sola clave para toda la app: solo sirve si es de esta misma sede
   private readSubtotalesCacheReglas(): any[] {
     try {
+      const idsedeCache = localStorage.getItem(KEY_RULES_SEDE);
+      const idsedeActual = this.get().idsede;
+      // cache sin marca de sede (versiones anteriores) o de otra sede: no es de fiar
+      if (!idsedeCache || !idsedeActual || Number(idsedeCache) !== Number(idsedeActual)) { return null; }
+
       const raw = localStorage.getItem('sys::rules');
       const reglas = raw ? JSON.parse(b64DecodeUnicode(raw)) : null;
       const obj = Array.isArray(reglas) ? reglas[0] : reglas;
-      return obj?.subtotales ?? [];
+      const subtotales = obj?.subtotales;
+
+      return Array.isArray(subtotales) && subtotales.length > 0 ? subtotales : null;
     } catch (error) {
-      return [];
+      return null;
     }
   }
 

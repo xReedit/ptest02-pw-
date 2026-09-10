@@ -1495,8 +1495,13 @@ export class MipedidoService {
 
   getArrSubTotales(rulesSubTotales: any[]): any {
 
-    // sin reglas (tras confirmar un pedido se pierden) se rehidratan del cache de la sede
-    const _rulesSubTotales = rulesSubTotales ?? this.establecimientoService.getRulesSubTotales() ?? [];
+    // sin reglas (tras confirmar un pedido se pierden) se rehidratan del cache de la sede;
+    // si tampoco hay, se devuelve null: totalizar sin reglas cobraria de menos en silencio
+    const _rulesSubTotales = rulesSubTotales?.length > 0 ? rulesSubTotales : this.establecimientoService.getRulesSubTotales();
+    if (!_rulesSubTotales || _rulesSubTotales.length === 0) {
+      console.error('reglas de subtotales no disponibles');
+      return null;
+    }
 
     const subTotal = this.getSubTotalMiPedido();
     // const isCalcCostoServicioDeliverySoloApp

@@ -341,7 +341,12 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     }
 
 
-    this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
+    // sin reglas no se puede totalizar: se conservan los subtotales anteriores y el envio
+    // se cortara con el aviso de 'sin-reglas' (getArrSubTotales ya registro el error)
+    const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
+    if (!_arrSubtotales) { this.isReloadListPedidos = false; return; }
+
+    this._arrSubtotales = _arrSubtotales;
     localStorage.setItem('sys::st', b64EncodeUnicode(JSON.stringify(this._arrSubtotales)));
     this.hayItems = parseFloat(this._arrSubtotales[0].importe) > 0 ? true : false;
 
@@ -718,6 +723,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       // si no hay nada guardado (recarga o storage limpiado) se recalculan los subtotales
       const stGuardado = localStorage.getItem('sys::st');
       this._arrSubtotales = stGuardado ? JSON.parse(b64DecodeUnicode(stGuardado)) : this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
+      // sin subtotales el pedido saldria sin impuestos ni entrega: mejor no enviarlo
+      if (!this._arrSubtotales) { this.errorSendPedido(new Error('sin-reglas')); return; }
       localStorage.setItem('sys::st', b64EncodeUnicode(JSON.stringify(this._arrSubtotales)));
 
 
@@ -1124,7 +1131,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // para notificar antes del pago
     // console.log(_miPedidoCuenta);
     // console.log(this._miPedido);
-    this._arrSubtotales = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
+    const _arrSubtotalesCuenta = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
+    if (!_arrSubtotalesCuenta) { return; } // sin reglas se conserva lo ya guardado
+
+    this._arrSubtotales = _arrSubtotalesCuenta;
     localStorage.setItem('sys::st', b64EncodeUnicode(JSON.stringify(this._arrSubtotales)));
 
   }
@@ -1278,6 +1288,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
         msj = 'El pedido está tardando más de lo normal. Revisa tu conexión y vuelve a intentar; si ya se registró no se duplicará.';
       } else if (resSocket?.message === 'socket-desconectado') {
         msj = 'Sin conexión con el servidor. Revisa tu internet y vuelve a intentar.';
+      } else if (resSocket?.message === 'sin-reglas') {
+        msj = 'No se pudieron cargar las reglas de la carta. Recarga la página e inténtalo de nuevo.';
       }
       alert(msj);
     }

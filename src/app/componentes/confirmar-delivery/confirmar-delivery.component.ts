@@ -235,8 +235,11 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
 
     // metodo de pago
-    this.isHabilitadoTarjeta  = this.establecimientoService.get().pwa_delivery_acepta_tarjeta === 1;
-    this.metodoPagoSelected =  this.infoTokenService.setIniMetodoPagoSegunFiltro(this.isHabilitadoTarjeta);
+    // se lee del establecimiento y no del campo de la clase: loadData() puede correr antes de ngOnInit
+    const _datosComercio = this.establecimientoService.get();
+    this.isHabilitadoTarjeta  = _datosComercio.pwa_delivery_acepta_tarjeta === 1;
+    const _comercioSoloTarjeta = _datosComercio.pwa_delivery_comercio_solidaridad === 1;
+    this.metodoPagoSelected =  this.infoTokenService.setIniMetodoPagoSegunFiltro(this.isHabilitadoTarjeta, _comercioSoloTarjeta);
 
     // direccion de entrega
     this.infoToken = this.infoTokenService.getInfoUs();
@@ -619,18 +622,20 @@ export class ConfirmarDeliveryComponent implements OnInit {
               this.dirEstablecimiento.c_servicio = costoEntrega.costo_servicio;
               this.dirEstablecimiento.distancia_mt = costoEntrega.distancia_en_km.toString();
               this.dirEstablecimiento.distancia_km = costoEntrega.distancia_en_km.toString();
-              this.dirEstablecimiento.isCalcApiGoogle = true;
+              this.isDistanciaEstimada = this.dirEstablecimiento.isDistanciaEstimada === true;
+              this.dirEstablecimiento.isCalcApiGoogle = !this.isDistanciaEstimada;
               this.establecimientoService.set(this.dirEstablecimiento);
 
               this.infoEstablecimiento.c_servicio = this.dirEstablecimiento.c_servicio;
-              this.resData.costoTotalDelivery = this.dirEstablecimiento.c_servicio; // 
+              this.resData.costoTotalDelivery = this.dirEstablecimiento.c_servicio; //
 
+              // sin reglas se conservan los subtotales anteriores; el envio avisara con 'sin-reglas'
               const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
-              localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
-
-              this._listSubtotales = _arrSubtotales;
+              if (_arrSubtotales) {
+                localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
+                this._listSubtotales = _arrSubtotales;
+              }
               this.isCalculandoDistanciaA = false;
-              this.isDistanciaEstimada = this.dirEstablecimiento.isDistanciaEstimada === true;
 
               this.isDireccionClienteCorrecta = true;
               this.verificarMontoMinimo();
@@ -644,6 +649,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
               this.isDireccionClienteCorrecta = false;
               // sin esto el spinner y el boton Confirmar se quedaban bloqueados para siempre
               this.isCalculandoDistanciaA = false;
+              this.isDistanciaEstimada = false; // no hay distancia valida que anotar
               this.verificarMontoMinimo();
               return;
             }
@@ -673,10 +679,12 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
         this.isDireccionClienteCorrecta = true;
   
+        // sin reglas se conservan los subtotales anteriores; el envio avisara con 'sin-reglas'
         const _arrSubtotales = this.miPedidoService.getArrSubTotales(this.dirEstablecimiento.rulesSubTotales);
-        localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
-  
-        this._listSubtotales = _arrSubtotales;
+        if (_arrSubtotales) {
+          localStorage.setItem('sys::st', btoa(JSON.stringify(_arrSubtotales)));
+          this._listSubtotales = _arrSubtotales;
+        }
         this.isCalculandoDistanciaA = false;
         this.isDistanciaEstimada = this.dirEstablecimiento.isDistanciaEstimada === true;
 
