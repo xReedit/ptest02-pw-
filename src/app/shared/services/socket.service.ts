@@ -253,6 +253,10 @@ export class SocketService {
     return this.fromEvent('repartidor-notifica-ubicacion');
   }
 
+  onPedidoCambioEstado() {
+    return this.fromEvent('pedido-cambio-estado');
+  }
+
 
   onComercioOpenChangeFromMonitor() {
     return this.fromEvent('set-comercio-open-change-from-monitor');
