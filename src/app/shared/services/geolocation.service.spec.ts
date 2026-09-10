@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { GeolocationService, OPCIONES_GEO } from './geolocation.service';
+import { GeolocationService, OPCIONES_GEO, conTimeout } from './geolocation.service';
 
 describe('GeolocationService (rama web)', () => {
   let service: GeolocationService;
@@ -75,5 +75,54 @@ describe('GeolocationService (rama web)', () => {
     expect(service.mensaje('timeout')).toContain('tardando');
     expect(service.mensaje('no-disponible')).toContain('ubicación');
     expect(service.mensaje('lo-que-sea')).toBe(service.mensaje('no-disponible'));
+  });
+
+  it('reconoce "timed out" en el texto pero no cualquier palabra que empiece por time', async () => {
+    fingirGeolocation({
+      getCurrentPosition: (_ok: any, err: any) => err({ message: 'The request timed out' })
+    });
+    await expectAsync(service.obtenerPosicion()).toBeRejectedWith('timeout');
+
+    fingirGeolocation({
+      getCurrentPosition: (_ok: any, err: any) => err({ message: 'Timestamp invalido del proveedor' })
+    });
+    await expectAsync(service.obtenerPosicion()).toBeRejectedWith('no-disponible');
+  });
+});
+
+// El plugin nativo ignora `timeout`, por eso el limite se impone con conTimeout. La rama nativa
+// no se puede ejercitar en Karma, pero el helper si: es una funcion pura sobre promesas.
+describe('conTimeout', () => {
+
+  beforeEach(() => {
+    jasmine.clock().install();
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
+  });
+
+  it('resuelve con el valor original si la promesa llega antes del limite y limpia el temporizador', async () => {
+    const limpiar = spyOn(window, 'clearTimeout').and.callThrough();
+
+    await expectAsync(conTimeout(Promise.resolve('ok'), OPCIONES_GEO.timeout)).toBeResolvedTo('ok');
+
+    expect(limpiar).toHaveBeenCalled();
+  });
+
+  it('rechaza con timeout cuando se pasa del limite', async () => {
+    const nuncaResuelve = new Promise<string>(() => { /* nunca se resuelve */ });
+    const esperado = expectAsync(conTimeout(nuncaResuelve, OPCIONES_GEO.timeout)).toBeRejectedWith('timeout');
+
+    jasmine.clock().tick(OPCIONES_GEO.timeout + 1);
+
+    await esperado;
+  });
+
+  it('propaga el rechazo original si la promesa falla antes del limite', async () => {
+    const falla = Promise.reject({ code: 2, message: 'Position unavailable' });
+
+    await expectAsync(conTimeout(falla, OPCIONES_GEO.timeout))
+      .toBeRejectedWith(jasmine.objectContaining({ code: 2 }));
   });
 });
