@@ -17,7 +17,6 @@ import { DialogItemEditComponent } from 'src/app/componentes/dialog-item-edit/di
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
-import { URL_IMG_CARTA } from 'src/app/shared/config/config.const';
 import { Subscription } from 'rxjs';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { CalcDistanciaService } from 'src/app/shared/services/calc-distancia.service';
@@ -42,7 +41,6 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
   // objCartaCarta: any;
   objCartaBus: any = [];
   isBusqueda = false;
-  rutaImgItem = URL_IMG_CARTA;
   imgNull = './assets/images/icon-app/img-null.png';
   private isCargado = true;
 

@@ -205,7 +205,7 @@
                                 <div *ngIf="itemComercio.cerrado === 1" class="div-cerrado-comercio fw-600">
                                     Cerrado
                                 </div>
-                                <img src="{{itemComercio.img_mini}}" alt="loquesea">
+                                <img [src]="itemComercio.img_mini | imgUrl:'comercio'" alt="loquesea">
                             </div>                            
                             <p class="fs-12 fw-600 m-0"> {{ itemComercio.nombre | titlecase}} </p>
                             <p class="fs-11 m-0"> {{ itemComercio.tiempo_aprox_entrega | titlecase}}</p>

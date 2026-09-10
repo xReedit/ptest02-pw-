@@ -8,7 +8,6 @@ import { SubItemContent } from 'src/app/modelos/subitem.content.model';
 import { SubItemsView } from 'src/app/modelos/subitems.view.model';
 // import { Subject } from 'rxjs/internal/Subject';
 // import { takeUntil } from 'rxjs/internal/operators';
-import { URL_IMG_CARTA } from 'src/app/shared/config/config.const';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 // import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
@@ -36,8 +35,6 @@ export class DialogItemEditComponent implements OnInit, OnDestroy {
   isUsCliente = true; // si el usario es cliente o es personal autorizado
 
   isOneTipoConsumo = false; // s si solo hay un tipo de consumo sale enves del boton continuar
-
-  url_img = URL_IMG_CARTA;
 
   isWaitBtnMenos = false;
 

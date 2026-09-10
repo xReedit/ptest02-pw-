@@ -175,7 +175,7 @@
                           <!-- imagen -->
                           <div class="text-right ml-1">
                             <div class="rounded-circle icon-div-carta">
-                              <img class="icon-item-carta rounded-circle" src="{{rutaImgItem}}{{item.img}}" alt="icon-item-carta">
+                              <img class="icon-item-carta rounded-circle" [src]="item.img | imgUrl:'carta'" alt="icon-item-carta">
                             </div>
                           </div>
                         </div>
@@ -236,7 +236,7 @@
                                   <img class="icon-item-carta" src="{{imgNull}}" alt="icon-item-carta" (click)="selectedItem(item)">
                                 </ng-container>
                                 <ng-template #elseTemplateConImg>
-                                  <img class="icon-item-carta" src="{{rutaImgItem}}{{item.img}}" alt="icon-item-carta" (click)="selectedItem(item)">                                  
+                                  <img class="icon-item-carta" [src]="item.img | imgUrl:'carta'" alt="icon-item-carta" (click)="selectedItem(item)">                                  
                                 </ng-template>
                                 
                               </div>

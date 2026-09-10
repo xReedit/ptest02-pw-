@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimiento';
-import { URL_IMG_COMERCIO } from 'src/app/shared/config/config.const';
 
 
 @Component({
@@ -14,7 +13,6 @@ export class ItemComercioComponent implements OnInit {
   isTiempoProgramadoSoloDia = false; // si el pedido se programa solo para el dia
   isComercioReservacionesActiva = false; // si el comercio acepta reserva y ademas esta en el horario
   amPm = 'AM';
-  imgComercio = '';
 
   descripcionDiaProgramado = '';
   horaAceptaReservas = '';
@@ -37,7 +35,6 @@ export class ItemComercioComponent implements OnInit {
     // this.isComercioAceptaPedidoProgramado = this.reserva ? this.reserva : this.isComercioAceptaPedidoProgramado; // si es reserva nada
 
     this.amPm = this.itemEstablecimiento.hora_ini ? parseInt(this.itemEstablecimiento.hora_ini.split(':')[0], 0) > 12 ? 'PM' : 'AM' : '';
-    this.imgComercio = URL_IMG_COMERCIO + this.itemEstablecimiento.pwa_delivery_img;
 
     // si aceptas reservas   // reserva = true = acepta reserva
     if ( this.reserva ) {

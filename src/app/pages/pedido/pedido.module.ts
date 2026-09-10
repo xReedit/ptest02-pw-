@@ -12,6 +12,7 @@ import { EstadoPedidoComponent } from './estado-pedido/estado-pedido.component';
 import { BuscarItemComponent } from './buscar-item/buscar-item.component';
 import { PedidoRoutingModule } from './pedido.routing';
 import { CoreModule } from 'src/app/core/core.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 // import { DialogItemComponent } from './resumen-pedido/dialog-item/dialog-item.component';
 import { BusquedaComponent } from './busqueda/busqueda.component';
@@ -49,7 +50,8 @@ import { DialogVerificarTelefonoComponent } from 'src/app/componentes/dialog-ver
     FormsModule,
     PedidoRoutingModule,
     CoreModule,
-    ComponentesModule
+    ComponentesModule,
+    SharedModule
   ],
   exports: [
     // DialogItemComponent,

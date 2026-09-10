@@ -10,7 +10,6 @@ import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cli
 // import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 // import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 
-import { URL_IMG_COMERCIO } from 'src/app/shared/config/config.const';
 import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimiento';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
@@ -31,8 +30,6 @@ export class EstablecimientosComponent implements OnInit {
   listPromociones = [];
   vistaInicio = 0;
   timeLoader = null;
-
-  imgComercio = URL_IMG_COMERCIO;
 
   listEstablecimientos: DeliveryEstablecimiento[] = [];
   ciudad_actual: string; // ciudad de direccion seleccionada
@@ -210,7 +207,6 @@ export class EstablecimientosComponent implements OnInit {
 
           this.listEstablecimientos.map((dirEstablecimiento: DeliveryEstablecimiento) => {
             dirEstablecimiento.visible = true;
-            dirEstablecimiento.img_mini = `${this.imgComercio}/${dirEstablecimiento.img_mini}`;
             // this.calcDistancia(x);
             // this.calcDistanceService.calculateRoute(this.direccionCliente, dirEstablecimiento);
             // dirEstablecimiento.c_servicio = _c_servicio;

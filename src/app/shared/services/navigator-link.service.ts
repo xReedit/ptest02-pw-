@@ -139,11 +139,9 @@ export class NavigatorLinkService {
   // si es [carta] -> inicio
   managerGoBack(previusUrl: string, nexturl: string) {
     // return;
-    console.log('previusUrl', previusUrl);
     if ( this.closeListenNavigator ) {return; }
     // const _url = this.lastUrlHistory;
     let _pageActive = '';
-    console.log('managerGoBack', previusUrl);
     switch (previusUrl) {
       case 'carta-i-secciones-items':
         _pageActive = 'carta';

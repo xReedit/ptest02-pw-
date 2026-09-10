@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { URL_IMG_ICONS } from 'src/app/shared/config/config.const';
+import { urlImagen } from 'src/app/shared/utils/img-url';
 import { HoldingService } from 'src/app/shared/services/holding.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 
@@ -59,7 +60,7 @@ export class FormaPagoComponent {
           this.paymentMethods.push({
             id: elem.idtipo_pago,
             name: this.utilService.primeraConMayusculas(elem.descripcion),
-            icon: `${URL_IMG_ICONS}${elem.img}`,
+            icon: urlImagen(URL_IMG_ICONS, elem.img),
             amount: 0,
             amount_real: 0,
             isActive: false,

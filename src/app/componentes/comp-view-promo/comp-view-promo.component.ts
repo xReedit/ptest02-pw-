@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimiento';
-import { URL_IMG_PROMO } from 'src/app/shared/config/config.const';
 
 @Component({
   selector: 'app-comp-view-promo',
@@ -21,10 +20,6 @@ export class CompViewPromoComponent implements OnInit {
   }
 
   @Output() itemSelected = new EventEmitter<DeliveryEstablecimiento>();
-
-  private urlRepoImg = URL_IMG_PROMO;
-  // imgdemo = this.urlRepoImg + '/' + '1613promo50.png';
-  imgdemo = this.urlRepoImg;
 
   constructor() { }
 
