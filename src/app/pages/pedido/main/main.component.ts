@@ -35,6 +35,7 @@ export class MainComponent implements OnInit {
   isMozoApp = VIEW_APP_MOZO;
   isHolding = false;
   labelTabOne = 'Carta';
+  isAppLista = false; // ya hubo una conexion: el loader a pantalla completa no vuelve a tapar la app
 
   private lastValScrollTop = 0;
   importeTotalProductos = 0;
@@ -73,6 +74,14 @@ export class MainComponent implements OnInit {
 
     this.detectScreenSize();
     this.socketService.isSocketOpenReconect = false;
+
+    // El loader "Conectando datos" es fixed y tapa toda la pantalla. Si el socket se caia
+    // despues de cargar, el cliente quedaba encerrado tras el (no podia ni pulsar Confirmar
+    // ni recibir el aviso de "Sin conexion"). Solo bloquea hasta la primera conexion; luego
+    // la app sigue usable y el envio del pedido avisa por su cuenta. (BUG-103)
+    this.socketService.isSocketOpen$.subscribe(abierto => {
+      this.isAppLista = this.isAppLista || abierto;
+    });
 
 
 
