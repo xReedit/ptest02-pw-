@@ -265,6 +265,12 @@ export class MainComponent implements OnInit {
   }
 
   goListaProductos() {
+    // Sin esto, "Ver Pedido" con el carrito vacio era un no-op silencioso.
+    if (this.countTotalItems === 0) {
+      this.snackBar.open('Aún no has agregado productos.', '', { duration: 3000 });
+      return;
+    }
+
     const _tabList = {
       index: 1,
       tab: {

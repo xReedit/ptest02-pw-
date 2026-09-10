@@ -26,6 +26,7 @@ import { DialogCalificacionSedeComponent } from 'src/app/componentes/dialog-cali
 import { SpeechDataProviderService } from 'src/app/shared/services/speech/speech-data-provider.service';
 import { CocinarPromoShowService } from 'src/app/shared/services/promo/cocinar-promo-show.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 
@@ -120,6 +121,7 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
     private crudService: CrudHttpService,
     private speechDataProviderService: SpeechDataProviderService,
     private cocinarPromoShowService: CocinarPromoShowService,
+    private snackBar: MatSnackBar,
   ) {
 
   }
@@ -456,6 +458,11 @@ export class CartaComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private showAnimateBloqueoCategoria(categoria: CategoriaModel) {
     categoria.animateBloqueoCategoria = true;
+
+    // Sin esto el toque sobre una carta cerrada no daba ningun feedback.
+    this.snackBar.open(`Esta carta atiende de ${categoria.hora_ini} a ${categoria.hora_fin}`, '', {
+      duration: 3000,
+    });
 
     setTimeout(() => {
       categoria.animateBloqueoCategoria = false;
