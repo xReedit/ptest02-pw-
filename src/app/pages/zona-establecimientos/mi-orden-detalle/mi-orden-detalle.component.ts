@@ -59,8 +59,9 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
     this.refrescar();
 
     // socket, vuelta al primer plano y polling de respaldo: cualquiera vuelve a pedir el estado al servidor
+    // debounceTime va antes de takeUntil: al revés, al destruir el componente el debounce pendiente se vaciaría igual
     merge(this.seguimiento.cambios$(), this.seguimiento.refrescoAutomatico$())
-      .pipe(takeUntil(this.destroy$), debounceTime(300))
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
       .subscribe(() => this.refrescar());
 
     this.seguimiento.ubicacionRepartidor$()
@@ -86,7 +87,7 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
         Object.assign(this.dataPedido, est);
         this.aplicarEstado(this.dataPedido);
         if ( est.position_now && !this.ubicacionRepartidor ) {
-          this.origin = { latitude: est.position_now.lat, longitude: est.position_now.lng };
+          this.origin = { latitude: est.position_now.latitude, longitude: est.position_now.longitude };
         }
       });
   }

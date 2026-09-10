@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
-import { SocketService } from 'src/app/shared/services/socket.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
 import { takeUntil, debounceTime } from 'rxjs/operators';
@@ -32,7 +31,6 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
     private infoTokenService: InfoTockenService,
     private verifyClientService: VerifyAuthClientService,
     private crudService: CrudHttpService,
-    private socketSerrvice: SocketService,
     private router: Router,
     private seguimiento: SeguimientoPedidoService,
   ) { }
@@ -77,7 +75,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
   }
 
   private conectServices() {
-    // this.socketSerrvice.connect(this.infoUser, 0, true);
+    // el socket ya lo abre main.component al entrar a la zona delivery
 
     if ( !this.haySesionCliente ) {
       this.sinSesion = true;
@@ -97,9 +95,10 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
   }
 
   // socket, vuelta al primer plano y polling de respaldo: cualquiera refresca la lista
+  // debounceTime va antes de takeUntil: al revés, al destruir el componente el debounce pendiente se vaciaría igual
   private listenChangeStatus(): void {
     merge(this.seguimiento.cambios$(), this.seguimiento.refrescoAutomatico$())
-      .pipe(takeUntil(this.destroy$), debounceTime(300))
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
       .subscribe(() => this.loadMisPedidos(false));
   }
 
@@ -111,6 +110,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
 
     // no se vacia la lista antes de responder: evita el parpadeo en cada refresco
     this.crudService.postFree(_data, 'delivery', 'get-mis-pedidos', false)
+      .pipe(takeUntil(this.destroy$))
       .subscribe( res => {
         this.loaderPage = false;
         // Una lista vacia no es un error: solo `success === false` o un fallo HTTP lo son.
