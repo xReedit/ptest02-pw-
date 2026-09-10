@@ -397,6 +397,7 @@ export class InfoTockenService {
   // borra datos del storage del pedido
   removeStoragePedido() {
     // sys::rules se conserva: son reglas de la sede, no del pedido
+    localStorage.removeItem('sys::idem'); // la clave de idempotencia muere con el pedido
     localStorage.removeItem('sys::status');
     localStorage.removeItem('sys::st');
 

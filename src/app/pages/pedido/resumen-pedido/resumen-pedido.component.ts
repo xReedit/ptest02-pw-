@@ -103,6 +103,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   private isReglasListas = false; // ya se inicializaron los listeners con la primera emision de reglas
   private watchdogEnvio: any; // corta el loader si el envio nunca resuelve
   private idemPedido: string = null; // clave de idempotencia: se mantiene entre reintentos del mismo pedido
+  private pedidoConfirmado = false; // el servidor ya devolvio idpedido: prohibido pedir reintento
 
   isShowPaymentMozo = false;
   totalAmountPedido = 0;
@@ -154,6 +155,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     this._miPedido = this.miPedidoService.getMiPedido();
 
     this.isPuntoAuntoPedido = this.infoToken.isPuntoAutoPedido();
+
+    // un pedido a medio enviar sobrevive a la recarga: se reutiliza su clave de idempotencia
+    this.idemPedido = localStorage.getItem('sys::idem') || null;
 
     // console.log('this.infoToken', this.infoToken);
 
@@ -509,6 +513,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   nuevoPedido() {
     this.idemPedido = null; // pedido distinto: nueva clave de idempotencia
+    localStorage.removeItem('sys::idem');
     this.backConfirmacion();
     if (this.isVisibleConfirmar) {
       this.backConfirmacion();
@@ -668,6 +673,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
   }
 
   private async enviarPedido() {
+    this.pedidoConfirmado = false;
     try {
 
       // this.verificarConexionSocket();
@@ -715,8 +721,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
 
 
-      // clave de idempotencia: el mismo pedido reintentado llega con el mismo idem
+      // clave de idempotencia: el mismo pedido reintentado llega con el mismo idem,
+      // persistida para que un reintento tras recargar la pagina siga siendo deduplicable
       this.idemPedido = this.idemPedido || `${dataUsuario?.idcliente || 0}-${dataUsuario?.idsede || 0}-${Date.now()}`;
+      localStorage.setItem('sys::idem', this.idemPedido);
 
       const _p_header = {
         m: dataFrmConfirma.m, // this.frmConfirma.mesa ? this.frmConfirma.mesa.toString().padStart(2, '0') || '00' : '00',
@@ -845,6 +853,13 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
 
     } catch (error) {
+      // si el servidor ya confirmo el pedido, un fallo posterior (navegacion, impresion, holding)
+      // no puede pedir reintento: duplicaria el pedido con una clave de idempotencia nueva
+      if (this.pedidoConfirmado) {
+        this.pedidoConfirmado = false;
+        console.error(error);
+        return;
+      }
       // cualquier fallo antes de emitir deja el loader colgado: se cierra aqui
       this.errorSendPedido(error);
     }
@@ -1227,8 +1242,10 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this.pedidoConfirmado = true;
     clearTimeout(this.watchdogEnvio);
     this.idemPedido = null;
+    localStorage.removeItem('sys::idem');
     setTimeout(() => {
       this.listenStatusService.setLoaderSendPedido(false, this.verifyClientService.getIsQrSuccess());
       this.isSavingPedido = false;
