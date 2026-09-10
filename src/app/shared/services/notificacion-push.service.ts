@@ -1,179 +1,161 @@
-import { Injectable, Optional } from '@angular/core';
-import { SwPush } from '@angular/service-worker';
-import { CrudHttpService } from './crud-http.service';
-import { InfoTockenService } from './info-token.service';
-import { VAPID_PUBLIC, IS_NATIVE } from '../config/config.const';
-
-
-
+import { Injectable, NgZone } from '@angular/core';
+import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   ActionPerformed,
   PushNotificationSchema,
   PushNotifications,
   Token,
 } from '@capacitor/push-notifications';
-// import { Observable } from 'rxjs/internal/Observable';
-// import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-// import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 
+import { CrudHttpService } from './crud-http.service';
+import { InfoTockenService } from './info-token.service';
+import { IS_NATIVE, IS_PLATAFORM_IOS } from '../config/config.const';
+import { construirSuscripcionPush, debeRegistrarToken, EnvioPush, PlataformaPush } from '../utils/push-payload';
+
+// Mismo id que el manifiesto (default_notification_channel_id) y que el backend.
+export const CANAL_PEDIDOS = 'pedidos';
+
+// ponytail: push solo nativo. El push web (SwPush + VAPID) queda fuera de alcance
+// mientras ServiceWorkerModule siga comentado en app.module.ts.
 @Injectable({
   providedIn: 'root'
 })
 export class NotificacionPushService {
 
-  // private VAPID_PUBLIC = 'BC7ietauZE99Hx9HkPyuGVr8jaYETyEJgH-gLaYIsbORYobppt9dX49_K_wubDqphu1afi7XrM6x1zAp4kJh_wU';
+  private tokenActual = '';
+  private ultimoEnviado: EnvioPush = { token: '', idcliente: 0 };
+  private iniciado = false;
 
-  // ponytail: ServiceWorkerModule esta desactivado (ver app.module.ts y main.ts), asi que
-  // SwPush no tiene provider. Se inyecta como @Optional para que inyectar este servicio no
-  // rompa la creacion del componente (NullInjectorError: No provider for SwPush!).
   constructor(
-    @Optional() private swPush: SwPush,
     private crudService: CrudHttpService,
-    private infoTokenService: InfoTockenService,    
-    // private dialog: MatDialog,
-  ) {
+    private infoTokenService: InfoTockenService,
+    private router: Router,
+    private snackBar: MatSnackBar,
+    private zone: NgZone,
+  ) { }
 
-    // this.showMessages();
+  // Se llama una sola vez desde AppComponent.ngOnInit().
+  public async iniciar(): Promise<void> {
+    if (!IS_NATIVE || this.iniciado) { return; }
+    this.iniciado = true;
+    await this.crearCanal();
+    this.registrarListeners();
+    await this.suscribirse();
+  }
 
-    // this.swPush.notificationClicks.subscribe( event => {
-    //   // console.log('Received notification: ', event);
-    //   const url = event.notification.data.url;
-    //   window.open(url, '_blank');
-    // });
-
-    this.swPush?.notificationClicks.subscribe( event => {
-      console.log('clic notification', event);
-      // const url = event.notification.data.url;
-      // window.location.reload();
-      // window.open('reparto.papaya.com.pe');
-    });
-
-
-    if (IS_NATIVE) {
-      PushNotifications.addListener('registration',
-        (token: Token) => {
-          console.log('addListener token.value ', token.value);
-          this.saveSuscripcion(token.value);
-        }
-      );
-  
-      PushNotifications.addListener('registrationError',
-        (error: any) => {
-          alert('Error en registrar: ' + JSON.stringify(error));
-        }
-      );
+  // Pide permiso y registra el dispositivo en FCM. Idempotente.
+  public async suscribirse(): Promise<void> {
+    if (!IS_NATIVE) { return; }
+    try {
+      // ponytail: en el plugin v4 requestPermissions() responde 'granted' sin preguntar
+      // (declara @Permission(strings = {})). Con targetSdkVersion 32 el diálogo de
+      // Android 13 lo dispara la creación del canal. Con Capacitor 5 esto sí preguntará.
+      const permiso = await PushNotifications.requestPermissions();
+      if (permiso.receive !== 'granted') { return; }
+      await PushNotifications.register();
+      this.enviarSuscripcion();
+    } catch (error) {
+      console.error('push suscribirse', error);
     }
   }
 
   public async getIsTienePermiso(): Promise<boolean> {
-    if (IS_NATIVE) {
-      let permStatus = await PushNotifications.checkPermissions();
-      return permStatus.receive === 'granted' ? true : false;
-    } else {
-      return Notification.permission === 'granted' ? true : false;
+    if (!IS_NATIVE) { return false; }
+    try {
+      const permStatus = await PushNotifications.checkPermissions();
+      return permStatus.receive === 'granted';
+    } catch (error) {
+      console.error('push checkPermissions', error);
+      return false;
     }
   }
 
+  // Reenvía el token vigente con el idcliente vigente. Se llama tras el registro en FCM,
+  // después del login y después de guardar un pedido.
+  public enviarSuscripcion(): void {
+    const payload = construirSuscripcionPush(this.idClienteActual(), this.tokenActual, this.plataforma());
+    if (!debeRegistrarToken(payload, this.ultimoEnviado)) { return; }
 
-  // se suscribe a la notificacion
-  public suscribirse(): void {
-    // console.log('llego a suscribirse estado this.swPush.isEnabled: ', this.swPush.isEnabled);
-    // if ( this.swPush.isEnabled ) {
-      // this.swPush.subscription.subscribe(res => {
-        // if (!res) {return; }
-        // this.lanzarPermisoNotificationPush(option);
-        // });
-        // }
-    
-    //0123 cambiamos
-    if (IS_NATIVE ) {      
-      PushNotifications.requestPermissions().then(result => {
-        console.log('result.receive', result.receive);
-        if (result.receive === 'granted') {
-          // Register with Apple / Google to receive push via APNS/FCM
-          PushNotifications.register()
-        } else {
-          // Show some error
-          console.log('error al registrar');
+    this.ultimoEnviado = { token: payload.token, idcliente: payload.idcliente };
+    this.crudService.postFree(payload, 'push', 'suscripcion', false)
+      .subscribe({
+        error: (error: any) => {
+          this.ultimoEnviado = { token: '', idcliente: 0 };
+          console.error('push/suscripcion', error);
         }
       });
-    } else {
-      this.keySuscribtion();
+  }
+
+  private async crearCanal(): Promise<void> {
+    if (IS_PLATAFORM_IOS) { return; }
+    try {
+      await PushNotifications.createChannel({
+        id: CANAL_PEDIDOS,
+        name: 'Estado del pedido',
+        description: 'Avisos del estado de tu pedido',
+        importance: 5,
+        visibility: 1,
+        sound: 'default',
+        vibration: true,
+        lights: true,
+      });
+    } catch (error) {
+      console.error('push createChannel', error);
     }
-
   }
 
-  //  suscriberse
-  private keySuscribtion() {
-    // console.log('keySuscribtion');
-    if (!this.swPush) { return; }
-    this.swPush
-    .requestSubscription({
-      serverPublicKey: VAPID_PUBLIC,
-    })
-    .then(subscription => {
-      // send subscription to the server
-      console.log('suscrito a notificaciones push', subscription);
-      this.saveSuscripcion(subscription);
-    })
-    .catch(console.error);
+  private registrarListeners(): void {
+    PushNotifications.addListener('registration', (token: Token) => {
+      this.tokenActual = token && token.value ? token.value : '';
+      this.enviarSuscripcion();
+    });
+
+    PushNotifications.addListener('registrationError', (error: any) => {
+      console.error('push registrationError', error);
+    });
+
+    // App en primer plano: Android no dibuja la notificación, se muestra un banner propio.
+    PushNotifications.addListener('pushNotificationReceived', (notificacion: PushNotificationSchema) => {
+      this.zone.run(() => this.mostrarBanner(notificacion));
+    });
+
+    // El usuario tocó la notificación (app en segundo plano o cerrada).
+    PushNotifications.addListener('pushNotificationActionPerformed', (accion: ActionPerformed) => {
+      this.zone.run(() => this.abrirPedido(accion && accion.notification ? accion.notification.data : null));
+    });
   }
 
-  private saveSuscripcion(_subscription: any): void {
-    const _data = {
-      suscripcion: _subscription,
-      idcliente: this.infoTokenService.infoUsToken.idcliente
-    };
+  private mostrarBanner(notificacion: PushNotificationSchema): void {
+    const titulo = notificacion && notificacion.title ? notificacion.title : 'Tu pedido';
+    const cuerpo = notificacion && notificacion.body ? notificacion.body : '';
+    const texto = cuerpo ? `${titulo}: ${cuerpo}` : titulo;
 
-    // console.log('push', _data);
-
-    this.crudService.postFree(_data, 'push', 'suscripcion', false)
-      .subscribe(res => console.log(res));
+    const ref = this.snackBar.open(texto, 'Ver', {
+      duration: 6000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
+    });
+    ref.onAction().subscribe(() => this.abrirPedido(notificacion ? notificacion.data : null));
   }
 
-  // private lanzarPermisoNotificationPush(option: number = 0) {
-  //   const _dialogConfig = new MatDialogConfig();
-  //   _dialogConfig.disableClose = true;
-  //   _dialogConfig.hasBackdrop = true;
-  //   _dialogConfig.data = {idMjs: option};
+  private abrirPedido(data: any): void {
+    const idpedido = Number(data && data.idpedido ? data.idpedido : 0);
+    const extras = idpedido > 0 ? { queryParams: { idpedido } } : {};
+    // ponytail: 800 ms para que el arranque en frío termine su navegación inicial
+    // antes de que la notificación imponga la suya.
+    setTimeout(() => {
+      this.router.navigate(['/zona-delivery/pedidos'], extras);
+    }, 800);
+  }
 
-  //   console.log('show dialog DialogDesicionComponent');
-  //   const dialogReset = this.dialog.open(DialogDesicionComponent, _dialogConfig);
-  //   dialogReset.afterClosed().subscribe(result => {
-  //     if (result ) {
-  //       console.log('result dialog DialogDesicionComponent', result);
-  //       // this.suscribirse();
-  //       this.keySuscribtion();
-  //     }
-  //   });
-  // }
+  private idClienteActual(): number {
+    const desdeToken = Number(this.infoTokenService.infoUsToken ? this.infoTokenService.infoUsToken.idcliente : 0);
+    if (desdeToken > 0) { return desdeToken; }
+    return Number(this.infoTokenService.getIdCliente() || 0);
+  }
 
-
-  // showMessages() {
-
-  //   // this.swPush.messages
-  //   //   .subscribe(message => {
-
-  //   //     console.log('[App] Push message received', message);
-
-  //   //     // let notification = message['notification'];
-
-  //   //     // this.tweets.unshift({
-  //   //     //   text: notification['body'],
-  //   //     //   id_str: notification['tag'],
-  //   //     //   favorite_count: notification['data']['favorite_count'],
-  //   //     //   retweet_count: notification['data']['retwe<et_count'],
-  //   //     //   user: {
-  //   //     //     name: notification['title']
-  //   //     //   }
-  //   //     // })
-
-  //   //   });
-
-  // }
-
-  // onNotification() {
-  //   this.swPush.messages
-  // }
-
+  private plataforma(): PlataformaPush {
+    return IS_PLATAFORM_IOS ? 'ios' : 'android';
+  }
 }

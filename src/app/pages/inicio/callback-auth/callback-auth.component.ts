@@ -15,6 +15,7 @@ import { callbackUri } from 'src/app/auth.config';
 import { mergeMap } from 'rxjs/operators';
 import { App } from '@capacitor/app';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
+import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 import { b64EncodeUnicode } from 'src/app/shared/utils/b64';
 
 
@@ -46,7 +47,8 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
     private crudService: CrudHttpService,
     public authNative: AuthService, //@auth0/auth0-angular
     private ngZone: NgZone,
-    private utilitariosService: UtilitariosService
+    private utilitariosService: UtilitariosService,
+    private notificacionPush: NotificacionPushService
     ) { }
 
   ngOnInit() {
@@ -136,6 +138,9 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
       this.authService.setLoggedStatus(true);
       this.infoToken.converToJSON();
       this.infoToken.setIsUsLoggedIn(true);
+
+      // el idcliente cambió: hay que reenviar el token con el cliente nuevo
+      this.notificacionPush.enviarSuscripcion();
 
       // Restaurar propiedades de holding si existían
       if (_holdingData.is_holding) {

@@ -6,7 +6,7 @@ import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
 import { takeUntil, debounceTime, filter } from 'rxjs/operators';
 import { merge } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SeguimientoPedidoService } from 'src/app/shared/services/seguimiento-pedido.service';
 import { resumirEstadoPedido } from 'src/app/shared/utils/estado-pedido';
 
@@ -25,6 +25,8 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
 
   idClientePedidos: number;
 
+  private idpedidoPush = 0;
+
   telefonoSoporte = '934746830';
 
   constructor(
@@ -32,10 +34,13 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
     private verifyClientService: VerifyAuthClientService,
     private crudService: CrudHttpService,
     private router: Router,
+    private route: ActivatedRoute,
     private seguimiento: SeguimientoPedidoService,
   ) { }
 
   ngOnInit() {
+
+    this.idpedidoPush = Number(this.route.snapshot.queryParams['idpedido'] || 0);
 
     // el id puede estar solo en el storage, solo en el token o solo en la sesion propia del cliente
     this.idClientePedidos = Number(this.infoTokenService.getIdCliente() || this.infoTokenService.infoUsToken?.idcliente || this.verifyClientService.getDataClient()?.idcliente || 0);
@@ -125,6 +130,12 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
           x.estado = x.estadoResumen.etiqueta;
           return x;
         });
+
+        if ( this.idpedidoPush > 0 ) {
+          const pedidoPush = this.listMisPedidos.find(x => Number(x.idpedido) === this.idpedidoPush);
+          this.idpedidoPush = 0;
+          if ( pedidoPush ) { this.openDetalle(pedidoPush); }
+        }
       }, error => {
         // se conserva la lista anterior: un fallo de red no debe vaciar la pantalla
         console.error('Error al cargar mis pedidos', error);
