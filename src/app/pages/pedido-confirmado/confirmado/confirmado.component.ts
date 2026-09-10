@@ -8,6 +8,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
+import { IS_NATIVE } from 'src/app/shared/config/config.const';
 
 @Component({
   selector: 'app-confirmado',
@@ -69,6 +70,9 @@ export class ConfirmadoComponent implements OnInit {
 
 
   private async lanzarPermisoNotificationPush(option: number = 0) {
+    // ponytail: web push fuera de alcance; quitar el gate cuando exista web push
+    if (!IS_NATIVE) { return; }
+
     try {
       // el pedido ya se guardo: el idcliente definitivo puede haber cambiado
       this.pushNotificationSerice.enviarSuscripcion();

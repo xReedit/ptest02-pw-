@@ -21,6 +21,7 @@ import { MetodoPagoModel } from 'src/app/modelos/metodo.pago.model';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { PagoTarjetaVisanetService } from 'src/app/shared/services/pago-tarjeta-visanet.service';
 import { Router } from '@angular/router';
+import { IS_NATIVE } from 'src/app/shared/config/config.const';
 
 // import * as botonPago from 'src/assets/js/boton-pago.js';
 
@@ -665,6 +666,9 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   }
 
   private async lanzarPermisoNotificationPush(option: number = 0) {
+    // ponytail: web push fuera de alcance; quitar el gate cuando exista web push
+    if (!IS_NATIVE) { return; }
+
     // this.pushNotificationSerice.suscribirse(option);
 
     this.pushNotificationSerice.enviarSuscripcion();
