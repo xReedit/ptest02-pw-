@@ -1495,6 +1495,9 @@ export class MipedidoService {
 
   getArrSubTotales(rulesSubTotales: any[]): any {
 
+    // sin reglas (tras confirmar un pedido se pierden) se rehidratan del cache de la sede
+    const _rulesSubTotales = rulesSubTotales ?? this.establecimientoService.getRulesSubTotales() ?? [];
+
     const subTotal = this.getSubTotalMiPedido();
     // const isCalcCostoServicioDeliverySoloApp
     let isCalcCostoServicioDelivery = this.establecimientoService.establecimiento.pwa_delivery_hablitar_calc_costo_servicio === 1;
@@ -1529,7 +1532,7 @@ export class MipedidoService {
 
     // porcentajes / impuestos / otros servicios
     const rptPorcentajes: any = [];
-    const arrPorcentajes = rulesSubTotales.filter(x => x.tipo === 'p');
+    const arrPorcentajes = _rulesSubTotales.filter(x => x.tipo === 'p');
     arrPorcentajes.map(p => {
       const porcentaje = p.monto / 100;
       const isImpuesto = p.es_impuesto === 1 ? true : false;
@@ -1569,7 +1572,7 @@ export class MipedidoService {
     // otros no porcentajes // taper // delivery
     let importeOtros = 0;
     const rptOtros: any = [];
-    const arrOtros = rulesSubTotales.filter(x => x.tipo === 'a');
+    const arrOtros = _rulesSubTotales.filter(x => x.tipo === 'a');
 
     // si es tiene idusuario es usuario autorizado no es cliente delivery  // si existe estableciiento en localstorage entonces es un clienteDelivery
     // let isClienteDelivery = this.infoTokenService.infoUsToken.idusuario ? false : true; // this.establecimientoService.get().idsede ? true : false;

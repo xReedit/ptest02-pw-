@@ -4,6 +4,7 @@ import { CrudHttpService } from './crud-http.service';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 import { Observable } from 'rxjs';
 import { IS_NATIVE } from '../config/config.const';
+import { b64DecodeUnicode } from '../utils/b64';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,30 @@ export class EstablecimientoService {
     this.establecimiento = this.get();
     this.establecimiento.rulesSubTotales = val;
     this.set(this.establecimiento);
+  }
+
+  // Tras confirmar un pedido se borra sys::ed y el establecimiento vuelve del API sin
+  // rulesSubTotales: el segundo pedido reventaba con "reading 'filter' of undefined".
+  // Se rehidratan desde el cache de reglas de la sede (sys::rules), que sobrevive al pedido.
+  getRulesSubTotales(): any[] {
+    const _delEstablecimiento = this.get().rulesSubTotales;
+    if (_delEstablecimiento) { return _delEstablecimiento; }
+
+    const _delCacheReglas = this.readSubtotalesCacheReglas();
+    if (_delCacheReglas.length > 0) { this.setRulesSubtotales(_delCacheReglas); }
+
+    return _delCacheReglas;
+  }
+
+  private readSubtotalesCacheReglas(): any[] {
+    try {
+      const raw = localStorage.getItem('sys::rules');
+      const reglas = raw ? JSON.parse(b64DecodeUnicode(raw)) : null;
+      const obj = Array.isArray(reglas) ? reglas[0] : reglas;
+      return obj?.subtotales ?? [];
+    } catch (error) {
+      return [];
+    }
   }
 
   setCostoSercioDelivery(val: number) {
