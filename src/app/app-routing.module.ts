@@ -117,6 +117,7 @@ const routes: Routes = [
       data: { titulo: 'Login Personal Autorizado' }
     },
 
+    { path: '**', redirectTo: '' },
 ];
 
 @NgModule({
@@ -138,7 +139,7 @@ export class AppRoutingModule {
 
   constructor(private router: Router) {
     this.router.errorHandler = (error: any) => {
-        this.router.navigate(['inicio']); // or redirect to default route
+        this.router.navigate(['']); // or redirect to default route
     };
   }
 

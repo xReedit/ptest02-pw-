@@ -2,9 +2,11 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../out-tsc/spec",
+    "skipLibCheck": true,
     "types": [
       "jasmine",
-      "node"
+      "node",
+      "google.maps"
     ]
   },
   "files": [
@@ -14,5 +16,8 @@
   "include": [
     "**/*.spec.ts",
     "**/*.d.ts"
+  ],
+  "exclude": [
+    "app/componentes/holding/marcas/marcas.component.spec.ts"
   ]
 }

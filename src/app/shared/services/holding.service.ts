@@ -4,7 +4,6 @@ import { CrudHttpService } from './crud-http.service';
 import { InfoTockenService } from './info-token.service';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { fakeAsync } from '@angular/core/testing';
 
 
 interface CachedData<T> {
@@ -77,7 +76,7 @@ export class HoldingService {
             }),
             catchError(error => {
                 console.error('Error getting métodos de pago:', error);
-                return throwError(() => error);
+                return throwError(error);
             })
         );
     }
@@ -103,7 +102,7 @@ export class HoldingService {
                 }),
                 catchError(error => {
                     console.error('Error guardando pedido holding:', error);
-                    return throwError(() => error);
+                    return throwError(error);
                 })
             );
     }
@@ -130,7 +129,7 @@ export class HoldingService {
                 }),
                 catchError(error => {
                     console.error('Error obteniendo pedidos cliente holding:', error);
-                    return throwError(() => error);
+                    return throwError(error);
                 })
             );
     }

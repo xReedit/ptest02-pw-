@@ -299,7 +299,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     // this.unsubscribeRe.unsubscribe();
     // Now let's also unsubscribe from the subject itself:
     this.destroy$.next(true);
-    this.destroy$.unsubscribe();
+    this.destroy$.complete();
   }
 
   private newFomrConfirma(): void {

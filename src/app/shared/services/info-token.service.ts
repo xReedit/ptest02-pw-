@@ -427,7 +427,7 @@ export class InfoTockenService {
       if ( isUsTmp ) {
         localStorage.setItem('::token', 'eyCJ9.' + isUsTmp);
         this.converToJSON();
-        return;
+        return true;
       }
 
       this.cerrarSessionGoIni();
@@ -495,14 +495,14 @@ export class InfoTockenService {
   }
 
   getHolding() {
-    return this.infoUsToken.holding || null;
+    return this.infoUsToken?.holding || null;
   }
 
   getIsHolding(): boolean {
-    return this.infoUsToken.is_holding == '1';
+    return this.infoUsToken?.is_holding == '1';
   }
 
   getIsMozoAcceptPayments(): boolean {
-    return this.infoUsToken.is_mozo_accept_payments == '1';
+    return this.infoUsToken?.is_mozo_accept_payments == '1';
   }
 }

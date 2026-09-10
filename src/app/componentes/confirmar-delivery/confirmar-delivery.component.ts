@@ -133,18 +133,19 @@ export class ConfirmarDeliveryComponent implements OnInit {
     private utilService: UtilitariosService,
     private dialogDireccionClienteDelivery: MatDialog,
     // private crudService: CrudHttpService
-  ) { }
+  ) {
+    this.socketCliente = this.verifyClientService.getDataClient();
+  }
 
   ngOnInit() {
 
 
-    this.socketCliente = this.verifyClientService.getDataClient();
     this.loadData();
 
     const _datosEstablecieminto = this.establecimientoService.get();
     this.montoMinimoPedido = _datosEstablecieminto.pwa_delivery_importe_min;
-    this.tipoComprobanteSelected = this.infoTokenService.infoUsToken.tipoComprobante;
-    this.propinaSelected = this.infoTokenService.infoUsToken.propina;
+    this.tipoComprobanteSelected = this.infoTokenService.infoUsToken?.tipoComprobante;
+    this.propinaSelected = this.infoTokenService.infoUsToken?.propina;
 
     
 
@@ -240,7 +241,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     this.infoToken = this.infoTokenService.getInfoUs();
     this.infoToken.telefono = this.infoToken.telefono || '';
     // console.log('this.infoToken', this.infoToken);
-    this.infoToken.idcliente = this.infoToken.idcliente || this.socketCliente.idcliente
+    this.infoToken.idcliente = this.infoToken.idcliente || this.socketCliente?.idcliente
 
     // que tenga la posibilidad de cambiar de direccion
     this.direccionCliente = this.infoToken.direccionEnvioSelected ? this.infoToken.direccionEnvioSelected : this.direccionClienteIni;

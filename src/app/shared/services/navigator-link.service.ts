@@ -7,6 +7,10 @@ import { InfoTockenService } from './info-token.service';
 import { EstadoPedidoClienteService } from './estado-pedido-cliente.service';
 import { ListenStatusService } from './listen-status.service';
 
+export function extraerUrlDeMatriz(elUrl: string): string {
+  return elUrl.indexOf(';') > -1 ? elUrl.substr(1).split(';')[1].split('=')[1] : elUrl;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -57,7 +61,7 @@ export class NavigatorLinkService {
 
             const elUrl = e[0]['url'];
 
-            const _url = elUrl.indexOf(';') ? e[0]['url'].substr(1).split(';')[1].split('=')[1] : e[0]['url'];
+            const _url = extraerUrlDeMatriz(elUrl);
             // const _nextUrl = e[1]['url'].substr(1).split(';')[1].split('=')[1];
             if ( _url.length > 0) {
               this.lastUrlHistory = _url; // last url -- de donde viene

@@ -168,7 +168,7 @@ export class CrudHttpService {
         return 'idsede:eq:' + this.infoTockenService.getInfoSedeToken();
     }
     private setInfoOrgToken(): string {
-        return 'idorg:eq:' + this.infoTockenService.getInfoSedeToken();
+        return 'idorg:eq:' + this.infoTockenService.getInfoOrgToken();
     }
 
     private getHeaderHttpClientForm(): HttpHeaders {

@@ -80,7 +80,7 @@ export class EstadoPedidoComponent implements OnInit, OnDestroy {
     // this.unsubscribe$.complete();
 
     this.destroyEstado$.next(true);
-    this.destroyEstado$.unsubscribe();
+    this.destroyEstado$.complete();
   }
 
   private listenStatus() {
