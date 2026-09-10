@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DatosDeliveryComponent } from './datos-delivery/datos-delivery.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -214,5 +214,7 @@ import { EstadoPedidosHoldingClienteComponent } from './estado-pedidos-holding-c
   //   DialogTiempoEntregaComponent
   //   // DialogDesicionComponent
   // ]
+  // ponytail: CUSTOM_ELEMENTS_SCHEMA silencia <google-map>/<agm-marker> (módulos removidos en e6b82a5); reemplazar por los mapas reales en el sprint 2
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ComponentesModule { }
