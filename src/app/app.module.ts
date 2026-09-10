@@ -8,7 +8,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
-// import { GlobalErrorHandler } from './shared/services/error.global.handler';
+import { GlobalErrorHandler } from './shared/services/error.global.handler';
 import { environment } from '../environments/environment';
 import { SocketIoModule } from 'ngx-socket-io';
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
@@ -61,7 +61,7 @@ const configAuth: AuthConfig = {
     // ServiceWorkerModule.register('assets/js/custom-service-worker.js', { enabled: environment.production })
   ],
   providers: [
-    // {provide: ErrorHandler, useClass: GlobalErrorHandler},
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
     {provide: LocationStrategy, useClass: PathLocationStrategy}, // 22012022 eliminar el #
     {
       provide: APP_INITIALIZER,
