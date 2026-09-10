@@ -447,7 +447,8 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   openDialogsendSMS() {
     const _dialogConfig = new MatDialogConfig();
-    _dialogConfig.disableClose = true;
+    // se puede cancelar: con disableClose ni Escape ni el backdrop cerraban el dialogo (BUG-104)
+    _dialogConfig.disableClose = false;
     _dialogConfig.hasBackdrop = true;
     // _dialogConfig.panelClass = 'my-full-screen-dialog';
     _dialogConfig.panelClass = ['my-dialog-orden-detalle', 'my-dialog-scrool'];
@@ -459,8 +460,10 @@ export class ConfirmarDeliveryComponent implements OnInit {
     const dialogRefTelefono = this.dialogTelefono.open(DialogVerificarTelefonoComponent, _dialogConfig);
 
     dialogRefTelefono.afterClosed().subscribe((result: any) => {
-      this.isValidForm = result.verificado;
-      if ( result.verificado ) {
+      // cancelar (Escape, backdrop o la flecha de la cabecera) no devuelve verificacion:
+      // se deja el telefono que ya hubiera y se revalida el formulario
+      if ( result?.verificado ) {
+        this.isValidForm = true;
         this.infoToken.telefono = result.numberphone;
         this.infoTokenService.setTelefono(result.numberphone);
         this.verifyClientService.setTelefono(result.numberphone);
