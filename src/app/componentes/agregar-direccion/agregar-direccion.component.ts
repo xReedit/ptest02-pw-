@@ -8,8 +8,11 @@ import { EstablecimientoService } from 'src/app/shared/services/establecimiento.
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
+import { GeolocationService } from 'src/app/shared/services/geolocation.service';
 
 declare var google: any;
+
+const CENTRO_LIMA = { lat: -12.0464, lng: -77.0428 };
 
 @Component({
   selector: 'app-agregar-direccion',
@@ -61,6 +64,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   @Output() saveDireccionOk = new EventEmitter<DeliveryDireccionCliente>();
 
   isDireccionValid = true;
+  msjGeolocalizacion = '';
 
   mapCenter: google.maps.LatLngLiteral;
 
@@ -74,7 +78,8 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     private miPedidoService: MipedidoService,
     private inforTokenService: InfoTockenService,
     private utilService: UtilitariosService,
-    private establecimientoService: EstablecimientoService
+    private establecimientoService: EstablecimientoService,
+    private geolocationService: GeolocationService
   ) { }
 
   ngOnInit() {
@@ -129,24 +134,37 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
       this.dataInfoSede = this.miPedidoService.objDatosSede.datossede[0];
       this.latitude = this.dataInfoSede.latitude;
       this.longitude = this.dataInfoSede.longitude;
-      this.mapCenter = {
-        lat: this.latitude,
-        lng: this.longitude
-      };
+      this.mapCenter = { lat: Number(this.latitude), lng: Number(this.longitude) };
       return;
     }
 
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.latitude = position.coords.latitude;
-        this.longitude = position.coords.longitude;
-        this.mapCenter = {
-          lat: this.latitude,
-          lng: this.longitude
-        };
-        this.getAddress(this.latitude, this.longitude);
+    this.usarCentroDeRespaldo();
+
+    this.geolocationService.obtenerPosicion()
+      .then(pos => {
+        this.msjGeolocalizacion = '';
+        this.latitude = pos.latitude;
+        this.longitude = pos.longitude;
+        this.mapCenter = { lat: pos.latitude, lng: pos.longitude };
+        this.getAddress(pos.latitude, pos.longitude);
+      })
+      .catch(error => {
+        this.msjGeolocalizacion = this.geolocationService.mensaje(error);
       });
-    }
+  }
+
+  // Centro inicial mientras el GPS responde (o si nunca responde): el del comercio si se conoce.
+  private usarCentroDeRespaldo() {
+    const sede = this.miPedidoService.objDatosSede && this.miPedidoService.objDatosSede.datossede
+      ? this.miPedidoService.objDatosSede.datossede[0]
+      : null;
+    const lat = Number(sede ? sede.latitude : NaN);
+    const lng = Number(sede ? sede.longitude : NaN);
+    const centro = Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : { lat: CENTRO_LIMA.lat, lng: CENTRO_LIMA.lng };
+
+    this.mapCenter = centro;
+    this.latitude = centro.lat;
+    this.longitude = centro.lng;
   }
 
   markerDragEnd(event: google.maps.MapMouseEvent) {

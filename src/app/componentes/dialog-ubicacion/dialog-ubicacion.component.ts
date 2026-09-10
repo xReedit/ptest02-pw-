@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
   insideCircle
 } from 'geolocation-utils';
+import { GeolocationService } from 'src/app/shared/services/geolocation.service';
 
 @Component({
   selector: 'app-dialog-ubicacion',
@@ -17,7 +18,8 @@ export class DialogUbicacionComponent implements OnInit {
 
   constructor(
     private dialogRef: MatDialogRef<DialogUbicacionComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private geolocationService: GeolocationService
   ) {
 
     this.cLocal = data.cLocal;
@@ -36,23 +38,20 @@ export class DialogUbicacionComponent implements OnInit {
   }
 
   private getPosition() {
-    navigator.geolocation.getCurrentPosition((position: any) => {
-      const divicePos = { lat: position.coords.latitude, lng: position.coords.longitude};
-      this.cDispositivo = divicePos;
-      this.hasPermissionPosition = true;
-
-      this.data.posIssValid = this.data.isDemo ? true :  this.arePointsNear(this.cLocal, this.cDispositivo, 1);
-      this.cerrarDlg();
-    }, this.showPositionError);
-  }
-
-  private showPositionError(error: any): void {
-    // if ( error.PERMISSION_DENIED ) {
-      this.hasPermissionPosition = false;
-      this.data.posIssValid = false;
-      this.cerrarDlg();
-    // }
-
+    this.geolocationService.obtenerPosicion()
+      .then(pos => {
+        this.cDispositivo = { lat: pos.latitude, lng: pos.longitude };
+        this.hasPermissionPosition = true;
+        this.data.posIssValid = this.data.isDemo ? true : this.arePointsNear(this.cLocal, this.cDispositivo, 1);
+        this.cerrarDlg();
+      })
+      .catch(() => {
+        // ponytail: el aviso al usuario y la alternativa manual las da quien abre el dialogo
+        // (lector-codigo-qr) al recibir posIssValid = false.
+        this.hasPermissionPosition = false;
+        this.data.posIssValid = false;
+        this.cerrarDlg();
+      });
   }
 
   private arePointsNear(checkPoint: any, centerPoint: any, km: number): boolean {

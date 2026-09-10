@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { IS_NATIVE } from '../config/config.const';
-import { Geolocation } from '@capacitor/geolocation';
 import { CrudHttpService } from './crud-http.service';
+import { GeolocationService } from './geolocation.service';
 import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
@@ -11,7 +10,8 @@ export class MapsServiceService {
 
   private readonly apiKeyGoogle = environment.googleMapsApiKey;
   constructor(
-    private crudService: CrudHttpService
+    private crudService: CrudHttpService,
+    private geolocationService: GeolocationService
     ) { }
 
   // Método que calcula la ruta más corta en automóvil en kilómetros
@@ -69,29 +69,10 @@ export class MapsServiceService {
   }
 
 
-  async getPosition() {
-    if (IS_NATIVE) {
-      return new Promise((resolve, reject) => {
-        Geolocation.requestPermissions().then(async (permissions) => {
-          const coordinates = await Geolocation.getCurrentPosition();          
-          resolve({ lng: coordinates.coords.longitude, lat: coordinates.coords.latitude });
-          },
-          err => {
-            reject(err);
-          });        
-      })
-    } else {
-
-      return new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resp => {
-          resolve({ lng: resp.coords.longitude, lat: resp.coords.latitude });
-        },
-          err => {
-            reject(err);
-          });
-      });
-
-    }
+  // ponytail: se conserva la forma {lat, lng} porque la usan los mapas; la logica vive en GeolocationService
+  async getPosition(): Promise<{ lat: number, lng: number }> {
+    const pos = await this.geolocationService.obtenerPosicion();
+    return { lat: pos.latitude, lng: pos.longitude };
   }
 
 

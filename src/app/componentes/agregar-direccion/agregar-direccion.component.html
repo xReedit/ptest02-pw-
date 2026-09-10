@@ -139,7 +139,8 @@
         </div>  
         
         <p *ngIf="!registerForm.valid" class="fw-600 text-danger fs-14">Indique direccion y una referencia.</p>                
-        <p *ngIf="!isDireccionValid" class="fw-600 text-danger fs-16">El servicio no esta disponible en esta ubicación.</p>                
+        <p *ngIf="!isDireccionValid" class="fw-600 text-danger fs-16">El servicio no esta disponible en esta ubicación.</p>
+        <p *ngIf="msjGeolocalizacion" class="fw-600 text-warning fs-13 p-2">{{ msjGeolocalizacion }}</p>
     
 
 </div>

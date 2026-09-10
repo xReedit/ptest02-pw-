@@ -28,9 +28,10 @@
             <div class="item-direccion fs-16" matRipple (click)="goUbicacionActual()"l>
                 <i class="fa fa-location-arrow text-success mr-2" aria-hidden="true"></i>
                 <span class="fw-600">Ubicación actual</span>
-            </div>   
+            </div>
         </ng-container>
-    
+        <p *ngIf="msjGeolocalizacion" class="fw-600 text-warning fs-13">{{ msjGeolocalizacion }}</p>
+
         <!-- lista de direcciones anteriormente guardadas -->
         <div *ngIf="!showBusqueda">            
             <div *ngFor="let item of listDirecciones" class="item-direccion-prediction d-flex" matRipple (click)="goDireccionGuardada(item)">                        

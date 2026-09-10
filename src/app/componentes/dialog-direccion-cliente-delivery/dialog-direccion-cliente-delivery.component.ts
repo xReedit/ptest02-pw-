@@ -13,6 +13,7 @@ import { UtilitariosService } from 'src/app/shared/services/utilitarios.service'
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { IS_NATIVE } from 'src/app/shared/config/config.const';
 import { SedeDeliveryService } from 'src/app/shared/services/sede-delivery.service';
+import { GeolocationService } from 'src/app/shared/services/geolocation.service';
 
 declare var google: any;
 
@@ -48,6 +49,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   // nueva direccion en ingreso
   dataCliente: DeliveryDireccionCliente;
   loader = 0;
+  msjGeolocalizacion = '';
 
   private ciudadComercio = '';
 
@@ -63,12 +65,11 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     private utilService: UtilitariosService,
     private establecimientoService: EstablecimientoService,
     private mapsService: MapsServiceService,
-    private sedeDeliveryService: SedeDeliveryService
+    private sedeDeliveryService: SedeDeliveryService,
+    private geolocationService: GeolocationService
   ) {
     this.idClienteBuscar = dialogData.idcliente;
     this.isFromComercio = dialogData.isFromComercio || false;
-
-    console.log(this.isFromComercio);
 
     this.direccionBuscarUpdate.pipe(
       debounceTime(400),
@@ -157,40 +158,28 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   }
 
   async goUbicacionActual() {
+    this.msjGeolocalizacion = '';
 
-    // const rptPermissions = await this.mapsService.ubicacionRequestPermissions();
-    // console.log('rptPermissions', rptPermissions);
-    // this.mapsService.getPosition()
-
-    // this.getPosition().then(pos => {
-    //   console.log('pos navigater', JSON.stringify(pos));
-    // })
-    this.mapsService.getPosition().then((pos: any) => {
-      // console.log('pos', JSON.stringify(pos));
-      
-      this.latitude = pos.lat;
-      this.longitude = pos.lng;
-
-      this.centerChange(pos);
-
-      this.getDireccionGeocode({ 'location': { lat: pos.lat, lng: pos.lng }});
-    });
+    try {
+      const pos = await this.geolocationService.obtenerPosicion();
+      this.latitude = pos.latitude;
+      this.longitude = pos.longitude;
+      this.setCentro(pos.latitude, pos.longitude);
+      this.getDireccionGeocode({ location: { lat: pos.latitude, lng: pos.longitude } });
+    } catch (error) {
+      // Alternativa manual: se queda en el buscador de direcciones.
+      this.msjGeolocalizacion = this.geolocationService.mensaje(error);
+      this.showBusqueda = true;
+    }
   }
 
   goMapa() {
     this.showSelectedDireccion = false;
   }
 
-  getPosition(): Promise<any> {
-    return new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resp => {
-                resolve({lng: resp.coords.longitude, lat: resp.coords.latitude});
-            },
-            err => {
-                reject(err);
-          });
-    });
-}
+  private setCentro(lat: number, lng: number): void {
+    this.mapCenter = { lat, lng };
+  }
 
   private async getDireccionGeocode(payload: any, prediccionSelected = null, showMapComercio = false) {
 
@@ -241,8 +230,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
           this.isChangeDireccion = false;
 
           // centrar
-          this.mapCenter.lat = this.latitude;
-          this.mapCenter.lng = this.longitude;
+          this.setCentro(this.latitude, this.longitude);
 
           this.countMoveMap = 0;
 
@@ -270,10 +258,8 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   }
 
   centerChange(event: any) {
-    // console.log('event center event', event);
     if (event) {
-      this.mapCenter.lat = event.lat;
-      this.mapCenter.lng = event.lng;
+      this.setCentro(event.lat, event.lng);
     }
   }
 
