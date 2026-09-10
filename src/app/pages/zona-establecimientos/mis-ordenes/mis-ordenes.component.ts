@@ -26,6 +26,7 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
   idClientePedidos: number;
 
   private idpedidoPush = 0;
+  private listaCargada = false; // ya respondio una carga: recien ahí "no esta en la lista" significa algo
 
   telefonoSoporte = '934746830';
 
@@ -137,10 +138,13 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
           return x;
         });
 
+        this.listaCargada = true;
         this.abrirPedidoPush();
       }, error => {
         // se conserva la lista anterior: un fallo de red no debe vaciar la pantalla
         console.error('Error al cargar mis pedidos', error);
+        // aunque fallara, la carga ya respondio: si no, el ?idpedido quedaria colgado para siempre
+        this.listaCargada = true;
         this.cargaFallida = this.listMisPedidos.length === 0;
         this.loaderPage = false;
       });
@@ -151,6 +155,10 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
     if ( this.idpedidoPush <= 0 ) { return; }
 
     const pedidoPush = (this.listMisPedidos || []).find(x => Number(x.idpedido) === this.idpedidoPush);
+
+    // la lista aun no ha respondido (esta llamada viene de queryParams en ngOnInit): se conserva
+    // idpedidoPush para que lo abra el callback de loadMisPedidos
+    if ( !pedidoPush && !this.listaCargada ) { return; }
 
     this.idpedidoPush = 0;
     // sin limpiar el ?idpedido, al volver atras se re-crea el componente y el detalle se reabre solo
