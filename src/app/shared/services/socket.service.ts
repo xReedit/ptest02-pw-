@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as io from 'socket.io-client';
 import { Observable } from 'rxjs/internal/Observable';
+import { Subject } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 
 
 import { URL_SERVER_SOCKET } from '../config/config.const';
@@ -40,6 +42,9 @@ export class SocketService {
   private resTipoConsumo: any = [];
 
   private verificandoConexion = false;
+
+  // un Subject por nombre de evento; ver fromEvent/bindEvent/rebindEvents
+  private eventSubjects = new Map<string, Subject<any>>();
 
   constructor(
     private infoTockenService: InfoTockenService,
@@ -99,6 +104,8 @@ export class SocketService {
       // forceNew: true
     });
 
+    this.rebindEvents(); // re-enlaza los eventos ya suscritos a la nueva instancia
+
     this.listenStatusSocket(); // escucha los estado del socket
 
     // this.socket.on('finishLoadDataInitial', () => {
@@ -145,29 +152,15 @@ export class SocketService {
   }
 
   onGetCarta() {
-    return new Observable(observer => {
-      this.socket.on('getLaCarta', (res: any) => {
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('getLaCarta');
   }
 
   onGetDataSedeDescuentos() {
-    return new Observable(observer => {
-      this.socket.on('getDataSedeDescuentos', (res: any) => {
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('getDataSedeDescuentos');
   }
 
   onGetTipoConsumo() {
-    // if ( this.isSocketOpen ) { return new Observable(observer => {observer.next(null); }); }
-    return new Observable(observer => {
-      this.socket.on('getTipoConsumo', (res: TipoConsumoModel) => {
-        // this.resTipoConsumo = res;
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('getTipoConsumo');
   }
 
   // onGetTipoConsumo() {
@@ -190,11 +183,7 @@ export class SocketService {
   }
 
   onItemModificado() {
-    return new Observable(observer => {
-      this.socket.on('itemModificado-pwa', (res: any) => {
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('itemModificado-pwa');
   }
 
   // onItemModificado() {
@@ -202,11 +191,7 @@ export class SocketService {
   // }
 
   onNuevoItemAddInCarta() {
-    return new Observable(observer => {
-      this.socket.on('nuevoItemAddInCarta', (res: any) => {
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('nuevoItemAddInCarta');
   }
 
   // onNuevoItemAddInCarta() {
@@ -215,11 +200,7 @@ export class SocketService {
 
   // cuando se recupera el stock de pedido que caduco el tiempo
   onItemResetCant() {
-    return new Observable(observer => {
-      this.socket.on('itemResetCant-pwa', (res: any) => {
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('itemResetCant-pwa');
   }
 
   // onItemResetCant() {
@@ -228,11 +209,7 @@ export class SocketService {
 
   // load reglas de la carta y subtotales
   onReglasCarta() {
-    return new Observable(observer => {
-      this.socket.on('getReglasCarta', (res: any) => {
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('getReglasCarta');
   }
 
   // onReglasCarta() {
@@ -242,149 +219,103 @@ export class SocketService {
   // datos de la sede, impresoras
   // load reglas de la carta y subtotales
   onGetDatosSede() {
-    return new Observable(observer => {
-      this.socket.on('getDataSede', (res: any) => {
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('getDataSede');
   }
 
   onGetClienteLlama() {
-    return new Observable(observer => {
-      this.socket.on('notificar-cliente-llamado', (res: any) => {
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('notificar-cliente-llamado');
   }
 
   onRemoveClienteLlama() {
-    return new Observable(observer => {
-      this.socket.on('notificar-cliente-llamado-remove', (res: any) => {
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('notificar-cliente-llamado-remove');
   }
 
   onLoadCallClienteLlama() {
-    return new Observable(observer => {
-      this.socket.on('load-list-cliente-llamado', (res: any) => {
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('load-list-cliente-llamado');
   }
 
   // respuesta de hacer un nuevo pedido
   onGetNuevoPedido() {
-    return new Observable(observer => {
-      this.socket.on('nuevoPedido', (res: any) => {
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('nuevoPedido');
   }
 
   // cuando el cliente paga el pedido
   onPedidoPagado() {
-    return new Observable(observer => {
-      this.socket.on('pedido-pagado-cliente', (res: any) => {
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('pedido-pagado-cliente');
   }
 
 
   onDeliveryPedidoChangeStatus() {
-    return new Observable(observer => {
-      this.socket.on('repartidor-notifica-estado-pedido', (estado: any) => {
-        observer.next(estado);
-      });
-    });
+    return this.fromEvent('repartidor-notifica-estado-pedido');
   }
 
   onDeliveryUbicacionRepartidor() {
-    return new Observable(observer => {
-      this.socket.on('repartidor-notifica-ubicacion', (coordenadas: any) => {
-        observer.next(coordenadas);
-      });
-    });
+    return this.fromEvent('repartidor-notifica-ubicacion');
   }
 
 
   onComercioOpenChangeFromMonitor() {
-    return new Observable(observer => {
-      this.socket.on('set-comercio-open-change-from-monitor', (comercioId: any) => {
-        observer.next(comercioId);
-      });
-    });
+    return this.fromEvent('set-comercio-open-change-from-monitor');
   }
 
   // repuesta del mensaje de verificacion
   onMsjVerificacionResponse() {
-    return new Observable(observer => {
-      this.socket.on('mensaje-verificacion-telefono-rpt', (data: any) => {
-        observer.next(data);
-      });
-    });
+    return this.fromEvent('mensaje-verificacion-telefono-rpt');
   }
 
   // fecha ahora
   onGetInfoDateNow() {
-    // if ( this.isSocketOpen ) { return new Observable(observer => {observer.next(null); }); }
-    return new Observable(observer => {
-      this.socket.on('date-now-info', (res: any) => {
-        // this.resTipoConsumo = res;
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('date-now-info');
   }
 
   // escucha si mesa fue pagada
   onGetMesaPagada() {
-    return new Observable(observer => {
-      this.socket.on('restobar-notifica-pay-pedido-res', (res: any) => {
-        if (res.importe_restante === 0) { // si es pagado en su totalidad
-          observer.next(res);
-        }
-      });
-    });
+    // solo emite si la mesa fue pagada en su totalidad (logica original del handler)
+    return this.fromEvent('restobar-notifica-pay-pedido-res')
+      .pipe(filter((res: any) => res && res.importe_restante === 0));
   }
 
   // escucha si hay nuevo pedido en mesa
   onGetNewPedidoMesa() {
-    return new Observable(observer => {
-      this.socket.on('nuevoPedido-for-list-mesas', (res: any) => {
-        // normaliza
-        let pase = false;
-        const _rpt = {
-          nummesa: '',
-          nommozo: '',
-          referencia: '',
-          flag_is_cliente: 0,
-          min: 0,
-          remove: false
-        };
+    // normaliza el payload y descarta los que no traen mesa (logica original del handler)
+    return this.fromEvent('nuevoPedido-for-list-mesas')
+      .pipe(
+        map((res: any) => this.normalizarPedidoMesa(res)),
+        filter(rpt => rpt !== null)
+      );
+  }
 
-        let _item_mesa;
+  private normalizarPedidoMesa(res: any) {
+    let pase = false;
+    const _rpt = {
+      nummesa: '',
+      nommozo: '',
+      referencia: '',
+      flag_is_cliente: 0,
+      min: 0,
+      remove: false
+    };
 
-        if (res.m) {
-          if (res.m !== '') {
-            _item_mesa = res;
-            pase = true;
-          }
-        } else if (res.p_header) {
-          if (res.p_header.m !== '') {
-            _item_mesa = res.p_header;
-            pase = true;
-          }
-        }
+    let _item_mesa;
 
-        if (pase) {
-          _rpt.nummesa = _item_mesa.m;
-          _rpt.nommozo = _item_mesa.nom_us;
+    if (res.m) {
+      if (res.m !== '') {
+        _item_mesa = res;
+        pase = true;
+      }
+    } else if (res.p_header) {
+      if (res.p_header.m !== '') {
+        _item_mesa = res.p_header;
+        pase = true;
+      }
+    }
 
-          observer.next(_rpt);
-        }
-      });
-    });
+    if (!pase) { return null; }
+
+    _rpt.nummesa = _item_mesa.m;
+    _rpt.nommozo = _item_mesa.nom_us;
+
+    return _rpt;
   }
 
   // onDeliveryGetLastIdPedido() {
@@ -438,33 +369,60 @@ export class SocketService {
     });
   }
 
-  asyncEmitPedido(eventName: string, eventNameRes: string, data: any) {
+  // Resuelve con la respuesta del servidor (por ack o por evento), rechaza por timeout o sin socket.
+  asyncEmitPedido(eventName: string, eventNameRes: string, data: any, timeoutMs = 25000): Promise<any> {
     return new Promise((resolve, reject) => {
-      try {
-        this.socket.emit(eventName, data);
-        this.socket.on(eventNameRes, result => {
-          this.socket.off(eventNameRes);
-          this.listenStatusService.setIisMsjConexionLentaSendPedidoSourse(false)
-          resolve(result);
-        });
-      } catch (error) {
-        return false;
+      if (!this.socket || !this.socket.connected) {
+        reject(new Error('socket-desconectado'));
+        return;
       }
-      // setTimeout(reject, 1000);
-      setTimeout(() => {
-        ;
-        this.listenStatusService.setIisMsjConexionLentaSendPedidoSourse(true)
-        return false;
-      }, 6000); // despues de 6 segundos indicara que se acerque al punto wifi  
+      let settled = false;
+      let timerLento: any;
+      let timerTimeout: any;
+      const onRes = (result: any) => finish(() => {
+        this.listenStatusService.setIisMsjConexionLentaSendPedidoSourse(false);
+        resolve(result);
+      });
+      const finish = (fn: () => void) => {
+        if (settled) { return; }
+        settled = true;
+        clearTimeout(timerLento);
+        clearTimeout(timerTimeout);
+        this.socket.off(eventNameRes, onRes);
+        fn();
+      };
+      // despues de 6 segundos indica al usuario que la conexion esta lenta
+      timerLento = setTimeout(() => this.listenStatusService.setIisMsjConexionLentaSendPedidoSourse(true), 6000);
+      timerTimeout = setTimeout(() => finish(() => reject(new Error('timeout'))), timeoutMs);
+      this.socket.on(eventNameRes, onRes);
+      this.socket.emit(eventName, data, (ack: any) => onRes(ack));
     });
   }
 
+  // Un Subject por evento; los componentes se suscriben al Subject, no al socket,
+  // asi una reconexion con instancia nueva no los deja escuchando a un socket muerto.
+  private fromEvent<T = any>(evento: string): Observable<T> {
+    if (!this.eventSubjects.has(evento)) {
+      const subj = new Subject<any>();
+      this.eventSubjects.set(evento, subj);
+      this.bindEvent(evento, subj);
+    }
+    return this.eventSubjects.get(evento).asObservable();
+  }
+
+  private bindEvent(evento: string, subj: Subject<any>): void {
+    if (!this.socket) { return; }
+    this.socket.off(evento);
+    this.socket.on(evento, (res: any) => subj.next(res));
+  }
+
+  // llamar cada vez que se crea una instancia nueva de socket
+  private rebindEvents(): void {
+    this.eventSubjects.forEach((subj, evento) => this.bindEvent(evento, subj));
+  }
+
   private listen(evento: string) {
-    return new Observable(observer => {
-      this.socket.on(evento, (res: any) => {
-        observer.next(res);
-      });
-    });
+    return this.fromEvent(evento);
   }
 
   closeConnection(): void {
@@ -620,10 +578,6 @@ export class SocketService {
 
   // holding
   onCallPedidoListoMarca() {
-    return new Observable(observer => {
-      this.socket.on('restobar-call-mozo-holding', (res: any) => {
-        observer.next(res);
-      });
-    });
+    return this.fromEvent('restobar-call-mozo-holding');
   }
 }
