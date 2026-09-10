@@ -48,9 +48,8 @@ export class ConfirmadoComponent implements OnInit {
 
   finDeliveryAvisoMsj() {
 
-    if ( this.utilitariosSerivce.getOS() !== 'iOS' ) {
-      this.lanzarPermisoNotificationPush(0);
-    }
+    // iOS ya no se excluye: el push nativo es el mismo camino en Android y en iOS
+    this.lanzarPermisoNotificationPush(0);
 
     // limpiar storage transaccion
     this.miPedidoService.prepareNewPedido();
@@ -69,21 +68,18 @@ export class ConfirmadoComponent implements OnInit {
   }
 
 
-  private lanzarPermisoNotificationPush(option: number = 0) {
-    // this.pushNotificationSerice.suscribirse(option);
-    
-    try {      
-      if ( this.pushNotificationSerice.getIsTienePermiso() ) {
-        this.pushNotificationSerice.suscribirse();
+  private async lanzarPermisoNotificationPush(option: number = 0) {
+    try {
+      // el pedido ya se guardo: el idcliente definitivo puede haber cambiado
+      this.pushNotificationSerice.enviarSuscripcion();
+
+      if ( await this.pushNotificationSerice.getIsTienePermiso() ) {
+        await this.pushNotificationSerice.suscribirse();
         return;
       }
     } catch (error) {
-      console.error(error);
+      console.error('lanzarPermisoNotificationPush', error);
     }
-    // else {
-    //   this.pushNotificationSerice.suscribirse();
-    //   return;
-    // }
 
     // si no tiene permiso le pregunta
     const _dialogConfig = new MatDialogConfig();
@@ -94,12 +90,7 @@ export class ConfirmadoComponent implements OnInit {
     const _dialogReset = this.dialog.open(DialogDesicionComponent, _dialogConfig);
     _dialogReset.afterClosed().subscribe(result => {
       if ( result ) {
-        // console.log('result', result);
-        try {          
-          this.pushNotificationSerice.suscribirse();
-        } catch (error) {
-          console.error(error);
-        }
+        this.pushNotificationSerice.suscribirse();
       }
     });
   }

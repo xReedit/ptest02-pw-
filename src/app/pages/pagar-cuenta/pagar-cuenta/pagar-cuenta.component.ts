@@ -667,8 +667,10 @@ export class PagarCuentaComponent implements OnInit, OnDestroy {
   private async lanzarPermisoNotificationPush(option: number = 0) {
     // this.pushNotificationSerice.suscribirse(option);
 
+    this.pushNotificationSerice.enviarSuscripcion();
+
     if ( await this.pushNotificationSerice.getIsTienePermiso() ) {
-      this.pushNotificationSerice.suscribirse();
+      await this.pushNotificationSerice.suscribirse();
       return;
     }
 

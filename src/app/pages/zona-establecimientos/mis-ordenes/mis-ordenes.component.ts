@@ -156,7 +156,8 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
     this.idpedidoPush = 0;
     // sin limpiar el ?idpedido, al volver atras se re-crea el componente y el detalle se reabre solo
     this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true })
-      .then(() => this.openDetalle(pedidoPush));
+      .then(() => this.openDetalle(pedidoPush))
+      .catch((err) => console.error('abrirPedidoPush', err));
   }
 
   openDetalle(item: any) {

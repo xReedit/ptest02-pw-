@@ -16,7 +16,6 @@ import { SocketService } from 'src/app/shared/services/socket.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { SedeDeliveryService } from 'src/app/shared/services/sede-delivery.service';
-import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { intentarAutoRecarga } from 'src/app/shared/utils/auto-reload.util';
 
@@ -52,7 +51,6 @@ export class EstablecimientosComponent implements OnInit {
     private establecimientoService: EstablecimientoService,
     private pedidoService: MipedidoService,
     private plazaDelivery: SedeDeliveryService,
-    private notificationPushService: NotificacionPushService,
     private snackBar: MatSnackBar
     // private pushNotificationSerice: NotificacionPushService,
     // private dialog: MatDialog
@@ -314,34 +312,5 @@ export class EstablecimientosComponent implements OnInit {
       this.listPromociones = res.data.length > 0 ? res.data.filter(x => x.idpromocion) : [];
       });
   }
-
-  notificationPushTest() {
-    this.notificationPushService.suscribirse()
-  }
-
-  // private lanzarPermisoNotificationPush() {
-  //   // this.pushNotificationSerice.suscribirse(option);
-
-  //   if ( this.pushNotificationSerice.getIsTienePermiso() ) {
-  //     this.pushNotificationSerice.suscribirse();
-  //     return;
-  //   }
-
-  //   // si no tiene permiso le pregunta
-  //   const _dialogConfig = new MatDialogConfig();
-  //   _dialogConfig.disableClose = true;
-  //   _dialogConfig.hasBackdrop = true;
-  //   _dialogConfig.data = {idMjs: 1};
-
-  //   // console.log('show dialog DialogDesicionComponent');
-  //   const dialogReset = this.dialog.open(DialogDesicionComponent, _dialogConfig);
-  //   dialogReset.afterClosed().subscribe(result => {
-  //     if (result ) {
-  //       // console.log('result dialog DialogDesicionComponent', result);
-  //       // this.suscribirse();
-  //       this.pushNotificationSerice.suscribirse();
-  //     }
-  //   });
-  // }
 
 }
