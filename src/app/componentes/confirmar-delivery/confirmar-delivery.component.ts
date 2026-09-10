@@ -99,6 +99,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
 
   isCalculandoDistanciaA = false;
   isDistanciaEstimada = false; // la distancia se estimo porque la api de google no respondio
+  tiempoAproxEntrega = ''; // parametros_tienda_linea.tiempo_aprox_entrega, si la sede lo configuro
 
   isRestaurante = false;
   isCubierto = false;
@@ -622,6 +623,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
               this.dirEstablecimiento.c_servicio = costoEntrega.costo_servicio;
               this.dirEstablecimiento.distancia_mt = costoEntrega.distancia_en_km.toString();
               this.dirEstablecimiento.distancia_km = costoEntrega.distancia_en_km.toString();
+              this.tiempoAproxEntrega = costoEntrega.tiempo_aprox_entrega || '';
               this.isDistanciaEstimada = this.dirEstablecimiento.isDistanciaEstimada === true;
               this.dirEstablecimiento.isCalcApiGoogle = !this.isDistanciaEstimada;
               this.establecimientoService.set(this.dirEstablecimiento);
@@ -650,6 +652,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
               // sin esto el spinner y el boton Confirmar se quedaban bloqueados para siempre
               this.isCalculandoDistanciaA = false;
               this.isDistanciaEstimada = false; // no hay distancia valida que anotar
+              this.tiempoAproxEntrega = ''; // no hay entrega que anunciar
               this.verificarMontoMinimo();
               return;
             }

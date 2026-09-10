@@ -45,7 +45,7 @@
             <span class="fw-100 fs-12 text-secondary">Direccion de entrega:</span>
             <p class="m-0 fs-14">
                 <!-- <strong>{{direccionCliente.titulo}}</strong> <br> {{direccionCliente.direccion}} -->
-                <strong [ngClass]="{'text-danger': direccionCliente.direccion === ''}">{{direccionCliente.titulo}}</strong> <span *ngIf="direccionCliente.direccion != ''" class="fw-100 text-info pl-2"> {{  dirEstablecimiento.distancia_km }} km </span><span *ngIf="isDistanciaEstimada" class="fw-100 fs-10 text-secondary pl-1">(distancia estimada)</span><br> {{direccionCliente.direccion}}
+                <strong [ngClass]="{'text-danger': direccionCliente.direccion === ''}">{{direccionCliente.titulo}}</strong> <span *ngIf="direccionCliente.direccion != ''" class="fw-100 text-info pl-2"> {{  dirEstablecimiento.distancia_km }} km </span><span *ngIf="isDistanciaEstimada" class="fw-100 fs-10 text-secondary pl-1">(distancia estimada)</span><span *ngIf="tiempoAproxEntrega" class="fw-100 fs-10 text-secondary pl-1">· {{ tiempoAproxEntrega }}</span><br> {{direccionCliente.direccion}}
             </p>   
             <p *ngIf="msjErrorDir.length > 0" class="text-danger fs-12 fw-100 m-0">  {{ msjErrorDir }} </p>
         </div>

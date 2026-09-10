@@ -266,18 +266,17 @@ export class CompGetDatosClienteComponent implements OnInit {
     _dirB.longitude = this.direccionB.longitude;
     this.isCalculandoDistancia = true;
 
-    // this.calcDistanceService.calculateRoute(this.direccionA, _dirB, false);
     this.calcDistanceService.calculateRouteObserver(this.direccionA, _dirB, false)
-    .subscribe((res: any) => {
-      // setTimeout(() => {        
+    .subscribe(() => {
         this.laPlazaDelivery = _dirB;
         this.isCalculandoDistancia = false;
-        // this.calcCostoServicio();
-        // console.log('this.laPlazaDelivery', this.laPlazaDelivery);
-        this.isCalculandoDistancia = false; this.isFormValid = true;
+        this.isFormValid = true;
         this.validFormDos();
-      // }, 1600);
-
+    }, () => {
+        // sin esto el indicador de "calculando" se queda encendido y el formulario bloqueado
+        this.isCalculandoDistancia = false;
+        this.isFormValid = false;
+        this.validFormDos();
     });
   }
 

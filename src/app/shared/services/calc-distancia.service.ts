@@ -16,6 +16,7 @@ import {
 import { MapsServiceService } from './maps-service.service';
 import { UtilitariosService } from './utilitarios.service';
 import { distanciaKmHaversine } from '../utils/geo';
+import { calcularCostoEntrega, CostoEntrega, ParametrosCostoDelivery } from '../utils/costo-entrega';
 
 
 @Injectable({
@@ -343,29 +344,9 @@ export class CalcDistanciaService {
   }
 
   // 1023 // calcular costo de entrega, recibiendo parametros para calcular la distancia
-  costoEntregaTiendaEnLinea(parametros: any, distanciaEnKm: number, isTiendaLinea = false) {
-    
-    const radioBasico = typeof parametros.km_base === 'string' ? parseFloat(parametros.km_base) : parametros.km_base; // Radio básico de 2 km
-    const costoBasico = typeof parametros.km_base_costo === 'string' ? parseFloat(parametros.km_base_costo) : parametros.km_base_costo; // Costo básico de $3.00
-    const costoAdicionalPorKilometro = typeof parametros.km_adicional_costo === 'string' ? parseFloat(parametros.km_adicional_costo) : parametros.km_adicional_costo; // Costo adicional por kilómetro de $2.00
-    const radioMaximo = typeof parametros.km_limite === 'string' ? parseFloat(parametros.km_limite) : parametros.km_limite; // Radio máximo de 10 km
-
-
-    if (distanciaEnKm > radioMaximo) {
-      return { mensaje: "😔 Lo siento, el servicio no disponible en esta zona 🗺️\n Verifique que la direccion sea la correcta. *Tambien puede adjuntarnos su ubicación.*", success: false };
-    }
-
-    let costoServicio = costoBasico;
-    const distanciaAdicional = distanciaEnKm - radioBasico;
-
-    if (distanciaAdicional > 0) {
-      const costoAdicional = distanciaAdicional * costoAdicionalPorKilometro;      
-      costoServicio = parseFloat(costoServicio) + costoAdicional;      
-    }    
-    costoServicio = this.utilService.roundAmount(costoServicio)// redondea
-
-    return { distancia_en_km: distanciaEnKm.toFixed(2), costo_servicio: costoServicio, success: true };
-
+  // la regla vive en shared/utils/costo-entrega.ts para poder probarla sin Angular ni google
+  costoEntregaTiendaEnLinea(parametros: ParametrosCostoDelivery, distanciaEnKm: number, isTiendaLinea = false): CostoEntrega {
+    return calcularCostoEntrega(parametros, distanciaEnKm, (monto: number) => this.utilService.roundAmount(monto));
   }
 
 

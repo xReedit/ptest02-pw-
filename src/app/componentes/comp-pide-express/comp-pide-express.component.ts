@@ -290,15 +290,16 @@ export class CompPideExpressComponent implements OnInit {
     this.validFormDos();
 
     this.calcDistanceService.calculateRouteObserver(this.direccionA, _dirB, false)
-    .subscribe((res: any) => {
-      // setTimeout(() => {
+    .subscribe(() => {
         this.laPlazaDelivery = _dirB;
         this.isCalculandoDistancia = false;
         this.setDiasHoraEstablecimineto();
         this.validFormDos();
         this.calcCostoServicio();
-      // }, 1600);
-
+    }, () => {
+        // sin esto el indicador de "calculando" se queda encendido y el formulario bloqueado
+        this.isCalculandoDistancia = false;
+        this.validFormDos();
     });
   }
 
@@ -327,7 +328,7 @@ export class CompPideExpressComponent implements OnInit {
       this.datosFormUno.is_express = 1;
 
     } catch (error) {
-      console.log(error);
+      // ponytail: los campos de arriba son opcionales; si alguno falta se envia lo que haya reunido
     }
 
     const _dataSend = {

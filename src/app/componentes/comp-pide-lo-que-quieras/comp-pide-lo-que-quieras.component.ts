@@ -267,29 +267,27 @@ export class CompPideLoQueQuierasComponent implements OnInit  {
   }
 
   calcularDistanciaEntrega() {
-    this.isCalculandoDistanciaA = true;
     if ( this.direccionCliente.ciudad.toLocaleLowerCase() !== this.laPlazaDelivery.ciudad.toLocaleLowerCase() ) {
       // el servicio no esta disponible en esta ubicacion
       this.direccionCliente.codigo = null;
       this.msjErrorDir = 'Servicio no disponible en esta dirección.';
+      this.isCalculandoDistanciaA = false; // antes se salia dejando el indicador encendido
+      this.validFormDos();
       return;
     }
 
+    this.isCalculandoDistanciaA = true;
 
-    // this.calcDistanceService.calculateRoute(this.direccionCliente, this.laPlazaDelivery, false);
     this.calcDistanceService.calculateRouteObserver(this.direccionCliente, this.laPlazaDelivery, false)
-    .subscribe((res: DeliveryEstablecimiento) => {
-      // setTimeout(() => {
+    .subscribe(() => {
         this.isCalculandoDistanciaA = false;
-        this.laPlazaDelivery = this.laPlazaDelivery;
-        // this.laPlazaDelivery = res;
-        // _suscription.unsubscribe();
         this.validFormDos();
         this.calcCostoServicio();
-      // }, 1600);
+    }, () => {
+        // sin esto el indicador de "calculando" se queda encendido y el formulario bloqueado
+        this.isCalculandoDistanciaA = false;
+        this.validFormDos();
     });
-
-
   }
 
   calcCostoServicio() {
@@ -316,7 +314,7 @@ export class CompPideLoQueQuierasComponent implements OnInit  {
       this.datosFormUno.is_express = 0;
 
     } catch (error) {
-      console.log(error);
+      // ponytail: los campos de arriba son opcionales; si alguno falta se envia lo que haya reunido
     }
 
     const _dataSend = {
