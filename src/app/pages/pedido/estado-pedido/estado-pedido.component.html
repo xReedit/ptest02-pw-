@@ -12,11 +12,6 @@
                 <span>{{tituloMesa}}</span>
                 <h3>{{infoToken.numMesaLector | number:'2.'}}</h3>
             </div>
-            <!-- <span *ngIf="!estadoPedido">.</span> -->    
-            <ng-template #elseTemplate>
-                
-            </ng-template>
-            
             <div class="col-8 xcontainer-center text-right" *ngIf="estadoPedido">
                 <span *ngIf="estadoPedido.estado === 0">Tiempo de espera <strong>{{ tiempoEspera }} min</strong> aprox.</span>
                 <span *ngIf="estadoPedido.estado === 1">Su pedido esta por llegar.</span>

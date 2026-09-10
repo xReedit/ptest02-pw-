@@ -3,7 +3,7 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
-import { takeUntil, debounceTime } from 'rxjs/operators';
+import { takeUntil, debounceTime, filter } from 'rxjs/operators';
 import { merge } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
 import { Router } from '@angular/router';
@@ -95,10 +95,11 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
   }
 
   // socket, vuelta al primer plano y polling de respaldo: cualquiera refresca la lista
+  // el filtro va ANTES del debounce: sin pedidos activos no se vuelve a consultar al servidor
   // debounceTime va antes de takeUntil: al revés, al destruir el componente el debounce pendiente se vaciaría igual
   private listenChangeStatus(): void {
     merge(this.seguimiento.cambios$(), this.seguimiento.refrescoAutomatico$())
-      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .pipe(filter(() => (this.listMisPedidos || []).some(x => x.estadoResumen?.activo)), debounceTime(300), takeUntil(this.destroy$))
       .subscribe(() => this.loadMisPedidos(false));
   }
 

@@ -12,7 +12,9 @@ export class SeguimientoPedidoService {
 
   constructor(private crud: CrudHttpService, private socket: SocketService, private zone: NgZone) {
     if (IS_NATIVE) {
-      void App.addListener('appStateChange', ({ isActive }) => { if (isActive) { this.zone.run(() => this.resumeSubject.next()); } });
+      // si el plugin no esta disponible el seguimiento sigue vivo con el resto de disparadores
+      void App.addListener('appStateChange', ({ isActive }) => { if (isActive) { this.zone.run(() => this.resumeSubject.next()); } })
+        .catch(() => undefined);
     }
   }
 
@@ -34,15 +36,23 @@ export class SeguimientoPedidoService {
       );
   }
 
-  // cualquier señal de cambio: evento unificado, o los dos eventos viejos del repartidor
-  cambios$(): Observable<any> {
-    return merge(this.socket.onPedidoCambioEstado(), this.socket.onDeliveryPedidoChangeStatus(), this.socket.onDeliveryUbicacionRepartidor());
+  // un evento sin idpedido viene del socket viejo y no se puede atribuir: se deja pasar
+  private esDelPedido(e: any, idpedido?: number): boolean {
+    if (!idpedido) { return true; }
+    const id = e?.idpedido;
+    return (id === undefined || id === null) ? true : Number(id) === Number(idpedido);
   }
 
-  ubicacionRepartidor$(): Observable<{ latitude: number; longitude: number }> {
+  // solo cambios de estado: las posiciones del repartidor no lo son y viajan por ubicacionRepartidor$
+  cambios$(idpedido?: number): Observable<any> {
+    return merge(this.socket.onPedidoCambioEstado(), this.socket.onDeliveryPedidoChangeStatus())
+      .pipe(filter((e: any) => this.esDelPedido(e, idpedido)));
+  }
+
+  ubicacionRepartidor$(idpedido?: number): Observable<{ latitude: number; longitude: number }> {
     return merge(
-      this.socket.onDeliveryUbicacionRepartidor().pipe(map((p: any) => this.normalizarPosicion(p))),
-      this.socket.onPedidoCambioEstado().pipe(map((e: any) => this.normalizarPosicion(e?.position_now)))
+      this.socket.onDeliveryUbicacionRepartidor().pipe(filter((p: any) => this.esDelPedido(p, idpedido)), map((p: any) => this.normalizarPosicion(p))),
+      this.socket.onPedidoCambioEstado().pipe(filter((e: any) => this.esDelPedido(e, idpedido)), map((e: any) => this.normalizarPosicion(e?.position_now)))
     ).pipe(filter(p => !!p)) as Observable<any>;
   }
 

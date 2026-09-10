@@ -3,7 +3,7 @@ import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { LatLng } from 'src/app/componentes/mapa-solo/mapa-solo.component';
 import { Subject, merge } from 'rxjs';
-import { takeUntil, debounceTime } from 'rxjs/operators';
+import { takeUntil, debounceTime, filter } from 'rxjs/operators';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DatosCalificadoModel } from 'src/app/modelos/datos.calificado.model';
 import { DialogCalificacionComponent } from 'src/app/componentes/dialog-calificacion/dialog-calificacion.component';
@@ -20,11 +20,9 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
   dataPedido: any;
   origin: LatLng;
   destination: LatLng;
-  estadoPedido = '';
   estadoResumen: EstadoResumen;
   pasos = PASOS_ESTADO;
   ubicacionRepartidor: { latitude: number; longitude: number } = null;
-  showTelefonoRepartidor = false;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   private direccionCliente: any;
@@ -59,12 +57,14 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
     this.refrescar();
 
     // socket, vuelta al primer plano y polling de respaldo: cualquiera vuelve a pedir el estado al servidor
+    // se pasa el idpedido: los eventos de otro pedido del mismo cliente no deben refrescar esta pantalla
+    // el filtro va ANTES del debounce: con el pedido cerrado no se vuelve a consultar al servidor
     // debounceTime va antes de takeUntil: al revés, al destruir el componente el debounce pendiente se vaciaría igual
-    merge(this.seguimiento.cambios$(), this.seguimiento.refrescoAutomatico$())
-      .pipe(debounceTime(300), takeUntil(this.destroy$))
+    merge(this.seguimiento.cambios$(this.dataPedido.idpedido), this.seguimiento.refrescoAutomatico$())
+      .pipe(filter(() => !!this.estadoResumen?.activo), debounceTime(300), takeUntil(this.destroy$))
       .subscribe(() => this.refrescar());
 
-    this.seguimiento.ubicacionRepartidor$()
+    this.seguimiento.ubicacionRepartidor$(this.dataPedido.idpedido)
       .pipe(takeUntil(this.destroy$))
       .subscribe(pos => {
         if ( !pos ) { return; }
@@ -84,7 +84,7 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(est => {
         if ( !est ) { return; }
-        Object.assign(this.dataPedido, est);
+        this.dataPedido = { ...this.dataPedido, ...est };
         this.aplicarEstado(this.dataPedido);
         if ( est.position_now && !this.ubicacionRepartidor ) {
           this.origin = { latitude: est.position_now.latitude, longitude: est.position_now.longitude };
@@ -94,8 +94,6 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
 
   private aplicarEstado(p: any): void {
     this.estadoResumen = resumirEstadoPedido(p);
-    this.estadoPedido = this.estadoResumen.etiqueta;
-    this.showTelefonoRepartidor = !!p.idrepartidor && this.estadoResumen.activo;
   }
 
   redirectWhatsApp() {
@@ -133,8 +131,10 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
       data => {
         // notificar al repartidor fin del pedido
         this.socketService.emit('repartidor-notifica-fin-pedido', this.dataPedido);
-        this.dataPedido.pwa_delivery_status = 4;
+        this.dataPedido = { ...this.dataPedido, pwa_delivery_status: 4 };
         this.aplicarEstado(this.dataPedido);
+        // dataPedido ya no es el mismo objeto que guarda el token: hay que reapuntarlo antes de persistir
+        this.infoTokenService.infoUsToken.otro = this.dataPedido;
         this.infoTokenService.set();
 
         this.router.navigate(['/zona-delivery/establecimientos']);
