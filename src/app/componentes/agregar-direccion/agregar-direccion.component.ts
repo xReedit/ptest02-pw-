@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone, ViewChild, ElementRef, Output, EventEmitter, Input, AfterViewInit } from '@angular/core';
-// import { GoogleMap, MapMarker, GoogleMapsModule } from '@angular/google-maps';
+import { GoogleMap } from '@angular/google-maps';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
@@ -9,6 +9,7 @@ import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { GeolocationService } from 'src/app/shared/services/geolocation.service';
+import { GoogleMapsLoaderService } from 'src/app/shared/services/google-maps-loader.service';
 
 declare var google: any;
 
@@ -55,7 +56,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   private dataInfoSede: any;
 
   @ViewChild('search') public searchElementRef: ElementRef;
-  // @ViewChild('map') map: GoogleMap;
+  @ViewChild('map') map: GoogleMap;
   @ViewChild('registerForm') myForm;
 
   @Input() isGuardarDireccion = true;
@@ -65,6 +66,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
 
   isDireccionValid = true;
   msjGeolocalizacion = '';
+  mapsListo = false; // sin Maps no se instancia <google-map>: su ngOnInit crea google.maps.Map
 
   mapCenter: google.maps.LatLngLiteral;
 
@@ -79,7 +81,8 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     private inforTokenService: InfoTockenService,
     private utilService: UtilitariosService,
     private establecimientoService: EstablecimientoService,
-    private geolocationService: GeolocationService
+    private geolocationService: GeolocationService,
+    private mapsLoader: GoogleMapsLoaderService
   ) { }
 
   ngOnInit() {
@@ -90,12 +93,22 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.loadInitComponent();
+    this.setCurrentLocation();
+
+    // el geocodificador y el autocompletado necesitan el script de Maps: se arman cuando responde
+    this.mapsLoader.load()
+      .then(() => { this.mapsListo = this.mapsLoader.isLoaded(); })
+      .catch(() => { this.mapsListo = false; })
+      .then(() => this.loadInitComponent());
   }
 
   private loadInitComponent() {
+    if (!this.mapsListo) {
+      this.msjGeolocalizacion = 'El buscador de direcciones no está disponible. Escribe la dirección completa o usa las coordenadas.';
+      return;
+    }
+
     this.geoCoder = new google.maps.Geocoder();
-    this.setCurrentLocation();
 
     const autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
       componentRestrictions: this._componentRestrictions
@@ -194,6 +207,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   }
 
   getAddress(latitude, longitude) {
+    if (!this.geoCoder) { return; }
 
     // this.isDireccionValid = true;
     // const palce_id = placeId ? {'placeId': placeId} : { 'location': { lat: latitude, lng: longitude } };
@@ -269,10 +283,16 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
       return ;
     }
 
-    // this.latitude = this.mapCenter.lat;
-    // this.longitude = this.mapCenter.lng;
+    // statusChanges dispara este metodo apenas el formulario es valido; si el GPS
+    // fue denegado y aun no hay centro ni geocodificacion, no hay nada que guardar.
+    if (!this.mapCenter || !this.mapCenter.lat) {
+      return;
+    }
 
-    // this.loader = 1;
+    if (!this.dataMapa) {
+      return;
+    }
+
     this.dataCliente.direccion = this.address;
     this.dataCliente.idcliente = this.isUsCliente ? this.verifyClientService.getDataClient().idcliente : this.idClienteBuscar;
     this.dataCliente.longitude = this.mapCenter.lng;
@@ -336,6 +356,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
 
   private searchTypeMap(search: string): string {
     let rpt = '';
+    if (!this.dataMapa || !this.dataMapa.address_components) { return rpt; }
     this.dataMapa.address_components.map((x: any) => {
       x.types.map( (t: any) => {
         if (t === search) {
@@ -363,11 +384,11 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     this.countMoveMap++;
   }
 
-  centerChange(event: any) {
-    if (event) {
-      this.mapCenter.lat = event.lat;
-      this.mapCenter.lng = event.lng;
-    }
+  // (centerChanged) de <google-map> no trae payload: el centro se lee del mapa.
+  centerChanged(): void {
+    const centro = this.map ? this.map.getCenter() : null;
+    if (!centro) { return; }
+    this.mapCenter = { lat: centro.lat(), lng: centro.lng() };
   }
 
   clickmap() {

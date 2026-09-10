@@ -1,5 +1,13 @@
-agm-map {
-    height: 300px;
+google-map {
+    display: block;
+    height: 400px;
+}
+
+.sin-mapa {
+    padding: 12px;
+    font-size: 12px;
+    color: #7b8494;
+    text-align: center;
 }
 
 .btn-in-input {

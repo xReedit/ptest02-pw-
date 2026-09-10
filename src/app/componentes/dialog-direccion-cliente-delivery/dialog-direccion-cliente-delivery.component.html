@@ -90,30 +90,35 @@
             Confirmar tu dirección </span>
     </p>
 
-    <!-- mapa -->    
+    <!-- mapa -->
     <div class="border" id="map_canvas">
-        <agm-map 
-            [latitude]="latitude" 
-            [longitude]="longitude"
-            [zoom]="zoom"          
-            [zoomControl]="false" [streetViewControl]="false" [disableDefaultUI]="true"              
-            [showDefaultInfoWindow] = "false"
-            (centerChange)="centerChange($event)"
+        <google-map *ngIf="mapsListo" [hidden]="mostrarRespaldo()"
+            height="245px"
+            width="100%"
+            [center]="mapCenter"
+            [zoom]="zoom"
+            [options]="mapOptions"
+            (mapInitialized)="mapaMontado()"
+            (tilesloaded)="mapaListo()"
+            (centerChanged)="centerChanged()"
             (mapClick)="clickmap()"
-            (idle)="idleMap()"
-            >                
-        </agm-map>           
-        <div class="centerMarker"></div>     
-        <div class="centerMarker-fondo"></div>
-        <div class="btn-confirmar-dir" *ngIf="countMoveMap > 1">            
-            <button class="btn btn-success" (click)="confirmarDireccion()">Confirmar</button>
+            (idle)="idleMap()">
+        </google-map>
+
+        <div *ngIf="mostrarRespaldo()" class="sin-mapa">
+            No pudimos cargar el mapa. Puedes guardar la dirección tal como la escribiste y corregirla luego.
         </div>
+
+        <ng-container *ngIf="!mostrarRespaldo()">
+            <div class="centerMarker"></div>
+            <div class="centerMarker-fondo"></div>
+            <div class="btn-confirmar-dir" *ngIf="countMoveMap > 1">
+                <button class="btn btn-success" (click)="confirmarDireccion()">Confirmar</button>
+            </div>
+        </ng-container>
     </div>
 
-    <!-- mapa capacitor -->
-    <!-- <div class="border" id="map_canvas">
-        <capacitor-google-map id="map"></capacitor-google-map>
-    </div> -->
+    <p *ngIf="msjGeolocalizacion" class="fw-600 text-warning fs-13 pt-2">{{ msjGeolocalizacion }}</p>
 
     <div class="p-2">
         <mat-form-field class="w-100">

@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { DatosDeliveryComponent } from './datos-delivery/datos-delivery.component';
@@ -211,7 +211,5 @@ import { EstadoPedidosHoldingClienteComponent } from './estado-pedidos-holding-c
   //   DialogTiempoEntregaComponent
   //   // DialogDesicionComponent
   // ]
-  // ponytail: CUSTOM_ELEMENTS_SCHEMA solo sigue por los <agm-map> de dialog-direccion-cliente-delivery; se quita cuando ese dialogo migre en el sprint 4
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ComponentesModule { }

@@ -1,28 +1,33 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject, NgZone, ChangeDetectorRef } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatInput } from '@angular/material/input';
+import { GoogleMap } from '@angular/google-maps';
 import { NgxMaterialTimepickerHoursFace } from 'ngx-material-timepicker/src/app/material-timepicker/components/timepicker-hours-face/ngx-material-timepicker-hours-face';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
-import { MapsServiceService } from 'src/app/shared/services/maps-service.service';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
-import { IS_NATIVE } from 'src/app/shared/config/config.const';
 import { SedeDeliveryService } from 'src/app/shared/services/sede-delivery.service';
 import { GeolocationService } from 'src/app/shared/services/geolocation.service';
+import { GoogleMapsLoaderService } from 'src/app/shared/services/google-maps-loader.service';
 
 declare var google: any;
+
+// ponytail: misma heuristica que mapa-solo. Google no siempre invoca gm_authFailure
+// (RefererNotAllowedMapError pinta su propio panel dentro del contenedor y no avisa),
+// asi que si el mapa no llega a dibujar en este plazo se le da por caido.
+const MS_ESPERA_MAPA = 6000;
 
 @Component({
   selector: 'app-dialog-direccion-cliente-delivery',
   templateUrl: './dialog-direccion-cliente-delivery.component.html',
   styleUrls: ['./dialog-direccion-cliente-delivery.component.css']
 })
-export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterViewInit {
+export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   direccionSelected: DeliveryDireccionCliente;
   listDirecciones: DeliveryDireccionCliente[];
@@ -39,12 +44,29 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   dataMapa: any;
   latitude: number;
   longitude: number;
-  zoom: number;
+  zoom = 17;
   countMoveMap = 0;
   isUsCliente = true; // si el usuario es cliente o usuario autorizado
-  mapCenter: any = {};
+  mapsListo = false;    // el script de Maps respondio
+  mapaPintado = false;  // llego tilesloaded: el mapa se dibujo de verdad
+  mapaCaido = false;    // vencio la espera o Google reporto el fallo de autenticacion
+  mapCenter: google.maps.LatLngLiteral = { lat: -12.0464, lng: -77.0428 };
+  mapOptions: google.maps.MapOptions = {
+    disableDefaultUI: true,
+    zoomControl: false,
+    streetViewControl: false,
+    clickableIcons: false,
+    gestureHandling: 'greedy'
+  };
+
+  @ViewChild(GoogleMap) map: GoogleMap;
+
   private isChangeDireccion = true;
   isFromComercio = false;
+
+  private destroy$ = new Subject<void>();
+  private temporizador: any = null;
+  private destruido = false;
 
   // nueva direccion en ingreso
   dataCliente: DeliveryDireccionCliente;
@@ -64,9 +86,11 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     private verifyClientService: VerifyAuthClientService,
     private utilService: UtilitariosService,
     private establecimientoService: EstablecimientoService,
-    private mapsService: MapsServiceService,
     private sedeDeliveryService: SedeDeliveryService,
-    private geolocationService: GeolocationService
+    private geolocationService: GeolocationService,
+    private mapsLoader: GoogleMapsLoaderService,
+    private zone: NgZone,
+    private cd: ChangeDetectorRef
   ) {
     this.idClienteBuscar = dialogData.idcliente;
     this.isFromComercio = dialogData.isFromComercio || false;
@@ -87,11 +111,27 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     this.loadDireccionesAgregadas();
 
     this.ciudadComercio = this.establecimientoService.get().ciudad;
+
+    this.mapsLoader.load()
+      .then(() => { this.mapsListo = true; })
+      .catch(() => { this.mapsListo = false; });
+
+    // BehaviorSubject: si el fallo de autenticacion ya ocurrio, la suscripcion recibe el valor actual
+    this.mapsLoader.authFallida$.pipe(takeUntil(this.destroy$)).subscribe((fallida) => {
+      if (fallida) { this.mapsListo = false; this.mapaCaido = true; this.mapaPintado = false; }
+    });
   }
 
   ngAfterViewInit() {
     // this.getPlaceAutocomplete();
-}
+  }
+
+  ngOnDestroy(): void {
+    this.destruido = true;
+    this.limpiarEspera();
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
 
   private loadDireccionesAgregadas() {
@@ -186,10 +226,14 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     if ( prediccionSelected ) {
       this.dataCliente.direccion = prediccionSelected.structured_formatting.main_text;
       this.dataCliente.ciudad = prediccionSelected.structured_formatting.secondary_text;
-      
+
     }
 
-    // console.log('payload', payload);
+    if (!this.mapsLoader.isLoaded()) {
+      this.msjGeolocalizacion = 'El mapa no está disponible. Guardaremos la dirección tal como la escribiste.';
+      this.showSelectedDireccion = false;
+      return;
+    }
 
     const geocoder = new google.maps.Geocoder();
     geocoder
@@ -249,6 +293,11 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
           // setTimeout(() => {
           // }, 500);
         // }
+      })
+      .catch(() => {
+        // el geocodificador rechaza (clave sin permiso, sin resultados, red caida): no se pierde lo escrito
+        this.msjGeolocalizacion = 'No pudimos ubicar esa dirección en el mapa. Puedes guardarla tal como la escribiste.';
+        this.showSelectedDireccion = false;
       });
   }
 
@@ -257,10 +306,42 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     this.countMoveMap++;
   }
 
-  centerChange(event: any) {
-    if (event) {
-      this.setCentro(event.lat, event.lng);
-    }
+  // (centerChanged) de <google-map> no trae payload: el centro se lee del mapa.
+  centerChanged(): void {
+    const centro = this.map ? this.map.getCenter() : null;
+    if (!centro) { return; }
+    this.setCentro(centro.lat(), centro.lng());
+  }
+
+  /** mapInitialized solo dice que se instancio google.maps.Map: con la clave rechazada tambien llega. */
+  mapaMontado(): void { this.armarEspera(); }
+
+  /** tilesloaded es la unica senal de que el mapa llego a dibujarse: cancela la espera. */
+  mapaListo(): void {
+    this.limpiarEspera();
+    this.zone.run(() => { this.mapaPintado = true; this.mapaCaido = false; });
+  }
+
+  /** Sin mapa dibujado se muestra el texto de respaldo; la direccion se puede guardar igual. */
+  mostrarRespaldo(): boolean {
+    if (this.mapaPintado) { return false; }
+    return this.mapaCaido || !this.mapsListo;
+  }
+
+  private armarEspera(): void {
+    if (this.temporizador || this.mapaPintado) { return; }
+    // fuera de Angular para no mantener vivo el ciclo de deteccion durante la espera
+    this.zone.runOutsideAngular(() => {
+      this.temporizador = setTimeout(() => {
+        this.temporizador = null;
+        if (this.mapaPintado || this.destruido) { return; }
+        this.zone.run(() => { this.mapaCaido = true; this.cd.detectChanges(); });
+      }, MS_ESPERA_MAPA);
+    });
+  }
+
+  private limpiarEspera(): void {
+    if (this.temporizador) { clearTimeout(this.temporizador); this.temporizador = null; }
   }
 
   clickmap() {
@@ -291,6 +372,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
 
   private searchTypeMap(search: string): string {
     let rpt = '';
+    if (!this.dataMapa || !this.dataMapa.address_components) { return rpt; }
     this.dataMapa.address_components.map((x: any) => {
       x.types.map( (t: any) => {
         if (t === search) {

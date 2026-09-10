@@ -57,25 +57,32 @@
 
             <!-- mapa -->
                 <div class="border" id="map_canvas">
-                    <google-map #map
+                    <google-map #map *ngIf="mapsListo"
                         [center]="mapCenter"
                         [zoom]="zoom"
                         [options]="mapOptions"
                         (mapClick)="clickmap()"
                         (idle)="idleMap()"
-                        (centerChanged)="centerChange($event)"
+                        (centerChanged)="centerChanged()"
                         height="400px"
                         width="100%">
                         <map-marker
                             [position]="mapCenter"
                             [options]="markerOptions"
-                            (dragend)="markerDragEnd($event)">
+                            (mapDragend)="markerDragEnd($event)">
                         </map-marker>
                     </google-map>
-                    <div class="centerMarker"></div>     
-                    <div class="btn-confirmar-dir" *ngIf="countMoveMap > 1">
-                        <button class="btn btn-success" (click)="confirmarDireccion()">Confirmar</button>
+
+                    <div *ngIf="!mapsListo" class="sin-mapa">
+                        No pudimos cargar el mapa. Puedes guardar la dirección tal como la escribiste y corregirla luego.
                     </div>
+
+                    <ng-container *ngIf="mapsListo">
+                        <div class="centerMarker"></div>
+                        <div class="btn-confirmar-dir" *ngIf="countMoveMap > 1">
+                            <button class="btn btn-success" (click)="confirmarDireccion()">Confirmar</button>
+                        </div>
+                    </ng-container>
                 </div>
 
             </div>

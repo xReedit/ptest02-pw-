@@ -22,7 +22,6 @@ import { UtilitariosService } from 'src/app/shared/services/utilitarios.service'
 import { ClienteService } from 'src/app/shared/services/cliente.service';
 import { DialogDireccionClienteDeliveryComponent } from '../dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
 import { IS_NATIVE } from 'src/app/shared/config/config.const';
-// import { MapsAPILoader } from '@agm/core';
 
 // DEL COMERCIO
 
