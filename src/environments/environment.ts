@@ -5,9 +5,18 @@
 import { envSecrets } from './env.secrets';
 
 export const environment = {
-  production: true,
+  production: false,
   view_mozo: false, // true = app solo mozo
   googleMapsApiKey: envSecrets.googleMapsApiKey,
+  apiUrl: 'http://localhost:5819/v3',
+  socketUrl: 'http://localhost:5819',
+  speechSocketUrl: 'http://192.168.1.65:1337',
+  speechAudioUrl: 'http://192.168.1.65:1337/resources/',
+  imgCartaUrl: 'http://192.168.1.65/restobar/file/',
+  imgPromoUrl: 'http://192.168.1.65/restobar/repositorio/img_promo/',
+  imgComercioUrl: 'http://192.168.1.65/restobar/print/logo/',
+  imgIconsUrl: 'http://192.168.1.65/restobar/images/',
+  vapidPublic: 'BC7ietauZE99Hx9HkPyuGVr8jaYETyEJgH-gLaYIsbORYobppt9dX49_K_wubDqphu1afi7XrM6x1zAp4kJh_wU',
   niubiz: {
     merchantId: '456879852',
     urlApiSeguridad: 'https://apisandbox.vnforappstest.com/api.security/v1/security',

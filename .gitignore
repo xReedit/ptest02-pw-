@@ -45,3 +45,5 @@ src/environments/env.secrets.ts
 # System Files
 .DS_Store
 Thumbs.db
+
+.superpowers/
