@@ -8,7 +8,7 @@ const routes: Routes = [{
     data: { titulo: 'Inicio' },
     children: [
         {
-            path: '', redirectTo: 'atm'
+            path: '', redirectTo: 'atm', pathMatch: 'full'
         },
         {
             path: 'atm',

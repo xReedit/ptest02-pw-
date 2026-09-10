@@ -9,7 +9,7 @@ const routes: Routes = [{
     data: { titulo: 'Inicio' },
     children: [
         {
-            path: '', redirectTo: 'info-reserva'
+            path: '', redirectTo: 'info-reserva', pathMatch: 'full'
         },
         {
             path: 'info-reserva',

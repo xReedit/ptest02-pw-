@@ -10,7 +10,7 @@ const routes: Routes = [{
     data: { titulo: 'Cuenta' },
     children: [
         {
-            path: '', redirectTo: 'pagar-cuenta'  
+            path: '', redirectTo: 'pagar-cuenta', pathMatch: 'full'  
             // component: PagarCuentaComponent,          
         },
         {

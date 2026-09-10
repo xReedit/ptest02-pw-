@@ -120,6 +120,10 @@ const routes: Routes = [
     { path: '**', redirectTo: '' },
 ];
 
+// Anti-bucle del errorHandler del router (ver constructor de AppRoutingModule).
+const REDIRECT_COOLDOWN_MS = 5000;
+let ultimaRedireccionPorError = 0;
+
 @NgModule({
   imports: [RouterModule.forRoot(
     routes, {
@@ -138,8 +142,25 @@ const routes: Routes = [
 export class AppRoutingModule {
 
   constructor(private router: Router) {
+    // ponytail: el errorHandler solo registra y, como mucho, redirige una vez cada
+    // REDIRECT_COOLDOWN_MS. Antes convertia cualquier error del router en una nueva
+    // navegacion inmediata a '' -> el mismo error -> bucle infinito (NG04014).
     this.router.errorHandler = (error: any) => {
-        this.router.navigate(['']); // or redirect to default route
+      console.error('Router error', error);
+
+      // Error de configuracion de rutas: redirigir volveria a lanzar el mismo error.
+      const _mensaje = String((error && error.message) || error || '');
+      if (error?.code === 'NG04014' || _mensaje.indexOf('Invalid configuration') > -1) { return; }
+
+      // Si ya estamos en la ruta raiz, redirigir a '' no aporta nada.
+      const _urlActual = this.router.url || '';
+      if (_urlActual === '' || _urlActual === '/') { return; }
+
+      const _ahora = Date.now();
+      if (_ahora - ultimaRedireccionPorError < REDIRECT_COOLDOWN_MS) { return; }
+      ultimaRedireccionPorError = _ahora;
+
+      this.router.navigate(['']);
     };
   }
 

@@ -9,7 +9,8 @@ const routes: Routes = [{
     children: [
         {
             path: '',
-            redirectTo: 'pedido-confirmado'
+            redirectTo: 'pedido-confirmado',
+            pathMatch: 'full'
         },
         {
             path: 'pedido-confirmado',

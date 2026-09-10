@@ -7,7 +7,7 @@ const routes: Routes = [{
     data: { titulo: 'Inicio' },
     children: [
         {
-            path: '', redirectTo: 'inicio'
+            path: '', redirectTo: 'inicio', pathMatch: 'full'
         }
     ]
 }];
