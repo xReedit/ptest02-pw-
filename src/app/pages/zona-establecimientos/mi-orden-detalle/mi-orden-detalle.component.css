@@ -1,3 +1,6 @@
+/* la barra inferior es fija y tapaba el paso resaltado de la linea de tiempo.
+   !important porque la utilidad p-3 de bootstrap ya trae padding con !important */
+.detalle-orden { padding-bottom: 56px !important; }
 .timeline { display:flex; flex-direction:column; gap:6px; }
 .paso { display:flex; align-items:center; gap:8px; color:#8a92a0; font-size:12px; }
 .paso .punto { width:10px; height:10px; border-radius:50%; background:#d5d9e0; flex:none; }

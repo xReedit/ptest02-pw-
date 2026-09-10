@@ -95,11 +95,12 @@ export class MisOrdenesComponent implements OnInit, OnDestroy {
   }
 
   // socket, vuelta al primer plano y polling de respaldo: cualquiera refresca la lista
-  // el filtro va ANTES del debounce: sin pedidos activos no se vuelve a consultar al servidor
+  // el filtro va ANTES del debounce: sin pedidos activos no se vuelve a consultar al servidor,
+  // salvo que la primera carga fallara: en ese caso el sondeo de 30 s sirve de reintento
   // debounceTime va antes de takeUntil: al revés, al destruir el componente el debounce pendiente se vaciaría igual
   private listenChangeStatus(): void {
     merge(this.seguimiento.cambios$(), this.seguimiento.refrescoAutomatico$())
-      .pipe(filter(() => (this.listMisPedidos || []).some(x => x.estadoResumen?.activo)), debounceTime(300), takeUntil(this.destroy$))
+      .pipe(filter(() => (this.listMisPedidos || []).some(x => x.estadoResumen?.activo) || this.cargaFallida), debounceTime(300), takeUntil(this.destroy$))
       .subscribe(() => this.loadMisPedidos(false));
   }
 

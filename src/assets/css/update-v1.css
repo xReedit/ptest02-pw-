@@ -41,11 +41,14 @@ overflow: auto;
   display: none;  
 } */
 
+/* la barra inferior es el unico acceso a "Mis Pedidos" con puntero: estaba oculta salvo en movil
+   y dejaba una franja azul de 20px sin pestañas clicables */
 .xfooter-zona-delivery .tabs-group {
-  display: none;  
+  display: block;
+  width: 100%;
 }
 .xfooter-zona-delivery {
-  padding: 10px;
+  padding: 0px;
 }
 
 .list-option-time.mat-list-option {

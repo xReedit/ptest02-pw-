@@ -23,7 +23,6 @@ export class SelectCiudadDeliveryComponent implements OnInit {
   private loadCiudades() {
     this.crudService.getAll('delivery', 'get-ciudades-delivery', false, false, false)
     .subscribe((res: any) => {
-      console.log('res', res);
       this.listCiudadesServicio = res.data;
 
       if ( this.isOnlyReserva ) {
