@@ -9,7 +9,8 @@
         matInput        
         type="tel"
         placeholder="Telefono"
-        (keyup) = "verificarNum(telefono.value)" 
+        (keyup) = "verificarNum(telefono.value)"
+        (input) = "verificarNum(telefono.value)"
         [value] = "data.numberphone" autocomplete="off"
         maxlength="9"        
         #telefono required>

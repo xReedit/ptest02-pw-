@@ -37,7 +37,8 @@
             <input type="number" matInput 
             placeholder="Paga con" 
             [(ngModel)]="importeIndicado"
-            (keyup) = "verificarImporte(importe.value)" 
+            (keyup) = "verificarImporte(importe.value)"
+            (input) = "verificarImporte(importe.value)"
             #importe required>
         </mat-form-field>
     </ng-container>
