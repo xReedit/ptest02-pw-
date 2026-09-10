@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
-import { ILatLng } from 'src/app/shared/directivas/directions-map-directive.directive';
+import { LatLng } from 'src/app/componentes/mapa-solo/mapa-solo.component';
 import { Subject, merge } from 'rxjs';
 import { takeUntil, debounceTime } from 'rxjs/operators';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -18,8 +18,8 @@ import { resumirEstadoPedido, PASOS_ESTADO, EstadoResumen } from 'src/app/shared
 })
 export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
   dataPedido: any;
-  origin: ILatLng;
-  destination: ILatLng;
+  origin: LatLng;
+  destination: LatLng;
   estadoPedido = '';
   estadoResumen: EstadoResumen;
   pasos = PASOS_ESTADO;

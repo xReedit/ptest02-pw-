@@ -1,3 +1,10 @@
-agm-map {
-    height: 230px;
+.mapa-solo {
+    min-height: 60px;
+}
+
+.sin-mapa {
+    padding: 12px;
+    font-size: 12px;
+    color: #7b8494;
+    text-align: center;
 }

@@ -1,12 +1,12 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { GoogleMapsModule } from '@angular/google-maps';
 import { DatosDeliveryComponent } from './datos-delivery/datos-delivery.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MaterialModule } from '../core/material/material.module';
 import { DebounceClickDirective } from '../shared/directivas/debounce-click.directive';
 import { EncuestaOpcionComponent } from './encuesta-opcion/encuesta-opcion.component';
 // import { DialogUbicacionComponent } from './dialog-ubicacion/dialog-ubicacion.component';
-// import { AgmCoreModule } from '@agm/core';
 
 import { AgregarDireccionComponent } from './agregar-direccion/agregar-direccion.component';
 
@@ -19,7 +19,6 @@ import { DialogVerificarTelefonoComponent } from './dialog-verificar-telefono/di
 import { DialogTipoComprobanteComponent } from './dialog-tipo-comprobante/dialog-tipo-comprobante.component';
 import { CompPropinaDeliveryComponent } from './comp-propina-delivery/comp-propina-delivery.component';
 import { MapaSoloComponent } from './mapa-solo/mapa-solo.component';
-import { DirectionsMapDirectiveDirective } from '../shared/directivas/directions-map-directive.directive';
 import { CompPedidoDetalleComponent } from './comp-pedido-detalle/comp-pedido-detalle.component';
 import { CompCalificacionComponent } from './comp-calificacion/comp-calificacion.component';
 // import { DialogDesicionComponent } from './dialog-desicion/dialog-desicion.component';
@@ -76,7 +75,6 @@ import { EstadoPedidosHoldingClienteComponent } from './estado-pedidos-holding-c
   declarations: [
     DatosDeliveryComponent,
     DebounceClickDirective,
-    DirectionsMapDirectiveDirective,
     EncuestaOpcionComponent,
     AgregarDireccionComponent,
     ItemComercioComponent,
@@ -137,10 +135,7 @@ import { EstadoPedidosHoldingClienteComponent } from './estado-pedidos-holding-c
     // DialogUbicacionComponent
   ],
   imports: [
-    // AgmCoreModule.forRoot({
-    //   apiKey: environment.googleMapsApiKey,
-    //   libraries: ['places']
-    // }),
+    GoogleMapsModule,
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
@@ -214,7 +209,7 @@ import { EstadoPedidosHoldingClienteComponent } from './estado-pedidos-holding-c
   //   DialogTiempoEntregaComponent
   //   // DialogDesicionComponent
   // ]
-  // ponytail: CUSTOM_ELEMENTS_SCHEMA silencia <google-map>/<agm-marker> (módulos removidos en e6b82a5); reemplazar por los mapas reales en el sprint 2
+  // ponytail: CUSTOM_ELEMENTS_SCHEMA solo sigue por los <agm-map> de dialog-direccion-cliente-delivery; se quita cuando ese dialogo migre en el sprint 4
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ComponentesModule { }
