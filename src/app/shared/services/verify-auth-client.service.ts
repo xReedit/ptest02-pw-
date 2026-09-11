@@ -10,6 +10,7 @@ import { catchError, shareReplay, share } from 'rxjs/operators';
 import { IS_NATIVE, IS_PLATAFORM_IOS } from '../config/config.const';
 import { AuthNativeService } from './auth-native.service';
 import { b64DecodeUnicode, b64EncodeUnicode } from '../utils/b64';
+import { guardarTokenCliente } from '../utils/token-cliente';
 
 @Injectable({
   providedIn: 'root'
@@ -370,6 +371,9 @@ export class VerifyAuthClientService {
 
       // console.log('registerCliente', rpt);
       if ( !rpt.success ) {return; }
+
+      // sprint 5: el backend acaba de establecer la identidad y devuelve la prueba
+      guardarTokenCliente(rpt.tokenCliente);
 
       // login en backend
       idClient = rpt.data[0].idcliente;

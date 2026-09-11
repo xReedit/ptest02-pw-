@@ -19,6 +19,7 @@ export const KEY_RULES_SEDE = 'sys::rules-sede';
 
 export const VIEW_APP_MOZO = false; // true = app solo mozo // solo para vista incial
 export const URL_CONSULTA_RUC_DNI = 'https://apifac.papaya.com.pe/api/services/'; // consulta dni o ruc
-// ponytail: TOKEN_CONSULTA y TOKEN_SMS siguen en el bundle; pasarlos por el backend en el sprint de seguridad
+// ponytail: TOKEN_CONSULTA sigue en el bundle. Va a un tercero (apifac.papaya.com.pe), no a
+// nuestro backend, asi que sacarlo exige pasar la consulta por el backend: sprint aparte.
+// TOKEN_SMS se borro en el sprint 5 junto con la ruta muerta delivery/send-sms-confirmation.
 export const TOKEN_CONSULTA = 'tLKbDncvyKIPcgdVAGqt7rmy7W9mU9cnbawpZdc7JJv7l6h9cU'; // token de prueba
-export const TOKEN_SMS = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoicGFwYXlhLXNtcyIsImlhdCI6MTAwMDIwMDAzMDAwfQ.bKnTHEEGW_SustFir-40ZAYcHtfIo7Gyjq7c2onsAj0'; // token de prueba

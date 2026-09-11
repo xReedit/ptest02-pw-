@@ -3,6 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
+import { guardarTokenCliente } from 'src/app/shared/utils/token-cliente';
 
 
 @Component({
@@ -79,7 +80,7 @@ export class DialogVerificarTelefonoComponent implements OnInit {
 
   }
 
-  // codMedio  0 = whatsapp  1= s ms
+  // codMedio se conserva por compatibilidad de firma: hoy solo hay un medio, WhatsApp.
   sendSMS(codMedio: number) {
 
     this.isVerificacionOk = false;
@@ -88,37 +89,23 @@ export class DialogVerificarTelefonoComponent implements OnInit {
     this.isNumberSuccess = 0;
     this.numSegundosActivarBtn = 15;
 
-    // por wsp
-    // if ( this.intentoVerificacion === 0 ) {
-    // this.intentoVerificacion = 1;
-    if ( codMedio === 0 ) {
-      this.data.idsocket = this.socketService.getIdSocket();
+    // ponytail: el envio por SMS se retira. Apuntaba a delivery/send-sms-confirmation, ruta
+    // que no existe (routes/v3.js la tenia comentada) y cuyo handler tenia el cuerpo entero
+    // comentado: nunca respondia. El OTP real siempre fue el de WhatsApp por socket. Con eso
+    // se va tambien TOKEN_SMS del bundle. Si se quiere SMS de verdad, es un sprint aparte.
+    this.data.idsocket = this.socketService.getIdSocket();
 
-      if (!this.socketService.isSocketOpen) {
-        this.socketService.connect(this.infoClient, 0, false, false);
-      }
-
-
-      setTimeout(() => {
-        this.socketService.emit('msj-confirma-telefono', this.data);
-      }, 500);
-      this.isContandoShow = true;
-      this.contadorActvarBtnSend();
-      this.intentoVerificacion++; // reintentar
-      return;
+    if (!this.socketService.isSocketOpen) {
+      this.socketService.connect(this.infoClient, 0, false, false);
     }
 
-    // por sms
-    this.contadorActvarBtnSend();
-    this.crudService.postSMS(this.data, 'delivery', 'send-sms-confirmation', false)
-      .subscribe(res => {
+    setTimeout(() => {
+      this.socketService.emit('msj-confirma-telefono', this.data);
+    }, 500);
 
-        this.isNumberSuccess = res.msj ? 1 : 2;
-        this.isSendSMS = res.msj;
-        // this.isValidForm = false;
-        this.detenerContadorBtnSend();
-        this.intentoVerificacion++; // reintentar
-      });
+    this.isContandoShow = true;
+    this.contadorActvarBtnSend();
+    this.intentoVerificacion++; // reintentar
   }
 
   verificarCodigoSMS(val: string) {
@@ -136,6 +123,8 @@ export class DialogVerificarTelefonoComponent implements OnInit {
 
         // console.log('x ===  verificarCodigoSMS', JSON.stringify(res));
         this.isVerificacionOk = res.data[0].response === 1 ? true : false;
+        // sprint 5: con el codigo correcto el telefono queda probado -> llega el token
+        if ( this.isVerificacionOk ) { guardarTokenCliente(res.tokenCliente); }
         // console.log('x ===  verificarCodigoSMS isVerificacionOk', this.isVerificacionOk);
         setTimeout(() => {
           this.loader = this.isVerificacionOk ? 2 : 3;

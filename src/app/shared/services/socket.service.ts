@@ -6,6 +6,7 @@ import { filter, map } from 'rxjs/operators';
 
 
 import { URL_SERVER_SOCKET } from '../config/config.const';
+import { leerTokenCliente } from '../utils/token-cliente';
 // import { CartaModel } from 'src/app/modelos/carta.model';
 // import { SeccionModel } from 'src/app/modelos/seccion.model';
 // import { ItemModel } from 'src/app/modelos/item.model';
@@ -87,7 +88,10 @@ export class SocketService {
       isOutCarta: _isOutCarta,
       isCashAtm: _isCashAtm,
       isFromApp: opFrom,
-      firts_socketid: infToken.socketId
+      firts_socketid: infToken.socketId,
+      // sprint 5: socket.io-client 2 no soporta auth:{}, el token va en el query del handshake.
+      // El backend solo lo mira para los sockets que se declaran cliente (iscliente = true).
+      tokenCliente: leerTokenCliente() || ''
     };
 
     // console.log('dataSocket', dataSocket);
@@ -347,10 +351,13 @@ export class SocketService {
   //   });
   // }
 
-  // tras guardar el pedido el servidor puede asignar otro idcliente; unirse a su sala sin reconectar
+  // tras guardar el pedido el servidor puede asignar otro idcliente; unirse a su sala sin reconectar.
+  // El token viaja en el evento porque el del handshake es el del idcliente anterior.
   joinCliente(idcliente: number): void {
     const id = Number(idcliente);
-    if (this.socket && id > 0) { this.socket.emit('join-cliente', id); }
+    if (this.socket && id > 0) {
+      this.socket.emit('join-cliente', { idcliente: id, tokenCliente: leerTokenCliente() || '' });
+    }
   }
 
   emit(evento: string, data: any) {

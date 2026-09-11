@@ -40,6 +40,7 @@ import { NotificacionPushService } from 'src/app/shared/services/notificacion-pu
 import { NiubizClientData, NiubizPaymentResponse } from 'src/app/shared/services/niubiz.service';
 import { b64DecodeUnicode, b64EncodeUnicode } from 'src/app/shared/utils/b64';
 import { claveIdem } from 'src/app/shared/utils/idem';
+import { guardarTokenCliente } from 'src/app/shared/utils/token-cliente';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
@@ -1237,6 +1238,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
     // el servidor puede haber reasignado el cliente al guardar: ese idcliente manda
     if (Number(_res.idcliente) > 0) {
+      // sprint 5: primero el token, para que la suscripcion push y el join-cliente de abajo
+      // ya salgan con la credencial del idcliente definitivo
+      guardarTokenCliente(_res.tokenCliente);
       this.infoToken.setIdClienteToken(Number(_res.idcliente));
       // el idcliente definitivo ya esta en el token: se reenvia el token push con el cliente correcto
       // (un cliente nuevo arranca con idcliente 0 y su token quedaria sin dueño)
