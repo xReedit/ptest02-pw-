@@ -1621,7 +1621,7 @@ import {
   leerTokenCliente
 } from './token-cliente';
 
-const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGNsaWVudGUiOjE1LCJ0aXBvIjoiY2xpZW50ZSJ9.Zm9vLWJhci1maXJtYS1kZS1wcnVlYmE';
+const TOKEN = '<token retirado del historial: ver .env>';
 
 describe('token-cliente', () => {
 
@@ -1763,7 +1763,7 @@ import { HttpConfigInterceptorService } from './http-config-interceptor.service'
 import { KEY_TOKEN_CLIENTE } from '../utils/token-cliente';
 import { URL_SERVER, URL_CONSULTA_RUC_DNI } from '../config/config.const';
 
-const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGNsaWVudGUiOjE1LCJ0aXBvIjoiY2xpZW50ZSJ9.Zm9vLWJhci1maXJtYS1kZS1wcnVlYmE';
+const TOKEN = '<token retirado del historial: ver .env>';
 
 // sin TestBed: el interceptor solo necesita tres colaboradores y un next falso
 function crear(tokenAuth: string = null, respuesta: () => Observable<any> = () => of(new HttpResponse())) {

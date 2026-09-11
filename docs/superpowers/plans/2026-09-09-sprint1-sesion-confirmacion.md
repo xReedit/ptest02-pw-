@@ -130,7 +130,7 @@ export const VIEW_APP_MOZO = false; // true = app solo mozo // solo para vista i
 export const URL_CONSULTA_RUC_DNI = 'https://apifac.papaya.com.pe/api/services/'; // consulta dni o ruc
 // ponytail: TOKEN_CONSULTA y TOKEN_SMS siguen en el bundle; pasarlos por el backend en el sprint de seguridad
 export const TOKEN_CONSULTA = 'tLKbDncvyKIPcgdVAGqt7rmy7W9mU9cnbawpZdc7JJv7l6h9cU'; // token de prueba
-export const TOKEN_SMS = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoicGFwYXlhLXNtcyIsImlhdCI6MTAwMDIwMDAzMDAwfQ.bKnTHEEGW_SustFir-40ZAYcHtfIo7Gyjq7c2onsAj0'; // token de prueba
+export const TOKEN_SMS = '<token retirado del historial: ver .env>'; // token de prueba
 ```
 Antes de reemplazar, leer el archivo actual completo y conservar cualquier otra constante exportada que no aparezca arriba (copiarla al final del archivo nuevo sin cambios).
 
