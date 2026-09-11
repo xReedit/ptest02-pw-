@@ -8,6 +8,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -40,6 +41,7 @@ import { MatMenuModule } from '@angular/material/menu';
     MatInputModule,
     MatTabsModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
     MatToolbarModule,
     MatDialogModule,
     MatCheckboxModule,
@@ -65,6 +67,7 @@ import { MatMenuModule } from '@angular/material/menu';
     MatInputModule,
     MatTabsModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
     MatToolbarModule,
     MatDialogModule,
     MatCheckboxModule,

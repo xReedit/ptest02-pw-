@@ -110,6 +110,9 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
 
     this.geoCoder = new google.maps.Geocoder();
 
+    // el input del buscador desaparece cuando el cliente marca "ingresar en coordenadas"
+    if (!this.searchElementRef) { return; }
+
     const autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
       componentRestrictions: this._componentRestrictions
     });
@@ -290,6 +293,12 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     }
 
     if (!this.dataMapa) {
+      // sin Maps no hay geocodificacion, pero el centro de respaldo si sirve: se guarda la
+      // direccion que escribio el cliente con esas coordenadas en vez de dejarla sin punto
+      this.dataCliente.idcliente = this.isUsCliente ? this.verifyClientService.getDataClient().idcliente : this.idClienteBuscar;
+      this.dataCliente.longitude = this.mapCenter.lng;
+      this.dataCliente.latitude = this.mapCenter.lat;
+      this.dataCliente.referencia = this.utilService.addslashes(this.dataCliente.referencia);
       return;
     }
 

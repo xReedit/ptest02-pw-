@@ -51,6 +51,12 @@ google-map {
     height: 245px;
 }
 
+/* el display:block de arriba le gana al [hidden] del navegador: sin esto el mapa roto
+   se queda encima del texto de respaldo */
+google-map[hidden] {
+    display: none;
+}
+
 .sin-mapa {
     padding: 12px;
     font-size: 12px;

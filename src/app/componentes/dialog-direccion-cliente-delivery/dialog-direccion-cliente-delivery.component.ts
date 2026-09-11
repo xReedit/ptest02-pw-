@@ -1,8 +1,6 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy, Inject, NgZone, ChangeDetectorRef } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatInput } from '@angular/material/input';
 import { GoogleMap } from '@angular/google-maps';
-import { NgxMaterialTimepickerHoursFace } from 'ngx-material-timepicker/src/app/material-timepicker/components/timepicker-hours-face/ngx-material-timepicker-hours-face';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
@@ -21,6 +19,8 @@ declare var google: any;
 // (RefererNotAllowedMapError pinta su propio panel dentro del contenedor y no avisa),
 // asi que si el mapa no llega a dibujar en este plazo se le da por caido.
 const MS_ESPERA_MAPA = 6000;
+
+const MSJ_SIN_MAPA = 'El mapa no está disponible. Guardaremos la dirección tal como la escribiste.';
 
 @Component({
   selector: 'app-dialog-direccion-cliente-delivery',
@@ -159,6 +159,13 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
 
   getPlacesPredictionsChange(value: string) {
 
+    // sin Maps, tocar google.* lanza ReferenceError y mata la suscripcion de busqueda del dialogo
+    if (!this.mapsLoader.isLoaded()) {
+      this.msjGeolocalizacion = MSJ_SIN_MAPA;
+      this.listPredicciones = [];
+      return;
+    }
+
     const sessionToken = new google.maps.places.AutocompleteSessionToken();
     // si es comercio adjunta la ciudad
     const _input = this.isFromComercio ? `${value}, ${this.ciudadComercio}` : value;
@@ -230,7 +237,9 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     }
 
     if (!this.mapsLoader.isLoaded()) {
-      this.msjGeolocalizacion = 'El mapa no está disponible. Guardaremos la dirección tal como la escribiste.';
+      this.msjGeolocalizacion = MSJ_SIN_MAPA;
+      // sin geocodificacion igual hay que dejar idcliente y las coordenadas del centro de respaldo
+      this.setDireccionSelected();
       this.showSelectedDireccion = false;
       return;
     }
@@ -297,6 +306,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
       .catch(() => {
         // el geocodificador rechaza (clave sin permiso, sin resultados, red caida): no se pierde lo escrito
         this.msjGeolocalizacion = 'No pudimos ubicar esa dirección en el mapa. Puedes guardarla tal como la escribiste.';
+        this.setDireccionSelected();
         this.showSelectedDireccion = false;
       });
   }
@@ -359,7 +369,9 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     this.dataCliente.longitude = this.mapCenter.lng;
     this.dataCliente.latitude = this.mapCenter.lat;
     this.dataCliente.referencia = this.utilService.addslashes(this.dataCliente.referencia);
-    this.dataCliente.ciudad = this.searchTypeMap('locality');
+    // sin geocodificacion searchTypeMap devuelve '': se conserva la ciudad de la prediccion,
+    // que es de la que depende cerrarDlg() para buscar la plaza
+    this.dataCliente.ciudad = this.searchTypeMap('locality') || this.dataCliente.ciudad;
     this.dataCliente.provincia = this.searchTypeMap('administrative_area_level_2');
     this.dataCliente.departamento = this.searchTypeMap('administrative_area_level_1');
     this.dataCliente.pais = this.searchTypeMap('country');
