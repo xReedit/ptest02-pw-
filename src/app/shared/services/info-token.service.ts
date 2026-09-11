@@ -7,6 +7,7 @@ import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
 import { HoldingModel } from 'src/app/modelos/holding.model';
 import { Router } from '@angular/router';
 import { b64DecodeUnicode, b64EncodeUnicode } from '../utils/b64';
+import { borrarTokenCliente, guardarTokenCliente, leerTokenCliente } from '../utils/token-cliente';
 
 
 
@@ -317,6 +318,11 @@ export class InfoTockenService {
 
   getToken(): any { return localStorage.getItem('::token'); }
   getTokenAuth(): any { return localStorage.getItem('::token:auth'); }
+
+  // token de sesion del cliente (sprint 5). Vive en sys::tkc; lo emite el backend.
+  getTokenCliente(): string { return leerTokenCliente(); }
+  setTokenCliente(token: any): boolean { return guardarTokenCliente(token); }
+  clearTokenCliente(): void { borrarTokenCliente(); }
 
   // cuando es punto pedido y cambia de usuario, solo cambiamos en el infotoken idusuario y nombres
   changeUserMozo(userMozo: any) {
