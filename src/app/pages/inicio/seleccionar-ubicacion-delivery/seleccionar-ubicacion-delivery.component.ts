@@ -8,7 +8,6 @@ import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cli
 @Component({
   selector: 'app-seleccionar-ubicacion-delivery',
   templateUrl: './seleccionar-ubicacion-delivery.component.html',
-  styleUrls: ['./seleccionar-ubicacion-delivery.component.css']
 })
 export class SeleccionarUbicacionDeliveryComponent implements OnInit {
   isFormValid = false;

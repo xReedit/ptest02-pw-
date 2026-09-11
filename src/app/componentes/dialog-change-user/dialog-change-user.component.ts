@@ -42,7 +42,6 @@ export class DialogChangeUser implements OnInit {
         if ( this.listUsuarios.length > 0 ) { return; }
         this.crudService.getAll('pedido', 'get-user-mozo-change-user', false, false)
             .subscribe((res: any) => {
-                console.log(res);
                 this.listUsuarios = res.data;
                 this.saveStorageListMozos();
             });
@@ -82,7 +81,6 @@ export class DialogChangeUser implements OnInit {
         this.usuario.nomusuario = this.nomUsuarioChange.usuario;
         this.usuario.pass = this.claveUsuarioChange;
         this.authService.getUserLogged(this.usuario).subscribe(res => {
-            console.log('res', res);
             if (res.success) {
                 this.authService.setLocalToken(res.token);
                 this.authService.setLocalTokenAuth(res.token);

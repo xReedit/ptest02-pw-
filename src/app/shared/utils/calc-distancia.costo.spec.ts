@@ -105,3 +105,27 @@ describe('formatearTiempoEntrega', () => {
     expect(formatearTiempoEntrega('')).toBe('');
   });
 });
+
+describe('calcularCostoEntrega: motivo cuando no hay costo', () => {
+  const redondearId = (monto: number): number => monto;
+
+  it('sede sin reglas (parametros vacios): success false y motivo sin-reglas', () => {
+    const rpt = calcularCostoEntrega({} as any, 3, redondearId);
+    expect(rpt.success).toBe(false);
+    expect(rpt.motivo).toBe('sin-reglas');
+    expect(rpt.costo_servicio).toBeUndefined();
+  });
+
+  it('modo fijo sin costo_fijo: success false y motivo sin-reglas', () => {
+    const rpt = calcularCostoEntrega({ modo: 'fijo' } as any, 3, redondearId);
+    expect(rpt.success).toBe(false);
+    expect(rpt.motivo).toBe('sin-reglas');
+  });
+
+  it('modo variable fuera del radio: motivo fuera-de-cobertura', () => {
+    const parametros = { modo: 'variable', km_base: 2, km_base_costo: 5, km_adicional_costo: 2, km_limite: 10 } as any;
+    const rpt = calcularCostoEntrega(parametros, 30, redondearId);
+    expect(rpt.success).toBe(false);
+    expect(rpt.motivo).toBe('fuera-de-cobertura');
+  });
+});

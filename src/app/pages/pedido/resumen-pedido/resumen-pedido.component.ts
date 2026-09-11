@@ -34,6 +34,7 @@ import { UtilitariosService } from 'src/app/shared/services/utilitarios.service'
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { SpeechDataProviderService } from 'src/app/shared/services/speech/speech-data-provider.service';
 import { URL_IMG_ICONS } from 'src/app/shared/config/config.const';
+import { urlImagen } from 'src/app/shared/utils/img-url';
 import { HoldingService } from 'src/app/shared/services/holding.service';
 import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 import { NiubizClientData, NiubizPaymentResponse } from 'src/app/shared/services/niubiz.service';
@@ -1423,7 +1424,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       methods: [
         {
           id: 4,
-          icon: `${URL_IMG_ICONS}_tp_05.png`,
+          icon: urlImagen(URL_IMG_ICONS, '_tp_05.png'),
           name: 'APLICACION',
           amount: this.importePagoHolding,
           isActive: true,

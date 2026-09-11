@@ -1,6 +1,8 @@
-import { Component, OnInit, NgZone, ViewChild, ElementRef, Output, EventEmitter, Input, AfterViewInit } from '@angular/core';
+import { Component, OnInit, NgZone, ViewChild, ElementRef, Output, EventEmitter, Input, AfterViewInit, OnDestroy } from '@angular/core';
 import { GoogleMap } from '@angular/google-maps';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DeliveryDireccionCliente } from 'src/app/modelos/delivery.direccion.cliente.model';
@@ -20,7 +22,7 @@ const CENTRO_LIMA = { lat: -12.0464, lng: -77.0428 };
   templateUrl: './agregar-direccion.component.html',
   styleUrls: ['./agregar-direccion.component.css']
 })
-export class AgregarDireccionComponent implements OnInit, AfterViewInit {
+export class AgregarDireccionComponent implements OnInit, AfterViewInit, OnDestroy {
   latitude: number;
   longitude: number;
   dataMapa: any;
@@ -66,11 +68,17 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
 
   isDireccionValid = true;
   msjGeolocalizacion = '';
-  mapsListo = false; // sin Maps no se instancia <google-map>: su ngOnInit crea google.maps.Map
+  mapsListo = false;    // sin Maps no se instancia <google-map>: su ngOnInit crea google.maps.Map
+  cargandoMapa = true;  // tercer estado: mientras load() no responde no es un fallo todavia
 
   mapCenter: google.maps.LatLngLiteral;
+  // el marcador arrastrable no puede colgar de mapCenter: mover el mapa lo devolvia al centro
+  markerPosition: google.maps.LatLngLiteral;
 
   _componentRestrictions: any = { country: 'pe' };
+
+  private destroy$ = new Subject<void>();
+  private autocomplete: any = null;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -95,11 +103,37 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.setCurrentLocation();
 
+    // BehaviorSubject: si el fallo de autenticacion ya ocurrio, la suscripcion recibe el valor actual
+    this.mapsLoader.authFallida$.pipe(takeUntil(this.destroy$)).subscribe((fallida) => {
+      if (fallida) { this.mapsListo = false; this.cargandoMapa = false; }
+    });
+
     // el geocodificador y el autocompletado necesitan el script de Maps: se arman cuando responde
     this.mapsLoader.load()
       .then(() => { this.mapsListo = this.mapsLoader.isLoaded(); })
       .catch(() => { this.mapsListo = false; })
-      .then(() => this.loadInitComponent());
+      .then(() => { this.cargandoMapa = false; this.loadInitComponent(); });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.limpiarAutocomplete();
+  }
+
+  // Google engancha listeners al input y cuelga el desplegable del <body>: ninguno de los dos
+  // se va solo cuando Angular destruye el componente.
+  private limpiarAutocomplete(): void {
+    if (!this.autocomplete) { return; }
+
+    if (typeof google !== 'undefined' && google.maps && google.maps.event) {
+      google.maps.event.clearInstanceListeners(this.autocomplete);
+    }
+    this.autocomplete = null;
+
+    const paneles = document.querySelectorAll('body > .pac-container');
+    const ultimo = paneles.length ? paneles[paneles.length - 1] : null;
+    if (ultimo && ultimo.parentNode) { ultimo.parentNode.removeChild(ultimo); }
   }
 
   private loadInitComponent() {
@@ -113,13 +147,13 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     // el input del buscador desaparece cuando el cliente marca "ingresar en coordenadas"
     if (!this.searchElementRef) { return; }
 
-    const autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
+    this.autocomplete = new google.maps.places.Autocomplete(this.searchElementRef.nativeElement, {
       componentRestrictions: this._componentRestrictions
     });
 
-    autocomplete.addListener('place_changed', () => {
+    this.autocomplete.addListener('place_changed', () => {
       this.ngZone.run(() => {
-        const place: google.maps.places.PlaceResult = autocomplete.getPlace();
+        const place: google.maps.places.PlaceResult = this.autocomplete.getPlace();
 
         this.countMoveMap = 0;
         this.dataMapa = place;
@@ -137,6 +171,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
           lat: this.latitude,
           lng: this.longitude
         };
+        this.markerPosition = this.mapCenter;
 
         setTimeout(() => {
           this.isChangeDireccion = true;
@@ -151,6 +186,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
       this.latitude = this.dataInfoSede.latitude;
       this.longitude = this.dataInfoSede.longitude;
       this.mapCenter = { lat: Number(this.latitude), lng: Number(this.longitude) };
+      this.markerPosition = this.mapCenter;
       return;
     }
 
@@ -162,6 +198,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
         this.latitude = pos.latitude;
         this.longitude = pos.longitude;
         this.mapCenter = { lat: pos.latitude, lng: pos.longitude };
+        this.markerPosition = this.mapCenter;
         this.getAddress(pos.latitude, pos.longitude);
       })
       .catch(error => {
@@ -179,6 +216,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     const centro = Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : { lat: CENTRO_LIMA.lat, lng: CENTRO_LIMA.lng };
 
     this.mapCenter = centro;
+    this.markerPosition = centro;
     this.latitude = centro.lat;
     this.longitude = centro.lng;
   }
@@ -191,6 +229,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
         lat: this.latitude,
         lng: this.longitude
       };
+      this.markerPosition = this.mapCenter;
     }
   }
 
@@ -204,6 +243,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
       lat: _lat,
       lng: _lon
     };
+    this.markerPosition = this.mapCenter;
 
     this.isChangeDireccion = true;
     this.getAddress(_lat, _lon);
@@ -295,6 +335,7 @@ export class AgregarDireccionComponent implements OnInit, AfterViewInit {
     if (!this.dataMapa) {
       // sin Maps no hay geocodificacion, pero el centro de respaldo si sirve: se guarda la
       // direccion que escribio el cliente con esas coordenadas en vez de dejarla sin punto
+      this.dataCliente.direccion = this.dataCliente.direccion || this.registerForm.value.direccion;
       this.dataCliente.idcliente = this.isUsCliente ? this.verifyClientService.getDataClient().idcliente : this.idClienteBuscar;
       this.dataCliente.longitude = this.mapCenter.lng;
       this.dataCliente.latitude = this.mapCenter.lat;

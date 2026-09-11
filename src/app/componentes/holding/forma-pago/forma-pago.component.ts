@@ -136,8 +136,6 @@ export class FormaPagoComponent {
       })),
       isPaymentSuccess: totalPaid >= this.totalAmount
     };
-
-    console.log('response', response);
     this.paymentsSelected.emit(response);
   }
 

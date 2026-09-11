@@ -125,7 +125,7 @@
 
     <div class="p-2">
         <mat-form-field class="w-100">
-            <input class="input-dir" matInput placeholder="Direccion" (keyup)="goBackEscogerDireccion()" [(ngModel)]="dataCliente.direccion" name="direccion" id="direccion" readonly>
+            <input class="input-dir" matInput placeholder="Direccion" (keyup)="editarDireccionTexto()" [(ngModel)]="dataCliente.direccion" name="direccion" id="direccion" [readonly]="!direccionEditable()">
             <button *ngIf="dataCliente.direccion" matSuffix mat-icon-button aria-label="Clear" (click)="goBackEscogerDireccion()">
                 <mat-icon matSuffix>
                     <i class="fa fa-close"></i>

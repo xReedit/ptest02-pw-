@@ -12,6 +12,7 @@ import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-cli
 import { SedeDeliveryService } from 'src/app/shared/services/sede-delivery.service';
 import { GeolocationService } from 'src/app/shared/services/geolocation.service';
 import { GoogleMapsLoaderService } from 'src/app/shared/services/google-maps-loader.service';
+import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 
 declare var google: any;
 
@@ -22,7 +23,11 @@ const MS_ESPERA_MAPA = 6000;
 
 const MSJ_SIN_MAPA = 'El mapa no está disponible. Guardaremos la dirección tal como la escribiste.';
 
+const MSJ_NO_GUARDADO = 'No pudimos guardar la dirección. Intenta de nuevo.';
+
 const MIN_CARACTERES_BUSQUEDA = 3;
+
+const CENTRO_LIMA = { lat: -12.0464, lng: -77.0428 };
 
 @Component({
   selector: 'app-dialog-direccion-cliente-delivery',
@@ -53,7 +58,8 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   mapsListo = false;    // el script de Maps respondio
   mapaPintado = false;  // llego tilesloaded: el mapa se dibujo de verdad
   mapaCaido = false;    // vencio la espera o Google reporto el fallo de autenticacion
-  mapCenter: google.maps.LatLngLiteral = { lat: -12.0464, lng: -77.0428 };
+  // se resiembra en ngOnInit con las coordenadas de la sede; Lima solo si no se conocen
+  mapCenter: google.maps.LatLngLiteral = { lat: CENTRO_LIMA.lat, lng: CENTRO_LIMA.lng };
   mapOptions: google.maps.MapOptions = {
     disableDefaultUI: true,
     zoomControl: false,
@@ -70,6 +76,10 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   private destroy$ = new Subject<void>();
   private temporizador: any = null;
   private destruido = false;
+  // las respuestas de Places llegan desordenadas: solo se pinta la de la ultima busqueda
+  private idBusqueda = 0;
+  // ciudad deducida de la prediccion elegida (terms), para cuando no hay geocodificacion
+  private ciudadPrediccion = '';
 
   // nueva direccion en ingreso
   dataCliente: DeliveryDireccionCliente;
@@ -92,6 +102,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     private sedeDeliveryService: SedeDeliveryService,
     private geolocationService: GeolocationService,
     private mapsLoader: GoogleMapsLoaderService,
+    private miPedidoService: MipedidoService,
     private zone: NgZone,
     private cd: ChangeDetectorRef
   ) {
@@ -120,6 +131,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     this.loadDireccionesAgregadas();
 
     this.ciudadComercio = this.establecimientoService.get().ciudad;
+    this.usarCentroDeRespaldo();
 
     this.mapsLoader.load()
       .then(() => { this.mapsListo = true; })
@@ -168,6 +180,10 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
 
   getPlacesPredictionsChange(value: string) {
 
+    // se numera antes de cualquier salida temprana para que una busqueda descartada
+    // tambien invalide las respuestas de las anteriores
+    const idActual = ++this.idBusqueda;
+
     // sin Maps, tocar google.* lanza ReferenceError y mata la suscripcion de busqueda del dialogo
     if (!this.mapsLoader.isLoaded()) {
       this.listPredicciones = [];
@@ -190,6 +206,9 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
       predictions: google.maps.places.QueryAutocompletePrediction[] | null,
       status: google.maps.places.PlacesServiceStatus
     ) => {
+      // respuesta de una busqueda ya superada (o dialogo cerrado): se descarta
+      if (idActual !== this.idBusqueda || this.destruido) { return; }
+
       // ponytail: NgZone ya inyectado como `zone` desde la Tarea 4; se reutiliza en vez de
       // agregar un segundo campo `ngZone` para la misma dependencia.
       this.zone.run(() => {
@@ -246,13 +265,16 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
 
     if ( prediccionSelected ) {
       this.dataCliente.direccion = prediccionSelected.structured_formatting.main_text;
-      this.dataCliente.ciudad = prediccionSelected.structured_formatting.secondary_text;
-
+      // secondary_text es la direccion administrativa completa ('Tarapoto, San Martin, Peru');
+      // la ciudad a secas sale de los terms, y es la que espera loadDatosPlazaByCiudad
+      this.ciudadPrediccion = this.ciudadDePrediccion(prediccionSelected);
+      this.dataCliente.ciudad = this.ciudadPrediccion || prediccionSelected.structured_formatting.secondary_text;
     }
 
     if (!this.mapsLoader.isLoaded()) {
       this.msjGeolocalizacion = MSJ_SIN_MAPA;
       // sin geocodificacion igual hay que dejar idcliente y las coordenadas del centro de respaldo
+      this.prellenarDireccionEscrita();
       this.setDireccionSelected();
       this.showSelectedDireccion = false;
       return;
@@ -320,6 +342,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
       .catch(() => {
         // el geocodificador rechaza (clave sin permiso, sin resultados, red caida): no se pierde lo escrito
         this.msjGeolocalizacion = 'No pudimos ubicar esa dirección en el mapa. Puedes guardarla tal como la escribiste.';
+        this.prellenarDireccionEscrita();
         this.setDireccionSelected();
         this.showSelectedDireccion = false;
       });
@@ -378,20 +401,66 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     // this.longitude = this.mapCenter.lng;
 
     // this.loader = 1;
-    this.dataCliente.direccion = this.dataCliente.direccion;
+    // JSON.stringify elimina las claves con `undefined`, y el procedimiento que guarda la
+    // direccion inserta NULL en columnas NOT NULL cuando la clave no viaja: todo campo
+    // obligatorio sale como cadena, nunca como undefined.
+    this.dataCliente.direccion = this.textoPlano(this.dataCliente.direccion);
     this.dataCliente.idcliente = this.isUsCliente ? this.verifyClientService.getDataClient().idcliente : this.idClienteBuscar;
     this.dataCliente.longitude = this.mapCenter.lng;
     this.dataCliente.latitude = this.mapCenter.lat;
-    this.dataCliente.referencia = this.utilService.addslashes(this.dataCliente.referencia);
-    // sin geocodificacion searchTypeMap devuelve '': se conserva la ciudad de la prediccion,
-    // que es de la que depende cerrarDlg() para buscar la plaza
-    this.dataCliente.ciudad = this.searchTypeMap('locality') || this.dataCliente.ciudad;
+    this.dataCliente.referencia = this.utilService.addslashes(this.dataCliente.referencia) || '';
+    // sin geocodificacion searchTypeMap devuelve '': se conserva la ciudad de la prediccion
+    // (o la del comercio), que es de la que depende cerrarDlg() para buscar la plaza
+    this.dataCliente.ciudad = this.searchTypeMap('locality')
+      || this.textoPlano(this.dataCliente.ciudad)
+      || this.ciudadPrediccion
+      || this.textoPlano(this.ciudadComercio);
     this.dataCliente.provincia = this.searchTypeMap('administrative_area_level_2');
     this.dataCliente.departamento = this.searchTypeMap('administrative_area_level_1');
     this.dataCliente.pais = this.searchTypeMap('country');
     this.dataCliente.codigo = this.searchTypeMap('postal_code');
 
     // console.log('this.dataCliente', this.dataCliente);
+  }
+
+  /** Sin mapa el cliente escribe la direccion a mano: el input deja de ser de solo lectura. */
+  direccionEditable(): boolean {
+    return this.mostrarRespaldo();
+  }
+
+  /** Con el mapa en pie el campo no se escribe: cualquier tecla vuelve al buscador, como antes. */
+  editarDireccionTexto(): void {
+    if (!this.direccionEditable()) { this.goBackEscogerDireccion(); }
+  }
+
+  // sin geocodificacion la unica direccion que existe es la que tecleo el cliente en el buscador
+  private prellenarDireccionEscrita(): void {
+    this.dataCliente.direccion = this.textoPlano(this.dataCliente.direccion) || this.textoPlano(this.direccionBuscar);
+  }
+
+  // 'Jiron Union 123, Tarapoto, San Martin, Peru' -> terms = [..., 'Tarapoto', 'San Martin', 'Peru']
+  private ciudadDePrediccion(prediccion: any): string {
+    const terminos = prediccion && prediccion.terms ? prediccion.terms : [];
+    if (terminos.length < 2) { return ''; }
+    const termino = terminos[terminos.length - 2];
+    return this.textoPlano(termino ? termino.value : '');
+  }
+
+  private textoPlano(valor: any): string {
+    return (valor === null || valor === undefined ? '' : valor.toString()).trim();
+  }
+
+  // Centro inicial del mapa: el de la sede si se conoce, Lima solo como ultimo recurso.
+  private usarCentroDeRespaldo(): void {
+    const sede = this.miPedidoService.objDatosSede && this.miPedidoService.objDatosSede.datossede
+      ? this.miPedidoService.objDatosSede.datossede[0]
+      : null;
+    const lat = Number(sede ? sede.latitude : NaN);
+    const lng = Number(sede ? sede.longitude : NaN);
+
+    this.mapCenter = Number.isFinite(lat) && Number.isFinite(lng)
+      ? { lat, lng }
+      : { lat: CENTRO_LIMA.lat, lng: CENTRO_LIMA.lng };
   }
 
 
@@ -432,30 +501,54 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
 
   private setBdDireccion() {
 
-    this.dataCliente.referencia = this.utilService.addslashes(this.dataCliente.referencia);
+    this.dataCliente.referencia = this.utilService.addslashes(this.dataCliente.referencia) || '';
     this.crudService.postFree(this.dataCliente, 'cliente', 'new-direccion', false)
-      .subscribe((res: any) => {
-        if ( this.isFromComercio ) {
-          if ( res.success ) {
-            this.dataCliente.idcliente_pwa_direccion = res.data[0].idcliente_pwa_direccion;
+      .subscribe(
+        (res: any) => {
+          const _id = this.idDireccionGuardada(res);
+
+          // el backend responde 200 con data vacia cuando el procedimiento no llego a insertar:
+          // no hay id que leer ni que inventar, se avisa y el dialogo sigue utilizable
+          if (_id === null) {
+            this.fallaGuardarDireccion();
+            return;
           }
-          this.countMoveMap = 1;
-          this.cerrarDlg();
 
-          return;
-        }
+          this.dataCliente.idcliente_pwa_direccion = _id;
 
-        setTimeout(() => {
-          this.loader = 2;
-          setTimeout(() => {
-            if ( res.success ) {
-              this.dataCliente.idcliente_pwa_direccion = res.data[0].idcliente_pwa_direccion;
-            }
+          if ( this.isFromComercio ) {
             this.countMoveMap = 1;
             this.cerrarDlg();
-          }, 500);
-        }, 1000);
-      });
+
+            return;
+          }
+
+          setTimeout(() => {
+            this.loader = 2;
+            setTimeout(() => {
+              this.countMoveMap = 1;
+              this.cerrarDlg();
+            }, 500);
+          }, 1000);
+        },
+        () => this.fallaGuardarDireccion()
+      );
+  }
+
+  /** id de la fila recien creada, o null si la respuesta no trae ninguna. */
+  private idDireccionGuardada(res: any): number | null {
+    if (!res || !res.success) { return null; }
+
+    const fila = res.data && res.data.length ? res.data[0] : null;
+    const id = fila ? Number(fila.idcliente_pwa_direccion) : NaN;
+
+    return Number.isFinite(id) && id > 0 ? id : null;
+  }
+
+  private fallaGuardarDireccion(): void {
+    this.loader = 0;
+    this.msjGeolocalizacion = MSJ_NO_GUARDADO;
+    if (!this.destruido) { this.cd.detectChanges(); }
   }
 
   private setDireccionStorage() {
@@ -469,28 +562,30 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   cerrarDlg(): void {
     // guarda direccion en el storage direccion seleccionada
     // console.log('this.dataCliente', this.dataCliente);
-    const rpt_dir = this.dataCliente.direccion ? this.dataCliente : null;
+    const rpt_dir = this.dataCliente && this.dataCliente.direccion ? this.dataCliente : null;
 
-    if ( rpt_dir && this.dataCliente ) {
-      if ( !this.dataCliente?.options ) {
-        this.sedeDeliveryService.loadDatosPlazaByCiudad(this.dataCliente.ciudad)
-        .subscribe((resPlaza: any) => {
-          this.dataCliente.options = resPlaza ? resPlaza.options : null;
-
-          this.setDireccionStorage();
-          this.dialogRef.close(rpt_dir);
-        });
-      } else {
-        this.setDireccionStorage();
-        this.dialogRef.close(rpt_dir);
-      }
-    } else {
-      // const rpt_dir = this.dataCliente.direccion ? this.dataCliente : null;
-      // this.dataCliente = null;
+    // sin direccion, con plaza ya resuelta o sin ciudad que consultar no hay nada que esperar
+    if ( !rpt_dir || this.dataCliente.options || !this.dataCliente.ciudad ) {
       this.setDireccionStorage();
       this.dialogRef.close(rpt_dir);
+      return;
     }
 
+    // la plaza es informacion extra: si no hay o la consulta falla el dialogo cierra igual
+    // con la direccion, en vez de quedarse abierto para siempre
+    this.sedeDeliveryService.loadDatosPlazaByCiudad(this.dataCliente.ciudad)
+      .subscribe(
+        (resPlaza: any) => {
+          this.dataCliente.options = resPlaza ? resPlaza.options : null;
+          this.setDireccionStorage();
+          this.dialogRef.close(rpt_dir);
+        },
+        () => {
+          this.dataCliente.options = null;
+          this.setDireccionStorage();
+          this.dialogRef.close(rpt_dir);
+        }
+      );
   }
 
 }

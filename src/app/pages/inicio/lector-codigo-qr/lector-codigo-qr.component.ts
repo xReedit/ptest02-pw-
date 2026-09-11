@@ -21,6 +21,7 @@ import { IS_NATIVE } from 'src/app/shared/config/config.const';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { HoldingService } from 'src/app/shared/services/holding.service';
+import { GeolocationService } from 'src/app/shared/services/geolocation.service';
 // import { BarcodeScanner } from '@capacitor-community/barcode-scanner'
 
 // import {QrScannerComponent} from 'angular2-qrscanner';
@@ -52,12 +53,15 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   scanActive = false;
   scanSuccess = false;
   isNativePlataform = IS_NATIVE;
+  // motivo real cuando lo que falla es la ubicacion y no el codigo; vacio = el codigo no sirve
+  msjUbicacion = '';
 
 
   // hasPermissionPosition = false;
 
   private isDemo = false;
   private divicePos: any;
+  private localPos: any = null; // coordenadas del local leidas del QR, para poder reintentar
   private _comercioUrl = '';
   private _telCliente_fromBot = '';
   private isActivaCamara = true;
@@ -74,7 +78,8 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     private router: Router,
     private routerActive: ActivatedRoute,
     private navigationService: NavigatorLinkService,
-    private holdingService: HoldingService
+    private holdingService: HoldingService,
+    private geolocationService: GeolocationService
     ) { }
 
   ngOnInit() {
@@ -90,6 +95,9 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     // lee el url si es directo
     if (this._comercioUrl) {
       this.isActivaCamara = false;
+      // sin camara la vista de proceso es la unica que da senales de vida (y la unica
+      // que puede mostrar el aviso de ubicacion si el GPS falla)
+      this.isProcesando = true;
       this.codQR = this._comercioUrl;
       this.leerDatosQR();
       return;
@@ -169,15 +177,26 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
     this.hasPermission = has;
   }
 
-  // getPosition(): void {
-  //   this.hasPermissionPosition = true;
-  //   navigator.geolocation.getCurrentPosition((position: any) => {
-  //     const divicePos = { lat: position.coords.latitude, lng: position.coords.longitude};
-  //     // this.leerDatosQR(divicePos);
-  //     this.divicePos = divicePos;
+  /** Reintento manual del boton "Intentar nuevamente" cuando lo que fallo fue la ubicacion. */
+  getPosition(): void {
+    this.hasPermissionPosition = true;
+    this.msjUbicacion = '';
 
-  //   }, this.showPositionError);
-  // }
+    this.geolocationService.obtenerPosicion()
+      .then(pos => {
+        this.divicePos = { lat: pos.latitude, lng: pos.longitude };
+        this.hasPermissionPosition = true;
+
+        // con la ubicacion ya concedida se vuelve a validar el mismo QR
+        if (this.localPos) {
+          this.isCodigoQrValido = true;
+          this.openDialogPOS(this.localPos);
+        }
+      })
+      .catch(error => {
+        this.showPositionError(error);
+      });
+  }
 
   // verifyAceptPosition() {
   //   navigator.geolocation.getCurrentPosition(this.getPosition, (error: any) => {
@@ -203,10 +222,10 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   // }
 
   private showPositionError(error: any): void {
-    // if ( error.PERMISSION_DENIED ) {
-      this.hasPermissionPosition = false;
-    // }
-
+    this.hasPermissionPosition = false;
+    this.isCodigoQrValido = false;
+    // el QR estaba bien: lo que fallo fue el GPS, y eso es lo que hay que decirle al cliente
+    this.msjUbicacion = this.geolocationService.mensaje(error);
   }
 
   onCamerasFound(devices: MediaDeviceInfo[]): void {
@@ -237,6 +256,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   // leer qr // formato keyQrPwa::5|-6.0283481:-76.9714528|1 -> mesa | coordenadas del local | idsede
   private leerDatosQR() {
     this.isCodigoQrValido = true;
+    this.msjUbicacion = '';
     let _codQr = [];
 
     // console.log('this.codQR', this.codQR);
@@ -373,7 +393,7 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   }
 
   private openDialogPOS(localPos: any) {
-    let isPositionValid = false;
+    this.localPos = localPos;
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.hasBackdrop = true;
@@ -385,9 +405,15 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(
       data => {
-        if ( !data ) { isPositionValid = false; }
-        // console.log('data dialog', data);
-        isPositionValid = data;
+        const isPositionValid = !!data;
+        // el dialogo anota en su `data` el motivo cuando lo que fallo fue la geolocalizacion
+        const motivo = dialogConfig.data.motivo;
+
+        if ( !isPositionValid && motivo ) {
+          this.showPositionError(motivo);
+          return;
+        }
+
         this.resValidQR(isPositionValid);
       }
     );
@@ -422,6 +448,8 @@ export class LectorCodigoQrComponent implements OnInit, OnDestroy {
   volverALeer(): void {
     this.isProcesando = false;
     this.isCodigoQrValido = true;
+    this.msjUbicacion = '';
+    this.hasPermissionPosition = true;
   }
 
 

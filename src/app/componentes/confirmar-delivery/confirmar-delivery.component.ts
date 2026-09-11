@@ -647,8 +647,13 @@ export class ConfirmarDeliveryComponent implements OnInit {
             } else {
               // la distancia es mayor a limite de distancia
               this.msjErrorDir = costoEntrega.mensaje;
-              this.direccionCliente.latitude = null;
-              this.direccionCliente.longitude = null;
+              // 'sin-reglas' es una falta de configuracion de la sede, no un problema de la
+              // direccion: direccionCliente es la misma referencia que infoToken.direccionEnvioSelected
+              // y anular sus coordenadas dejaba la direccion irrecuperable el resto de la sesion
+              if (costoEntrega.motivo !== 'sin-reglas') {
+                this.direccionCliente.latitude = null;
+                this.direccionCliente.longitude = null;
+              }
               this.isDireccionClienteCorrecta = false;
               // sin esto el spinner y el boton Confirmar se quedaban bloqueados para siempre
               this.isCalculandoDistanciaA = false;
@@ -692,12 +697,23 @@ export class ConfirmarDeliveryComponent implements OnInit {
         this.isCalculandoDistanciaA = false;
         this.isDistanciaEstimada = this.dirEstablecimiento.isDistanciaEstimada === true;
 
+        // las sedes sin repartidor propio cobran la tarifa de plataforma, pero el tiempo de
+        // entrega lo configuran igual en sede_costo_delivery: antes solo se pintaba en la otra rama
+        this.tiempoAproxEntrega = this.tiempoEntregaDeLaSede();
+
         this.verificarMontoMinimo();
       // }, 1500);
       }, error => this.fallaCalculoDistancia(error));
     // }
 
 
+  }
+
+  // tiempo de entrega configurado por la sede (parametros_tienda_linea.tiempo_aprox_entrega),
+  // independiente de quien haga el reparto; cadena vacia si la sede no lo declara
+  private tiempoEntregaDeLaSede(): string {
+    const _parametros = this.establecimientoService.get().parametros_tienda_linea;
+    return _parametros ? formatearTiempoEntrega(_parametros.tiempo_aprox_entrega) : '';
   }
 
   // el calculo de distancia fallo (google caido, sin red, cuota agotada...): el formulario

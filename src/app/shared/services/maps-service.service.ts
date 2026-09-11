@@ -69,13 +69,6 @@ export class MapsServiceService {
   }
 
 
-  // ponytail: se conserva la forma {lat, lng} porque la usan los mapas; la logica vive en GeolocationService
-  async getPosition(): Promise<{ lat: number, lng: number }> {
-    const pos = await this.geolocationService.obtenerPosicion();
-    return { lat: pos.latitude, lng: pos.longitude };
-  }
-
-
   async getDireccionInversa(lat, lng) {
     const _coordenadas = `${lng},${lat}`;
     const _url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${_coordenadas}&key=${this.apiKeyGoogle}`;        

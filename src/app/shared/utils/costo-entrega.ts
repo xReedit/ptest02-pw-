@@ -13,12 +13,18 @@ export interface ParametrosCostoDelivery {
   tiempo_aprox_entrega?: number | string;
 }
 
+// 'sin-reglas' = la sede no tiene configurado el costo de entrega (falta de configuracion del
+// comercio). 'fuera-de-cobertura' = la direccion esta mas lejos del radio maximo. Quien llama
+// necesita distinguirlos: con 'sin-reglas' la direccion del cliente sigue siendo valida.
+export type MotivoSinCosto = 'sin-reglas' | 'fuera-de-cobertura';
+
 export interface CostoEntrega {
   success: boolean;
   costo_servicio?: number;
   distancia_en_km?: string;
   tiempo_aprox_entrega?: number | string;
   mensaje?: string;
+  motivo?: MotivoSinCosto;
 }
 
 export const MSJ_FUERA_DE_COBERTURA = 'Lo siento, el servicio no está disponible en esta zona. Verifica que la dirección sea la correcta. También puedes adjuntarnos tu ubicación.';
@@ -50,10 +56,17 @@ export function calcularCostoEntrega(
 
   // modo 'fijo': el costo no depende de la distancia, tampoco del radio maximo
   if (_parametros.modo === 'fijo') {
+    const costoFijo = aNumero(_parametros.costo_fijo);
+
+    // sede en modo fijo sin costo_fijo: antes se cobraba 0 en silencio, que es peor que avisar
+    if (!Number.isFinite(costoFijo)) {
+      return { mensaje: MSJ_FUERA_DE_COBERTURA, success: false, motivo: 'sin-reglas' };
+    }
+
     return {
       ...tiempo,
       distancia_en_km: distancia,
-      costo_servicio: redondear(aNumero(_parametros.costo_fijo) || 0),
+      costo_servicio: redondear(costoFijo),
       success: true
     };
   }
@@ -68,11 +81,11 @@ export function calcularCostoEntrega(
 
   // sede sin la regla de costo configurada: mejor avisar que dejar que el NaN se cuele al pedido
   if (!Number.isFinite(radioMaximo) || !Number.isFinite(costoBasico)) {
-    return { mensaje: MSJ_FUERA_DE_COBERTURA, success: false };
+    return { mensaje: MSJ_FUERA_DE_COBERTURA, success: false, motivo: 'sin-reglas' };
   }
 
   if (distanciaEnKm > radioMaximo) {
-    return { mensaje: MSJ_FUERA_DE_COBERTURA, success: false };
+    return { mensaje: MSJ_FUERA_DE_COBERTURA, success: false, motivo: 'fuera-de-cobertura' };
   }
 
   const distanciaAdicional = distanciaEnKm - radioBasico;

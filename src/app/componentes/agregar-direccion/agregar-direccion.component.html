@@ -67,13 +67,17 @@
                         height="400px"
                         width="100%">
                         <map-marker
-                            [position]="mapCenter"
+                            [position]="markerPosition"
                             [options]="markerOptions"
                             (mapDragend)="markerDragEnd($event)">
                         </map-marker>
                     </google-map>
 
-                    <div *ngIf="!mapsListo" class="sin-mapa">
+                    <div *ngIf="cargandoMapa" class="sin-mapa">
+                        Cargando mapa…
+                    </div>
+
+                    <div *ngIf="!cargandoMapa && !mapsListo" class="sin-mapa">
                         No pudimos cargar el mapa. Puedes guardar la dirección tal como la escribiste y corregirla luego.
                     </div>
 
