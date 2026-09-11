@@ -10,7 +10,7 @@
         <div class="div-txt-dir d-flex align-items-center">
             <!-- btn atras busqueda -->
             <div *ngIf="showBusqueda" class="animated fadeInLeft">
-                <i class="fa fa-arrow-left pr-2" (click)="showBusqueda = false; direccionBuscar = ''"></i> 
+                <i class="fa fa-arrow-left pr-2" (click)="showBusqueda = false; direccionBuscar = ''; sinResultados = false; listPredicciones = []"></i>
             </div>
     
             <i class="fa fa-map-marker mr-2 text-secondary" aria-hidden="true"></i>
@@ -69,11 +69,14 @@
                     </div>
                 </div>
             </div>
+            <p *ngIf="sinResultados" class="text-secondary fs-13 p-2 m-0">
+                Sin resultados para "{{ direccionBuscar }}". Prueba con el nombre de la calle y el número, o usa <strong>Ubicación actual</strong>.
+            </p>
         </div>
-    
-        
-        
-        
+
+
+
+
         <!-- si viene del comercio -->
         <div *ngIf="isFromComercio" class="text-center pt-3">
             <button class="btn btn-secondary" (click)="cerrarDlg()">Cerrar</button>

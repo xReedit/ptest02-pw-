@@ -5,6 +5,10 @@ import {
 } from 'geolocation-utils';
 import { GeolocationService } from 'src/app/shared/services/geolocation.service';
 
+// 65 metros: es el radio con el que se venia validando que el cliente este en el local.
+// Se expresa en km porque arePointsNear recibe km.
+const RADIO_UBICACION_KM = 0.065;
+
 @Component({
   selector: 'app-dialog-ubicacion',
   templateUrl: './dialog-ubicacion.component.html',
@@ -27,14 +31,8 @@ export class DialogUbicacionComponent implements OnInit {
    }
 
   ngOnInit() {
-    this.loadGPS();
-  }
-
-  private loadGPS() {
-    setTimeout(() => {
-      // loading
-      this.getPosition();
-    }, 4000);
+    // ponytail: sin espera artificial; obtenerPosicion ya trae su propio timeout de 10 s
+    this.getPosition();
   }
 
   private getPosition() {
@@ -42,7 +40,9 @@ export class DialogUbicacionComponent implements OnInit {
       .then(pos => {
         this.cDispositivo = { lat: pos.latitude, lng: pos.longitude };
         this.hasPermissionPosition = true;
-        this.data.posIssValid = this.data.isDemo ? true : this.arePointsNear(this.cLocal, this.cDispositivo, 1);
+        this.data.posIssValid = this.data.isDemo
+          ? true
+          : this.arePointsNear(this.cLocal, this.cDispositivo, RADIO_UBICACION_KM);
         this.cerrarDlg();
       })
       .catch(() => {
@@ -55,17 +55,10 @@ export class DialogUbicacionComponent implements OnInit {
   }
 
   private arePointsNear(checkPoint: any, centerPoint: any, km: number): boolean {
-    // const ky = 40000 / 360;
-    // const kx = Math.cos(Math.PI * centerPoint.lat / 180.0) * ky;
-    // const dx = Math.abs(centerPoint.lng - checkPoint.lng) * kx;
-    // const dy = Math.abs(centerPoint.lat - checkPoint.lat) * ky;
-    // return Math.sqrt(dx * dx + dy * dy) <= km;
+    const center = { lat: centerPoint.lat, lon: centerPoint.lng };
+    const radius = km * 1000; // insideCircle trabaja en metros
 
-    const center = {lat: centerPoint.lat, lon: centerPoint.lng };
-    const radius = 65; // meters
-
-    // insideCircle({lat: 51.03, lon: 4.05}, center, radius) // true
-    return insideCircle({lat: checkPoint.lat, lon: checkPoint.lng}, center, radius);  // false
+    return insideCircle({ lat: checkPoint.lat, lon: checkPoint.lng }, center, radius);
   }
 
   cerrarDlg(): void {

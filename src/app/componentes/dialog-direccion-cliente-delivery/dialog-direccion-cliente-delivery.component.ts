@@ -22,6 +22,8 @@ const MS_ESPERA_MAPA = 6000;
 
 const MSJ_SIN_MAPA = 'El mapa no está disponible. Guardaremos la dirección tal como la escribiste.';
 
+const MIN_CARACTERES_BUSQUEDA = 3;
+
 @Component({
   selector: 'app-dialog-direccion-cliente-delivery',
   templateUrl: './dialog-direccion-cliente-delivery.component.html',
@@ -40,6 +42,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   listPredicciones: any;
   showSelectedDireccion = true;
   showBusqueda = false;
+  sinResultados = false;
 
   dataMapa: any;
   latitude: number;
@@ -99,10 +102,16 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
       debounceTime(400),
       distinctUntilChanged())
       .subscribe((value: any) => {
-        if ( value?.length > 4 ) {
-          this.showBusqueda = true;
-          this.getPlacesPredictionsChange(value);
+        const texto = (value === null || value === undefined ? '' : value.toString()).trim();
+
+        if (texto.length < MIN_CARACTERES_BUSQUEDA) {
+          this.listPredicciones = [];
+          this.sinResultados = false;
+          return;
         }
+
+        this.showBusqueda = true;
+        this.getPlacesPredictionsChange(texto);
       });
   }
 
@@ -161,8 +170,8 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
 
     // sin Maps, tocar google.* lanza ReferenceError y mata la suscripcion de busqueda del dialogo
     if (!this.mapsLoader.isLoaded()) {
-      this.msjGeolocalizacion = MSJ_SIN_MAPA;
       this.listPredicciones = [];
+      this.sinResultados = true;
       return;
     }
 
@@ -181,15 +190,19 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
       predictions: google.maps.places.QueryAutocompletePrediction[] | null,
       status: google.maps.places.PlacesServiceStatus
     ) => {
-      if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions) {
-        // alert(status);
-        return;
-      }
+      // ponytail: NgZone ya inyectado como `zone` desde la Tarea 4; se reutiliza en vez de
+      // agregar un segundo campo `ngZone` para la misma dependencia.
+      this.zone.run(() => {
+        if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions || predictions.length === 0) {
+          // ZERO_RESULTS y cualquier otro estado: la lista queda vacia y se avisa
+          this.listPredicciones = [];
+          this.sinResultados = true;
+          return;
+        }
 
-      this.listPredicciones = predictions;
-      // predictions.forEach((prediction) => {
-      //   console.log('prediction.description', prediction);
-      // });
+        this.listPredicciones = predictions;
+        this.sinResultados = false;
+      });
     });
   }
 
@@ -200,6 +213,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   }
 
   goDireccion(prediccionSelected: any, showMapComercio = false) {
+    this.sinResultados = false;
     // console.log('direccion selected', prediccionSelected);
     this.getDireccionGeocode({ placeId: prediccionSelected.place_id }, prediccionSelected, showMapComercio);
   }
