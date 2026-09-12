@@ -101,6 +101,7 @@
     <div class="xfooter-zona-delivery" *ngIf="listenService.isShowFooterZonaDelivery$ | async">
         <div class="tabs-group">
             <mat-tab-group class="fondo-tab-group"
+                [selectedIndex]="tabActivo"
             color="accent"
             (selectedTabChange)="clickTab($event.index)"
             headerPosition="below" 

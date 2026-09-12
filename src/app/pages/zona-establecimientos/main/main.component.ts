@@ -40,6 +40,10 @@ export class MainComponent implements OnInit {
 
   telefonoSoporte = '934746830';
 
+  // pestaña marcada en la barra inferior; se calcula de la url para que al
+  // recargar en /pedidos no quede marcado "Inicio"
+  tabActivo = 0;
+
   constructor(
     private infoTokenService: InfoTockenService,
     private verifyClientService: VerifyAuthClientService,
@@ -60,7 +64,9 @@ export class MainComponent implements OnInit {
     // window.history.forward();
     // history.pushState(null, null, document.title);
 
-    this.infoTokenService.converToJSON();    
+    this.tabActivo = this.router.url.indexOf('/pedidos') > -1 ? 1 : 0;
+
+    this.infoTokenService.converToJSON();
     this.infoClient = this.verifyClientService.getDataClient();
     this.isClienteLogueado = this.infoClient.isCliente;
     this.showSelectedDireccion = this.isClienteLogueado;
