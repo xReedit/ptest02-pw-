@@ -1,9 +1,15 @@
-<div class="border mapa-solo">
+<div class="mapa-solo">
   <google-map *ngIf="puedeMontarMapa()" [hidden]="mostrarRespaldo()"
               height="230px" width="100%" [center]="center" [zoom]="zoom" [options]="options"
               (mapInitialized)="mapaMontado()" (tilesloaded)="mapaListo()">
     <map-marker *ngIf="posCliente" [position]="posCliente" [options]="opcionesCliente"></map-marker>
     <map-marker *ngIf="posRepartidor" [position]="posRepartidor" [options]="opcionesRepartidor"></map-marker>
   </google-map>
-  <div *ngIf="mostrarRespaldo()" class="sin-mapa">Mapa no disponible por el momento.</div>
+  <div *ngIf="mostrarRespaldo()" class="sin-mapa">
+    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+      <circle cx="12" cy="10" r="3"></circle>
+    </svg>
+    <span>Mapa no disponible por el momento.</span>
+  </div>
 </div>

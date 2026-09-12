@@ -19,7 +19,7 @@
         <!-- imagen -->
         <ng-container *ngIf="item.img.length > 0">
             <div class="text-center border-bottom">
-                <img class="img-carta" [src]="item.img | imgUrl:'carta'" alt="{{item.img}}" appImgFallback>
+                <img class="img-carta" [src]="item.img | imgUrl:'carta'" alt="{{item.img}}" appImgFallback="ocultar">
             </div>
         </ng-container>
         

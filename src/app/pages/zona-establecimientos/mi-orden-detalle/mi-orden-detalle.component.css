@@ -1,10 +1,82 @@
 /* la barra inferior es fija y tapaba el paso resaltado de la linea de tiempo.
    !important porque la utilidad p-3 de bootstrap ya trae padding con !important */
 .detalle-orden { padding-bottom: 56px !important; }
-.timeline { display:flex; flex-direction:column; gap:6px; }
-.paso { display:flex; align-items:center; gap:8px; color:#8a92a0; font-size:12px; }
-.paso .punto { width:10px; height:10px; border-radius:50%; background:#d5d9e0; flex:none; }
-.paso.hecho { color:#3b4252; } .paso.hecho .punto { background:#2c7a4b; }
-.paso.actual { color:#1d2433; font-weight:700; } .paso.actual .punto { background:#e0651f; box-shadow:0 0 0 4px rgba(224,101,31,.2); }
+
+/* tarjetas consistentes: la clase global div-flat-white-borde (util.css) solo trae
+   un borde plano de 1px; se refuerza aqui -solo dentro de esta pantalla, por el
+   encapsulamiento de estilos de Angular- con mas padding, radio y una sombra suave
+   para que encabezado, mapa/linea de tiempo y detalle del pedido luzcan como el
+   mismo tipo de tarjeta en vez de cajas pegadas y sin aire */
+.div-flat-white-borde.card-pedido {
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(20, 24, 33, 0.08), 0 1px 2px rgba(20, 24, 33, 0.06);
+}
+
+.titulo-pedido { margin: 0; }
+
+.card-pedido hr { margin: 14px 0; border-color: #edeff2; }
+
+.timeline { display:flex; flex-direction:column; gap:0; }
+.paso {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  column-gap: 10px;
+  align-items: center;
+  padding: 7px 0;
+  color: #8a92a0;
+  font-size: 12px;
+}
+
+/* linea que conecta los pasos: un segmento por fila, del centro del punto anterior
+   al centro del punto de esta fila (top:-50%/height:100% de la propia fila da
+   exactamente eso, sea cual sea el alto real de la fila) */
+.paso:not(:first-child)::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: 12px;
+  width: 2px;
+  height: 100%;
+  background: #d5d9e0;
+  transform: translateX(-50%);
+  z-index: 0;
+}
+.paso.hecho:not(:first-child)::before { background: #2c7a4b; }
+.paso.actual:not(:first-child)::before { background: #e0651f; }
+
+.paso .punto {
+  position: relative;
+  z-index: 1;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #d5d9e0;
+  justify-self: center;
+  flex: none;
+}
+.paso.hecho { color:#3b4252; }
+.paso.hecho .punto { background: #2c7a4b; }
+.paso.hecho .punto::after {
+  content: '\2713';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7px;
+  line-height: 1;
+  color: #fff;
+}
+.paso.actual { color:#1d2433; font-weight:700; }
+.paso.actual .punto {
+  width: 13px;
+  height: 13px;
+  background: #e0651f;
+  box-shadow: 0 0 0 4px rgba(224,101,31,.2);
+}
+
 .chip-estado { display:inline-block; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; }
 .chip-cancelado { background:#fbe7e5; color:#b3261e; }

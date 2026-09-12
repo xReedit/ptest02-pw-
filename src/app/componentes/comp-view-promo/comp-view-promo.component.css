@@ -10,6 +10,19 @@
     min-width: 240px;
 }
 
+/* Si la imagen de la promo esta rota, appImgFallback="ocultar" le pone
+   display:none al <img>. La fila es flex (align-items por defecto: stretch),
+   asi que sin esto el slot quedaria como un hueco vacio del alto de las
+   demas promos aunque el ancho minimo ya no aplique. */
+.div-promo:has(img[style*="display: none"]) {
+    min-width: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+}
+
 .div-promo img {
     cursor: pointer;
     width: 250px;

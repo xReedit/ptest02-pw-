@@ -48,6 +48,9 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
   showSelectedDireccion = true;
   showBusqueda = false;
   sinResultados = false;
+  // true cuando Places responde algo distinto de OK/ZERO_RESULTS (clave rechazada, cuota
+  // excedida, sin Maps, etc.): es un fallo de busqueda, no "no hay direcciones que coincidan"
+  errorBusqueda = false;
 
   dataMapa: any;
   latitude: number;
@@ -115,9 +118,13 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
       .subscribe((value: any) => {
         const texto = (value === null || value === undefined ? '' : value.toString()).trim();
 
+        // cada tecla nueva invalida el mensaje (sea "sin resultados" o "fallo de busqueda")
+        // de la busqueda anterior
+        this.sinResultados = false;
+        this.errorBusqueda = false;
+
         if (texto.length < MIN_CARACTERES_BUSQUEDA) {
           this.listPredicciones = [];
-          this.sinResultados = false;
           return;
         }
 
@@ -186,8 +193,10 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
 
     // sin Maps, tocar google.* lanza ReferenceError y mata la suscripcion de busqueda del dialogo
     if (!this.mapsLoader.isLoaded()) {
+      console.error('places', 'MAPS_NOT_LOADED');
       this.listPredicciones = [];
-      this.sinResultados = true;
+      this.sinResultados = false;
+      this.errorBusqueda = true;
       return;
     }
 
@@ -212,15 +221,30 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
       // ponytail: NgZone ya inyectado como `zone` desde la Tarea 4; se reutiliza en vez de
       // agregar un segundo campo `ngZone` para la misma dependencia.
       this.zone.run(() => {
-        if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions || predictions.length === 0) {
-          // ZERO_RESULTS y cualquier otro estado: la lista queda vacia y se avisa
+        const esOk = status === google.maps.places.PlacesServiceStatus.OK;
+        const esZeroResults = status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS
+          || (esOk && (!predictions || predictions.length === 0));
+
+        if (!esOk && !esZeroResults) {
+          // REQUEST_DENIED, OVER_QUERY_LIMIT, INVALID_REQUEST, UNKNOWN_ERROR, etc.:
+          // la busqueda fallo, no es que no haya direcciones que coincidan
+          console.error('places', status);
+          this.listPredicciones = [];
+          this.sinResultados = false;
+          this.errorBusqueda = true;
+          return;
+        }
+
+        if (esZeroResults) {
           this.listPredicciones = [];
           this.sinResultados = true;
+          this.errorBusqueda = false;
           return;
         }
 
         this.listPredicciones = predictions;
         this.sinResultados = false;
+        this.errorBusqueda = false;
       });
     });
   }
@@ -233,6 +257,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
 
   goDireccion(prediccionSelected: any, showMapComercio = false) {
     this.sinResultados = false;
+    this.errorBusqueda = false;
     // console.log('direccion selected', prediccionSelected);
     this.getDireccionGeocode({ placeId: prediccionSelected.place_id }, prediccionSelected, showMapComercio);
   }

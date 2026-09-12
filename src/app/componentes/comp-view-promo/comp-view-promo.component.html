@@ -1,7 +1,7 @@
 <div class="div-content-promo">
 
     <div class="div-promo" matRipple *ngFor="let item of _listPromo" (click)="_itemSelected(item)">
-        <img [src]="item.img | imgUrl:'promo'" alt="aa" appImgFallback loading="lazy">
+        <img [src]="item.img | imgUrl:'promo'" alt="aa" appImgFallback="ocultar" loading="lazy">
         <div *ngIf="item.cerrado === 1" class="div-cerrado-comercio fw-600">
             Cerrado
         </div>

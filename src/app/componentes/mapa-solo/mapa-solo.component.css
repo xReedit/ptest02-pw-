@@ -1,10 +1,29 @@
 .mapa-solo {
     min-height: 60px;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
+/* superficie neutra en vez de un rectangulo vacio con borde duro: icono + una linea,
+   centrados, con la altura tipica de una card compacta (96-120px) */
 .sin-mapa {
-    padding: 12px;
-    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 104px;
+    padding: 16px;
+    background: #f5f5f5;
+    border-radius: 10px;
     color: #7b8494;
     text-align: center;
+}
+
+.sin-mapa svg {
+    color: #b0b8c4;
+}
+
+.sin-mapa span {
+    font-size: 12px;
 }

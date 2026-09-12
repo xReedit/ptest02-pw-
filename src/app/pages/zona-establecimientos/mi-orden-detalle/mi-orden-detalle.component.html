@@ -1,51 +1,55 @@
 <div class="animated fadeInRight p-3 text-dark text-left detalle-orden">
-    
-    <div class="div-flat-white-borde mb-3">
-        <h4>Pedido # {{dataPedido.idpedido}}</h4>
-        <div *ngIf="estadoResumen?.activo">
+
+    <!-- encabezado -->
+    <div class="div-flat-white-borde mb-3 card-pedido">
+        <h4 class="titulo-pedido">Pedido # {{dataPedido.idpedido}}</h4>
+    </div>
+
+    <!-- mapa + linea de tiempo -->
+    <div class="div-flat-white-borde mb-3 fs-13 card-pedido">
+        <div *ngIf="estadoResumen?.activo && dataPedido.idrepartidor" class="mb-3">
             <app-mapa-solo [origin]="origin" [destination]="destination"></app-mapa-solo>
         </div>
-    
-        <div class="div-flat-white-borde fs-13">
-            <div class="timeline" *ngIf="estadoResumen?.codigo !== 'cancelado'; else cancelado">
-              <div class="paso" *ngFor="let p of pasos; let i = index"
-                   [class.hecho]="i + 1 < estadoResumen?.paso" [class.actual]="i + 1 === estadoResumen?.paso">
-                <span class="punto"></span>
-                <span class="texto">{{ p.etiqueta }}</span>
-              </div>
-            </div>
-            <ng-template #cancelado><span class="chip-estado chip-cancelado">Cancelado</span></ng-template>
 
-            <ng-container *ngIf="dataPedido.idrepartidor">
-                <hr>
-                <div>
-                    <span class="fw-600">Repartidor: </span><br>
-                    <div class="fw-100">
-                        <span>{{ dataPedido.nom_repartidor | titlecase }}  {{ dataPedido.ap_repartidor | titlecase }} </span><br>
-                        <span> {{ dataPedido.telefono_repartidor }} </span>
-                    </div>
-                </div>
-                <hr>
-                <div class="row text-center" *ngIf="dataPedido.idrepartidor && estadoResumen?.activo">
-                    <div matRipple class="col-6 border-right text-info" (click)="callPhone()"><i class="fa fa-phone" aria-hidden="true"></i> LLamar</div>
-                    <div matRipple class="col-6 text-info" (click)="redirectWhatsApp()"><i class="fa fa-commenting-o" aria-hidden="true"></i> Enviar Mensaje</div>
-                </div>
-            </ng-container>
+        <div class="timeline" *ngIf="estadoResumen?.codigo !== 'cancelado'; else cancelado">
+          <div class="paso" *ngFor="let p of pasos; let i = index"
+               [class.hecho]="i + 1 < estadoResumen?.paso" [class.actual]="i + 1 === estadoResumen?.paso">
+            <span class="punto"></span>
+            <span class="texto">{{ p.etiqueta }}</span>
+          </div>
         </div>
+        <ng-template #cancelado><span class="chip-estado chip-cancelado">Cancelado</span></ng-template>
+
+        <ng-container *ngIf="dataPedido.idrepartidor">
+            <hr>
+            <div>
+                <span class="fw-600">Repartidor: </span><br>
+                <div class="fw-100">
+                    <span>{{ dataPedido.nom_repartidor | titlecase }}  {{ dataPedido.ap_repartidor | titlecase }} </span><br>
+                    <span> {{ dataPedido.telefono_repartidor }} </span>
+                </div>
+            </div>
+            <hr>
+            <div class="row text-center" *ngIf="dataPedido.idrepartidor && estadoResumen?.activo">
+                <div matRipple class="col-6 border-right text-info" (click)="callPhone()"><i class="fa fa-phone" aria-hidden="true"></i> LLamar</div>
+                <div matRipple class="col-6 text-info" (click)="redirectWhatsApp()"><i class="fa fa-commenting-o" aria-hidden="true"></i> Enviar Mensaje</div>
+            </div>
+        </ng-container>
     </div>
+
     <!--  detalle del pedido -->
-    <div class="div-flat-white-borde mb-3 fs-13">        
+    <div class="div-flat-white-borde mb-3 fs-13 card-pedido">
         <app-comp-pedido-detalle [infoPedido] = "dataPedido" ></app-comp-pedido-detalle>
     </div>
 
     <!-- boton confirmar recibido -->
     <ng-container *ngIf="estadoResumen?.codigo === 'camino' || (dataPedido.pwa_delivery_servicio_propio == 1 && estadoResumen?.activo && dataPedido.idrepartidor)">
-        <div class="div-flat-white-borde mb-3 fs-13 text-center">
+        <div class="div-flat-white-borde mb-3 fs-13 text-center card-pedido">
             <p class="text-secondary fs-13">Por favor revise su pedido antes de confirmar.</p>
 
             <button mat-flat-button
             color="primary" (click)="openDialogCalificacion()" >Listo, recibi conforme.</button>
         </div>
     </ng-container>
-    
+
 </div>
