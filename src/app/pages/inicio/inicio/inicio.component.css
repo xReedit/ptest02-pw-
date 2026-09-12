@@ -393,7 +393,8 @@ body, html {
 @media (prefers-reduced-motion: reduce) {
   .option-delivery img { animation: none; }
     .cielo-dia, .cielo-noche, .astro, .estrellas, .estrella,
-    .nube, .cerros, .lineas { animation: none; }
+    .nube, .cerros, .lineas, .sol, .luna { animation: none; }
+    .sol { left: 44%; opacity: 1; }
     .cielo-noche, .luna, .nube-noche { opacity: 0; }
     .estrellas { opacity: 0; }
     .option-delivery .titulo, .option-delivery .fs-11 { animation: none; }
@@ -477,22 +478,47 @@ body, html {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  top: 14px;
-  left: 47%;
-  will-change: opacity;
+  will-change: transform, opacity;
 }
 
+/* El sol cruza el cielo en arco, se esconde por el costado derecho y vuelve a
+   salir por el izquierdo. El salto de un borde al otro ocurre mientras es de
+   noche y su opacidad es cero, asi que no se ve. */
 .sol {
+  top: 8px;
+  left: 0;
   background: radial-gradient(circle, #FFD37A 0%, #FFB443 62%, #FFA726 100%);
   box-shadow: 0 0 0 8px rgba(255, 200, 110, .28);
-  animation: fase-dia 16s ease-in-out infinite;
+  opacity: 0;
+  animation: fase-dia 16s ease-in-out infinite, sol-cruza 16s linear infinite;
 }
 
+@keyframes sol-cruza {
+  0%   { left: 44%; transform: translateY(-4px); }
+  14%  { left: 62%; transform: translateY(2px); }
+  32%  { left: 92%; transform: translateY(16px); }
+  44%  { left: 112%; transform: translateY(30px); }
+  44.01% { left: -14%; transform: translateY(30px); }
+  62%  { left: 2%; transform: translateY(16px); }
+  80%  { left: 24%; transform: translateY(2px); }
+  100% { left: 44%; transform: translateY(-4px); }
+}
+
+/* La luna asoma desde abajo, se queda arriba mientras dura la noche y se hunde
+   de nuevo hacia abajo al amanecer. */
 .luna {
+  top: 12px;
+  left: 46%;
   background: radial-gradient(circle at 62% 38%, #FBF4D8 0%, #E9DFB6 100%);
   box-shadow: inset -7px 2px 0 -1px rgba(20, 32, 74, .92), 0 0 0 7px rgba(240, 234, 200, .16);
   opacity: 0;
-  animation: fase-noche 16s ease-in-out infinite;
+  animation: fase-noche 16s ease-in-out infinite, luna-sube 16s ease-in-out infinite;
+}
+
+@keyframes luna-sube {
+  0%, 30% { transform: translateY(64px); }
+  52%, 82% { transform: translateY(0); }
+  96%, 100% { transform: translateY(64px); }
 }
 
 .estrellas {
@@ -612,7 +638,9 @@ body, html {
   z-index: 2;
 }
 
-.escena-delivery img { animation: none; }
+.escena-delivery { align-self: flex-end; margin-bottom: 4px; }
+
+.escena-delivery img { animation: none; display: block; }
 
 .option-delivery .titulo {
   color: #10395F;
