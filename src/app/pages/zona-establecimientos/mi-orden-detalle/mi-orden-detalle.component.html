@@ -52,4 +52,15 @@
         </div>
     </ng-container>
 
+    <!-- calificar al comercio: solo si este pedido especifico esta entregado y aun no fue calificado -->
+    <div *ngIf="mostrarCalificarComercio" class="div-flat-white-borde mb-3 fs-13 card-pedido card-calificar-comercio animated fadeInUp">
+        <button type="button" class="btn-cerrar-calificar" aria-label="Cerrar aviso" (click)="descartarCalificarComercio()">
+            <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
+        <div matRipple class="d-flex align-items-center xCursor pr-4" (click)="goCalificarComercio()">
+            <i class="fa fa-star text-warning fa-2x mr-2" aria-hidden="true"></i>
+            <span>Califique al comercio de su último pedido.</span>
+        </div>
+    </div>
+
 </div>

@@ -9,6 +9,7 @@ import { DatosCalificadoModel } from 'src/app/modelos/datos.calificado.model';
 import { DialogCalificacionComponent } from 'src/app/componentes/dialog-calificacion/dialog-calificacion.component';
 import { Router } from '@angular/router';
 import { SeguimientoPedidoService } from 'src/app/shared/services/seguimiento-pedido.service';
+import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { resumirEstadoPedido, PASOS_ESTADO, EstadoResumen } from 'src/app/shared/utils/estado-pedido';
 
 @Component({
@@ -25,13 +26,20 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
   ubicacionRepartidor: { latitude: number; longitude: number } = null;
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
+  // "Califique al comercio de su ultimo pedido": antes flotaba en la cabecera de zona-establecimientos
+  // sin importar que pedido se estuviera viendo. Ahora se muestra solo dentro del detalle del pedido
+  // que realmente esta entregado y pendiente de calificar, al final del contenido.
+  mostrarCalificarComercio = false;
+  private comercioACalificar: any = null;
+
   private direccionCliente: any;
   constructor(
     private infoTokenService: InfoTockenService,
     private socketService: SocketService,
     private dialog: MatDialog,
     private router: Router,
-    private seguimiento: SeguimientoPedidoService
+    private seguimiento: SeguimientoPedidoService,
+    private establecimientoService: EstablecimientoService
   ) { }
 
   ngOnInit() {
@@ -94,6 +102,73 @@ export class MiOrdenDetalleComponent implements OnInit, OnDestroy {
 
   private aplicarEstado(p: any): void {
     this.estadoResumen = resumirEstadoPedido(p);
+    if ( this.estadoResumen.codigo === 'entregado' ) {
+      this.verificarCalificarComercio();
+    }
+  }
+
+  // consulta si ESTE pedido especifico esta pendiente de calificar (no cualquier otro pedido del cliente)
+  private verificarCalificarComercio(): void {
+    if ( this.mostrarCalificarComercio || this.comercioACalificar || this.calificarComercioFueDescartado() ) { return; }
+
+    this.establecimientoService.getComerciosXCalifcar(this.dataPedido.idcliente)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(lista => {
+        const pendiente = (lista || []).find(x => x.idpedido === this.dataPedido.idpedido);
+        if ( pendiente ) {
+          this.comercioACalificar = pendiente;
+          this.mostrarCalificarComercio = true;
+        }
+      });
+  }
+
+  private claveDescarteCalificarComercio(): string {
+    return `calificar-comercio-descartado-${this.dataPedido.idpedido}`;
+  }
+
+  private calificarComercioFueDescartado(): boolean {
+    try {
+      return sessionStorage.getItem(this.claveDescarteCalificarComercio()) === '1';
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // cierra el aviso para el resto de esta sesion del navegador; no vuelve a molestar al recargar la pantalla
+  descartarCalificarComercio(): void {
+    this.mostrarCalificarComercio = false;
+    try {
+      sessionStorage.setItem(this.claveDescarteCalificarComercio(), '1');
+    } catch (error) {
+      // almacenamiento no disponible (modo privado, etc.): no es critico, solo se repetiria el aviso
+    }
+  }
+
+  goCalificarComercio(): void {
+    const _pClaificar = this.comercioACalificar;
+    if ( !_pClaificar ) { return; }
+
+    const dataCalificado: DatosCalificadoModel = new DatosCalificadoModel;
+    dataCalificado.idcliente = this.dataPedido.idcliente;
+    dataCalificado.idpedido = _pClaificar.idpedido;
+    dataCalificado.idsede = _pClaificar.idsede;
+    dataCalificado.tipo = 3;
+    dataCalificado.showNombre = true;
+    dataCalificado.showTitulo = true;
+    dataCalificado.showTxtComentario = true;
+    dataCalificado.nombre = _pClaificar.nomestablecimiento;
+    dataCalificado.titulo = 'Como calificas al comercio?';
+    dataCalificado.showMsjTankyou = true;
+
+    const _dialogConfig = new MatDialogConfig();
+    _dialogConfig.disableClose = true;
+    _dialogConfig.hasBackdrop = true;
+    _dialogConfig.data = { dataCalificado };
+
+    const dialogRef = this.dialog.open(DialogCalificacionComponent, _dialogConfig);
+    dialogRef.afterClosed().subscribe(() => {
+      this.mostrarCalificarComercio = false;
+    });
   }
 
   redirectWhatsApp() {

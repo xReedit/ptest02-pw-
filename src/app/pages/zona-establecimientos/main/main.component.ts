@@ -10,9 +10,6 @@ import { ListenStatusService } from 'src/app/shared/services/listen-status.servi
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { InfoTockenService } from 'src/app/shared/services/info-token.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
-import { DatosCalificadoModel } from 'src/app/modelos/datos.calificado.model';
-import { DialogCalificacionComponent } from 'src/app/componentes/dialog-calificacion/dialog-calificacion.component';
-import { EstablecimientoService } from 'src/app/shared/services/establecimiento.service';
 import { AuthServiceSotrage } from 'src/app/shared/services/auth.service';
 import { DialogDireccionClienteDeliveryComponent } from 'src/app/componentes/dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
 import { AuthNativeService } from 'src/app/shared/services/auth-native.service';
@@ -39,10 +36,7 @@ export class MainComponent implements OnInit {
   showPanelRigth = false;
   showSelectedDireccion = false;
 
-  listPedidoCalificar = [];
-  numComerciosCalificar = 0;
-  isShowCalificar = false;
-  isPlataformIos = IS_PLATAFORM_IOS;  
+  isPlataformIos = IS_PLATAFORM_IOS;
 
   telefonoSoporte = '934746830';
 
@@ -56,10 +50,9 @@ export class MainComponent implements OnInit {
     private router: Router,
     private socketService: SocketService,
     private navigartoService: NavigatorLinkService,
-    private establecientoService: EstablecimientoService,
     private authService: AuthServiceSotrage,
     private authNativeService: AuthNativeService,
-    private crudService: CrudHttpService    
+    private crudService: CrudHttpService
     // public ngxService: NgxUiLoaderService
   ) { }
 
@@ -93,10 +86,6 @@ export class MainComponent implements OnInit {
 
     }
 
-    this.loadComerciosXCalificar();
-
-
-
     // si no hay direccion abre el dialog
     // setTimeout(() => {
     //   if ( !this.isSelectedDireccion ) {
@@ -110,16 +99,6 @@ export class MainComponent implements OnInit {
   //   this.socketService.isSocketOpenReconect = true;
   //   this.socketService.closeConnection();
   // }
-
-  private loadComerciosXCalificar() {
-    this.establecientoService.getComerciosXCalifcar(this.infoClient.idcliente)
-    .subscribe(res => {
-      // console.log(res);
-      this.listPedidoCalificar = res;
-      this.numComerciosCalificar = this.listPedidoCalificar.length;
-      this.isShowCalificar = this.numComerciosCalificar > 0;
-    });
-  }
 
   openDialogDireccion1() {
 
@@ -231,42 +210,6 @@ export class MainComponent implements OnInit {
     }
 
     window.history.back();
-  }
-
-  goCalificarComercio(index: number) {
-    const _pClaificar = this.listPedidoCalificar[index];
-    if ( _pClaificar ) {
-      const dataCalificado: DatosCalificadoModel = new DatosCalificadoModel;
-      dataCalificado.idcliente = this.infoClient.idcliente;
-      dataCalificado.idpedido = _pClaificar.idpedido;
-      dataCalificado.idsede = _pClaificar.idsede;
-      dataCalificado.tipo = 3;
-      dataCalificado.showNombre = true;
-      dataCalificado.showTitulo = true;
-      dataCalificado.showTxtComentario = true;
-      dataCalificado.nombre = _pClaificar.nomestablecimiento;
-      dataCalificado.titulo = 'Como calificas al comercio?';
-      dataCalificado.showMsjTankyou = true;
-
-    const _dialogConfig = new MatDialogConfig();
-      _dialogConfig.disableClose = true;
-      _dialogConfig.hasBackdrop = true;
-
-      _dialogConfig.data = {
-        dataCalificado: dataCalificado
-      };
-
-
-    const dialogRef =  this.dialog.open(DialogCalificacionComponent, _dialogConfig);
-    dialogRef.afterClosed().subscribe(
-      data => {
-        index++;
-        // console.log('index', index);
-        this.isShowCalificar = index < this.numComerciosCalificar;
-        this.goCalificarComercio(index);
-      }
-    );
-    }
   }
 
   registarDirCliente() {
