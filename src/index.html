@@ -49,100 +49,122 @@
   <style type="text/css">
     body, html {
   height: 100%;
-  /* background: linear-gradient(0deg, rgba(0,100,191,1) 0%, #3f51b5 100%); */
-  /* background: linear-gradient(0deg, rgba(0,100,191,1) 0%, #3f51b5 100%); */
-  /* background: linear-gradient(0deg, rgba(0,172,193,1) 0%, #3f51b5 100%); */
-  /* background: #351465; */
-  /* background: #3f51b5; */
 }
 
-/* .content-all {
-
-  width: 100%;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  overflow: auto;
-  background: linear-gradient(0deg, rgba(0,100,191,1) 0%, #3f51b5 100%);
-} */
 .app-loading {
   overflow: hidden;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   height: 100%;
   text-align: center;
-  background: linear-gradient(0deg, rgba(0,100,191,1) 0%, #3f51b5 100%);
+  background: #3F51B5;
+}
+
+.app-loading::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 70% at 50% 8%, rgba(0,100,191,.85) 0%, rgba(63,81,181,0) 60%);
+  pointer-events: none;
 }
 
 .app-loading p {
   margin: 0;
 }
 
-.app-loading .t-p-0 {
-  font-size: 14px;
-  color: #616161;
+.app-loading-col {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
 }
 
-.app-loading .t-p-1 {
-  font-size: 12px;
-  color: #757575;
+.app-loading .orbe {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(26px);
+  pointer-events: none;
+  will-change: transform;
 }
 
-.app-loading .spinner {
-  height: 200px;
-  width: 200px;
-  animation: rotate 2s linear infinite;
-  transform-origin: center center;
+.app-loading .o1 { width: 300px; height: 300px; left: -80px; top: 90px; background: radial-gradient(circle, rgba(0,140,220,.55) 0%, rgba(0,140,220,0) 70%); animation: flota1 22s ease-in-out infinite alternate; }
+.app-loading .o2 { width: 260px; height: 260px; right: -70px; top: 300px; background: radial-gradient(circle, rgba(224,101,31,.30) 0%, rgba(224,101,31,0) 70%); animation: flota2 28s ease-in-out infinite alternate; }
+.app-loading .o3 { width: 340px; height: 340px; left: 20px; bottom: -60px; background: radial-gradient(circle, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 70%); animation: flota3 34s ease-in-out infinite alternate; }
+
+@keyframes flota1 { from { transform: translate3d(-18px, 10px, 0) scale(1); } to { transform: translate3d(22px, -14px, 0) scale(1.12); } }
+@keyframes flota2 { from { transform: translate3d(16px, -12px, 0) scale(1.08); } to { transform: translate3d(-20px, 14px, 0) scale(.95); } }
+@keyframes flota3 { from { transform: translate3d(-10px, -8px, 0) scale(.98); } to { transform: translate3d(14px, 12px, 0) scale(1.1); } }
+
+.app-loading-logo {
+  width: 148px;
+  height: 148px;
+  object-fit: contain;
+  position: relative;
+}
+
+.app-loading .brillo {
+  position: relative;
+  overflow: hidden;
+}
+
+.app-loading-wordmark {
+  width: 186px;
+  display: block;
+}
+
+.app-loading .brillo::after {
+  content: "";
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
-  right: 0;
-  margin: auto;
+  width: 42%;
+  background: linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.30) 50%, rgba(255,255,255,0) 100%);
+  animation: barrido 5.5s ease-in-out infinite;
+  will-change: transform;
 }
 
-.app-loading .spinner .path {
-  stroke-dasharray: 1, 200;
-  stroke-dashoffset: 0;
-  animation: dash 1.5s ease-in-out infinite;
-  stroke-linecap: round;
-  stroke: rgba(221, 221, 221, 0.767);
+@keyframes barrido { 0% { transform: translateX(-120%); } 55%, 100% { transform: translateX(280%); } }
+
+.app-loading-dots {
+  position: absolute;
+  bottom: 110px;
+  display: flex;
+  gap: 10px;
 }
 
-.logo-loading {
-  width: 180px;
-  height: 180px;  
-  background:        
-    url('./assets/icons/logo_app.png')
-    no-repeat
-    center center;
-  padding: 5px 0 5px 25px;
-  color: white;
+.app-loading-dots span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #E0651F;
+  display: block;
+  will-change: transform, opacity;
 }
 
-@keyframes rotate {
-  100% {
-    transform: rotate(360deg);
-  }
+.pt1, .pt2, .pt3 { animation: salta 1.2s ease-in-out infinite; }
+.pt2 { animation-delay: .16s; }
+.pt3 { animation-delay: .32s; }
+
+@keyframes salta { 0%, 70%, 100% { transform: translateY(0); opacity: .45; } 35% { transform: translateY(-9px); opacity: 1; } }
+
+.app-loading .t-p-1 {
+  position: absolute;
+  bottom: 28px;
+  font-size: 12px;
+  font-weight: 300;
+  color: rgba(255,255,255,.55);
 }
 
-@keyframes dash {
-  0% {
-    stroke-dasharray: 1, 200;
-    stroke-dashoffset: 0;
-  }
-  50% {
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -35px;
-  }
-  100% {
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -124px;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .app-loading .o1, .app-loading .o2, .app-loading .o3,
+  .app-loading .pt1, .app-loading .pt2, .app-loading .pt3 { animation: none; }
+  .app-loading .brillo::after { display: none; }
 }
   </style>
 
@@ -217,19 +239,25 @@
       </div>
     </div> -->
 
-  <app-root>    
+  <app-root>
     <div class="app-loading">
-      <div class="logo-loading">     
-      </div>            
-      <!-- <p class="t-p-0">Papaya Express</p> -->
-      <svg class="spinner" viewBox="25 25 50 50">
-        <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>
-      </svg>
-      <div style="bottom: 10px; position: fixed;">
-        <p class="t-p-1" style="color: white;">papaya.com.pe</p>
+      <div class="app-loading-col">
+        <div class="orbe o1"></div>
+        <div class="orbe o2"></div>
+        <div class="orbe o3"></div>
+        <img class="app-loading-logo" src="assets/icons/logo_app.png" alt="Papaya">
+        <div class="brillo">
+          <img class="app-loading-wordmark" src="assets/images/papaya_text-white.png" alt="Papaya">
+        </div>
+        <div class="app-loading-dots">
+          <span class="pt1"></span>
+          <span class="pt2"></span>
+          <span class="pt3"></span>
+        </div>
+        <p class="t-p-1">papaya.com.pe</p>
       </div>
     </div>
-  </app-root>  
+  </app-root>
 
 
   <script src="assets/js/jquery.js" type="text/javascript"></script>
