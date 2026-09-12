@@ -9,19 +9,13 @@
     display: -webkit-inline-box;
 }
 
+/*** barra de navegacion inferior (Inicio | Mis Pedidos | Soporte) ***/
+/* lenguaje visual: indigo #3F51B5, tinta #1E2437, apagado #6c757d */
+
 .fondo-tab-group {
-    background: #3f51b5;
-    /* background: #303f9f; */
-    /* background: #168EBD; */
-    /* top: 50px; */
-    /* position: fixed; */
+    background: transparent;
     width: 100%;
     z-index: 1;
-}
-
-.header-tab-cliente {
-    display: grid !important;
-    color: white;
 }
 
 .xfooter-zona-delivery {
@@ -29,8 +23,77 @@
     position: fixed;
     text-align: center;
     width: 100%;
-    background: #3f51b5;
-    /* padding: 20px; */
+    background: #ffffff;
+    border-top: 1px solid #E4E8F2;
+    box-shadow: 0 -2px 12px rgba(16, 24, 64, .06);
+    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 5;
+}
+
+.header-tab-cliente {
+    display: grid !important;
+    justify-items: center;
+    align-content: center;
+    gap: 3px;
+    min-width: 44px;
+    min-height: 44px;
+    color: #6c757d;
+    font-family: Ubuntu-Regular, sans-serif;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.header-tab-cliente .fa {
+    font-size: 19px;
+    line-height: 1;
+}
+
+.icono-tab {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* aviso de pedido en curso */
+.punto-pedido {
+    position: absolute;
+    top: -3px;
+    right: -6px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #E0651F;
+    box-shadow: 0 0 0 2px #ffffff;
+}
+
+::ng-deep .fondo-tab-group .mat-tab-header {
+    border-bottom: 0;
+    border-top: 0;
+}
+
+/* las pestañas de esta barra no tienen contenido, solo navegan */
+::ng-deep .fondo-tab-group .mat-tab-body-wrapper {
+    height: 0;
+    min-height: 0;
+}
+
+::ng-deep .fondo-tab-group .mat-tab-label {
+    height: 56px;
+    min-width: 44px;
+    padding: 0 8px;
+    opacity: 1;
+}
+
+::ng-deep .fondo-tab-group .mat-tab-label-active .header-tab-cliente {
+    color: #3F51B5;
+    font-weight: 500;
+}
+
+::ng-deep .fondo-tab-group .mat-ink-bar {
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background-color: #3F51B5 !important;
 }
 .header-app-1 {
     background: #eeeeee;
@@ -51,7 +114,9 @@
     /* height: 100vh; */
     overflow: auto;
     /* background: #E5EFF7; */
-    background-color: #eeeeee;    
+    background-color: #eeeeee;
+    /* la barra inferior es fija: reservar su alto + el area segura del telefono */
+    padding-bottom: calc(60px + env(safe-area-inset-bottom));
 }
 
 .content-paso-ini {

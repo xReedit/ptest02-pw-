@@ -100,8 +100,8 @@
     <!-- <footer></footer> -->
     <div class="xfooter-zona-delivery" *ngIf="listenService.isShowFooterZonaDelivery$ | async">
         <div class="tabs-group">
-            <mat-tab-group class="fondo-tab-group" 
-            color="accent"                     
+            <mat-tab-group class="fondo-tab-group"
+            color="accent"
             (selectedTabChange)="clickTab($event.index)"
             headerPosition="below" 
             mat-stretch-tabs>
@@ -117,8 +117,12 @@
                 <mat-tab>
                   <ng-template mat-tab-label>
                     <div class="header-tab-cliente">
-                        <i class="fa fa-sticky-note" aria-hidden="true"></i>
-                        <span class="fs-10">Mis Pedidos</span>      
+                        <span class="icono-tab">
+                          <i class="fa fa-sticky-note" aria-hidden="true"></i>
+                          <!-- aviso de pedido en curso (dato ya disponible en el servicio, sin peticiones extra) -->
+                          <span class="punto-pedido" *ngIf="listenService.hayPedidoPendiente$ | async"></span>
+                        </span>
+                        <span class="fs-10">Mis Pedidos</span>
                     </div>
                   </ng-template>          
                 </mat-tab>

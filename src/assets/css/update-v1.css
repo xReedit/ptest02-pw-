@@ -46,6 +46,8 @@ overflow: auto;
 .xfooter-zona-delivery .tabs-group {
   display: block;
   width: 100%;
+  position: static;
+  margin-top: 0;
 }
 .xfooter-zona-delivery {
   padding: 0px;
@@ -97,10 +99,12 @@ overflow: auto;
 /* cuando es en celular el dialog detalle orden abre en pantalla completa */
 @media (max-width: 676px) {   
 
+  /* la barra ya es fija desde .xfooter-zona-delivery: el hijo no necesita
+     posicionarse ni compensar alto con margenes negativos */
   .xfooter-zona-delivery .tabs-group {
-    display: inline-block;  
-    position: fixed;
-    margin-top: -45px;
+    display: block;
+    position: static;
+    margin-top: 0;
     width: 100% !important;
     left: 0;
   }

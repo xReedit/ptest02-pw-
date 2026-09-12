@@ -4,7 +4,7 @@
     <!-- toolbar -->
     <ng-container *ngIf="showToolBar isBusqueda ">
       <div matRipple
-        class="text-white bg-primary p-2 m-toolbar-seccion xanimated xfadeInDown text-puntos-suspensivos d-flex justify-content-between align-items-center"
+        class="text-white bg-primary p-2 m-toolbar-seccion toolbar-carta xanimated xfadeInDown text-puntos-suspensivos d-flex justify-content-between align-items-center"
         (click)="goBack()">
         <span class="pl-2 font-weight-light fs-13 text-puntos">{{tituloToolBar}}</span>
         <div class="border-1">
@@ -26,8 +26,8 @@
         [ngClass]="{'m-main-pt-40': isHolding}">
 
         <!-- informacion y comentarios solo delivery cliente -->
-        <div class="p-2 pl-3 pr-3 border-bottom d-flex justify-content-between fs-14" 
-            style="background: #e3f2fd;" matRipple [matRippleColor]="rippleColor"
+        <div class="p-2 pl-3 pr-3 border-bottom d-flex justify-content-between fs-14 barra-calificacion"
+            matRipple [matRippleColor]="rippleColor"
             *ngIf="isShowCalificacion && isCliente"
             (click)="openDialogComentarios()"
             >
@@ -35,73 +35,75 @@
             <span class="pr-2"><i class="fa fa-star text-warning pr-1"></i> {{ dataCalificacion.calificacion | number: '.1' }}</span>
           </div>
           <div>
-            <span>{{ dataCalificacion.cantidad }} Opiniones <i class="fa fa-angle-right text-secondary pl-2"></i></span>            
+            <span>{{ dataCalificacion.cantidad }} Opiniones <i class="fa fa-angle-right text-secondary pl-2"></i></span>
           </div>
         </div>
 
-        <ng-container *ngIf="miPedidoService.objCarta">                 
-              <ul>
-                  <li *ngFor="let item of miPedidoService.objCarta.carta" class="xCursor"
+        <ng-container *ngIf="miPedidoService.objCarta">
+              <ul class="lista-categorias">
+                  <li *ngFor="let item of miPedidoService.objCarta.carta" class="xCursor li-categoria"
                       matRipple [matRippleColor]="rippleColor"
                       (click)="getSecciones(item)">
-                      <div class="m1 seccion item-categoria-carta">      
+                      <div class="m1 seccion item-categoria-carta">
                         <div class="w-100 d-flex align-items-center">
                           <div class="img mt-2">
                             <img src="assets/images/048-grill.png" alt="">
-                          </div>                        
-                          <div>
-                            <span class="fw-100 fs-20">{{item.des}}</span><br>                        
+                          </div>
+                          <div class="texto-categoria">
+                            <span class="fw-100 fs-20 titulo-categoria">{{item.des}}</span>
                             <div class="text-secondary">
-                              <span class="mt-2 fs-15">{{ item.detalle | lowercase }}</span><br>
-                              <i class="fa fa-clock-o pr-2" aria-hidden="true"></i>
-                              <span class="mt-2 fs-12">Horario: {{item.hora_ini}} a {{item.hora_fin}} </span>
+                              <span class="mt-2 fs-15 detalle-categoria">{{ item.detalle | lowercase }}</span>
+                              <span class="chip-horario">
+                                <i class="fa fa-clock-o pr-2" aria-hidden="true"></i>
+                                <span class="mt-2 fs-12">Horario: {{item.hora_ini}} a {{item.hora_fin}} </span>
+                              </span>
                             </div>
                           </div>
                         </div>
-                          
+
                         <!-- si esta disponible segun hora -->
-                        <div *ngIf="!item.abierto" class="aling-rigth">
+                        <div *ngIf="!item.abierto" class="aling-rigth candado-categoria">
                           <img src="assets/images/002-lock.png" alt="bloqueado" class="animated" [ngClass]="{'wobble': item.animateBloqueoCategoria}">
                         </div>
                       </div>
                   </li>
-              </ul>    
-            
+              </ul>
+
         </ng-container>
       </div>
     </ng-container>
 
     <!-- Secciones -->
-    <div [hidden]="!showSecciones && isScreenIsMobile || showCategoria"      
+    <div [hidden]="!showSecciones && isScreenIsMobile || showCategoria"
       class="content-secciones seccion animated fadeIn m-main-pt-40">
 
         <!-- promociones -->
         <ng-container *ngIf="objPromociones">
-          <div *ngFor="let item of objPromociones; let i = index" class="m1 seccion li-seccion xCursor"
-                matRipple [matRippleColor]="rippleColor">        
+          <div *ngFor="let item of objPromociones; let i = index" class="m1 seccion li-seccion li-promocion xCursor"
+                matRipple [matRippleColor]="rippleColor">
             <app-item-promocion [promo]="item" class="w-100" (selected)="showItemsPromo(item)"></app-item-promocion>
-          </div> 
+          </div>
         </ng-container>
 
       <ng-container>
-        <ul>
+        <ul class="lista-secciones">
           <li *ngFor="let item of objSecciones; let i = index" class="li-seccion xCursor"
               matRipple [matRippleColor]="rippleColor"
               (click)="getItems(item)">
             <div class="m1 seccion">
               <div class="img">
                 <ng-container *ngIf="item.img === ''; else elseTemplateImg">
-                  <img src="assets/images/{{i}}.png" alt="img-icon" appImgFallback="ocultar" loading="lazy">                  
+                  <img src="assets/images/{{i}}.png" alt="img-icon" appImgFallback="ocultar" loading="lazy">
                 </ng-container>
                 <ng-template #elseTemplateImg>
                   <img src="assets/images/{{item.img}}" alt="img-icon" appImgFallback="ocultar" loading="lazy">
                 </ng-template>
-                
+
               </div>
-              <div style="width: calc(100% - 50px) !important;">
+              <div class="texto-seccion">
                 <div>
-                  <div class="d-flex">
-                    <span class="fw-100 fs-19">{{item.des}}</span><br>
+                  <div class="d-flex align-items-center">
+                    <span class="fw-100 fs-19 titulo-seccion">{{item.des}}</span><br>
                     <div *ngIf="item.descuento">
                       <span class="badge badge-danger ml-2">- {{ item.descuento}}</span>
                     </div>
@@ -109,88 +111,92 @@
                   <div class="titulo-detalle-seccion text-secondary">
                     <span class="fw-100 mt-2 fs-13">{{getObjDetalleSeccion(item)}}</span>
                   </div>
-                </div>                
+                </div>
               </div>
+              <i class="fa fa-angle-right flecha-seccion" aria-hidden="true"></i>
             </div>
           </li>
         </ul>
         <br><br>
-      </ng-container>      
+      </ng-container>
     </div>
 
     <!-- items -->
     <!-- color-fondo-ul -->
     <!-- [ngClass]="{'fadeInRight': showItems}" -->
-    <div [hidden]="!showItems && isScreenIsMobile"     
-      [ngClass]="{'fadeInRight': showItems}"  
+    <div [hidden]="!showItems && isScreenIsMobile"
+      [ngClass]="{'fadeInRight': showItems}"
       class="content-items animated fadeIn m-main-pt-40">
       <ng-container>
 
 
         <!-- vista tradiciconal -->
         <ng-container *ngIf="!isViewMercado; else elseViewItemMercado">
-          
+
           <ul class="ul-items">
             <li *ngFor="let item of objItems" class="li-item">
-              <div class="border-bottom-li xcontent child-item border-left-item-{{getEstadoStockItem(item.cantidad)}}" matRipple [matRippleColor]="rippleColor"> 
-                <div class="m1 d-flex xtitulo"  [ngClass]="{'li-tachado': item.cantidad < 1, 'p-titulo-item-sin-detalle': item.detalles.length === 0}" (click)="selectedItem(item)">                                
+              <div class="border-bottom-li xcontent child-item tarjeta-item border-left-item-{{getEstadoStockItem(item.cantidad)}}" matRipple [matRippleColor]="rippleColor">
+                <div class="m1 d-flex xtitulo"  [ngClass]="{'li-tachado': item.cantidad < 1, 'p-titulo-item-sin-detalle': item.detalles.length === 0}" (click)="selectedItem(item)">
                   <!-- style 2.0 200720 -->
                   <div class="content-titulo-item w-100 d-flex align-items-center justify-content-between w-100">
                       <ng-container *ngIf="item.img === ''; else elseConImagen">
-                        <!-- sin imagen -->                      
-                          <div class="d-flex justify-content-between w-100">
-                            <div>
+                        <!-- sin imagen -->
+                          <div class="d-flex justify-content-between w-100 fila-item">
+                            <div class="col-texto-item">
                               <span class="fw-600 fs-12 item-titulo">{{item.des}} <i *ngIf="item.is_recomendacion === '1'" class="fa fa-star text-warning pr-1"></i></span>
-                              
+
                               <ng-container *ngIf="item.detalles.length > 0">
-                                <p class="titlo-detalle mb-1" >{{item.detalles}}</p>                    
-                                
-                              </ng-container>                            
+                                <p class="titlo-detalle mb-1" >{{item.detalles}}</p>
+
+                              </ng-container>
+
+                              <div class="fila-precio">
+                                <span *ngIf="item.precio_antes" class="precio-antes">S/ {{item.precio_antes | number:'0.2' }}</span>
+                                <span class="precio-actual">S/ {{item.precio | number:'0.2' }}</span>
+                              </div>
                             </div>
-                            <!-- si no hay detalles -->
-                            <div class="text-right pl-1">
-                              <p class="mb-0 fw-600">
-                                <span *ngIf="item.precio_antes" class="fw-600 li-tachado mr-1">{{item.precio_antes | number:'0.2' }}</span>
-                                {{item.precio | number:'0.2' }}
-                              </p>                            
+                            <!-- llamada a la accion -->
+                            <div class="text-right pl-1 col-media-item">
+                              <span class="btn-add-visual" aria-hidden="true"><i class="fa fa-plus"></i></span>
                             </div>
-                          </div>                      
-                      </ng-container>                    
+                          </div>
+                      </ng-container>
                       <ng-template #elseConImagen>
                         <!-- con imagen -->
-                        <div class="d-flex justify-content-between w-100 align-items-center">
-                          <div>
+                        <div class="d-flex justify-content-between w-100 align-items-center fila-item">
+                          <div class="col-texto-item">
                             <span class="fw-600 fs-12 item-titulo">{{item.des}} <i *ngIf="item.is_recomendacion === '1'" class="fa fa-star text-warning pr-1"></i></span>
-                            
+
                             <ng-container>
-                              <p *ngIf="item.detalles.length > 0" class="titlo-detalle mb-1" >{{item.detalles}}</p>                    
-                              
+                              <p *ngIf="item.detalles.length > 0" class="titlo-detalle mb-1" >{{item.detalles}}</p>
+
                               <!-- si hay detalles los precios abajo -->
-                              <div>
-                                <p *ngIf="item.precio_antes" class="mb-0 fw-600 li-tachado">{{item.precio_antes | number:'0.2' }}</p>
-                                <p class="mb-0 fw-600 pr-2">{{item.precio | number:'0.2' }}</p>
+                              <div class="fila-precio">
+                                <span *ngIf="item.precio_antes" class="precio-antes">S/ {{item.precio_antes | number:'0.2' }}</span>
+                                <span class="precio-actual">S/ {{item.precio | number:'0.2' }}</span>
                               </div>
-                            </ng-container>                            
+                            </ng-container>
                           </div>
                           <!-- imagen -->
-                          <div class="text-right ml-1">
-                            <div class="rounded-circle icon-div-carta">
-                              <img class="icon-item-carta rounded-circle" [src]="item.img | imgUrl:'carta'" alt="icon-item-carta" appImgFallback="ocultar" loading="lazy">
+                          <div class="text-right ml-1 col-media-item">
+                            <div class="icon-div-carta">
+                              <img class="icon-item-carta" [src]="item.img | imgUrl:'carta'" alt="icon-item-carta" appImgFallback="ocultar" loading="lazy">
                             </div>
+                            <span class="btn-add-visual" aria-hidden="true"><i class="fa fa-plus"></i></span>
                           </div>
                         </div>
                       </ng-template>
-                      
+
                     </div>
 
-                    
+
                   </div>
-                  
+
                   <!-- control para aumentar con un clic  - para una sola opcion de consumo | delivery o autopedido (llevar) -->
                   <ng-container *ngIf="isPuntoAutoPedido || isTomaPedidoRapido || isCliente">
-                    <div class="control-more-clic animated fadeInUp" *ngIf="item.is_visible_control_last_add || item.cantidad_seleccionada > 0">                    
+                    <div class="control-more-clic animated fadeInUp" *ngIf="item.is_visible_control_last_add || item.cantidad_seleccionada > 0">
                       <app-comp-ctrl-add-fast class="float-left mr-1"
-                          (objResponse)="resultCantItemMercado($event)" 
+                          (objResponse)="resultCantItemMercado($event)"
                           [cantidad_show] = "item.cantidad_seleccionada"
                           [objItem]="item"
                           [comprimir] = "false"
@@ -203,11 +209,11 @@
                       </div>
                     </div>
                   </ng-container>
-                  
 
-              </div>            
-            </li>          
-          </ul> 
+
+              </div>
+            </li>
+          </ul>
 
         </ng-container>
 
@@ -216,19 +222,19 @@
           <ul class="content-view-item-mercado">
             <li *ngFor="let item of objItems" class="li-content-mercado">
                 <div class="li-item-mercado d-flex xtitulo p-titulo-item-sin-detalle" matRipple [ngClass]="{'li-tachado': item.cantidad < 1}">
-                  <div class="w-100">                                            
+                  <div class="w-100">
                         <!-- con imagen -->
                         <div class="w-100 align-items-center">
 
                           <div>
-                            
+
                             <app-comp-ctrl-add-fast class="div-control-add-fast"
-                              (objResponse)="resultCantItemMercado($event)" 
+                              (objResponse)="resultCantItemMercado($event)"
                               [cantidad_show] = "item.cantidad_seleccionada"
                               [objItem]="item"
                               [limitAdd]="item.cantidad">
                             </app-comp-ctrl-add-fast>
-  
+
                             <!-- imagen -->
                             <div class="text-right ml-1">
                               <div class="text-center">
@@ -238,30 +244,30 @@
                                 <ng-template #elseTemplateConImg>
                                   <img class="icon-item-carta" [src]="item.img | imgUrl:'carta'" alt="icon-item-carta" (click)="selectedItem(item)" appImgFallback="ocultar" loading="lazy">
                                 </ng-template>
-                                
+
                               </div>
                             </div>
                           </div>
-                          
+
                           <div class="text-center" (click)="selectedItem(item)">
-                            <span class="fw-600 fs-11 item-titulo">{{item.des}} <i *ngIf="item.is_recomendacion === '1'" class="fa fa-star text-warning pr-1"></i></span>                                                          
-                            <div>
-                                <p *ngIf="item.precio_antes" class="mb-0 fw-600 li-tachado">{{item.precio_antes | number:'0.2' }}</p>
-                                <p class="mb-0 fw-600 pr-2">{{item.precio | number:'0.2' }}</p>
-                            </div>             
+                            <span class="fw-600 fs-11 item-titulo">{{item.des}} <i *ngIf="item.is_recomendacion === '1'" class="fa fa-star text-warning pr-1"></i></span>
+                            <div class="fila-precio justify-content-center">
+                                <span *ngIf="item.precio_antes" class="precio-antes">S/ {{item.precio_antes | number:'0.2' }}</span>
+                                <span class="precio-actual">S/ {{item.precio | number:'0.2' }}</span>
+                            </div>
                           </div>
-                          
+
                         </div>
                   </div>
-  
-                </div>      
-            </li>          
-          </ul> 
-        </ng-template>
-        
 
-        
-               
+                </div>
+            </li>
+          </ul>
+        </ng-template>
+
+
+
+
       </ng-container>
     </div>
 
@@ -272,34 +278,34 @@
           <app-resumen-pedido id="1"></app-resumen-pedido>
       </div>
     </ng-container>
-    
+
 
     <br>
 
   </div>
 
     <!-- busqueda -->
-    <div [hidden]="!isBusqueda" class="xtransicion color-fondo-ul xanimated xfadeInDown" style="border-top: 8px solid #3f51b5;">
+    <div [hidden]="!isBusqueda" class="xtransicion color-fondo-ul lista-busqueda xanimated xfadeInDown">
         <ng-container>
           <ul>
               <!-- [ngClass]="{'li-padding-selected': item.selected}" -->
             <li *ngFor="let item of objCartaBus" [hidden]="!item.visible">
-              <div class="xcontent border-left-item-{{getEstadoStockItem(item.cantidad)}}">
+              <div class="xcontent tarjeta-item border-left-item-{{getEstadoStockItem(item.cantidad)}}">
                 <div class="m1 d-flex xtitulo" matRipple [matRippleColor]="rippleColor" [ngClass]="{'li-tachado': item.cantidad < 1, 'p-titulo-item-sin-detalle': item.detalles.length === 0, 'p-titulo-item-select': item.selected}" (click)="selectedItem(item)">
                   <!-- titulo item -->
                   <div class="content-titulo-item w-100">
-                    <span>{{item.des}}</span>
+                    <span class="item-titulo">{{item.des}}</span>
                     <ng-container *ngIf="item.detalles.length > 0">
-                        <p class="titlo-detalle" >{{item.seccion}}: {{item.detalles}}</p>                    
-                      </ng-container>                    
+                        <p class="titlo-detalle" >{{item.seccion}}: {{item.detalles}}</p>
+                      </ng-container>
                   </div>
-    
+
                 </div>
 
-                
-              </div>            
-            </li>          
-          </ul>        
+
+              </div>
+            </li>
+          </ul>
         </ng-container>
       </div>
       <br>

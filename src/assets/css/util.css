@@ -287,12 +287,16 @@ p, span, div {
 .fs-200 {font-size: 200px;}
 
 
+/* legibilidad: los pesos 100-300 en gris sobre blanco no se leen en exteriores.
+   El minimo de texto y titulos es 400 (Ubuntu-Regular); la jerarquia se
+   mantiene con tamaño y color, no con trazos finos.
+   Para un trazo mas ligero de forma deliberada usar .font-ligth. */
 .fw-100 {
-  font-weight: 100;
-  font-family: Ubuntu-Light;
+  font-weight: 400;
+  font-family: Ubuntu-Regular, sans-serif;
 }
-.fw-200 {font-weight: 200; }
-.fw-300 {font-weight: 300; }
+.fw-200 {font-weight: 400; }
+.fw-300 {font-weight: 400; }
 .fw-400 {font-weight: 400; }
 .fw-500 {font-weight: 500; }
 .fw-600 {font-weight: 600; }
