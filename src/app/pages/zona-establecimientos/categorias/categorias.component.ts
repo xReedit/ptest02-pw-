@@ -45,7 +45,8 @@ export class CategoriasComponent implements OnInit, OnDestroy, AfterViewInit {
   isSelectedDireccion = false;
   direccionCliente: DeliveryDireccionCliente;
 
-  listSubCatFiltros: any = []; // sub categoria para filtrar
+  listSubCatFiltros: any = []; // sub categorias visibles (solo las que tienen comercio)
+  private listSubCatFiltrosAll: any[] = []; // todas las sub categorias, antes de depurar vacias
 
   private idcategoria_selected: any;
   private isMismaDireccionSelectd = false; // si es la misma direccion el calculo de distancia y costo de servicio lo trae de cache
@@ -136,8 +137,12 @@ export class CategoriasComponent implements OnInit, OnDestroy, AfterViewInit {
       this.listSubCatFiltros.map(x => x.selected = false);
       this.listSubCatFiltros.unshift({ id: 0, descripcion: 'Todos', selected: true });
       this.listSubCatFiltros.unshift({ id: 0, descripcion: 'buscar', selected: false });
+      // copia completa: las pastillas visibles se derivan de esta segun los
+      // comercios que realmente existan (ver depurarCategoriasVacias).
+      this.listSubCatFiltrosAll = this.listSubCatFiltros.slice();
     } else {
       this.listSubCatFiltros = [];
+      this.listSubCatFiltrosAll = [];
     }
 
 
@@ -231,6 +236,9 @@ export class CategoriasComponent implements OnInit, OnDestroy, AfterViewInit {
 
           // 250522 calculara la distancia cuando ingresa al comercio
           // this.setCalcDistanciaComercio();
+
+        // solo dejar las pastillas de categorias que tengan al menos un comercio
+        this.depurarCategoriasVacias();
 
         // ya hay tarjetas: montar/rehacer Isotope sobre ellas
         this.reconstruirIsotope();
@@ -407,6 +415,33 @@ export class CategoriasComponent implements OnInit, OnDestroy, AfterViewInit {
     // nueva posicion. id 0 = todas.
     this.idFiltroCategoria = itemFiltro.id || 0;
     this.filtrarIsotope();
+  }
+
+  /** Deja solo las pastillas de categorias que tengan al menos un comercio en la
+      lista actual. "Todos" y "buscar" (id 0) siempre quedan. Si la categoria
+      seleccionada ya no existe, vuelve a "Todos". */
+  private depurarCategoriasVacias(): void {
+    if (!this.listSubCatFiltrosAll || this.listSubCatFiltrosAll.length === 0) { return; }
+
+    const idsPresentes = new Set<string>();
+    (this.listEstablecimientosMaster || []).forEach((e: DeliveryEstablecimiento) => {
+      String(e.idsede_subcategoria || '').split(',').forEach(i => {
+        const t = i.trim();
+        if (t) { idsPresentes.add(t); }
+      });
+    });
+
+    this.listSubCatFiltros = this.listSubCatFiltrosAll
+      .filter(c => c.id === 0 || idsPresentes.has(String(c.id)));
+
+    // si la categoria activa quedo fuera, volver a "Todos"
+    const activa = this.listSubCatFiltros.find(c => c.selected && c.id !== 0);
+    if (this.idFiltroCategoria !== 0 && !activa) {
+      this.listSubCatFiltros.forEach(c => c.selected = false);
+      const todos = this.listSubCatFiltros.find(c => c.id === 0 && c.descripcion === 'Todos');
+      if (todos) { todos.selected = true; }
+      this.idFiltroCategoria = 0;
+    }
   }
 
   /** Clases de categoria de una tarjeta, p.ej. "cat-8 cat-3", para el filtro de Isotope. */
