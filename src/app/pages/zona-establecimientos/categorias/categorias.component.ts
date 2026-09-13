@@ -81,6 +81,10 @@ export class CategoriasComponent implements OnInit, OnDestroy, AfterViewInit {
   private textoFiltro = '';
 
   isShowTextBusquedaComercio = false;
+
+  // repeticiones para el esqueleton de carga
+  skeletonChips = [1, 2, 3, 4, 5, 6];
+  skeletonCards = [1, 2, 3, 4, 5, 6];
   constructor(
     private crudService: CrudHttpService,
     private router: Router,
@@ -257,12 +261,13 @@ export class CategoriasComponent implements OnInit, OnDestroy, AfterViewInit {
         // solo dejar las pastillas de categorias que tengan al menos un comercio
         this.depurarCategoriasVacias();
 
-        // ya hay tarjetas: montar/rehacer Isotope sobre ellas
+        // baja el esqueleton y deja pintar las tarjetas reales; Isotope se monta
+        // sobre ellas en el siguiente tick.
+        this.loaderPage = false;
         this.reconstruirIsotope();
-
-        setTimeout(() => {
-          this.loaderPage = false;
-        }, 500);
+      }, () => {
+        // si la consulta falla, quitar el esqueleton igual para no dejarlo girando
+        this.loaderPage = false;
       });
   }
 

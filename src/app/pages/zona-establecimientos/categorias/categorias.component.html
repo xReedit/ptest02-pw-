@@ -1,8 +1,20 @@
-<div class="animated fadeIn div-loader-2" *ngIf="loaderPage">
-    <div class="loader">
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        <span class="pt-2">Obteniendo datos...</span>
-    </div>    
+<!-- Esqueleton mientras cargan las opciones y los comercios -->
+<div class="sk-wrap p-2" *ngIf="loaderPage">
+    <div class="sk-chips">
+        <span class="sk-block sk-chip" *ngFor="let n of skeletonChips"></span>
+    </div>
+    <div class="sk-grid">
+        <div class="sk-card" *ngFor="let n of skeletonCards">
+            <div class="sk-inner">
+                <div class="sk-block sk-portada"></div>
+                <div class="sk-body">
+                    <div class="sk-block sk-linea sk-l1"></div>
+                    <div class="sk-block sk-linea sk-l2"></div>
+                    <div class="sk-block sk-linea sk-l3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="animated fadeInUp">
 
@@ -12,7 +24,7 @@
         <p class="pt-2">Para comenzar, establesca una dirección de entrega.</p>
     </div>
     
-    <div *ngIf="listEstablecimientos && listEstablecimientos.length === 0" class="div-img-gps p-3">
+    <div *ngIf="!loaderPage && listEstablecimientos && listEstablecimientos.length === 0" class="div-img-gps p-3">
         <img src="assets/images/_no_disponible.png" alt="no-disponible">
         <p class="pt-2">El servicio aún no esta disponible en este lugar.</p>
     </div>
@@ -26,7 +38,7 @@
     </div>    
     <!-- PROMOCIONES -->
 
-    <div class="p-2 content-master-establecimiento" *ngIf="listEstablecimientos">
+    <div class="p-2 content-master-establecimiento" *ngIf="listEstablecimientos && !loaderPage">
 
         <!-- filtro de categorias. Los dos estados (pastillas / buscador) se apilan
              en el mismo lugar con una altura reservada, asi el cambio es un

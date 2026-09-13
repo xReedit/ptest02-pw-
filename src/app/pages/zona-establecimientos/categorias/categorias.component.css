@@ -1,3 +1,77 @@
+/* ===== Esqueleton de carga ===== */
+.sk-wrap { max-width: 720px; margin: 0 auto; }
+
+.sk-chips {
+    display: flex;
+    gap: 8px;
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+
+.sk-chip {
+    flex: 0 0 auto;
+    width: 88px;
+    height: 32px;
+    border-radius: 8px;
+}
+.sk-chips .sk-chip:first-child { width: 60px; }
+
+.sk-grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.sk-card {
+    width: 50%;
+    padding: 0 6px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+}
+
+.sk-inner {
+    background: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(16, 24, 64, .10), 0 6px 16px rgba(16, 24, 64, .06);
+    padding-bottom: 13px;
+}
+
+.sk-portada {
+    width: 100%;
+    padding-bottom: 62.5%; /* misma proporcion 16/10 de la portada real */
+    border-radius: 0;
+}
+
+.sk-body { padding: 11px 12px 0; }
+
+.sk-linea {
+    height: 12px;
+    border-radius: 6px;
+    margin-bottom: 9px;
+}
+.sk-l1 { width: 65%; }
+.sk-l2 { width: 45%; }
+.sk-l3 { width: 55%; height: 10px; }
+
+/* bloque gris con brillo que recorre */
+.sk-block {
+    background: #e9edf3;
+    background-image: linear-gradient(90deg, rgba(233,237,243,0) 0, rgba(255,255,255,.65) 50%, rgba(233,237,243,0) 100%);
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    background-position: -150% 0;
+    animation: sk-brillo 1.3s ease-in-out infinite;
+}
+
+@keyframes sk-brillo {
+    0% { background-position: -150% 0; }
+    100% { background-position: 250% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sk-block { animation: none; }
+}
+
 /* Contenedor de la barra de filtro (pastillas o buscador). Position relative para
    que el elemento saliente, que la animacion vuelve absolute al desvanecerse, se
    ubique aqui y no salte la grilla. */
