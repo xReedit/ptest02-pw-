@@ -87,7 +87,9 @@ export class EstablecimientosComponent implements OnInit {
 
 
     this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {
-      if (res && (this.isClienteLogueado) ) {
+      // el visitante sin cuenta tambien ve los comercios de su zona: la direccion basta,
+      // el registro se pide recien al confirmar el pedido
+      if (res) {
         // opcion 2 = sercicio no disponible en tu zona
         this.vistaInicio = res?.options ? res?.options?.vista ? res.options.vista : 0 : 2;
         this.ciudad_actual = res.ciudad;
@@ -161,7 +163,7 @@ export class EstablecimientosComponent implements OnInit {
 
   goComercios() {
     if (this.vistaInicio === 0 ) {return; }
-    localStorage.setItem('sys:subcat', '0');
+    localStorage.setItem('sys:subcat', btoa('[]'));
     localStorage.setItem('sys::cat', '-1');
     setTimeout(() => {
       this.router.navigate(['/zona-delivery/categorias']);

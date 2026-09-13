@@ -1,10 +1,11 @@
 /* Tarjeta de comercio. Valores de docs/DESIGN.md: Ubuntu, indigo #3F51B5,
    naranja #E0651F, tinta #1E2437, texto apagado #6c757d, radio 18 y la sombra
-   estandar de tarjeta. Sin ancho fijo: la lista manda. */
+   estandar de tarjeta. Todas las tarjetas miden lo mismo: el ancho lo fija la
+   lista, la portada tiene alto fijo y el cuerpo un minimo, para que la fila no
+   dependa de cuanto texto traiga cada comercio. */
 .tarjeta-comercio {
   width: 100%;
-  max-width: 520px;
-  margin: 0 auto 12px;
+  margin: 0 0 14px;
   background: #ffffff;
   border-radius: 18px;
   overflow: hidden;
@@ -15,8 +16,8 @@
 }
 
 .tarjeta-comercio:hover {
-  box-shadow: 0 2px 6px rgba(16, 24, 64, .12), 0 10px 24px rgba(16, 24, 64, .10);
-  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(16, 24, 64, .12), 0 12px 26px rgba(16, 24, 64, .12);
+  transform: translateY(-2px);
 }
 
 .tarjeta-comercio:active {
@@ -24,10 +25,9 @@
   box-shadow: 0 1px 3px rgba(16, 24, 64, .12);
 }
 
-/* Portada 16:9 recortada a 132 px: entran tres comercios en pantalla. */
 .portada {
   position: relative;
-  height: 132px;
+  height: 148px;
   overflow: hidden;
   background: #EEF1F6;
 }
@@ -50,38 +50,92 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 42px;
+  font-size: 46px;
   font-weight: 500;
-  letter-spacing: .04em;
+  letter-spacing: .06em;
   color: #3F51B5;
-  background: linear-gradient(140deg, #E8ECF8 0%, #DDE3F4 100%);
+  background:
+    radial-gradient(120% 90% at 30% 15%, rgba(255, 255, 255, .85) 0%, rgba(255, 255, 255, 0) 60%),
+    linear-gradient(140deg, #E8ECF8 0%, #D8DFF3 100%);
 }
 
-.iniciales[data-tono="1"] { color: #0064BF; background: linear-gradient(140deg, #E4EFFA 0%, #D6E6F7 100%); }
-.iniciales[data-tono="2"] { color: #B4531A; background: linear-gradient(140deg, #FBEDE3 0%, #F7E0CE 100%); }
-.iniciales[data-tono="3"] { color: #2F5D7C; background: linear-gradient(140deg, #E7EFF3 0%, #DAE6ED 100%); }
+.iniciales[data-tono="1"] {
+  color: #0064BF;
+  background:
+    radial-gradient(120% 90% at 30% 15%, rgba(255, 255, 255, .85) 0%, rgba(255, 255, 255, 0) 60%),
+    linear-gradient(140deg, #E4EFFA 0%, #CFE2F6 100%);
+}
 
-.velo-cerrado {
+.iniciales[data-tono="2"] {
+  color: #B4531A;
+  background:
+    radial-gradient(120% 90% at 30% 15%, rgba(255, 255, 255, .85) 0%, rgba(255, 255, 255, 0) 60%),
+    linear-gradient(140deg, #FBEDE3 0%, #F6DCC7 100%);
+}
+
+.iniciales[data-tono="3"] {
+  color: #2F5D7C;
+  background:
+    radial-gradient(120% 90% at 30% 15%, rgba(255, 255, 255, .85) 0%, rgba(255, 255, 255, 0) 60%),
+    linear-gradient(140deg, #E7EFF3 0%, #D3E1E9 100%);
+}
+
+/* Cerrado: la portada se apaga, no se tapa con un bloque gris. */
+.esta-cerrado .portada::after {
+  content: "";
   position: absolute;
   inset: 0;
   z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(24, 30, 54, .52);
+  background: rgba(30, 36, 55, .28);
+}
+
+.esta-cerrado .img-comercio,
+.esta-cerrado .iniciales {
+  filter: grayscale(.65);
 }
 
 .pastilla-cerrado {
-  padding: 6px 14px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, .94);
+  position: absolute;
+  z-index: 3;
+  left: 12px;
+  bottom: 12px;
+  padding: 5px 12px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .95);
+  color: #1E2437;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.pastilla-calificacion {
+  position: absolute;
+  z-index: 3;
+  right: 12px;
+  top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .95);
   color: #1E2437;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(16, 24, 64, .16);
+}
+
+.pastilla-calificacion svg {
+  width: 14px;
+  height: 14px;
+  color: #E0651F;
 }
 
 .cuerpo {
   padding: 14px 16px 16px;
+  height: 118px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .tarjeta-comercio p {
@@ -119,12 +173,13 @@
 }
 
 .meta {
-  margin-top: 12px;
+  margin-top: auto;
+  padding-top: 12px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 14px;
-  min-height: 24px;
+  min-height: 26px;
 }
 
 .dato {
@@ -139,10 +194,6 @@
   width: 15px;
   height: 15px;
   flex-shrink: 0;
-}
-
-.dato .estrella {
-  color: #E0651F;
 }
 
 .dato.aviso {

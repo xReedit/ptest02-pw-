@@ -109,7 +109,11 @@ export class CategoriasComponent implements OnInit, OnDestroy {
 
     this.idcategoria_selected = localStorage.getItem('sys::cat');
     if ( this.idcategoria_selected !== '-1' ) {
-      this.listSubCatFiltros = JSON.parse(atob(localStorage.getItem('sys:subcat'))); // filtro para celulares
+      // 'sys:subcat' no siempre trae base64: establecimientos escribe el texto '0'
+      // cuando la categoria no tiene subcategorias. Sin esta guarda el atob rompia
+      // el ngOnInit entero y la pantalla nunca llegaba a suscribirse a la direccion,
+      // asi que la lista de comercios no cargaba nunca.
+      this.listSubCatFiltros = this.leerSubCategoriasGuardadas();
 
       // preparr filtro
       this.listSubCatFiltros.map(x => x.selected = false);
@@ -132,10 +136,14 @@ export class CategoriasComponent implements OnInit, OnDestroy {
     this.infoClient = this.verifyClientService.getDataClient();
     this.isClienteLogueado = this.infoClient.isCliente || false;
 
-    this.listenService.isChangeDireccionDelivery$
+    // La direccion se toma del servicio, que es el unico dueño y guarda el valor
+    // actual: si ya habia una elegida (o el visitante recarga la pagina) llega en la
+    // primera emision, sin depender de que el evento del bus ocurra despues de que
+    // esta pantalla se suscriba.
+    this.direccionEntrega.seleccionada$
     .pipe(takeUntil(this.unsubscribe$))
     .subscribe((res: DeliveryDireccionCliente) => {
-      if ( res ) {        
+      if ( res ) {
         this.codigo_postal_actual = res.codigo || '0';
         this.ciudad_actual = res.ciudad;
         this.isNullselectedDireccion = false;
@@ -404,4 +412,17 @@ export class CategoriasComponent implements OnInit, OnDestroy {
       });
   }
 
+
+  /** Lee el filtro de subcategorias tolerando basura: si no es base64 de un arreglo, devuelve vacio. */
+  private leerSubCategoriasGuardadas(): any[] {
+    const guardado = localStorage.getItem('sys:subcat');
+    if (!guardado) { return []; }
+
+    try {
+      const lista = JSON.parse(atob(guardado));
+      return Array.isArray(lista) ? lista : [];
+    } catch (error) {
+      return [];
+    }
+  }
 }
