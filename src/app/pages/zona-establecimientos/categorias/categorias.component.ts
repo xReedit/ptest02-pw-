@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import Isotope from 'isotope-layout';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimiento';
@@ -29,7 +30,20 @@ import { DireccionEntregaService } from 'src/app/shared/services/direccion-entre
 @Component({
   selector: 'app-categorias',
   templateUrl: './categorias.component.html',
-  styleUrls: ['./categorias.component.css']
+  styleUrls: ['./categorias.component.css'],
+  animations: [
+    // al alternar entre las pastillas y el campo de busqueda: el que sale se
+    // desvanece hacia arriba y el que entra aparece desde arriba, sin salto seco.
+    trigger('cambioBusqueda', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-8px)' }),
+        animate('220ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('150ms ease-in', style({ opacity: 0, transform: 'translateY(-8px)' }))
+      ])
+    ])
+  ]
 })
 export class CategoriasComponent implements OnInit, OnDestroy, AfterViewInit {
   // rippleColor = 'rgb(255,238,88, 0.2)';
