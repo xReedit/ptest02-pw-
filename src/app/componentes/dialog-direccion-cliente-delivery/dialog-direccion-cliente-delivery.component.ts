@@ -14,6 +14,7 @@ import { GeolocationService } from 'src/app/shared/services/geolocation.service'
 import { GoogleMapsLoaderService } from 'src/app/shared/services/google-maps-loader.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { DireccionPendienteService } from 'src/app/shared/services/direccion-pendiente.service';
+import { DireccionEntregaService } from 'src/app/shared/services/direccion-entrega.service';
 
 declare var google: any;
 
@@ -108,6 +109,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     private mapsLoader: GoogleMapsLoaderService,
     private miPedidoService: MipedidoService,
     private direccionPendienteService: DireccionPendienteService,
+    private direccionEntrega: DireccionEntregaService,
     private zone: NgZone,
     private cd: ChangeDetectorRef
   ) {
@@ -618,12 +620,15 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     if (!this.destruido) { this.cd.detectChanges(); }
   }
 
+  // el dialogo ya no escribe el storage a mano: la direccion tiene un solo dueño, que
+  // guarda en los dos almacenes viejos y avisa a las pantallas en el momento. De paso,
+  // cerrar sin direccion deja de pisar la que ya estaba escogida.
   private setDireccionStorage() {
-    localStorage.setItem('sys::dir_se', JSON.stringify(this.dataCliente));
+    this.direccionEntrega.establecer(this.dataCliente);
   }
 
   private getDireccionStorage() {
-    return localStorage.getItem('sys::dir_se') ? JSON.parse(localStorage.getItem('sys::dir_se')) : null;
+    return this.direccionEntrega.seleccionada;
   }
 
   cerrarDlg(): void {

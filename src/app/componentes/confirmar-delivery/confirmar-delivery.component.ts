@@ -20,6 +20,7 @@ import { TiempoEntregaModel } from 'src/app/modelos/tiempo.entrega.model';
 import { DialogTiempoEntregaComponent } from '../dialog-tiempo-entrega/dialog-tiempo-entrega.component';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { DialogDireccionClienteDeliveryComponent } from '../dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
+import { DireccionEntregaService } from 'src/app/shared/services/direccion-entrega.service';
 import { SocketClientModel } from 'src/app/modelos/socket.client.model';
 import { IS_NATIVE } from 'src/app/shared/config/config.const';
 import { formatearTiempoEntrega } from 'src/app/shared/utils/costo-entrega';
@@ -135,6 +136,7 @@ export class ConfirmarDeliveryComponent implements OnInit {
     private dialogTiempoEntrega: MatDialog,
     private utilService: UtilitariosService,
     private dialogDireccionClienteDelivery: MatDialog,
+    private direccionEntrega: DireccionEntregaService,
     // private crudService: CrudHttpService
   ) {
     this.socketCliente = this.verifyClientService.getDataClient();
@@ -543,6 +545,9 @@ export class ConfirmarDeliveryComponent implements OnInit {
         }
 
         this.infoToken.direccionEnvioSelected = this.direccionCliente;
+        // ademas del token del pedido, la direccion escogida se le entrega a su dueño
+        // para que cabecera y comercios queden con lo mismo. El resto del flujo no cambia.
+        this.direccionEntrega.establecer(this.direccionCliente);
 
         // esto para poder guardar en el procedure
         this.direccionCliente.idcliente_pwa_direccion = this.direccionCliente.idcliente_pwa_direccion === null ? 0 : this.direccionCliente.idcliente_pwa_direccion;

@@ -1,4 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { UsuarioTokenModel } from 'src/app/modelos/usuario.token.model';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
@@ -17,6 +19,7 @@ import { IS_PLATAFORM_IOS } from 'src/app/shared/config/config.const';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DialogDesicionComponent } from 'src/app/componentes/dialog-desicion/dialog-desicion.component';
 import { DialogOutAuthIosComponent } from 'src/app/componentes/dialog-out-auth-ios/dialog-out-auth-ios.component';
+import { DireccionEntregaService } from 'src/app/shared/services/direccion-entrega.service';
 
 
 
@@ -25,9 +28,11 @@ import { DialogOutAuthIosComponent } from 'src/app/componentes/dialog-out-auth-i
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit, OnDestroy {
   infoClient: SocketClientModel;
-  nomDireccionCliente = 'Establecer una direccion de entrega';
+  // texto por defecto de la cabecera mientras nadie ha escogido direccion
+  readonly TEXTO_SIN_DIRECCION = 'Establecer una direccion de entrega';
+  nomDireccionCliente = this.TEXTO_SIN_DIRECCION;
   isSelectedDireccion = false;
 
   infoUser: UsuarioTokenModel;
@@ -44,6 +49,8 @@ export class MainComponent implements OnInit {
   // recargar en /pedidos no quede marcado "Inicio"
   tabActivo = 0;
 
+  private destruir$ = new Subject<void>();
+
   constructor(
     private infoTokenService: InfoTockenService,
     private verifyClientService: VerifyAuthClientService,
@@ -56,7 +63,8 @@ export class MainComponent implements OnInit {
     private navigartoService: NavigatorLinkService,
     private authService: AuthServiceSotrage,
     private authNativeService: AuthNativeService,
-    private crudService: CrudHttpService
+    private crudService: CrudHttpService,
+    private direccionEntrega: DireccionEntregaService
     // public ngxService: NgxUiLoaderService
   ) { }
 
@@ -70,26 +78,29 @@ export class MainComponent implements OnInit {
     this.infoClient = this.verifyClientService.getDataClient();
     this.isClienteLogueado = this.infoClient.isCliente;
     this.showSelectedDireccion = this.isClienteLogueado;
-    
+
 
     // console.log('this.infoClient main', this.infoClient);
 
+    // la direccion de entrega tiene un solo dueño: la cabecera y el cartel de bienvenida
+    // se repintan en cuanto cambia, sin recargar y sin depender de estar logueado
+    this.direccionEntrega.seleccionada$
+      .pipe(takeUntil(this.destruir$))
+      .subscribe((direccion: DeliveryDireccionCliente) => this.pintarDireccion(direccion));
+
+    // el bus sigue vivo para quien todavia avisa por el (dialog-select-direccion):
+    // lo que llega por ahi se le entrega al dueño, no se escribe a mano
+    this.listenService.isChangeDireccionDelivery$
+      .pipe(takeUntil(this.destruir$))
+      .subscribe((res: DeliveryDireccionCliente) => {
+        if ( res ) { this.direccionEntrega.establecer(res); }
+      });
+
     // si cliente esta logueado; la sesion propia del cliente tambien necesita el socket para seguir su pedido
     if (this.isClienteLogueado || this.infoClient.isClienteTmp || this.verifyClientService.isLogin()) {
-      this.setDireccion(this.infoClient.direccionEnvioSelected);
       this.showSelectedDireccion = true;
       // console.log('this.infoToken', this.infoClient);
       this.socketService.connect(this.infoClient, 0, true);
-
-      this.listenService.isChangeDireccionDelivery$.subscribe((res: DeliveryDireccionCliente) => {        
-        if ( res) {
-          // this.codigo_postal_actual = res.codigo;
-          this.nomDireccionCliente = res.direccion + ' ' + res.ciudad;
-          this.verifyClientService.setDireccionDeliverySelected(res);
-          // this.setDireccion(res);
-        }
-      });
-
     }
 
     // si no hay direccion abre el dialog
@@ -101,10 +112,10 @@ export class MainComponent implements OnInit {
 
   }
 
-  // ngOnDestroy(): void {
-  //   this.socketService.isSocketOpenReconect = true;
-  //   this.socketService.closeConnection();
-  // }
+  ngOnDestroy(): void {
+    this.destruir$.next();
+    this.destruir$.complete();
+  }
 
   openDialogDireccion1() {
 
@@ -120,8 +131,7 @@ export class MainComponent implements OnInit {
       data => {
         if ( !data ) { return; }
         // console.log('direcion', data);
-        this.verifyClientService.setDireccionDeliverySelected(data);
-        this.setDireccion(data);
+        this.direccionEntrega.establecer(data);
       }
     );
   }
@@ -146,28 +156,34 @@ export class MainComponent implements OnInit {
         this.showSelectedDireccion = true;
 
         this.verifyClientService.setIsClientTmp(this.infoClient.isClienteTmp)
-        this.verifyClientService.setDireccionDeliverySelected(data);
-        this.setDireccion(data);
+        // el dueño de la direccion escribe los dos almacenes y avisa a la cabecera
+        this.direccionEntrega.establecer(data);
 
-        this.verifyClientService.setDataClient()
-      
         // console.log('this.infoClient', this.infoClient);
     });
 
   }
 
-  setDireccion(direccion: DeliveryDireccionCliente) {
-    if ( direccion?.direccion ) {
-      this.isSelectedDireccion = true;
-      let _direccion: any;
-      try {
-        _direccion = direccion?.direccion.split(',') || '';        
-      } catch (error) {        
-        console.error('error split', error);
-      }
-      this.nomDireccionCliente = _direccion + ' ' + direccion.ciudad;
-      this.listenService.setChangeDireccionDelivery(direccion);
+  /** Repinta cabecera y cartel de bienvenida con lo que diga el dueño de la direccion. */
+  private pintarDireccion(direccion: DeliveryDireccionCliente) {
+    if ( !direccion?.direccion ) {
+      this.isSelectedDireccion = false;
+      this.nomDireccionCliente = this.TEXTO_SIN_DIRECCION;
+      this.showSelectedDireccion = this.isClienteLogueado;
+      return;
     }
+
+    this.isSelectedDireccion = true;
+    this.showSelectedDireccion = true;
+
+    let _direccion: any;
+    try {
+      _direccion = direccion?.direccion.split(',') || '';
+    } catch (error) {
+      console.error('error split', error);
+    }
+    this.nomDireccionCliente = _direccion + ' ' + direccion.ciudad;
+    this.listenService.setChangeDireccionDelivery(direccion);
   }
 
   clickTab(op: any) {

@@ -21,6 +21,7 @@ import { EMPTY } from 'rxjs';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { ClienteService } from 'src/app/shared/services/cliente.service';
 import { DialogDireccionClienteDeliveryComponent } from '../dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
+import { DireccionEntregaService } from 'src/app/shared/services/direccion-entrega.service';
 import { IS_NATIVE } from 'src/app/shared/config/config.const';
 
 // DEL COMERCIO
@@ -120,6 +121,7 @@ export class DatosDeliveryComponent implements OnInit {
     private utilService: UtilitariosService,
     private clienteService: ClienteService,
     private dialogDireccionClienteDelivery: MatDialog,
+    private direccionEntrega: DireccionEntregaService,
     // private mapsAPILoader: MapsAPILoader,
     // private ngZone: NgZone,
     ) { }
@@ -411,7 +413,9 @@ export class DatosDeliveryComponent implements OnInit {
           return;
         }
 
-        // this.infoToken.direccionEnvioSelected = this.direccionCliente;
+        // la direccion escogida se le entrega a su dueño para que cabecera y comercios
+        // queden con lo mismo. Solo despues del filtro de ciudad, como hasta ahora.
+        this.direccionEntrega.establecer(this.direccionCliente);
 
         // esto para poder guardar en el procedure
         this.direccionCliente.idcliente_pwa_direccion = this.direccionCliente.idcliente_pwa_direccion === null ? 0 : this.direccionCliente.idcliente_pwa_direccion;

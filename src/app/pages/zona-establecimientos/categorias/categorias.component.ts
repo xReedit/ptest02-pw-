@@ -20,6 +20,7 @@ import { Subject } from 'rxjs/internal/Subject';
 import { takeUntil } from 'rxjs/operators';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { DialogDireccionClienteDeliveryComponent } from 'src/app/componentes/dialog-direccion-cliente-delivery/dialog-direccion-cliente-delivery.component';
+import { DireccionEntregaService } from 'src/app/shared/services/direccion-entrega.service';
 // import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 
 // import { Subscription } from 'rxjs/internal/Subscription';
@@ -66,7 +67,8 @@ export class CategoriasComponent implements OnInit, OnDestroy {
     private establecimientoService: EstablecimientoService,
     private socketService: SocketService,
     private infoTokenService: InfoTockenService,
-    private pedidoService: MipedidoService
+    private pedidoService: MipedidoService,
+    private direccionEntrega: DireccionEntregaService
     // private activatedRoute: ActivatedRoute,
     // private navigatorService: NavigatorLinkService,
   ) { }
@@ -334,7 +336,7 @@ export class CategoriasComponent implements OnInit, OnDestroy {
         if ( !data ) { return; }
         // console.log('data dialog', data);
         this.direccionCliente = data;
-        this.verifyClientService.setDireccionDeliverySelected(this.direccionCliente);
+        this.direccionEntrega.establecer(this.direccionCliente);
         // this.setDireccion(data);
       }
     );
@@ -358,11 +360,9 @@ export class CategoriasComponent implements OnInit, OnDestroy {
       if ( !data ) { return; }
         // console.log('direcion', data);
         this.direccionCliente = data;
-        this.verifyClientService.setDireccionDeliverySelected(this.direccionCliente);
-        this.listenService.setChangeDireccionDelivery(this.direccionCliente);
-
-        // this.verifyClientService.setDireccionDeliverySelected(data);
-        // this.setDireccion(data);
+        // el dueño de la direccion la guarda y avisa; main repinta la cabecera, esconde
+        // el cartel de "Indica direccion de entrega" y reemite por isChangeDireccionDelivery$
+        this.direccionEntrega.establecer(this.direccionCliente);
     });
 
   }
