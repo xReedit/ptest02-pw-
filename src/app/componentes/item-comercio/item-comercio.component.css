@@ -3,12 +3,22 @@
    estandar de tarjeta. Todas las tarjetas miden lo mismo: el ancho lo fija la
    lista, la portada tiene alto fijo y el cuerpo un minimo, para que la fila no
    dependa de cuanto texto traiga cada comercio. */
+/* El anfitrion es inline por defecto y se encogia al contenido dentro de la
+   celda de la grilla, asi que cada tarjeta salia de un ancho distinto. */
+:host {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
 .tarjeta-comercio {
   width: 100%;
-  margin: 0 0 14px;
+  margin: 0 0 12px;
   background: #ffffff;
-  border-radius: 18px;
+  border-radius: 10px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   cursor: pointer;
   text-align: left;
   box-shadow: 0 1px 3px rgba(16, 24, 64, .10), 0 6px 16px rgba(16, 24, 64, .06);
@@ -27,9 +37,10 @@
 
 .portada {
   position: relative;
-  height: 148px;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   background: #EEF1F6;
+  flex-shrink: 0;
 }
 
 .img-comercio {
@@ -50,7 +61,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 46px;
+  font-size: clamp(24px, 10vw, 38px);
   font-weight: 500;
   letter-spacing: .06em;
   color: #3F51B5;
@@ -100,7 +111,7 @@
   left: 12px;
   bottom: 12px;
   padding: 5px 12px;
-  border-radius: 13px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, .95);
   color: #1E2437;
   font-size: 12px;
@@ -116,7 +127,7 @@
   align-items: center;
   gap: 5px;
   padding: 5px 10px;
-  border-radius: 13px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, .95);
   color: #1E2437;
   font-size: 13px;
@@ -131,9 +142,10 @@
 }
 
 .cuerpo {
-  padding: 14px 16px 16px;
-  height: 118px;
+  padding: 11px 12px 13px;
+  min-height: 88px;
   box-sizing: border-box;
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
@@ -143,7 +155,7 @@
 }
 
 .nombre {
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 600;
   color: #1E2437;
   line-height: 1.25;
@@ -154,7 +166,7 @@
 
 .eslogan {
   margin-top: 2px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 300;
   color: #6c757d;
   overflow: hidden;
@@ -174,19 +186,19 @@
 
 .meta {
   margin-top: auto;
-  padding-top: 12px;
+  padding-top: 10px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 14px;
-  min-height: 26px;
+  gap: 6px 10px;
+  min-height: 24px;
 }
 
 .dato {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  gap: 5px;
+  font-size: 12px;
   color: #4B5468;
 }
 
@@ -210,11 +222,11 @@
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
+  gap: 5px;
+  padding: 3px 8px;
   border: 1px solid #DDE2EC;
-  border-radius: 13px;
-  font-size: 12px;
+  border-radius: 8px;
+  font-size: 11px;
   color: #4B5468;
   background: #FAFBFD;
 }

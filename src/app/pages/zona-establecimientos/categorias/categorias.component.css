@@ -1,6 +1,12 @@
+/* Dos comercios por fila. El envoltorio es un flex item que se estira al alto
+   de la fila, asi que las dos tarjetas de una misma fila miden igual sin
+   necesidad de fijarles un alto y sin recortar el texto de las mas largas. */
 .content-all-comercio > div {
-    flex: 0 0 100%;
-    max-width: 520px;
+    flex: 0 0 50%;
+    max-width: 340px;
+    padding: 0 6px;
+    box-sizing: border-box;
+    display: flex;
 }
 
 .content-all-comercio {
