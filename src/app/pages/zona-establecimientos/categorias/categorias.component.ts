@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimiento';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -28,7 +29,20 @@ import { DireccionEntregaService } from 'src/app/shared/services/direccion-entre
 @Component({
   selector: 'app-categorias',
   templateUrl: './categorias.component.html',
-  styleUrls: ['./categorias.component.css']
+  styleUrls: ['./categorias.component.css'],
+  animations: [
+    // al filtrar: la tarjeta que no aplica se desvanece y se achica; la que
+    // aparece entra igual. La grilla reacomoda las demas para llenar el hueco.
+    trigger('filtroCard', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scale(.92)' }),
+        animate('220ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'scale(1)' }))
+      ]),
+      transition(':leave', [
+        animate('160ms ease', style({ opacity: 0, transform: 'scale(.92)' }))
+      ])
+    ])
+  ]
 })
 export class CategoriasComponent implements OnInit, OnDestroy {
   // rippleColor = 'rgb(255,238,88, 0.2)';
