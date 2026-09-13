@@ -1,79 +1,67 @@
-<div class="animated fadeIn content-comercio pb-2 text-left" matRipple (click)="_itemSelected()">
-    <mat-card>
-    <div class="content-img-comercio">        
-        <img class="img-comercio" [src]="itemEstablecimiento.pwa_delivery_img | imgUrl:'comercio'" alt="" appImgFallback loading="lazy">
-        <div class="div-cerrado" *ngIf="isCerrado && !isComercioAceptaPedidoProgramado && !isComercioReservacionesActiva">
-            <p>Cerrado Ahora</p>                    
+<div class="animated fadeIn tarjeta-comercio" matRipple (click)="_itemSelected()">
+
+    <div class="portada">
+        <!-- placa con iniciales: se ve cuando el comercio no tiene logo o la imagen falla -->
+        <div class="iniciales" [attr.data-tono]="tonoInicial">{{ iniciales }}</div>
+
+        <img class="img-comercio" [src]="itemEstablecimiento.pwa_delivery_img | imgUrl:'comercio'" alt=""
+             appImgFallback="ocultar" loading="lazy">
+
+        <div class="velo-cerrado" *ngIf="isCerrado && !isComercioAceptaPedidoProgramado && !isComercioReservacionesActiva">
+            <span class="pastilla-cerrado">Cerrado ahora</span>
         </div>
     </div>
-    <div >
-        <div class="div-info-comercio">
-            <p class="fw-600 fs-18">
-                {{itemEstablecimiento.nombre | titlecase}}                
-            </p>
-            <p class="fs-13" *ngIf="itemEstablecimiento.eslogan.length > 0">{{itemEstablecimiento.eslogan | titlecase}}</p>
-            <p class="fw-100 fs-12 m-0" style="line-height: 1;">{{itemEstablecimiento.sub_categoria}}</p>
-            
-        </div>
-        <hr>
-        <div class="d-flex div-sub-info-comercio">            
+
+    <div class="cuerpo">
+        <p class="nombre">{{itemEstablecimiento.nombre | titlecase}}</p>
+        <p class="eslogan" *ngIf="tieneEslogan">{{itemEstablecimiento.eslogan | titlecase}}</p>
+        <p class="rubros">{{itemEstablecimiento.sub_categoria}}</p>
+
+        <div class="meta">
             <ng-container *ngIf="!isCerrado; else elseTemplateComercioCerrado">
-                            
-                <div *ngIf="!reserva" class="d-flex">
-                    <div>
-                        <i class="fa fa-clock-o"></i>
+
+                <ng-container *ngIf="!reserva">
+                    <span class="dato" *ngIf="tieneTiempo">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 14"></polyline></svg>
                         {{ itemEstablecimiento.tiempo_aprox_entrega | lowercase }}
-                    </div>
-                    <!-- <div *ngIf="itemEstablecimiento.c_servicio">
-                        <i class="fa fa-bicycle"></i>
-                        S/.{{ itemEstablecimiento.c_servicio | number: '0.2'}}
-                    </div> -->
-                    <div *ngIf="itemEstablecimiento.calificacion > 3">
-                        <i class="fa fa-star text-warning"></i>
+                    </span>
+
+                    <span class="dato" *ngIf="itemEstablecimiento.calificacion > 3">
+                        <svg viewBox="0 0 24 24" fill="currentColor" class="estrella"><path d="M12 3.6l2.5 5.1 5.6.8-4 3.9 1 5.6-5.1-2.7-5 2.7 1-5.6-4.1-3.9 5.6-.8z"></path></svg>
                         {{ itemEstablecimiento.calificacion | number:'.0' }}
-                    </div>
+                    </span>
 
-                    <!-- si acepta tarjeta -->
-                    <ng-container *ngIf="itemEstablecimiento.pwa_delivery_acepta_tarjeta === 1">
-                        <div class="div-acepta-tarjeta">                            
-                                <i class="fa fa-credit-card mr-1"></i> Acepta Tarjeta                            
-                        </div>
-                    </ng-container>
-                    
-                </div>
+                    <span class="chip" *ngIf="itemEstablecimiento.pwa_delivery_acepta_tarjeta === 1">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"></rect><line x1="2.5" y1="10" x2="21.5" y2="10"></line></svg>
+                        Acepta tarjeta
+                    </span>
+                </ng-container>
 
-                <div *ngIf="reserva" class="d-flex">
-                    <div>
-                        <i class="fa fa-clock-o"></i>
+                <ng-container *ngIf="reserva">
+                    <span class="dato">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 14"></polyline></svg>
                         Atencion hasta las <strong>{{ itemEstablecimiento.hora_fin }}</strong>
-                    </div>
-                    <div *ngIf="itemEstablecimiento.calificacion > 3" class="ml-2">
-                        <i class="fa fa-star text-warning"></i>
+                    </span>
+                    <span class="dato" *ngIf="itemEstablecimiento.calificacion > 3">
+                        <svg viewBox="0 0 24 24" fill="currentColor" class="estrella"><path d="M12 3.6l2.5 5.1 5.6.8-4 3.9 1 5.6-5.1-2.7-5 2.7 1-5.6-4.1-3.9 5.6-.8z"></path></svg>
                         {{ itemEstablecimiento.calificacion | number:'.0' }}
-                    </div>
-                </div>
-
+                    </span>
+                </ng-container>
 
             </ng-container>
-            <ng-template #elseTemplateComercioCerrado>                            
-                <div *ngIf="isComercioAceptaPedidoProgramado">
-                    <span class="">
-                        <i class="fa fa-calendar"></i>
-                        Pídelo para {{ descripcionDiaProgramado }} desde <strong>las {{ itemEstablecimiento.hora_ini }} </strong>
-                    </span>
-                </div>
 
-                <!-- si es reserva  muestra la hora que acepta reservas -->
-                <div  *ngIf="reserva">
-                    <span>
-                        <i class="fa fa-clock-o"></i>
-                        Reservas desde {{ horaAceptaReservas }}
-                    </span>
-                </div>
+            <ng-template #elseTemplateComercioCerrado>
+                <span class="dato aviso" *ngIf="isComercioAceptaPedidoProgramado">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.5"></rect><line x1="3.5" y1="10" x2="20.5" y2="10"></line><line x1="8" y1="3" x2="8" y2="7"></line><line x1="16" y1="3" x2="16" y2="7"></line></svg>
+                    Pídelo para {{ descripcionDiaProgramado }} desde <strong>las {{ itemEstablecimiento.hora_ini }}</strong>
+                </span>
+
+                <span class="dato aviso" *ngIf="reserva">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 14"></polyline></svg>
+                    Reservas desde {{ horaAceptaReservas }}
+                </span>
             </ng-template>
-            
-            
         </div>
     </div>
-    </mat-card>
+
 </div>

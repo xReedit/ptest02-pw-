@@ -1,107 +1,175 @@
-.content-comercio {
-    width: 335px;
-    margin: 5px;
+/* Tarjeta de comercio. Valores de docs/DESIGN.md: Ubuntu, indigo #3F51B5,
+   naranja #E0651F, tinta #1E2437, texto apagado #6c757d, radio 18 y la sombra
+   estandar de tarjeta. Sin ancho fijo: la lista manda. */
+.tarjeta-comercio {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto 12px;
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 1px 3px rgba(16, 24, 64, .10), 0 6px 16px rgba(16, 24, 64, .06);
+  transition: box-shadow .18s ease, transform .18s ease;
 }
 
-.content-img-comercio {
-    border: 1px solid lightgray;
-    border-radius: 2px;
-    text-align: center;
+.tarjeta-comercio:hover {
+  box-shadow: 0 2px 6px rgba(16, 24, 64, .12), 0 10px 24px rgba(16, 24, 64, .10);
+  transform: translateY(-1px);
+}
+
+.tarjeta-comercio:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(16, 24, 64, .12);
+}
+
+/* Portada 16:9 recortada a 132 px: entran tres comercios en pantalla. */
+.portada {
+  position: relative;
+  height: 132px;
+  overflow: hidden;
+  background: #EEF1F6;
 }
 
 .img-comercio {
-    max-width: 100%;
-    /* max-width: 330px; */
-    height: 115px;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.div-info-comercio {
-    padding-top: 15px;
-    margin: 0px;
-    line-height: 0.35em;
+/* Debajo de la imagen. Si no hay logo, o falla, la directiva oculta el img y
+   queda esta placa en vez del marcador roto. */
+.iniciales {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-weight: 500;
+  letter-spacing: .04em;
+  color: #3F51B5;
+  background: linear-gradient(140deg, #E8ECF8 0%, #DDE3F4 100%);
 }
 
-.div-sub-info-comercio{
-    /* background: #eeeeee; */
-    margin-top: -15px;
+.iniciales[data-tono="1"] { color: #0064BF; background: linear-gradient(140deg, #E4EFFA 0%, #D6E6F7 100%); }
+.iniciales[data-tono="2"] { color: #B4531A; background: linear-gradient(140deg, #FBEDE3 0%, #F7E0CE 100%); }
+.iniciales[data-tono="3"] { color: #2F5D7C; background: linear-gradient(140deg, #E7EFF3 0%, #DAE6ED 100%); }
+
+.velo-cerrado {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(24, 30, 54, .52);
 }
 
-.div-sub-info-comercio div {
-    border-radius: 2px;    
-    font-size: 13px;
-    padding: 5px;    
-    padding-right: 15px;
-    padding-left: 0px;
+.pastilla-cerrado {
+  padding: 6px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .94);
+  color: #1E2437;
+  font-size: 13px;
+  font-weight: 500;
 }
 
-.div-cerrado {
-    /* width: 100%;
-    background: lavenderblush;
-    margin-top: -200px;
-    opacity: 0.6;
-    text-align: center;     */
-
-    background: #fff0f5;
-    opacity: .6;
-    text-align: center;
-    top: 15px;
-    position: absolute;
-    width: 90%;
-    display: flex;
-    align-items: center;
-    height: 120px;
-
-    
+.cuerpo {
+  padding: 14px 16px 16px;
 }
 
-.div-cerrado p {
-    /* font-size: 25px;
-    font-weight: 800;
-    width: 100%;
-    top: 10%;
-    position: relative; */
-
-    font-size: 18px;
-    font-weight: 600;
-    /* font-weight: 800; */
-    width: 100%;
-    /* top: 30%; */
-    position: relative;
-    margin: 0;
+.tarjeta-comercio p {
+  margin: 0;
 }
 
-.div-acepta-tarjeta {
-    /* position: absolute;
-    right: 20px;
-    background: aliceblue;
-    width: 97px;
-    height: 25px;
-    border-radius: 0px 0px 0px 5px;
-    opacity: 0.7; */
-    /* background: #e0e0e0;
-    border-radius: 5px;
-    opacity: 0.7;
-    font-size: 10px;
-    padding: 5px;
-    border: 1px solid #9e9e9e; */
-
-    background: #eeeeee;
-    border-radius: 5px !important;
-    opacity: 0.7;
-    font-size: 10px !important;
-    padding: 4px !important;
-    /* border: 1px solid #757575; */
-    color: black;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
+.nombre {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1E2437;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+.eslogan {
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 300;
+  color: #6c757d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-.title-acepta-tarjeta {
-    position: fixed;
-    right: 27px;
-    font-size: 10px;
-    z-index: 1;
-    margin-top: 5px;
+.rubros {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 300;
+  color: #99A0B0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  min-height: 24px;
+}
+
+.dato {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #4B5468;
+}
+
+.dato svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.dato .estrella {
+  color: #E0651F;
+}
+
+.dato.aviso {
+  color: #7A3410;
+  font-size: 12.5px;
+  align-items: flex-start;
+  line-height: 1.35;
+}
+
+.dato.aviso svg {
+  margin-top: 1px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid #DDE2EC;
+  border-radius: 13px;
+  font-size: 12px;
+  color: #4B5468;
+  background: #FAFBFD;
+}
+
+.chip svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }

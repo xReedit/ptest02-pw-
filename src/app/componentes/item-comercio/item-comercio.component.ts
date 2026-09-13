@@ -112,4 +112,37 @@ export class ItemComercioComponent implements OnInit {
     this.itemSelected.emit(this.itemEstablecimiento);
   }
 
+
+  /** Iniciales para la placa que reemplaza al logo cuando el comercio no tiene. */
+  get iniciales(): string {
+    const nombre = (this.itemEstablecimiento && this.itemEstablecimiento.nombre || '').trim();
+    if (!nombre) { return '?'; }
+
+    const palabras = nombre.split(/\s+/).filter(p => p.length > 1);
+    const primera = (palabras[0] || nombre).charAt(0);
+    const segunda = palabras.length > 1 ? palabras[1].charAt(0) : '';
+
+    return (primera + segunda).toUpperCase();
+  }
+
+  /** Tono de la placa, derivado del nombre: el mismo comercio siempre se ve igual. */
+  get tonoInicial(): number {
+    const nombre = (this.itemEstablecimiento && this.itemEstablecimiento.nombre || '');
+    let suma = 0;
+    for (let i = 0; i < nombre.length; i++) { suma += nombre.charCodeAt(i); }
+
+    return suma % 4;
+  }
+
+  /** Un eslogan de un solo caracter, como el '.' que trae la base, no es un eslogan. */
+  get tieneEslogan(): boolean {
+    return (this.itemEstablecimiento && this.itemEstablecimiento.eslogan || '').trim().length > 1;
+  }
+
+  /** Sin tiempo no se pinta el reloj solo. */
+  get tieneTiempo(): boolean {
+    const t = this.itemEstablecimiento && this.itemEstablecimiento.tiempo_aprox_entrega;
+
+    return String(t === null || t === undefined ? '' : t).trim().length > 0;
+  }
 }
