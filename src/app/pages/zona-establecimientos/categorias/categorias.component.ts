@@ -32,15 +32,18 @@ import { DireccionEntregaService } from 'src/app/shared/services/direccion-entre
   templateUrl: './categorias.component.html',
   styleUrls: ['./categorias.component.css'],
   animations: [
-    // al alternar entre las pastillas y el campo de busqueda: el que sale se
-    // desvanece hacia arriba y el que entra aparece desde arriba, sin salto seco.
+    // Crossfade suave entre pastillas y buscador: solo opacidad, sin deslizar. El
+    // que sale se saca de flujo (absolute) mientras se desvanece, para que el que
+    // entra no lo empuje y la grilla de abajo no salte. El pequeno retardo del
+    // que entra encadena la mezcla.
     trigger('cambioBusqueda', [
       transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(-8px)' }),
-        animate('220ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'translateY(0)' }))
+        style({ opacity: 0 }),
+        animate('300ms 80ms ease', style({ opacity: 1 }))
       ]),
       transition(':leave', [
-        animate('150ms ease-in', style({ opacity: 0, transform: 'translateY(-8px)' }))
+        style({ position: 'absolute', width: '100%', top: 0, left: 0 }),
+        animate('220ms ease', style({ opacity: 0 }))
       ])
     ])
   ]

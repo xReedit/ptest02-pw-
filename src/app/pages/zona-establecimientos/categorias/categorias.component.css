@@ -1,3 +1,11 @@
+/* Contenedor de la barra de filtro (pastillas o buscador). Position relative para
+   que el elemento saliente, que la animacion vuelve absolute al desvanecerse, se
+   ubique aqui y no salte la grilla. */
+.barra-filtro {
+    position: relative;
+    margin-bottom: 8px;
+}
+
 /* Grilla manejada por Isotope: filtra y desliza las tarjetas a su nueva
    posicion. Isotope posiciona cada celda en absoluto dentro del contenedor,
    asi que aca no hay flex; el ancho de la celda (50%) define las dos columnas
