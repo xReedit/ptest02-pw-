@@ -91,12 +91,12 @@
 
         <div class="dni-cuerpo">
             <div *ngIf="!isPaseOk">
-                <mat-form-field class="w-100" appearance="outline">
-                    <mat-label>DNI</mat-label>
-                    <input matInput placeholder="Número de documento" maxlength="8" type="number" (keyup.enter)="buscarDNI(dni.value)" autocomplete="off" name="txtDni" #dni>
-                    <button mat-flat-button color="primary" matSuffix class="dni-buscar" (click)="buscarDNI(dni.value)" aria-label="Buscar DNI">
+                <mat-form-field class="w-100">
+                    <input matInput placeholder="DNI" maxlength="8" type="number" (keyup.enter)="buscarDNI(dni.value)" autocomplete="off" name="txtDni" #dni>
+                    <button mat-icon-button matSuffix class="dni-buscar" color="primary" (click)="buscarDNI(dni.value)" aria-label="Buscar DNI">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="13 6 19 12 13 18"></polyline></svg>
                     </button>
+                    <mat-hint align="end">{{dni.value.length}} / 8</mat-hint>
                 </mat-form-field>
 
                 <div class="w-100">

@@ -224,13 +224,10 @@
 
 .w-100 { width: 100%; }
 
-.dni-buscar {
-  min-width: 44px;
-}
-
 .dni-buscar svg {
   width: 20px;
   height: 20px;
+  color: #3F51B5;
 }
 
 .dni-error {
