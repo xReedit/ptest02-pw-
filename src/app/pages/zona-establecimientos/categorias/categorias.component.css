@@ -4,6 +4,9 @@
 .content-all-comercio > div {
     flex: 0 0 50%;
     max-width: 340px;
+    /* Sin esto la celda hereda min-width auto y un comercio con muchos rubros
+       la estira mas alla de la mitad de la fila, rompiendo la grilla. */
+    min-width: 0;
     padding: 0 6px;
     box-sizing: border-box;
     display: flex;
