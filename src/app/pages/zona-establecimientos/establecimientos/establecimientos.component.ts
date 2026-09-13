@@ -25,6 +25,12 @@ import { intentarAutoRecarga } from 'src/app/shared/utils/auto-reload.util';
 })
 export class EstablecimientosComponent implements OnInit {
   loaderPage = true;
+
+  // repeticiones para el esqueleton de carga
+  skeletonIconos = [1, 2, 3, 4, 5];
+  skeletonGrupos = [1, 2];
+  skeletonComercios = [1, 2, 3, 4];
+
   imgIcoCategoria = 'assets/images/icon-app/';
   listIcoCategoria: any;
   listPromociones = [];

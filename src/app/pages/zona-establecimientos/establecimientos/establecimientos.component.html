@@ -1,10 +1,26 @@
-<div class="animated fadeIn div-loader-2" *ngIf="loaderPage">
-    <div class="loader">
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        <span class="pt-2">Obteniendo datos...</span>
-    </div>    
+<!-- Esqueleton mientras cargan las secciones y los comercios -->
+<div class="sk-est" *ngIf="loaderPage">
+    <div class="sk-block sk-titulo"></div>
+    <div class="sk-fila">
+        <div class="sk-ico" *ngFor="let n of skeletonIconos">
+            <div class="sk-block sk-ico-circ"></div>
+            <div class="sk-block sk-lbl"></div>
+        </div>
+    </div>
+
+    <div class="sk-grupo" *ngFor="let g of skeletonGrupos">
+        <div class="sk-block sk-titulo sk-titulo-grupo"></div>
+        <div class="sk-fila">
+            <div class="sk-ico" *ngFor="let n of skeletonComercios">
+                <div class="sk-block sk-com-img"></div>
+                <div class="sk-block sk-lbl"></div>
+                <div class="sk-block sk-lbl sk-lbl-corta"></div>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="animated fadeInUp div-content-all">    
+
+<div class="animated fadeInUp div-content-all" *ngIf="!loaderPage">
 
 
 
