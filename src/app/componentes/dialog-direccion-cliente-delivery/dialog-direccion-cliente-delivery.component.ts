@@ -172,9 +172,11 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
       .subscribe((res: any) => {
         const direccionGuardada = this.getDireccionStorage();
 
-        this.listDirecciones = res.data;
-        this.listDirecciones.map(d => {
-          d.direccion = d.direccion.split(',')[0];
+        // el backend puede responder sin data (cliente sin sesion, 400, o fallo de red):
+        // sin esta guarda el .map reventaba y mataba la suscripcion del dialogo
+        this.listDirecciones = (res && Array.isArray(res.data)) ? res.data : [];
+        this.listDirecciones.forEach(d => {
+          d.direccion = (d.direccion || '').split(',')[0];
           if ( direccionGuardada ) {
             d.selected = d.idcliente_pwa_direccion === direccionGuardada.idcliente_pwa_direccion;
           }
