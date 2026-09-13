@@ -27,7 +27,7 @@ Ubuntu en 300, 400, 500 y 700, con `Helvetica Neue, Arial, sans-serif` de respal
 
 ## Superficies
 
-Tarjeta blanca, radio 16 a 20, sombra `0 1px 3px rgba(16,24,64,.10), 0 6px 16px rgba(16,24,64,.06)`. Nada de tarjetas anidadas. Nada de franjas de color al costado.
+Tarjeta blanca, radio 10 en listados y 16 a 20 en tarjetas grandes, pastillas y chips en 8, sombra `0 1px 3px rgba(16,24,64,.10), 0 6px 16px rgba(16,24,64,.06)`. Nada de tarjetas anidadas. Nada de franjas de color al costado.
 
 ## Estructura
 

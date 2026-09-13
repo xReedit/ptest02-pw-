@@ -1,140 +1,139 @@
-<div class="animated fadeIn">
-    <div *ngIf="!isViewLoginDNI" class="text-center">
-        <div class="pl-3 pr-3 pt-3">
-            <div class="w-100 text-center">
-                <img src="assets/icons/icon-72x72.png">
-                <!-- <p class="pt-1 fw-100 fs-12 text-secondary m-0">papaya.com.pe</p> -->
-            </div>
-            <p class="fs-18 fw-600">Registrate y comienza hacer tu pedido.</p>
+<div class="registro-pantalla animated fadeIn">
+
+    <!-- ===== Vista principal: elegir metodo ===== -->
+    <div *ngIf="!isViewLoginDNI" class="registro-metodos">
+
+        <div class="registro-encabezado">
+            <img class="registro-logo" src="assets/icons/icon-72x72.png" alt="Papaya Express">
+            <p class="registro-titulo">Regístrate y comienza a hacer tu pedido</p>
+            <p class="registro-bajada">Elige cómo quieres continuar</p>
         </div>
-        <hr>
-        <div class="pl-3 pr-3 pt-2 max-w">
-            <div class="btn-social apple" *ngIf="isPlatformIOS" matRipple role="button" tabindex="0" (click)="goApple()" (keyup.enter)="goApple()">
-                <i class="fa fa-apple" aria-hidden="true"></i>
-                <span class="pl-2">Con Apple</span>
-            </div>
 
-            <div class="btn-social fb" matRipple role="button" tabindex="0" (click)="goFb()" (keyup.enter)="goFb()">                
-                <i class="fa fa-facebook" aria-hidden="true"></i>
-                <span class="pl-2">Con Facebook</span> 
-            </div>
-            <div class="btn-social gmail" matRipple role="button" tabindex="0" (click)="goGmail()" (keyup.enter)="goGmail()">                
-                <i class="fa fa-google" aria-hidden="true"></i>
-                <span class="pl-2">Con Gmail</span>
-            </div>
+        <div class="registro-lista">
 
-            <div class="btn-social wsp" matRipple role="button" tabindex="0" (click)="goCelular()" (keyup.enter)="goCelular()">                
-                <i class="fa fa-whatsapp" aria-hidden="true"></i>
-                <span class="pl-2">Con tu celular</span>
-            </div>
-    
-            <hr>
-    
-            <div class="btn-social dni" matRipple role="button" tabindex="0" (click)="viewLoginDni()" (keyup.enter)="viewLoginDni()">
-                <i class="fa fa-id-card-o" aria-hidden="true"></i>
-                <span class="pl-2">Con DNI</span>
-            </div>
+            <button type="button" class="metodo" *ngIf="isPlatformIOS" matRipple (click)="goApple()">
+                <span class="metodo-icono apple">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.37 12.62c-.02-2.09 1.71-3.09 1.79-3.14-0.98-1.43-2.5-1.62-3.03-1.64-1.29-.13-2.52.76-3.17.76-.65 0-1.66-.74-2.73-.72-1.4.02-2.7.82-3.42 2.07-1.46 2.53-.37 6.28 1.05 8.33.7 1 1.53 2.13 2.62 2.09 1.05-.04 1.45-.68 2.72-.68 1.27 0 1.63.68 2.73.66 1.13-.02 1.84-1.02 2.53-2.03.8-1.16 1.13-2.29 1.15-2.35-.03-.01-2.2-.85-2.22-3.36zM14.4 6.36c.58-.7.97-1.68.86-2.66-.83.03-1.84.55-2.44 1.25-.54.62-1.01 1.61-.88 2.56.93.07 1.88-.47 2.46-1.15z"></path></svg>
+                </span>
+                <span class="metodo-texto">Continuar con Apple</span>
+                <svg class="metodo-flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"></polyline></svg>
+            </button>
 
-            <hr>
-            <button class="btn btn-secondary" (click)="goBackLogin()">
-                <i class="fa fa-arrow-left mr-2"></i>
+            <button type="button" class="metodo" matRipple (click)="goFb()">
+                <span class="metodo-icono fb">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.9h2.54V9.85c0-2.52 1.49-3.91 3.78-3.91 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.9h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94z"></path></svg>
+                </span>
+                <span class="metodo-texto">Continuar con Facebook</span>
+                <svg class="metodo-flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"></polyline></svg>
+            </button>
+
+            <button type="button" class="metodo" matRipple (click)="goGmail()">
+                <span class="metodo-icono">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="#4285F4" d="M21.6 12.23c0-.68-.06-1.34-.17-1.96H12v3.71h5.39a4.6 4.6 0 0 1-2 3.02v2.5h3.23c1.89-1.74 2.98-4.3 2.98-7.27z"></path>
+                        <path fill="#34A853" d="M12 22c2.7 0 4.96-.9 6.62-2.42l-3.23-2.5c-.9.6-2.05.95-3.39.95-2.6 0-4.8-1.76-5.59-4.12H3.07v2.58A10 10 0 0 0 12 22z"></path>
+                        <path fill="#FBBC05" d="M6.41 13.9a6 6 0 0 1 0-3.82V7.5H3.07a10 10 0 0 0 0 9z"></path>
+                        <path fill="#EA4335" d="M12 5.96c1.47 0 2.79.5 3.83 1.5l2.86-2.86A10 10 0 0 0 3.07 7.5l3.34 2.58C7.2 7.72 9.4 5.96 12 5.96z"></path>
+                    </svg>
+                </span>
+                <span class="metodo-texto">Continuar con Gmail</span>
+                <svg class="metodo-flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"></polyline></svg>
+            </button>
+
+            <button type="button" class="metodo" matRipple (click)="goCelular()">
+                <span class="metodo-icono wsp">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.33 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.5 0 9.96-4.46 9.96-9.96 0-2.66-1.04-5.16-2.92-7.04A9.9 9.9 0 0 0 12.04 2zm5.8 14.13c-.25.69-1.44 1.32-1.98 1.36-.53.05-.53.42-3.34-.7-2.81-1.11-4.56-3.99-4.7-4.17-.14-.19-1.12-1.49-1.12-2.84s.71-2.01.96-2.29c.25-.28.55-.35.73-.35l.53.01c.17 0 .4-.06.62.48l.86 2.09c.07.14.12.31.02.5l-.32.66-.28.3c-.14.14-.29.29-.12.57.16.28.73 1.2 1.56 1.95 1.07.95 1.98 1.25 2.26 1.39.28.14.44.12.61-.07l.87-1.01c.19-.24.35-.19.59-.1l1.67.79c.24.12.4.17.46.27.06.1.06.6-.19 1.28z"></path></svg>
+                </span>
+                <span class="metodo-texto">Continuar con tu celular</span>
+                <svg class="metodo-flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"></polyline></svg>
+            </button>
+
+            <div class="registro-separador"><span>o</span></div>
+
+            <button type="button" class="metodo metodo-dni" matRipple (click)="viewLoginDni()">
+                <span class="metodo-icono dni">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"></rect><circle cx="8" cy="11" r="2"></circle><path d="M5 16.2c.5-1.4 1.7-2.2 3-2.2s2.5.8 3 2.2"></path><line x1="14.5" y1="10" x2="19" y2="10"></line><line x1="14.5" y1="13.5" x2="19" y2="13.5"></line></svg>
+                </span>
+                <span class="metodo-texto">Regístrate con tu DNI</span>
+                <svg class="metodo-flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"></polyline></svg>
+            </button>
+
+            <!-- Invitado: solo en mesa con QR, ni delivery ni solo llevar -->
+            <ng-container *ngIf="dataClienteSend.isQrSuccess && !dataClienteSend.isSoloLLevar && !dataClienteSend.isDelivery">
+                <div class="registro-invitado">
+                    <p class="registro-invitado-titulo">Ingresar como invitado</p>
+                    <p class="registro-invitado-nota">En modo invitado no verás ni cambiarás tu perfil, ni accederás a promociones y descuentos.</p>
+                    <button type="button" class="metodo metodo-suave" matRipple (click)="viewLoginInvitado()">
+                        <span class="metodo-icono">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-3.5 3.6-6 8-6s8 2.5 8 6"></path></svg>
+                        </span>
+                        <span class="metodo-texto">Continuar como invitado</span>
+                        <svg class="metodo-flecha" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"></polyline></svg>
+                    </button>
+                </div>
+            </ng-container>
+
+            <button type="button" class="registro-regresar" (click)="goBackLogin()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 6 9 12 15 18"></polyline></svg>
                 Regresar
             </button>
+
         </div>
-
-        <!-- si solo es mesa -->
-        <!-- <ng-container *ngIf="!dataClienteSend.isDelivery && !dataClienteSend.isSoloLLevar"> -->
-        <ng-container *ngIf="dataClienteSend.isQrSuccess && !dataClienteSend.isSoloLLevar && !dataClienteSend.isDelivery">
-            <hr>
-            <div class="p-3  max-w">
-                <h5>Ingresar como Invitado</h5>
-                <p class="fs-11">En el modo invitados no puedes ver ni cambiar la información del perfil, tampoco accederas a promociones y descuentos.</p>
-                <div class="btn-social invitado" matRipple role="button" tabindex="0" (click)="viewLoginInvitado()" (keyup.enter)="viewLoginInvitado()">
-                    <i class="fa fa-user" aria-hidden="true"></i>
-                    <span class="pl-2">Como Invitado</span>
-                </div>
-            </div>
-        </ng-container>
-        
-        
-
     </div>
-    
-    <div *ngIf="isViewLoginDNI" class="animated fadeInUp">
 
-        <!-- encabezado -->
-        <div class="pr-5 pt-5 pl-5 pb-2 max-w" (click)="viewLoginDni()">
-            <p class="fs-18 fw-600"><i class="fa fa-arrow-left pr-2"></i> Escriba su DNI.</p>
-        </div>
-        <hr>
+    <!-- ===== Vista DNI ===== -->
+    <div *ngIf="isViewLoginDNI" class="registro-dni animated fadeInUp">
 
-        <div class="pr-5 pt-2 pl-5 pb-0 max-w">
+        <button type="button" class="dni-volver" (click)="viewLoginDni()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 6 9 12 15 18"></polyline></svg>
+            Escribe tu DNI
+        </button>
+
+        <div class="dni-cuerpo">
             <div *ngIf="!isPaseOk">
-                <mat-form-field class="w-100">
-                    <input matInput placeholder="DNI" maxlength="8" type="number" (keyup.enter)="buscarDNI(dni.value)" autocomplete="off" name="txtDni" #dni>
-                    <button mat-flat-button color="primary" matSuffix (click)="buscarDNI(dni.value)">            
-                        <i class="fa fa-arrow-right" aria-hidden="true"></i>                        
+                <mat-form-field class="w-100" appearance="outline">
+                    <mat-label>DNI</mat-label>
+                    <input matInput placeholder="Número de documento" maxlength="8" type="number" (keyup.enter)="buscarDNI(dni.value)" autocomplete="off" name="txtDni" #dni>
+                    <button mat-flat-button color="primary" matSuffix class="dni-buscar" (click)="buscarDNI(dni.value)" aria-label="Buscar DNI">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="13 6 19 12 13 18"></polyline></svg>
                     </button>
                 </mat-form-field>
-                <div class="w-100">
-                    <mat-progress-bar style="bottom: 20px;" [hidden]="!loadConsulta" mode="indeterminate"></mat-progress-bar>
-                    <span class="fs-13 text-danger">{{msj_error}}</span>                    
-                </div>
-        
-                <ng-container *ngIf="isValidDNI" class="animated fadeInUp">
-                    <p class="fs-13 fw-600">
-                        {{dataCliente.names}}
-                    </p>
-            
-                    <span class="fs-13 text-info">Para confirmar su identidad, indique el número verificador ubicado en la parte superior derecha de su DNI.</span>
 
-                    <div class="div-list-date text-center">
-                        <div matRipple
-                            class="item-list-date"
-                            role="button"
-                            tabindex="0"
+                <div class="w-100">
+                    <mat-progress-bar [hidden]="!loadConsulta" mode="indeterminate"></mat-progress-bar>
+                    <p class="dni-error" *ngIf="msj_error">{{msj_error}}</p>
+                </div>
+
+                <ng-container *ngIf="isValidDNI">
+                    <p class="dni-nombre">{{dataCliente.names}}</p>
+                    <p class="dni-instruccion">Para confirmar tu identidad, indica el número verificador de la parte superior derecha de tu DNI.</p>
+
+                    <div class="dni-opciones">
+                        <button type="button" matRipple
+                            class="dni-opcion"
                             [ngClass]="{'selected': item.selected}"
                             (click)="verificarDNI(item)"
                             (keyup.enter)="verificarDNI(item)"
                             *ngFor="let item of listViewDate">
-                            <div>{{item}}</div>
-                        </div>
-                    </div>                        
-
-                    <div class="text-center">
-                        <div >
-                            <div>
-                                <img src="/assets/images/dni-code-verification-blue.jpg" class="dni-b" width="150" alt="dni-b">
-                            </div>
-                        </div>
-                        <br>
-                        <div >
-                            <div>
-                                <img src="/assets/images/dni-code-verification-e.jpg" width="150" alt="dni-e">
-                            </div>
-                        </div>
-                        
+                            {{item}}
+                        </button>
                     </div>
-                                        
-                                
+
+                    <div class="dni-ayuda">
+                        <img src="/assets/images/dni-code-verification-blue.jpg" class="dni-muestra" alt="Ubicación del código verificador">
+                        <img src="/assets/images/dni-code-verification-e.jpg" class="dni-muestra" alt="Ejemplo del código verificador">
+                    </div>
                 </ng-container>
             </div>
-            
-            <div class="text-center">
-                <ng-container *ngIf="isListDateSelect" class="animated pulse">
-                    <ng-container *ngIf="isDateBirthdayValid && isPaseOk; else elseTemplate">
-                        <span class="text-success fs-20">Excelente usuario validado.</span>
-                    </ng-container>
-                    <ng-template #elseTemplate>
-                        <span class="text-danger fs-14">Seleccione con cuidado, de lo contrario no podra registrase con este documento.</span>
-                    </ng-template>
+
+            <div class="dni-resultado" *ngIf="isListDateSelect">
+                <ng-container *ngIf="isDateBirthdayValid && isPaseOk; else elseTemplate">
+                    <span class="dni-ok">Excelente, usuario validado.</span>
                 </ng-container>
+                <ng-template #elseTemplate>
+                    <span class="dni-mal">Selecciona con cuidado, de lo contrario no podrás registrarte con este documento.</span>
+                </ng-template>
             </div>
-    </div>
-        
-
-        
-        
-
+        </div>
     </div>
 </div>

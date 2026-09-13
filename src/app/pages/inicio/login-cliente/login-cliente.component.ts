@@ -238,7 +238,7 @@ constructor(
             if ( !response.success ) {
               this.loadConsulta = false;
               this.isValidDNI = false;
-              this.msj_error = 'Numero de documento no valido. Ó intente registrarse con Gmail o Facebook';
+              this.msj_error = 'Número de documento no válido. O regístrate con Gmail o Facebook.';
               return;
             }
 
@@ -252,7 +252,7 @@ constructor(
         (error) => {
             this.loadConsulta = false;
             this.isValidDNI = false;
-            this.msj_error = 'No se encontro, intentelo nuevamente. Ó intente registrarse con Gmail o Facebook';
+            this.msj_error = 'No se encontró, inténtalo de nuevo. O regístrate con Gmail o Facebook.';
             // alert(error.message);
             // console.log(error.message);
           }
