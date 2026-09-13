@@ -4,6 +4,7 @@ import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { SocketService } from 'src/app/shared/services/socket.service';
 import { VerifyAuthClientService } from 'src/app/shared/services/verify-auth-client.service';
 import { guardarTokenCliente } from 'src/app/shared/utils/token-cliente';
+import { DireccionPendienteService } from 'src/app/shared/services/direccion-pendiente.service';
 
 
 @Component({
@@ -31,7 +32,8 @@ export class DialogVerificarTelefonoComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) data: any,
     private crudService: CrudHttpService,
     private socketService: SocketService,
-    private verifyClientService: VerifyAuthClientService
+    private verifyClientService: VerifyAuthClientService,
+    private direccionPendienteService: DireccionPendienteService
   ) {
     this.data = data;
 
@@ -124,7 +126,11 @@ export class DialogVerificarTelefonoComponent implements OnInit {
         // console.log('x ===  verificarCodigoSMS', JSON.stringify(res));
         this.isVerificacionOk = res.data[0].response === 1 ? true : false;
         // sprint 5: con el codigo correcto el telefono queda probado -> llega el token
-        if ( this.isVerificacionOk ) { guardarTokenCliente(res.tokenCliente); }
+        if ( this.isVerificacionOk ) {
+          guardarTokenCliente(res.tokenCliente);
+          // ya hay identidad: la direccion escogida antes de registrarse se cuelga del cliente
+          this.direccionPendienteService.sincronizar(this.data.idcliente);
+        }
         // console.log('x ===  verificarCodigoSMS isVerificacionOk', this.isVerificacionOk);
         setTimeout(() => {
           this.loader = this.isVerificacionOk ? 2 : 3;

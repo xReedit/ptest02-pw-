@@ -41,6 +41,7 @@ import { NiubizClientData, NiubizPaymentResponse } from 'src/app/shared/services
 import { b64DecodeUnicode, b64EncodeUnicode } from 'src/app/shared/utils/b64';
 import { claveIdem } from 'src/app/shared/utils/idem';
 import { guardarTokenCliente } from 'src/app/shared/utils/token-cliente';
+import { DireccionPendienteService } from 'src/app/shared/services/direccion-pendiente.service';
 // import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 // import { Subscription } from 'rxjs/internal/Subscription';
 
@@ -147,7 +148,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     private verifyClientService: VerifyAuthClientService,
     private speechDataProviderService: SpeechDataProviderService,
     private holdingService: HoldingService,
-    private notificacionPush: NotificacionPushService
+    private notificacionPush: NotificacionPushService,
+    private direccionPendienteService: DireccionPendienteService
   ) { }
 
   ngOnInit() {
@@ -1242,6 +1244,8 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       // ya salgan con la credencial del idcliente definitivo
       guardarTokenCliente(_res.tokenCliente);
       this.infoToken.setIdClienteToken(Number(_res.idcliente));
+      // ya hay identidad: la direccion escogida antes de registrarse se cuelga del cliente
+      this.direccionPendienteService.sincronizar(Number(_res.idcliente));
       // el idcliente definitivo ya esta en el token: se reenvia el token push con el cliente correcto
       // (un cliente nuevo arranca con idcliente 0 y su token quedaria sin dueño)
       this.notificacionPush.enviarSuscripcion();

@@ -13,6 +13,7 @@ import { SedeDeliveryService } from 'src/app/shared/services/sede-delivery.servi
 import { GeolocationService } from 'src/app/shared/services/geolocation.service';
 import { GoogleMapsLoaderService } from 'src/app/shared/services/google-maps-loader.service';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
+import { DireccionPendienteService } from 'src/app/shared/services/direccion-pendiente.service';
 
 declare var google: any;
 
@@ -106,6 +107,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     private geolocationService: GeolocationService,
     private mapsLoader: GoogleMapsLoaderService,
     private miPedidoService: MipedidoService,
+    private direccionPendienteService: DireccionPendienteService,
     private zone: NgZone,
     private cd: ChangeDetectorRef
   ) {
@@ -432,7 +434,7 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
     // direccion inserta NULL en columnas NOT NULL cuando la clave no viaja: todo campo
     // obligatorio sale como cadena, nunca como undefined.
     this.dataCliente.direccion = this.textoPlano(this.dataCliente.direccion);
-    this.dataCliente.idcliente = this.isUsCliente ? this.verifyClientService.getDataClient().idcliente : this.idClienteBuscar;
+    this.dataCliente.idcliente = this.idClienteActual();
     this.dataCliente.longitude = this.mapCenter.lng;
     this.dataCliente.latitude = this.mapCenter.lat;
     this.dataCliente.referencia = this.utilService.addslashes(this.dataCliente.referencia) || '';
@@ -523,7 +525,40 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
       this.loader = 2;
       this.dataCliente.idcliente_pwa_direccion = null;
       // this.saveDireccionOk.emit(this.dataCliente);
+
+      // visitante sin registrar: el backend rechaza la fila sin idcliente ('idcliente es
+      // requerido'), asi que ni se le pregunta. La direccion queda guardada en el equipo y
+      // se cuelga del cliente en cuanto exista uno (DireccionPendienteService.sincronizar).
+      if (!this.hayClienteReal()) {
+        this.guardarDireccionSinCliente();
+        return;
+      }
+
       this.setBdDireccion();
+  }
+
+  /**
+   * idcliente del cliente que esta usando el dialogo. Puede no haberlo: 0/null/undefined
+   * cuando nadie se ha identificado y -2 mientras el telefono se verifica sin registro.
+   */
+  private idClienteActual(): number {
+    const id = this.isUsCliente
+      ? (this.verifyClientService.getDataClient() || {}).idcliente
+      : this.idClienteBuscar;
+
+    return Number(id);
+  }
+
+  private hayClienteReal(): boolean {
+    const id = this.idClienteActual();
+    return Number.isFinite(id) && id > 0;
+  }
+
+  /** Guarda solo en el equipo y cierra igual que un guardado con exito: sin error a la vista. */
+  private guardarDireccionSinCliente(): void {
+    this.direccionPendienteService.guardar(this.dataCliente);
+    this.setDireccionStorage(); // la lista de comercios lee 'sys::dir_se'
+    this.cerrarTrasGuardar();
   }
 
   private setBdDireccion() {
@@ -543,23 +578,28 @@ export class DialogDireccionClienteDeliveryComponent implements OnInit, AfterVie
 
           this.dataCliente.idcliente_pwa_direccion = _id;
 
-          if ( this.isFromComercio ) {
-            this.countMoveMap = 1;
-            this.cerrarDlg();
-
-            return;
-          }
-
-          setTimeout(() => {
-            this.loader = 2;
-            setTimeout(() => {
-              this.countMoveMap = 1;
-              this.cerrarDlg();
-            }, 500);
-          }, 1000);
+          this.cerrarTrasGuardar();
         },
         () => this.fallaGuardarDireccion()
       );
+  }
+
+  /** Cierre comun a todo guardado con exito, venga del backend o solo del equipo. */
+  private cerrarTrasGuardar(): void {
+    if ( this.isFromComercio ) {
+      this.countMoveMap = 1;
+      this.cerrarDlg();
+
+      return;
+    }
+
+    setTimeout(() => {
+      this.loader = 2;
+      setTimeout(() => {
+        this.countMoveMap = 1;
+        this.cerrarDlg();
+      }, 500);
+    }, 1000);
   }
 
   /** id de la fila recien creada, o null si la respuesta no trae ninguna. */

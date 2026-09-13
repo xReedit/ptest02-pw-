@@ -17,6 +17,7 @@ import { App } from '@capacitor/app';
 import { UtilitariosService } from 'src/app/shared/services/utilitarios.service';
 import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 import { b64EncodeUnicode } from 'src/app/shared/utils/b64';
+import { DireccionPendienteService } from 'src/app/shared/services/direccion-pendiente.service';
 
 
 @Component({
@@ -48,7 +49,8 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
     public authNative: AuthService, //@auth0/auth0-angular
     private ngZone: NgZone,
     private utilitariosService: UtilitariosService,
-    private notificacionPush: NotificacionPushService
+    private notificacionPush: NotificacionPushService,
+    private direccionPendienteService: DireccionPendienteService
     ) { }
 
   ngOnInit() {
@@ -141,6 +143,9 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
 
       // el idcliente cambió: hay que reenviar el token con el cliente nuevo
       this.notificacionPush.enviarSuscripcion();
+
+      // ya hay identidad: la direccion escogida antes de registrarse se cuelga del cliente
+      this.direccionPendienteService.sincronizar(this.infoToken.infoUsToken?.idcliente);
 
       // Restaurar propiedades de holding si existían
       if (_holdingData.is_holding) {
