@@ -54,15 +54,15 @@
         </ng-template>
         
 
-        <div class="content-all-comercio">
-            <!-- el ngIf va en la celda, no en la tarjeta: antes la celda quedaba
-                 vacia al filtrar y dejaba un hueco. Ahora la celda entera entra y
-                 sale con animacion y la grilla se reacomoda para llenar el espacio. -->
-            <ng-container *ngFor="let item of listEstablecimientos">
-                <div *ngIf="item.visible" [@filtroCard]>
-                    <app-item-comercio [itemEstablecimiento] = "item"  (itemSelected) = "itemSelected($event)"></app-item-comercio>
-                </div>
-            </ng-container>
+        <!-- Isotope filtra y reacomoda. Se renderizan TODAS las tarjetas siempre,
+             cada celda marcada con sus categorias (cat-<id>) y el nombre para la
+             busqueda; Isotope oculta las que no aplican y desliza las demas a su
+             nueva posicion. -->
+        <div class="content-all-comercio" #gridComercios>
+            <div class="celda-comercio" *ngFor="let item of listEstablecimientos"
+                 [ngClass]="clasesFiltro(item)" [attr.data-nombre]="(item.nombre || '') | lowercase">
+                <app-item-comercio [itemEstablecimiento]="item" (itemSelected)="itemSelected($event)"></app-item-comercio>
+            </div>
         </div>
         <br><br>
         

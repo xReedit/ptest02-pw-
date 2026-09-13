@@ -1,27 +1,19 @@
-/* Dos comercios por fila. El envoltorio es un flex item que se estira al alto
-   de la fila, asi que las dos tarjetas de una misma fila miden igual sin
-   necesidad de fijarles un alto y sin recortar el texto de las mas largas. */
-.content-all-comercio > div {
-    flex: 0 0 50%;
-    max-width: 340px;
-    /* Sin esto la celda hereda min-width auto y un comercio con muchos rubros
-       la estira mas alla de la mitad de la fila, rompiendo la grilla. */
-    min-width: 0;
-    padding: 0 6px;
-    box-sizing: border-box;
-    display: flex;
+/* Grilla manejada por Isotope: filtra y desliza las tarjetas a su nueva
+   posicion. Isotope posiciona cada celda en absoluto dentro del contenedor,
+   asi que aca no hay flex; el ancho de la celda (50%) define las dos columnas
+   via percentPosition. */
+.content-all-comercio {
+    position: relative;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
 }
 
-.content-all-comercio {
-    width: 100%;
-    /* height: 100vh; */
-    /* position: fixed; */
-    overflow-x: auto;
-
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    height: fit-content;
+.celda-comercio {
+    width: 50%;
+    padding: 0 6px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
 }
 
 

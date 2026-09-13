@@ -3,12 +3,10 @@
    estandar de tarjeta. Todas las tarjetas miden lo mismo: el ancho lo fija la
    lista, la portada tiene alto fijo y el cuerpo un minimo, para que la fila no
    dependa de cuanto texto traiga cada comercio. */
-/* El anfitrion es inline por defecto y se encogia al contenido dentro de la
-   celda de la grilla, asi que cada tarjeta salia de un ancho distinto. */
+/* El anfitrion llena la celda de la grilla. */
 :host {
-  display: flex;
-  flex: 1;
-  min-width: 0;
+  display: block;
+  width: 100%;
 }
 
 .tarjeta-comercio {
@@ -144,9 +142,10 @@
 
 .cuerpo {
   padding: 11px 12px 13px;
-  min-height: 88px;
+  /* alto fijo: con Isotope las celdas no se estiran entre si, asi que el cuerpo
+     fijo mantiene todas las tarjetas del mismo alto tengan o no eslogan. */
+  height: 104px;
   box-sizing: border-box;
-  flex: 1;
   display: flex;
   flex-direction: column;
 }

@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import Isotope from 'isotope-layout';
 import { CrudHttpService } from 'src/app/shared/services/crud-http.service';
 import { DeliveryEstablecimiento } from 'src/app/modelos/delivery.establecimiento';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -29,22 +29,9 @@ import { DireccionEntregaService } from 'src/app/shared/services/direccion-entre
 @Component({
   selector: 'app-categorias',
   templateUrl: './categorias.component.html',
-  styleUrls: ['./categorias.component.css'],
-  animations: [
-    // al filtrar: la tarjeta que no aplica se desvanece y se achica; la que
-    // aparece entra igual. La grilla reacomoda las demas para llenar el hueco.
-    trigger('filtroCard', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'scale(.92)' }),
-        animate('220ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'scale(1)' }))
-      ]),
-      transition(':leave', [
-        animate('160ms ease', style({ opacity: 0, transform: 'scale(.92)' }))
-      ])
-    ])
-  ]
+  styleUrls: ['./categorias.component.css']
 })
-export class CategoriasComponent implements OnInit, OnDestroy {
+export class CategoriasComponent implements OnInit, OnDestroy, AfterViewInit {
   // rippleColor = 'rgb(255,238,88, 0.2)';
   loaderPage = false;
   listEstablecimientos: DeliveryEstablecimiento[]; // es se utiliza para filtrar
@@ -68,6 +55,13 @@ export class CategoriasComponent implements OnInit, OnDestroy {
 
   private unsubscribe$: Subject<any> = new Subject<any>();
 
+  // Isotope: grilla que filtra y reacomoda las tarjetas con animacion de posicion.
+  @ViewChild('gridComercios') private gridComercios: ElementRef<HTMLElement>;
+  private iso: any = null;
+  private vistaLista = false;      // el <ng-if> de la grilla ya monto el contenedor
+  private idFiltroCategoria = 0;   // 0 = todas
+  private textoFiltro = '';
+
   isShowTextBusquedaComercio = false;
   constructor(
     private crudService: CrudHttpService,
@@ -90,6 +84,15 @@ export class CategoriasComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
+    this.destroyIsotope();
+  }
+
+  ngAfterViewInit() {
+    this.vistaLista = true;
+    // si la lista ya cargo antes de montar la vista, arma Isotope ahora
+    if (this.listEstablecimientos && this.listEstablecimientos.length > 0) {
+      this.reconstruirIsotope();
+    }
   }
 
   ngOnInit() {
@@ -183,16 +186,20 @@ export class CategoriasComponent implements OnInit, OnDestroy {
   }
 
   searchByNomComercio(nomComercio: string) {
-    this.listEstablecimientos = this.listEstablecimientosMaster.filter(x => x.nombre.toLocaleLowerCase().includes(nomComercio.toLocaleLowerCase()));    
+    // La busqueda ya no reemplaza el arreglo (eso rompia el layout de Isotope):
+    // todas las tarjetas siguen en el DOM e Isotope oculta/reacomoda las que no
+    // coinciden por nombre, respetando la categoria activa.
+    this.textoFiltro = nomComercio || '';
+    this.filtrarIsotope();
   }
 
   clearTextBusquedaComercio() {
-    this.listEstablecimientos = this.listEstablecimientosMaster;
+    this.textoFiltro = '';
     this.isShowTextBusquedaComercio = false;
+    this.filtrarIsotope();
   }
 
   showTextBusquedaComercio() {
-    this.listEstablecimientos = this.listEstablecimientosMaster;
     this.isShowTextBusquedaComercio = true;
   }
 
@@ -224,6 +231,9 @@ export class CategoriasComponent implements OnInit, OnDestroy {
 
           // 250522 calculara la distancia cuando ingresa al comercio
           // this.setCalcDistanciaComercio();
+
+        // ya hay tarjetas: montar/rehacer Isotope sobre ellas
+        this.reconstruirIsotope();
 
         setTimeout(() => {
           this.loaderPage = false;
@@ -393,23 +403,57 @@ export class CategoriasComponent implements OnInit, OnDestroy {
     this.listSubCatFiltros.map(x => x.selected = false);
     itemFiltro.selected = true;
 
-    if ( itemFiltro.id === 0 ) { // todos
-      this.listEstablecimientos
-      .map((e: DeliveryEstablecimiento) => {e.visible = true ; });
-      return;
-    }
+    // Isotope hace el resto: filtra por la categoria y desliza las tarjetas a su
+    // nueva posicion. id 0 = todas.
+    this.idFiltroCategoria = itemFiltro.id || 0;
+    this.filtrarIsotope();
+  }
 
-    this.listEstablecimientos
-      .map((e: DeliveryEstablecimiento) => {
-        e.visible = false;
-        e.idsede_subcategoria_filtro = '';
-        e.idsede_subcategoria.split(',').map(i => {
-          e.idsede_subcategoria_filtro += `.${i}.`;
-        });
-        return e;
-      })
-      .filter((e: DeliveryEstablecimiento) => e.idsede_subcategoria_filtro.indexOf('.' + itemFiltro.id + '.') > -1  )
-      .map((e: DeliveryEstablecimiento) => e.visible = true);
+  /** Clases de categoria de una tarjeta, p.ej. "cat-8 cat-3", para el filtro de Isotope. */
+  clasesFiltro(item: DeliveryEstablecimiento): string {
+    const sub = (item && item.idsede_subcategoria) ? String(item.idsede_subcategoria) : '';
+    return sub.split(',')
+      .map(i => i.trim())
+      .filter(i => i.length > 0)
+      .map(i => 'cat-' + i)
+      .join(' ');
+  }
+
+  /** Reconstruye Isotope tras (re)cargar la lista; espera un tick a que Angular pinte las celdas. */
+  private reconstruirIsotope(): void {
+    setTimeout(() => this.initIsotope(), 80);
+  }
+
+  private initIsotope(): void {
+    const cont = this.gridComercios && this.gridComercios.nativeElement;
+    if (!cont) { return; }
+    this.destroyIsotope();
+    this.iso = new Isotope(cont, {
+      itemSelector: '.celda-comercio',
+      percentPosition: true,
+      transitionDuration: '0.4s',
+      layoutMode: 'fitRows'
+    });
+    this.filtrarIsotope();
+  }
+
+  private filtrarIsotope(): void {
+    if (!this.iso) { return; }
+    // Isotope filtra por selector CSS: categoria por clase (.cat-N) y busqueda por
+    // el atributo data-nombre. Se combinan en un solo selector. El texto se limpia
+    // a letras/numeros/espacio para no romper el selector de atributo.
+    const idCat = this.idFiltroCategoria;
+    const texto = (this.textoFiltro || '').toLowerCase().trim().replace(/[^a-z0-9á-úñ ]/gi, '');
+    const selCat = idCat === 0 ? '' : '.cat-' + idCat;
+    const selTxt = texto ? '[data-nombre*="' + texto + '"]' : '';
+    this.iso.arrange({ filter: (selCat + selTxt) || '*' });
+  }
+
+  private destroyIsotope(): void {
+    if (this.iso) {
+      try { this.iso.destroy(); } catch (e) { /* nada */ }
+      this.iso = null;
+    }
   }
 
 
