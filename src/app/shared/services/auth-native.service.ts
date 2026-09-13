@@ -8,6 +8,7 @@ import { DOCUMENT } from '@angular/common';
 import { VerifyAuthClientService } from './verify-auth-client.service';
 import { NavigatorLinkService } from './navigator-link.service';
 import { Router } from '@angular/router';
+import { IS_NATIVE } from 'src/app/shared/config/config.const';
 
 // const callbackUri = IS_NATIVE ? `${config.appId}://dev-m48s1pe2.auth0.com/capacitor/${config.appId}/callback` : 'http://localhost:4200';
 // const callbackUri = `<%= "${config.appId}" %>://dev-m48s1pe2.auth0.com/capacitor/<%= "${config.appId}" %>/callback`;
@@ -59,33 +60,21 @@ public userAuthNative$ = this.authNative.isAuthenticated$.pipe(switchMap(() => t
     
     async login(op: number = 0) {
         this.processLoginInit = true;
-        const arr_proveedor = ['google-oauth2', 'facebook', 'apple']
-        const _proveedor = arr_proveedor[op]
-        
-        // console.log('callbackUri', callbackUri);        
+        const arr_proveedor = ['google-oauth2', 'facebook', 'apple'];
+        const _proveedor = arr_proveedor[op];
 
-        // await this.authNative.loginWithRedirect({ noRedirect: true });
-        // this.authNative
-        //     .buildAuthorizeUrl({
-        //         connection: _proveedor,
-        //         // appState: {
-        //         //     targetUrl: '/callback-auth',
-        //         // }
-        //     })
-        //     .pipe(mergeMap((url) => Browser.open({ url, windowName: '_self' })))
-        //     .subscribe();
-
-        this.authNative.loginWithRedirect({
-            authorizationParams: {
-                connection: _proveedor,
-                // redirect_uri: callbackUri,
-            },
-            openUrl: (url) => {
-                Browser.open({ url, windowName: '_self' });
-                return Promise.resolve();
-            }
-        });
-    } 
+        // API v1: connection va al nivel raiz, no en authorizationParams. En nativo
+        // se arma la URL y se abre con el navegador de Capacitor; en web basta el
+        // redirect de pagina completa (el redirect_uri sale de la config).
+        if (IS_NATIVE) {
+            this.authNative
+                .buildAuthorizeUrl({ connection: _proveedor })
+                .pipe(mergeMap((url) => Browser.open({ url, windowName: '_self' })))
+                .subscribe();
+        } else {
+            this.authNative.loginWithRedirect({ connection: _proveedor });
+        }
+    }
     
     async loginWithRedirect() {
         // const params = {

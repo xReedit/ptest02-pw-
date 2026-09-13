@@ -24,12 +24,13 @@ import { GoogleMapsLoaderService } from './shared/services/google-maps-loader.se
 // const redirectUri = `<%= "${config.appId}" %>://${account.namespace}/capacitor/<%= "${config.appId}" %>/callback`;
 // import { DirectionsMapDirectiveDirective } from './shared/directivas/directions-map-directive.directive';
 
+// @auth0/auth0-angular v1: el redirect va en redirectUri (nivel raiz). La forma
+// authorizationParams.redirect_uri es de la v2 y en la v1 se ignora, por eso el
+// SDK caia a window.location.origin sin /callback-auth y Auth0 rechazaba.
 const configAuth: AuthConfig = {
   domain,
   clientId,
-  authorizationParams: {
-    redirect_uri: callbackUri
-  },
+  redirectUri: callbackUri,
   cacheLocation: "localstorage",
   useRefreshTokens: true
 }
