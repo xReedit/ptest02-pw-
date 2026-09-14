@@ -85,6 +85,9 @@ export class CategoriasComponent implements OnInit, OnDestroy, AfterViewInit {
   // repeticiones para el esqueleton de carga
   skeletonChips = [1, 2, 3, 4, 5, 6];
   skeletonCards = [1, 2, 3, 4, 5, 6];
+
+  // true si la carga de comercios fallo (muestra estado de error con reintento)
+  errorCarga = false;
   constructor(
     private crudService: CrudHttpService,
     private router: Router,
@@ -231,6 +234,7 @@ export class CategoriasComponent implements OnInit, OnDestroy, AfterViewInit {
 
   loadEstablecimientos() {
     this.loaderPage = true;
+    this.errorCarga = false;
     const _data = {
       idsede_categoria: this.idcategoria_selected,
       codigo_postal: this.ciudad_actual, // this.codigo_postal_actual, cambiamos el 310720
@@ -266,9 +270,18 @@ export class CategoriasComponent implements OnInit, OnDestroy, AfterViewInit {
         this.loaderPage = false;
         this.reconstruirIsotope();
       }, () => {
-        // si la consulta falla, quitar el esqueleton igual para no dejarlo girando
+        // si la consulta falla: quitar el esqueleton y mostrar estado de error
         this.loaderPage = false;
+        this.errorCarga = true;
       });
+  }
+
+  /** Reintenta cargar los comercios tras un error de red. */
+  reintentarCarga(): void {
+    if (this.direccionCliente) {
+      this.loadEstablecimientos();
+      this.loadEstablecimientosPromos();
+    }
   }
 
   // 250522 calculara la distancia cuando ingresa al comercio

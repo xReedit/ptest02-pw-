@@ -7,6 +7,14 @@ import { environment } from './environments/environment';
 
 if (environment.production) {
   enableProdMode();
+
+  // En produccion se silencian los logs de depuracion (log/debug/info) para no
+  // ensuciar la consola ni filtrar datos. Se conservan warn y error, utiles para
+  // diagnostico. Cubre todo el codigo y cualquier log futuro sin tocar 37 archivos.
+  const noop = () => { /* silencio en produccion */ };
+  console.log = noop;
+  console.debug = noop;
+  console.info = noop;
 }
 
 // ponytail: el SW de Angular está desactivado; desregistrar el que quedó instalado en dispositivos viejos

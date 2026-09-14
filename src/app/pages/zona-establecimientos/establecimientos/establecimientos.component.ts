@@ -31,6 +31,9 @@ export class EstablecimientosComponent implements OnInit {
   skeletonGrupos = [1, 2];
   skeletonComercios = [1, 2, 3, 4];
 
+  // true si la carga fallo (muestra estado de error con reintento)
+  errorCarga = false;
+
   imgIcoCategoria = 'assets/images/icon-app/';
   listIcoCategoria: any;
   listPromociones = [];
@@ -118,6 +121,7 @@ export class EstablecimientosComponent implements OnInit {
 
   private xLoadCategoria() {
     this.loaderPage = true;
+    this.errorCarga = false;
     this.verificarLoaderReload();
 
     this.crudService.getAll('delivery', 'get-categorias', false, false, false)
@@ -125,14 +129,20 @@ export class EstablecimientosComponent implements OnInit {
         this.listIcoCategoria = res.data.map(x => {x.visible = x.img !== ''; return x; });
         const _allCategorias = JSON.stringify(this.listIcoCategoria);
         localStorage.setItem('sys:allcat', btoa(_allCategorias));
-        // console.log('this.listIcoCategoria', this.listIcoCategoria);
 
-        // setTimeout(() => {
-        //   this.loaderPage = false;
-        // }, 500);
         this.loaderPage = false;
         clearTimeout(this.timeLoader);
+      }, () => {
+        // error de red: quitar el esqueleton y mostrar estado de error con reintento
+        this.loaderPage = false;
+        this.errorCarga = true;
+        clearTimeout(this.timeLoader);
       });
+  }
+
+  /** Reintenta la carga tras un error de red. */
+  reintentarCarga(): void {
+    this.xLoadCategoria();
   }
 
   // 12 segundos de cargar, reload page (una sola vez por sesion)

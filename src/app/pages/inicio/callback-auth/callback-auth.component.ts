@@ -207,7 +207,7 @@ export class CallbackAuthComponent implements OnInit, OnDestroy {
     };
 
     this.crudService.postFree(dataSend, 'error', 'set-error', false)
-    .subscribe(res => console.log(res));
+    .subscribe();
   }
 
   // Reintenta sin destruir la sesión guardada. El cierre de sesión real es solo desde el menú del cliente.

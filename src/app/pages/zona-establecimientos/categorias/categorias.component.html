@@ -24,7 +24,18 @@
         <p class="pt-2">Para comenzar, establesca una dirección de entrega.</p>
     </div>
     
-    <div *ngIf="!loaderPage && listEstablecimientos && listEstablecimientos.length === 0" class="div-img-gps p-3">
+    <!-- estado de error con reintento -->
+    <div *ngIf="!loaderPage && errorCarga" class="div-img-gps p-3 text-center">
+        <img src="assets/images/_no_disponible.png" alt="error">
+        <p class="pt-2 fw-600">No pudimos cargar los comercios</p>
+        <p class="fs-13 text-secondary">Revisa tu conexión e inténtalo de nuevo.</p>
+        <button class="btn-reintentar" (click)="reintentarCarga()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.5 15a9 9 0 1 1-2.1-9.4L23 10"></path></svg>
+            Reintentar
+        </button>
+    </div>
+
+    <div *ngIf="!loaderPage && !errorCarga && listEstablecimientos && listEstablecimientos.length === 0" class="div-img-gps p-3">
         <img src="assets/images/_no_disponible.png" alt="no-disponible">
         <p class="pt-2">El servicio aún no esta disponible en este lugar.</p>
     </div>
@@ -38,7 +49,7 @@
     </div>    
     <!-- PROMOCIONES -->
 
-    <div class="p-2 content-master-establecimiento" *ngIf="listEstablecimientos && !loaderPage">
+    <div class="p-2 content-master-establecimiento" *ngIf="listEstablecimientos && !loaderPage && !errorCarga">
 
         <!-- filtro de categorias. Los dos estados (pastillas / buscador) se apilan
              en el mismo lugar con una altura reservada, asi el cambio es un

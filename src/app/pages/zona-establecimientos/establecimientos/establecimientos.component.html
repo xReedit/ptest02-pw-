@@ -20,7 +20,18 @@
     </div>
 </div>
 
-<div class="animated fadeInUp div-content-all" *ngIf="!loaderPage">
+<!-- estado de error con reintento -->
+<div *ngIf="!loaderPage && errorCarga" class="div-img-gps p-3 text-center">
+    <img src="assets/images/_no_disponible.png" alt="error">
+    <p class="pt-2 fw-600">No pudimos cargar la información</p>
+    <p class="fs-13 text-secondary">Revisa tu conexión e inténtalo de nuevo.</p>
+    <button class="btn-reintentar" (click)="reintentarCarga()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.5 15a9 9 0 1 1-2.1-9.4L23 10"></path></svg>
+        Reintentar
+    </button>
+</div>
+
+<div class="animated fadeInUp div-content-all" *ngIf="!loaderPage && !errorCarga">
 
 
 

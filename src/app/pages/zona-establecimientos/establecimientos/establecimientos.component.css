@@ -1,3 +1,22 @@
+/* boton de reintento en el estado de error */
+.btn-reintentar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    min-height: 44px;
+    padding: 0 20px;
+    border: none;
+    border-radius: 12px;
+    background: #3F51B5;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-reintentar svg { width: 18px; height: 18px; }
+
 /* ===== Esqueleton de carga (secciones + grupos de comercios) ===== */
 .sk-est { padding: 16px; }
 
