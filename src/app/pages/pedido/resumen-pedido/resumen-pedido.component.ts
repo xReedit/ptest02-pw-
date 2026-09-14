@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { trigger, transition, style, animate } from '@angular/animations';
 
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { ReglascartaService } from 'src/app/shared/services/reglascarta.service';
@@ -49,20 +48,7 @@ import { DireccionPendienteService } from 'src/app/shared/services/direccion-pen
 @Component({
   selector: 'app-resumen-pedido',
   templateUrl: './resumen-pedido.component.html',
-  styleUrls: ['./resumen-pedido.component.css'],
-  animations: [
-    // misma animacion del pie que en pwa-app-pedido-mozo: el pie espera abajo y
-    // sube; al salir baja sin esperar.
-    trigger('slideFooter', [
-      transition(':enter', [
-        style({ transform: 'translateY(100%)' }),
-        animate('220ms 400ms cubic-bezier(0.22, 1, 0.36, 1)', style({ transform: 'translateY(0)' }))
-      ]),
-      transition(':leave', [
-        animate('180ms cubic-bezier(0.55, 0, 1, 0.45)', style({ transform: 'translateY(100%)' }))
-      ])
-    ])
-  ]
+  styleUrls: ['./resumen-pedido.component.css']
 })
 export class ResumenPedidoComponent implements OnInit, OnDestroy {
 

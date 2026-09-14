@@ -8,6 +8,7 @@ import { MainComponent } from './main/main.component';
 import { InicioComponent } from './inicio/inicio.component';
 import { CartaComponent } from './carta/carta.component';
 import { ResumenPedidoComponent } from './resumen-pedido/resumen-pedido.component';
+import { FooterPedidoComponent } from './resumen-pedido/footer-pedido/footer-pedido.component';
 import { EstadoPedidoComponent } from './estado-pedido/estado-pedido.component';
 import { BuscarItemComponent } from './buscar-item/buscar-item.component';
 import { PedidoRoutingModule } from './pedido.routing';
@@ -34,6 +35,7 @@ import { DialogVerificarTelefonoComponent } from 'src/app/componentes/dialog-ver
     InicioComponent,
     CartaComponent,
     ResumenPedidoComponent,
+    FooterPedidoComponent,
     EstadoPedidoComponent,
     BuscarItemComponent,
     // DialogItemComponent,

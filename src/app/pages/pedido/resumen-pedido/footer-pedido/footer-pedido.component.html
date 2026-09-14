@@ -1,0 +1,62 @@
+<div class="xfooter" *ngIf="visible" @slideFooter>
+    <div class="m-0 w-100 d-flex justify-content-between footer-botones">
+        <div class="btn-footer-cancel" matRipple (click)="r.nuevoPedido()">
+            <span [hidden]="r.isVisibleConfirmarAnimated" class="animated fadeInRight">
+                <ng-container *ngIf="r.isCliente; else elseTemplateisDeliveryCliente">
+                    Borrar Lista
+                </ng-container>
+                <ng-template #elseTemplateisDeliveryCliente>
+                    Nuevo Pedido
+                </ng-template>
+            </span>
+            <span [hidden]="!r.isVisibleConfirmarAnimated" class="animated fadeInLeft"><i class="fa fa-arrow-left"></i> Atras </span>
+        </div>
+
+        <ng-container *ngIf="!r.isVisibleConfirmarAnimated; then divBtnListo; else divBtnEnviar"></ng-container>
+        <ng-template #divBtnListo>
+            <div class="btn-footer-next transicion" matRipple (click)="r.confirmarPeiddo()">
+                <div>
+                    <span class="animated fadeInRight">Continuar <i class="fa fa-arrow-right"></i></span>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template #divBtnEnviar>
+            <ng-container *ngIf="!r.isDelivery; else elseTemplate">
+                <div *ngIf="!r.isCliente && !r.isPuntoAuntoPedido" class="btn-footer-next transicion" matRipple (click)="r.prepararEnvio()"
+                    [ngClass]="{'xdisabled': r.isRequiereMesa}">
+                    <div>
+                        <span class="animated fadeInLeft">Enviar Pedido</span>
+                    </div>
+                </div>
+            </ng-container>
+            <ng-template #elseTemplate>
+                <div class="btn-footer-next transicion" matRipple (click)="r.prepararEnvio()"
+                    [ngClass]="{'xdisabled': r.isDelivery && !r.isDeliveryValid}">
+                    <div>
+                        <span class="animated fadeInLeft">Enviar delivery</span>
+                    </div>
+                </div>
+            </ng-template>
+
+            <!-- cliente delivery -->
+            <ng-container *ngIf="r.isDeliveryCliente">
+                <div class="btn-footer-next transicion" matRipple (click)="r.prepararEnvio()"
+                    [ngClass]="{'xdisabled': !r.isReadyClienteDelivery}">
+                    <div>
+                        <span class="animated fadeInLeft">Confirmar</span>
+                    </div>
+                </div>
+            </ng-container>
+
+            <!-- cliente reserva -->
+            <ng-container *ngIf="r.isReservaCliente">
+                <div class="btn-footer-next transicion" matRipple (click)="r.prepararEnvio()"
+                    [ngClass]="{'xdisabled': !r.isReadyClienteReserva}">
+                    <div>
+                        <span class="animated fadeInLeft">Enviar Reserva</span>
+                    </div>
+                </div>
+            </ng-container>
+        </ng-template>
+    </div>
+</div>

@@ -1,4 +1,5 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { ResumenPedidoComponent } from '../resumen-pedido/resumen-pedido.component';
 import { MipedidoService } from 'src/app/shared/services/mipedido.service';
 import { NavigatorLinkService } from 'src/app/shared/services/navigator-link.service';
 import { ListenStatusService } from 'src/app/shared/services/listen-status.service';
@@ -17,7 +18,11 @@ import { intentarAutoRecarga } from 'src/app/shared/utils/auto-reload.util';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit, AfterViewInit {
+
+  // el pie (fuera de las pestañas) opera sobre este resumen
+  @ViewChild(ResumenPedidoComponent) private resumenVc: ResumenPedidoComponent;
+  resumenRef: ResumenPedidoComponent = null;
 
   isVisibleToolBar = true;
   isBusqueda = false;
@@ -58,6 +63,7 @@ export class MainComponent implements OnInit {
     // private comandAnalizerService: ComandAnalizerService,
     private establecimientoService: EstablecimientoService,
     private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef,
   ) {
     // console.log('verifyClientService', this.verifyClientService.get);
     // this.comandAnalizerService.getIsActive();
@@ -68,6 +74,12 @@ export class MainComponent implements OnInit {
     this.isScreenIsMobile = window.innerWidth > 1049 ? false : true;
     // console.log('window.innerWidth', window.innerWidth);
     // console.log('this.isScreenIsMobile', this.isScreenIsMobile);
+  }
+
+  ngAfterViewInit() {
+    // el resumen (dentro de una pestaña) ya existe: lo tomamos para el pie externo
+    this.resumenRef = this.resumenVc || null;
+    this.cdr.detectChanges();
   }
 
   ngOnInit() {

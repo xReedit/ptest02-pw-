@@ -180,6 +180,9 @@
     </mat-tab-group>
   </div>
 
+  <!-- pie del pedido fuera de las pestañas: queda fijo y se desliza al mostrarse/ocultarse -->
+  <app-footer-pedido *ngIf="isScreenIsMobile && resumenRef" [r]="resumenRef" [activo]="selectedTab === 1"></app-footer-pedido>
+
 
   <app-mozo-show-traduce-text></app-mozo-show-traduce-text>
 
