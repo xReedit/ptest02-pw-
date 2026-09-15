@@ -110,7 +110,9 @@
 }
 .content-body {
     margin-top: 74px;
-    height: calc(100vh - 56px);
+    /* la resta debe igualar el margin-top (la cabecera fija), si no el alto suma
+       18px de mas y aparece un segundo scroll en escritorio ademas del interno. */
+    height: calc(100vh - 74px);
     /* height: 100vh; */
     overflow: auto;
     /* background: #E5EFF7; */
