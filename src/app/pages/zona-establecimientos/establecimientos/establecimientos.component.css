@@ -18,7 +18,14 @@
 .btn-reintentar svg { width: 18px; height: 18px; }
 
 /* ===== Esqueleton de carga (secciones + grupos de comercios) ===== */
-.sk-est { padding: 16px; }
+/* mismo ancho y centrado que .div-content-all para que en escritorio no quede
+   pegado al costado sino centrado como el contenido real. */
+.sk-est {
+    padding: 16px;
+    max-width: 500px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
 
 .sk-titulo {
     width: 140px;
