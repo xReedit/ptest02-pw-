@@ -39,6 +39,7 @@ import { HoldingService } from 'src/app/shared/services/holding.service';
 import { NotificacionPushService } from 'src/app/shared/services/notificacion-push.service';
 import { NiubizClientData, NiubizPaymentResponse } from 'src/app/shared/services/niubiz.service';
 import { b64DecodeUnicode, b64EncodeUnicode } from 'src/app/shared/utils/b64';
+import { elegirSubtotalesEnvio, leerSubtotalesGuardados } from './subtotales-envio';
 import { claveIdem } from 'src/app/shared/utils/idem';
 import { guardarTokenCliente } from 'src/app/shared/utils/token-cliente';
 import { DireccionPendienteService } from 'src/app/shared/services/direccion-pendiente.service';
@@ -725,10 +726,9 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
       this.infoToken.setMetodoPagoSelected(this.infoToken.getInfoUs().metodoPago);
       // this.infoToken.setMetodoPagoSelected(this.infoToken.infoUsToken.metodoPago);
 
-      // saca del local por que puede que se haya puestro propina
+      // saca del local por que puede que se haya puestro propina (solo si corresponde a ESTE carrito)
       // si no hay nada guardado (recarga o storage limpiado) se recalculan los subtotales
-      const stGuardado = localStorage.getItem('sys::st');
-      this._arrSubtotales = stGuardado ? JSON.parse(b64DecodeUnicode(stGuardado)) : this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
+      this._arrSubtotales = this.subtotalesParaEnviar();
       // sin subtotales el pedido saldria sin impuestos ni entrega: mejor no enviarlo
       if (!this._arrSubtotales) { this.errorSendPedido(new Error('sin-reglas')); return; }
       localStorage.setItem('sys::st', b64EncodeUnicode(JSON.stringify(this._arrSubtotales)));
@@ -1349,9 +1349,21 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
     }
   }
 
+  // sys::st (propina, opcionales, entrega...) solo si su SUB TOTAL corresponde a ESTE carrito: con la app en dos
+  // pestanas la otra lo pisa y el pedido saldria (y se cobraria) con el total ajeno. Ver subtotales-envio.ts
+  private subtotalesParaEnviar(): any {
+    let recalculado = null;
+    try {
+      recalculado = this.miPedidoService.getArrSubTotales(this.rulesSubtoTales);
+    } catch (e) {
+      recalculado = null;
+    }
+    return elegirSubtotalesEnvio(leerSubtotalesGuardados(localStorage.getItem('sys::st')), this._arrSubtotales, recalculado);
+  }
+
   private async guardarPedidoHoldingLlamarPersonal(): Promise<void> {
     this.checkTiposDeConsumo();
-    this._arrSubtotales = JSON.parse(b64DecodeUnicode(localStorage.getItem('sys::st')));
+    this._arrSubtotales = this.subtotalesParaEnviar();
     
     const dataUsuario = this.infoToken.getInfoUs();
     const holdingData = this.infoToken.getHolding();
@@ -1380,7 +1392,7 @@ export class ResumenPedidoComponent implements OnInit, OnDestroy {
 
   private async guardarPedidoHoldingPagarConfirmar(): Promise<void> {
     this.checkTiposDeConsumo();
-    this._arrSubtotales = JSON.parse(b64DecodeUnicode(localStorage.getItem('sys::st')));
+    this._arrSubtotales = this.subtotalesParaEnviar(); // es el importe que se cobra con Niubiz
     
     const dataUsuario = this.infoToken.getInfoUs();
     const holdingData = this.infoToken.getHolding();

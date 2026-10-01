@@ -1761,7 +1761,10 @@ export class MipedidoService {
           sumSubTotal += z.items
             .map((x: ItemModel) => {
               cantItemOrder += x.cantidad_seleccionada;
-              return x.precio_print;
+              // precio_print puede venir como texto ("17.00"): sin convertir, la suma concatena
+              return typeof x.precio_print === 'string'
+                ? parseFloat(x.precio_print || 0)
+                : (x.precio_print || 0);
             })
             .reduce((a, b) => a + b, 0);
         });
